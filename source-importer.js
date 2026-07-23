@@ -152,7 +152,7 @@ async function extractPptx(file, onProgress) {
   const warnings = [];
   if (allSlidePaths.length > slidePaths.length) warnings.push(`Only the first ${MAX_PPTX_SLIDES} slides were imported.`);
   if (assets.length >= MAX_ASSETS) warnings.push(`Only the first ${MAX_ASSETS} visual assets were preserved.`);
-  if (unsupportedImages) warnings.push(`${unsupportedImages} PowerPoint image${unsupportedImages === 1 ? " was" : "s were"} skipped because the browser cannot safely render that image format, such as EMF or WMF.`);
+  if (unsupportedImages) warnings.push(`${unsupportedImages} PowerPoint image${unsupportedImages === 1 ? " was" : "s were"} skipped because EMF/WMF cannot be rendered safely in the browser. Re-save those images as PNG or JPEG in PowerPoint for full preservation.`);
 
   const rawContent = sections.map((section) => {
     const imageMarkers = section.assets.map((id) => `[ASSET:${id}]`).join("\n\n");
@@ -182,7 +182,7 @@ async function extractPptx(file, onProgress) {
 async function loadPdfJs() {
   if (!pdfJsPromise) {
     pdfJsPromise = import("/vendor/pdf.min.mjs").then((pdfjs) => {
-      pdfjs.GlobalWorkerOptions.workerSrc = "/vendor/pdf.worker.min.mjs";
+      if (pdfjs?.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc = "/vendor/pdf.worker.min.mjs";
       return pdfjs;
     }).catch((error) => {
       pdfJsPromise = null;
@@ -198,8 +198,9 @@ function pdfTextLines(items) {
   for (const item of safeItems) {
     const value = clean(item?.str);
     if (!value) continue;
-    const x = Number(item?.transform?.[4] || 0);
-    const y = Number(item?.transform?.[5] || 0);
+    const transform = Array.isArray(item?.transform) ? item.transform : [];
+    const x = Number(transform[4] || 0);
+    const y = Number(transform[5] || 0);
     let row = rows.find((candidate) => Math.abs(candidate.y - y) <= 3);
     if (!row) {
       row = { y, items: [] };
@@ -222,20 +223,22 @@ function pageHasVisualContent(pdfjs, operatorList) {
     pdfjs?.OPS?.paintImageMaskXObject,
     pdfjs?.OPS?.paintImageMaskXObjectGroup,
   ].filter((value) => Number.isFinite(value)));
-  const operations = Array.from(operatorList?.fnArray || []);
+  const operations = operatorList?.fnArray && typeof operatorList.fnArray[Symbol.iterator] === "function" ? [...operatorList.fnArray] : [];
   return operations.some((operation) => visualOps.has(operation));
 }
 
 async function renderPdfPage(page, pageNumber, title) {
+  if (typeof page?.getViewport !== "function" || typeof page?.render !== "function") return null;
   const baseViewport = page.getViewport({ scale: 1 });
-  const scale = Math.min(1.75, PDF_RENDER_MAX_WIDTH / Math.max(baseViewport.width, 1));
+  const scale = Math.min(1.75, PDF_RENDER_MAX_WIDTH / Math.max(Number(baseViewport?.width) || 1, 1));
   const viewport = page.getViewport({ scale });
   const canvas = document.createElement("canvas");
-  canvas.width = Math.max(1, Math.ceil(viewport.width));
-  canvas.height = Math.max(1, Math.ceil(viewport.height));
+  canvas.width = Math.max(1, Math.ceil(Number(viewport?.width) || 1));
+  canvas.height = Math.max(1, Math.ceil(Number(viewport?.height) || 1));
   const context = canvas.getContext("2d", { alpha: false });
   if (!context) return null;
-  await page.render({ canvasContext: context, viewport }).promise;
+  const renderTask = page.render({ canvasContext: context, viewport });
+  if (renderTask?.promise && typeof renderTask.promise.then === "function") await renderTask.promise;
   const source = canvas.toDataURL("image/jpeg", 0.82);
   canvas.width = 1;
   canvas.height = 1;
@@ -252,7 +255,8 @@ async function renderPdfPage(page, pageNumber, title) {
 async function destroyPdf(pdf, loadingTask) {
   try {
     if (typeof loadingTask?.destroy === "function") await loadingTask.destroy();
-    else if (typeof pdf?.destroy === "function") await pdf.destroy();
+    if (typeof pdf?.cleanup === "function") pdf.cleanup();
+    if (typeof pdf?.destroy === "function") await pdf.destroy();
   } catch (error) {
     console.warn("PDF cleanup failed", error);
   }
@@ -262,6 +266,7 @@ async function extractPdf(file, onProgress) {
   const policy = getUploadPolicy();
   if (file.size > policy.maxBytes) throw new Error(`This device can safely process files up to ${policy.mobile ? "20" : "50"} MB.`);
   const pdfjs = await loadPdfJs().catch(() => { throw new Error("PDF support could not load in this browser. Redeploy the latest build or refresh the page."); });
+  if (typeof pdfjs?.getDocument !== "function") throw new Error("PDF support loaded incorrectly. Redeploy the latest build.");
   onProgress("Opening the PDF document…");
   const loadingTask = pdfjs.getDocument({
     data: new Uint8Array(await file.arrayBuffer()),
@@ -269,9 +274,15 @@ async function extractPdf(file, onProgress) {
     cMapPacked: true,
     standardFontDataUrl: "/vendor/standard_fonts/",
     wasmUrl: "/vendor/wasm/",
+    disableFontFace: policy.mobile,
+    useWorkerFetch: false,
+    isEvalSupported: false,
   });
+  if (!loadingTask?.promise || typeof loadingTask.promise.then !== "function") throw new Error("This browser could not start the PDF reader.");
   const pdf = await loadingTask.promise;
-  const pageCount = Math.min(pdf.numPages, MAX_PDF_PAGES);
+  const totalPages = Number(pdf?.numPages) || 0;
+  if (!totalPages || typeof pdf?.getPage !== "function") throw new Error("The selected PDF does not contain readable pages.");
+  const pageCount = Math.min(totalPages, MAX_PDF_PAGES);
   const assets = [];
   const sections = [];
   const warnings = [];
@@ -281,8 +292,10 @@ async function extractPdf(file, onProgress) {
 
   try {
     try {
-      const metadata = await pdf.getMetadata();
-      documentTitle = clean(metadata?.info?.Title) || documentTitle;
+      if (typeof pdf.getMetadata === "function") {
+        const metadata = await pdf.getMetadata();
+        documentTitle = clean(metadata?.info?.Title) || documentTitle;
+      }
     } catch { /* metadata is optional */ }
 
     for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
@@ -290,6 +303,7 @@ async function extractPdf(file, onProgress) {
       let page;
       try {
         page = await pdf.getPage(pageNumber);
+        if (!page || typeof page.getTextContent !== "function") throw new Error("Text extraction is not supported for this page.");
         const textContent = await page.getTextContent();
         const lines = pdfTextLines(textContent?.items);
         const title = lines.find((line) => line.length >= 3) || `Page ${pageNumber}`;
@@ -321,7 +335,7 @@ async function extractPdf(file, onProgress) {
       } catch (error) {
         throw new Error(`PDF page ${pageNumber} could not be read: ${error instanceof Error ? error.message : String(error)}`);
       } finally {
-        if (typeof page?.cleanup === "function") page.cleanup();
+        try { if (typeof page?.cleanup === "function") page.cleanup(); } catch { /* cleanup is optional */ }
       }
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
@@ -329,7 +343,7 @@ async function extractPdf(file, onProgress) {
     await destroyPdf(pdf, loadingTask);
   }
 
-  if (pdf.numPages > pageCount) warnings.push(`Only the first ${MAX_PDF_PAGES} PDF pages were imported.`);
+  if (totalPages > pageCount) warnings.push(`Only the first ${MAX_PDF_PAGES} PDF pages were imported.`);
   if (assets.length >= MAX_PDF_PAGE_IMAGES) warnings.push(`PDF visual snapshots were limited to the first ${MAX_PDF_PAGE_IMAGES} relevant pages to protect browser memory.`);
   if (imageOnlyPages) warnings.push(`${imageOnlyPages} PDF page${imageOnlyPages === 1 ? "" : "s"} contained no extractable text. Page snapshots were preserved where possible, but OCR is not performed.`);
   if (snapshotFailures) warnings.push(`${snapshotFailures} PDF page snapshot${snapshotFailures === 1 ? "" : "s"} could not be rendered, but their extractable text was preserved.`);
