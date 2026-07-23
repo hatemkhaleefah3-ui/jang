@@ -3,15 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Turn lecture HTML files into clean, structured, printable lecture notes." />
+  <meta name="description" content="Turn PPTX, PDF, and HTML lectures into clear redesigned HTML and PowerPoint files." />
   <meta name="theme-color" content="#f5e642" />
-  <title>Jang — Lecture HTML Rebuilder</title>
+  <title>Jang — Lecture Rebuilder</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css" />
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
-  <script type="module" src="/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js" defer></script>
+  <script type="module" src="/app-v2.js"></script>
 </head>
 <body>
   <div class="noise" aria-hidden="true"></div>
@@ -36,12 +38,12 @@
         <p class="eyebrow"><span>01</span> Import · Reorganize · Download</p>
         <h1 id="heroTitle">Make every lecture<br /><em>worth reading.</em></h1>
         <p class="hero-description">
-          Upload a lecture HTML file. Jang extracts its academic content, images and diagrams, asks Gemini to reorganize it, then creates a polished, printable HTML document.
+          Upload a PPTX, PDF, or HTML lecture. Jang extracts its academic content and useful visuals locally, optionally asks Gemini to reorganize it, then creates a polished HTML preview and downloadable PowerPoint.
         </p>
         <div class="trust-row" aria-label="Product promises">
           <span>Browser-first extraction</span>
           <span>No account required</span>
-          <span>Downloadable HTML</span>
+          <span>Downloadable PPTX + HTML</span>
         </div>
       </div>
 
@@ -68,28 +70,28 @@
           <p class="section-label">Workspace</p>
           <h2 id="workspaceTitle">Rebuild a lecture</h2>
         </div>
-        <p>HTML stays on your device until the extracted text is sent for restructuring.</p>
+        <p>The original file stays on your device. Only extracted text and an asset manifest are sent for AI restructuring when Gemini is configured.</p>
       </div>
 
       <div class="workspace-grid">
         <section class="control-panel" aria-label="Lecture import controls">
           <div class="step-heading">
             <span>1</span>
-            <div><strong>Choose the source</strong><small>One .html or .htm file</small></div>
+            <div><strong>Choose the source</strong><small>One .pptx, .pdf, .html, or .htm file</small></div>
           </div>
 
           <label class="drop-zone" id="dropZone" for="fileInput">
-            <input id="fileInput" type="file" accept=".html,.htm,text/html" />
+            <input id="fileInput" type="file" accept=".pptx,.pdf,.html,.htm,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/html" />
             <span class="upload-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0 4 4m-4-4L8 8M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </span>
-            <strong>Drop lecture HTML here</strong>
+            <strong>Drop a PPTX, PDF, or HTML lecture here</strong>
             <span>or click to browse</span>
-            <small>Maximum 8 MB · embedded and remote images are preserved</small>
+            <small>Up to 50 MB desktop / 20 MB mobile · processing stays on this device</small>
           </label>
 
           <div class="file-card" id="fileCard" hidden>
-            <div class="file-type">HTML</div>
+            <div class="file-type" id="fileType">FILE</div>
             <div class="file-details"><strong id="fileName"></strong><span id="fileMeta"></span></div>
             <button class="icon-button" id="removeFile" type="button" aria-label="Remove selected file">×</button>
           </div>
@@ -137,7 +139,7 @@
             <span>Rebuild lecture</span>
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <p class="control-note">The Gemini key is stored only as a Cloudflare secret and is never exposed to visitors.</p>
+          <p class="control-note" id="aiSetupHint">Checking the Cloudflare AI configuration…</p>
         </section>
 
         <section class="result-panel" aria-label="Generated lecture result">
@@ -148,6 +150,7 @@
             </div>
             <div class="toolbar-actions">
               <button class="secondary-button" id="openPreviewButton" type="button" disabled>Open preview</button>
+              <button class="secondary-button" id="downloadPptxButton" type="button" disabled>Download PPTX</button>
               <button class="download-button" id="downloadButton" type="button" disabled>
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Download HTML
@@ -167,10 +170,10 @@
               <div><strong id="processingTitle">Reading the lecture</strong><span id="processingDetail">Preparing content for extraction…</span></div>
             </div>
             <ol class="progress-list">
-              <li id="stageRead"><span></span><div><b>Read HTML</b><small>Validate and parse the source</small></div></li>
+              <li id="stageRead"><span></span><div><b>Read source</b><small>Validate and parse PPTX, PDF, or HTML</small></div></li>
               <li id="stageExtract"><span></span><div><b>Extract content</b><small>Text, tables, images and diagrams</small></div></li>
               <li id="stagePlan"><span></span><div><b>Reorganize with Gemini</b><small>Create a faithful academic structure</small></div></li>
-              <li id="stageRender"><span></span><div><b>Build the new file</b><small>Apply the lecture design system</small></div></li>
+              <li id="stageRender"><span></span><div><b>Build outputs</b><small>Create the HTML preview and PowerPoint</small></div></li>
             </ol>
           </div>
 
@@ -186,17 +189,17 @@
     <section class="how-it-works" aria-labelledby="howTitle">
       <div class="how-heading"><p class="section-label">The pipeline</p><h2 id="howTitle">Four clear steps. One clean file.</h2></div>
       <div class="process-cards">
-        <article><span>01</span><h3>Import</h3><p>Select a lecture HTML file. Parsing happens locally in the visitor’s browser.</p></article>
-        <article><span>02</span><h3>Extract</h3><p>Headings, paragraphs, lists, tables, embedded images, SVG and Mermaid diagrams are identified.</p></article>
-        <article><span>03</span><h3>Rebuild</h3><p>Gemini creates a content plan while preserving the lecture’s meaning and factual detail.</p></article>
-        <article><span>04</span><h3>Download</h3><p>A self-contained, printable HTML lecture is rendered and returned to the visitor.</p></article>
+        <article><span>01</span><h3>Import</h3><p>Select a PPTX, PDF, or HTML lecture. Parsing and media extraction happen locally in the browser.</p></article>
+        <article><span>02</span><h3>Extract</h3><p>Readable text, slide structure, embedded images, SVG, and relevant PDF page snapshots are identified.</p></article>
+        <article><span>03</span><h3>Rebuild</h3><p>Gemini creates a content plan when configured; otherwise Jang creates a source-preserving local layout.</p></article>
+        <article><span>04</span><h3>Download</h3><p>A PowerPoint deck and a self-contained HTML lecture are generated in the browser.</p></article>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div><strong>Jang</strong><span>Designed for clearer lectures.</span></div>
-    <p>Open-source · Cloudflare Pages · Gemini API</p>
+    <p>Open-source · Cloudflare Pages · PDF.js · Gemini API</p>
   </footer>
 
   <dialog id="previewDialog" class="preview-dialog">
