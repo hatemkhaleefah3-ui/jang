@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import PptxGenJS from "pptxgenjs";
+import JSZip from "jszip";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
 const output = resolve("tests", "fixtures");
@@ -23,21 +23,19 @@ const html = `<!doctype html>
 </body></html>`;
 await writeFile(resolve(output, "lecture.html"), html);
 
-const pptx = new PptxGenJS();
-pptx.layout = "LAYOUT_WIDE";
-pptx.author = "Jang browser test";
-let slide = pptx.addSlide();
-slide.addText("Carbohydrate Metabolism", { x: 0.7, y: 0.8, w: 11.8, h: 0.8, fontSize: 30, bold: true });
-slide.addText("Pentose phosphate pathway", { x: 0.7, y: 2.0, w: 10, h: 0.5, fontSize: 20 });
-slide = pptx.addSlide();
-slide.addText("Pentose Phosphate Pathway", { x: 0.7, y: 0.5, w: 11.8, h: 0.6, fontSize: 26, bold: true });
-slide.addText("The pathway occurs in the cytosol and has oxidative and nonoxidative phases.", { x: 0.8, y: 1.5, w: 11, h: 0.7, fontSize: 18 });
-slide.addText("Oxidative phase produces NADPH\nNonoxidative phase interconverts sugars\nNo ATP is directly produced", { x: 1, y: 2.5, w: 10.5, h: 2.2, fontSize: 18, bullet: false });
-slide = pptx.addSlide();
-slide.addText("Regulation and Clinical Significance", { x: 0.7, y: 0.5, w: 11.8, h: 0.6, fontSize: 26, bold: true });
-slide.addText("Glucose-6-phosphate dehydrogenase is rate limiting. NADPH maintains reduced glutathione in erythrocytes.", { x: 0.7, y: 1.5, w: 6.2, h: 2, fontSize: 18 });
-slide.addImage({ data: pngData, x: 7.4, y: 1.5, w: 4.4, h: 3.6 });
-await pptx.writeFile({ fileName: resolve(output, "lecture.pptx") });
+const paragraph = (value) => `<a:p><a:r><a:t>${value}</a:t></a:r></a:p>`;
+const shape = (type, values) => `<p:sp><p:nvSpPr><p:cNvPr id="1" name="Text"/><p:cNvSpPr/><p:nvPr>${type ? `<p:ph type="${type}"/>` : ""}</p:nvPr></p:nvSpPr><p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/>${values.map(paragraph).join("")}</p:txBody></p:sp>`;
+const slideXml = (title, body, image = false) => `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree>${shape("title", [title])}${shape("body", body)}${image ? '<p:pic><p:nvPicPr><p:cNvPr id="4" name="Image"/><p:cNvPicPr/><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="rId1"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr/></p:pic>' : ""}</p:spTree></p:cSld></p:sld>`;
+
+const pptx = new JSZip();
+pptx.file("[Content_Types].xml", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"xml\" ContentType=\"application/xml\"/><Default Extension=\"png\" ContentType=\"image/png\"/></Types>");
+pptx.file("ppt/slides/slide1.xml", slideXml("Carbohydrate Metabolism", ["Pentose phosphate pathway"]));
+pptx.file("ppt/slides/slide2.xml", slideXml("Pentose Phosphate Pathway", ["The pathway occurs in the cytosol and has oxidative and nonoxidative phases.", "Oxidative phase produces NADPH", "Nonoxidative phase interconverts sugars", "No ATP is directly produced"]));
+pptx.file("ppt/slides/slide3.xml", slideXml("Regulation and Clinical Significance", ["Glucose-6-phosphate dehydrogenase is rate limiting.", "NADPH maintains reduced glutathione in erythrocytes."], true));
+pptx.file("ppt/slides/_rels/slide3.xml.rels", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"../media/image1.png\"/></Relationships>");
+pptx.file("ppt/media/image1.png", pngBytes);
+await writeFile(resolve(output, "lecture.pptx"), await pptx.generateAsync({ type: "nodebuffer" }));
 
 const pdf = await PDFDocument.create();
 const font = await pdf.embedFont(StandardFonts.Helvetica);
