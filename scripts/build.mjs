@@ -16,11 +16,13 @@ const extractor = (await readFile(resolve(root, "extractor-v2.js"), "utf8"))
 await writeFile(resolve(output, "extractor-v2.js"), extractor);
 
 await Promise.all([
-  cp(resolve(pdfRoot, "build", "pdf.min.mjs"), resolve(vendor, "pdf.min.mjs")),
-  cp(resolve(pdfRoot, "build", "pdf.worker.min.mjs"), resolve(vendor, "pdf.worker.min.mjs")),
+  cp(resolve(root, "node_modules", "jszip", "dist", "jszip.min.js"), resolve(vendor, "jszip.min.js")),
+  cp(resolve(root, "node_modules", "pptxgenjs", "dist", "pptxgen.bundle.js"), resolve(vendor, "pptxgen.bundle.js")),
+  cp(resolve(pdfRoot, "legacy", "build", "pdf.min.mjs"), resolve(vendor, "pdf.min.mjs")),
+  cp(resolve(pdfRoot, "legacy", "build", "pdf.worker.min.mjs"), resolve(vendor, "pdf.worker.min.mjs")),
   cp(resolve(pdfRoot, "cmaps"), resolve(vendor, "cmaps"), { recursive: true }),
   cp(resolve(pdfRoot, "standard_fonts"), resolve(vendor, "standard_fonts"), { recursive: true }),
   cp(resolve(pdfRoot, "wasm"), resolve(vendor, "wasm"), { recursive: true }),
 ]);
 
-console.log(`Prepared ${staticFiles.length + 1} static files plus local PDF.js assets in dist/.`);
+console.log(`Prepared ${staticFiles.length + 1} static files plus local JSZip, PptxGenJS, and legacy PDF.js assets in dist/.`);
