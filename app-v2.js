@@ -18,6 +18,7 @@ const state = {
   plan: null,
   generatedHTML: "",
   generatedFilename: "",
+  resultMode: "none",
   turnstileToken: "",
   turnstileId: null,
   busy: false,
@@ -63,14 +64,17 @@ function showPreview() {
   el.emptyState.hidden = true;
   el.previewShell.hidden = false;
   el.previewFrame.srcdoc = state.generatedHTML;
-  el.resultTitle.textContent = state.generatedFilename;
-  [el.downloadButton, el.downloadPptxButton, el.openPreviewButton].forEach((button) => { if (button) button.disabled = false; });
+  el.resultTitle.textContent = `${state.resultMode === "ai" ? "AI redesign" : "Local draft"} · ${state.generatedFilename}`;
+  if (el.downloadButton) el.downloadButton.disabled = false;
+  if (el.openPreviewButton) el.openPreviewButton.disabled = false;
+  if (el.downloadPptxButton) el.downloadPptxButton.disabled = state.resultMode !== "ai";
 }
 function clearResult() {
   state.extraction = null;
   state.plan = null;
   state.generatedHTML = "";
   state.generatedFilename = "";
+  state.resultMode = "none";
   el.previewFrame.removeAttribute("srcdoc");
   el.dialogFrame.removeAttribute("srcdoc");
   el.processingState.hidden = true;
@@ -248,24 +252,26 @@ async function processLecture() {
 
     try {
       state.plan = await requestPlan(state.extraction, userOptions);
+      state.resultMode = "ai";
     } catch (error) {
       localMode = error?.code === "AI_NOT_CONFIGURED";
       fallbackReason = error instanceof Error ? error.message : "The AI service was unavailable.";
       state.plan = createFallbackPlan(state.extraction, userOptions);
+      state.resultMode = "local";
     } finally {
       resetTurnstile();
     }
 
     state.plan = compactPlan(state.plan, state.extraction, userOptions);
-    stage(3, "Building the outputs", "Creating the HTML preview and PowerPoint-ready slide plan…");
+    stage(3, "Building the outputs", state.resultMode === "ai" ? "Creating the final HTML preview and PowerPoint deck…" : "Creating a local draft preview for inspection…");
     state.generatedHTML = buildLectureHTML(state.plan, state.extraction.assets, userOptions);
     state.generatedFilename = safeFilename(state.plan?.metadata?.title || state.extraction.title);
     showPreview();
 
     const notices = [...state.extraction.warnings];
-    if (localMode) notices.unshift(`The ${deploymentLabel()} cannot access an AI key. The file was grouped locally. Add the key to this same Cloudflare environment and redeploy.`);
-    else if (fallbackReason) notices.unshift(`AI request failed: ${fallbackReason} A grouped source-preserving layout was created instead.`);
-    else notices.unshift(`Gemini reorganized ${stats.batchCount} independently retryable batch${stats.batchCount === 1 ? "" : "es"}.`);
+    if (localMode) notices.unshift(`The ${deploymentLabel()} cannot access an AI key. A local draft preview was created, but final PPTX export is disabled until Gemini is available in this same Cloudflare environment and the deployment is rebuilt.`);
+    else if (fallbackReason) notices.unshift(`AI request failed: ${fallbackReason} A local draft preview was created; final PPTX export is disabled so it is not mistaken for the AI-redesigned result.`);
+    else notices.unshift(`Gemini reorganized ${stats.batchCount} independently retryable batch${stats.batchCount === 1 ? "" : "es"}. Final PPTX export is enabled.`);
     const tone = fallbackReason || state.extraction.warnings.length ? "warning" : "success";
     message(notices.join(" "), tone);
   } catch (error) {
@@ -292,6 +298,10 @@ function downloadHtml() {
 }
 async function downloadPowerPoint() {
   if (!state.plan || !state.extraction) return;
+  if (state.resultMode !== "ai") {
+    message("Final PowerPoint export requires a successful Gemini redesign. This result is a local draft because the current Cloudflare deployment could not use AI.", "warning");
+    return;
+  }
   el.downloadPptxButton.disabled = true;
   try {
     await downloadPptx(state.plan, state.extraction.assets, (state.generatedFilename || "redesigned-lecture.html").replace(/\.html$/i, ".pptx"));
@@ -329,18 +339,15 @@ async function loadConfig() {
     const response = await fetch(`/api/config?ts=${Date.now()}`, { headers: { accept: "application/json" }, cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     state.config = { ...state.config, ...(await response.json()) };
-    const label = deploymentLabel();
-    backendStatus(state.config.configured ? "ready" : "warning", state.config.configured ? `Gemini ready · ${state.config.model}` : `AI key not visible · ${state.config.environment || "deployment"}`);
+    backendStatus(state.config.configured ? "ready" : "warning", state.config.configured ? `Gemini ready · ${state.config.model}` : "Local draft mode · AI key unavailable");
     if (el.aiSetupHint) el.aiSetupHint.textContent = state.config.configured
-      ? `AI reorganization is active through ${state.config.keySource || "a Cloudflare secret"} on the ${label}; the key is never exposed to visitors.`
-      : `The ${label} cannot see GEMINI_API_KEY or GOOGLE_API_KEY. Secrets are environment-specific and only become available to deployments created after the secret is saved. Add it to this environment and redeploy.`;
+      ? `AI reorganization is active through ${state.config.keySource || "a Cloudflare secret"}; final PPTX export is enabled after a successful redesign.`
+      : `This ${deploymentLabel()} cannot access GEMINI_API_KEY or GOOGLE_API_KEY. Add the secret to this exact Cloudflare environment and redeploy. Until then, only a local draft preview is available.`;
     loadTurnstile(state.config.turnstileSiteKey);
   } catch {
-    backendStatus("warning", "AI status unavailable");
-    if (el.aiSetupHint) el.aiSetupHint.textContent = "The Cloudflare API endpoint is unavailable. Jang will still try the AI request, then use grouped local mode if necessary.";
-  } finally {
-    updateButton();
-  }
+    backendStatus("warning", "Local draft mode · API unavailable");
+    if (el.aiSetupHint) el.aiSetupHint.textContent = "The Cloudflare API endpoint is unavailable. Local draft preview remains available, but final PPTX export requires a working AI endpoint.";
+  } finally { updateButton(); }
 }
 
 el.fileInput.addEventListener("change", () => selectFile(el.fileInput.files?.[0]));
