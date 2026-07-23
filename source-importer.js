@@ -1,4 +1,5 @@
-import { extractLecture as extractHtmlLecture, createFallbackPlan, getUploadPolicy } from "./extractor-v2.js";
+import { extractLecture as extractHtmlLecture, getUploadPolicy } from "./extractor-v2.js";
+import { createFallbackPlan } from "./fallback-plan.js";
 
 const MAX_PPTX_SLIDES = 300;
 const MAX_PDF_PAGES = 250;
@@ -14,11 +15,36 @@ const natural = (a, b) => a.localeCompare(b, undefined, { numeric: true });
 let pdfJsPromise;
 
 function splitBatches(content) {
-  const chunks = [];
-  for (let offset = 0; offset < content.length && chunks.length < MAX_BATCHES; offset += BATCH_CHARS) {
-    chunks.push(content.slice(offset, offset + BATCH_CHARS));
+  const parts = content.split(/\n(?=#{1,3}\s)/g).filter(Boolean);
+  const batches = [];
+  let current = "";
+  const flush = () => {
+    if (current.trim()) batches.push(current.trim());
+    current = "";
+  };
+
+  for (const part of parts) {
+    if (batches.length >= MAX_BATCHES) break;
+    if (part.length > BATCH_CHARS) {
+      flush();
+      const paragraphs = part.split(/\n{2,}/).filter(Boolean);
+      let chunk = "";
+      for (const paragraph of paragraphs) {
+        if (chunk && chunk.length + paragraph.length + 2 > BATCH_CHARS) {
+          batches.push(chunk.trim());
+          chunk = "";
+          if (batches.length >= MAX_BATCHES) break;
+        }
+        chunk += `${chunk ? "\n\n" : ""}${paragraph}`;
+      }
+      if (chunk && batches.length < MAX_BATCHES) batches.push(chunk.trim());
+      continue;
+    }
+    if (current && current.length + part.length + 1 > BATCH_CHARS) flush();
+    current += `${current ? "\n" : ""}${part}`;
   }
-  return chunks;
+  if (batches.length < MAX_BATCHES) flush();
+  return batches.slice(0, MAX_BATCHES);
 }
 
 function finalizeContent(content, warnings) {
@@ -26,18 +52,45 @@ function finalizeContent(content, warnings) {
   const limited = content.slice(0, MAX_EXTRACTED_CHARS);
   if (limited.length < originalExtractedChars) warnings.push(`Extracted text was limited to ${MAX_EXTRACTED_CHARS.toLocaleString()} characters; later material was not included.`);
   const batches = splitBatches(limited);
-  if (batches.join("").length < limited.length) warnings.push(`Only the first ${MAX_BATCHES} AI batches were included.`);
+  if (batches.join("").length < limited.replace(/\s/g, "").length * 0.9) warnings.push(`Only the first ${MAX_BATCHES} AI batches were included.`);
   return { content: limited, batches, originalExtractedChars, truncated: limited.length < originalExtractedChars };
 }
 
-function mimeFromPath(path) {
+function webMimeFromPath(path) {
   const ext = path.split(".").pop()?.toLowerCase();
-  return ({ png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif", svg: "image/svg+xml", webp: "image/webp" })[ext] || "application/octet-stream";
+  return ({ png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif", svg: "image/svg+xml", webp: "image/webp" })[ext] || null;
 }
 
 async function asDataUrl(zipEntry, path) {
+  const mime = webMimeFromPath(path);
+  if (!mime) return null;
   const base64 = await zipEntry.async("base64");
-  return `data:${mimeFromPath(path)};base64,${base64}`;
+  return `data:${mime};base64,${base64}`;
+}
+
+function paragraphText(node) {
+  return clean([...node.getElementsByTagNameNS("*", "t")].map((item) => item.textContent || "").join(""));
+}
+
+function extractSlideText(slideDoc, slideNumber) {
+  const shapes = [...slideDoc.getElementsByTagNameNS("*", "sp")];
+  let title = "";
+  const body = [];
+
+  for (const shape of shapes) {
+    const paragraphs = [...shape.getElementsByTagNameNS("*", "p")].map(paragraphText).filter(Boolean);
+    if (!paragraphs.length) continue;
+    const placeholder = shape.getElementsByTagNameNS("*", "ph")[0]?.getAttribute("type") || "";
+    if (!title && ["title", "ctrTitle", "subTitle"].includes(placeholder)) title = clean(paragraphs.join(" "));
+    else body.push(...paragraphs);
+  }
+
+  if (!title) {
+    const allParagraphs = [...slideDoc.getElementsByTagNameNS("*", "p")].map(paragraphText).filter(Boolean);
+    title = allParagraphs.shift() || `Slide ${slideNumber}`;
+    if (!body.length) body.push(...allParagraphs);
+  }
+  return { title, body: body.filter((value) => value !== title) };
 }
 
 async function extractPptx(file, onProgress) {
@@ -52,42 +105,55 @@ async function extractPptx(file, onProgress) {
   if (!slidePaths.length) throw new Error("The selected PPTX does not contain readable slides.");
 
   const assets = [];
+  const mediaIds = new Map();
   const sections = [];
+  let unsupportedImages = 0;
+
   for (let index = 0; index < slidePaths.length; index += 1) {
     onProgress(`Reading slide ${index + 1} of ${slidePaths.length}…`);
     const slidePath = slidePaths[index];
     const slideEntry = zip.file(slidePath);
     if (!slideEntry) continue;
     const slideDoc = xml(await slideEntry.async("text"));
-    const texts = [...slideDoc.getElementsByTagNameNS("*", "t")].map((node) => clean(node.textContent)).filter(Boolean);
-    const title = texts[0] || `Slide ${index + 1}`;
-    const body = texts.slice(1);
+    const { title, body } = extractSlideText(slideDoc, index + 1);
 
     const relPath = slidePath.replace("ppt/slides/", "ppt/slides/_rels/") + ".rels";
     const relEntry = zip.file(relPath);
     const rels = relEntry ? xml(await relEntry.async("text")) : null;
     const relMap = new Map(rels ? [...rels.getElementsByTagNameNS("*", "Relationship")].map((node) => [node.getAttribute("Id"), node.getAttribute("Target")]) : []);
-    const blips = [...slideDoc.getElementsByTagNameNS("*", "blip")];
     const slideAssets = [];
-    for (const blip of blips) {
+
+    for (const blip of [...slideDoc.getElementsByTagNameNS("*", "blip")]) {
       if (assets.length >= MAX_ASSETS) break;
       const rid = blip.getAttribute("r:embed") || blip.getAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "embed");
       const target = relMap.get(rid);
       if (!target || !target.includes("media/")) continue;
       const mediaPath = `ppt/${target.replace(/^\.\.\//, "")}`;
+      if (mediaIds.has(mediaPath)) {
+        slideAssets.push(mediaIds.get(mediaPath));
+        continue;
+      }
       const entry = zip.file(mediaPath);
       if (!entry) continue;
+      const source = await asDataUrl(entry, mediaPath);
+      if (!source) {
+        unsupportedImages += 1;
+        continue;
+      }
       const id = `image-${String(assets.length + 1).padStart(3, "0")}`;
-      assets.push({ id, type: "image", source: await asDataUrl(entry, mediaPath), sourceKind: "embedded", alt: `${title} image`, caption: "" });
+      mediaIds.set(mediaPath, id);
+      assets.push({ id, type: "image", source, sourceKind: "embedded", alt: `${title} image`, caption: "" });
       slideAssets.push(id);
     }
-    sections.push({ title, body, assets: slideAssets });
+    sections.push({ title, body, assets: [...new Set(slideAssets)] });
     await new Promise((resolve) => setTimeout(resolve, 0));
   }
 
   const warnings = [];
   if (allSlidePaths.length > slidePaths.length) warnings.push(`Only the first ${MAX_PPTX_SLIDES} slides were imported.`);
   if (assets.length >= MAX_ASSETS) warnings.push(`Only the first ${MAX_ASSETS} visual assets were preserved.`);
+  if (unsupportedImages) warnings.push(`${unsupportedImages} PowerPoint image${unsupportedImages === 1 ? " was" : "s were"} skipped because the browser cannot safely render that image format, such as EMF or WMF.`);
+
   const rawContent = sections.map((section) => {
     const imageMarkers = section.assets.map((id) => `[ASSET:${id}]`).join("\n\n");
     return `# ${section.title}\n\n${section.body.join("\n\n")}${imageMarkers ? `\n\n${imageMarkers}` : ""}`;
@@ -124,27 +190,23 @@ async function loadPdfJs() {
 }
 
 function pdfTextLines(items) {
-  const lines = [];
-  let current = [];
-  let lastY = null;
+  const rows = [];
   for (const item of items) {
     const value = clean(item?.str);
     if (!value) continue;
+    const x = Number(item?.transform?.[4] || 0);
     const y = Number(item?.transform?.[5] || 0);
-    if (lastY !== null && Math.abs(y - lastY) > 4 && current.length) {
-      lines.push(clean(current.join(" ")));
-      current = [];
+    let row = rows.find((candidate) => Math.abs(candidate.y - y) <= 3);
+    if (!row) {
+      row = { y, items: [] };
+      rows.push(row);
     }
-    current.push(value);
-    lastY = y;
-    if (item?.hasEOL && current.length) {
-      lines.push(clean(current.join(" ")));
-      current = [];
-      lastY = null;
-    }
+    row.items.push({ x, value });
   }
-  if (current.length) lines.push(clean(current.join(" ")));
-  return lines.filter(Boolean);
+  return rows
+    .sort((a, b) => b.y - a.y)
+    .map((row) => clean(row.items.sort((a, b) => a.x - b.x).map((item) => item.value).join(" ")))
+    .filter(Boolean);
 }
 
 function pageHasVisualContent(pdfjs, operatorList, text) {
@@ -168,7 +230,7 @@ async function renderPdfPage(page, pageNumber, title) {
   canvas.height = Math.max(1, Math.ceil(viewport.height));
   const context = canvas.getContext("2d", { alpha: false });
   if (!context) return null;
-  await page.render({ canvas, canvasContext: context, viewport }).promise;
+  await page.render({ canvasContext: context, viewport }).promise;
   const source = canvas.toDataURL("image/jpeg", 0.82);
   canvas.width = 1;
   canvas.height = 1;
@@ -176,10 +238,19 @@ async function renderPdfPage(page, pageNumber, title) {
     id: `pdf-page-${String(pageNumber).padStart(3, "0")}`,
     type: "image",
     source,
-    sourceKind: "pdf-page-render",
+    sourceKind: "embedded",
     alt: `${title} — page ${pageNumber}`,
     caption: `Source PDF page ${pageNumber}`,
   };
+}
+
+async function destroyPdf(pdf, loadingTask) {
+  try {
+    if (typeof loadingTask?.destroy === "function") await loadingTask.destroy();
+    else if (typeof pdf?.destroy === "function") await pdf.destroy();
+  } catch (error) {
+    console.warn("PDF cleanup failed", error);
+  }
 }
 
 async function extractPdf(file, onProgress) {
@@ -201,19 +272,21 @@ async function extractPdf(file, onProgress) {
   const warnings = [];
   let imageOnlyPages = 0;
   let documentTitle = file.name.replace(/\.pdf$/i, "");
-  try {
-    const metadata = await pdf.getMetadata();
-    documentTitle = clean(metadata?.info?.Title) || documentTitle;
-  } catch { /* metadata is optional */ }
 
   try {
+    try {
+      const metadata = await pdf.getMetadata();
+      documentTitle = clean(metadata?.info?.Title) || documentTitle;
+    } catch { /* metadata is optional */ }
+
     for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
       onProgress(`Reading PDF page ${pageNumber} of ${pageCount}…`);
       const page = await pdf.getPage(pageNumber);
       const textContent = await page.getTextContent();
       const lines = pdfTextLines(textContent.items);
-      const title = lines[0] || `Page ${pageNumber}`;
-      const body = lines.length > 1 ? lines.slice(1) : [];
+      const title = lines.find((line) => line.length >= 3) || `Page ${pageNumber}`;
+      const titleIndex = lines.indexOf(title);
+      const body = titleIndex >= 0 ? lines.filter((_, index) => index !== titleIndex) : lines;
       const pageAssets = [];
       const pageText = lines.join(" ");
       if (!pageText) imageOnlyPages += 1;
@@ -229,11 +302,11 @@ async function extractPdf(file, onProgress) {
         }
       }
       sections.push({ title, body, assets: pageAssets });
-      page.cleanup();
+      if (typeof page.cleanup === "function") page.cleanup();
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
   } finally {
-    await pdf.destroy();
+    await destroyPdf(pdf, loadingTask);
   }
 
   if (pdf.numPages > pageCount) warnings.push(`Only the first ${MAX_PDF_PAGES} PDF pages were imported.`);
@@ -242,8 +315,7 @@ async function extractPdf(file, onProgress) {
 
   const rawContent = sections.map((section, index) => {
     const imageMarkers = section.assets.map((id) => `[ASSET:${id}]`).join("\n\n");
-    const text = section.body.join("\n\n");
-    return `# ${section.title || `Page ${index + 1}`}\n\n${text}${imageMarkers ? `\n\n${imageMarkers}` : ""}`;
+    return `# ${section.title || `Page ${index + 1}`}\n\n${section.body.join("\n\n")}${imageMarkers ? `\n\n${imageMarkers}` : ""}`;
   }).join("\n\n");
   const finalized = finalizeContent(rawContent, warnings);
   return {
