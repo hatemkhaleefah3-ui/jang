@@ -1,6 +1,6 @@
 {
   "name": "jang-lecture-rebuilder",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": true,
   "description": "Browser-first PPTX, PDF, and HTML lecture redesign tool deployed on Cloudflare Pages.",
   "scripts": {
@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "jszip": "3.10.1",
-    "pdfjs-dist": "6.1.200",
+    "pdfjs-dist": "4.10.38",
     "pptxgenjs": "3.12.0"
   },
   "devDependencies": {
