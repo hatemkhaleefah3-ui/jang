@@ -1,0 +1,14 @@
+{
+  "name": "jang-lecture-rebuilder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser-first lecture HTML redesign tool deployed on Cloudflare Pages.",
+  "scripts": {
+    "dev": "wrangler pages dev . --compatibility-date=2026-07-23",
+    "check": "node --check app.js && node --check extractor.js && node --check lecture-template.js && node --check functions/api/config.js && node --check functions/api/redesign.js"
+  },
+  "devDependencies": {
+    "wrangler": "^4.25.0"
+  },
+  "type": "module"
+}

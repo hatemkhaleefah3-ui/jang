@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Turn lecture HTML files into clean, structured, printable lecture notes." />
+  <meta name="theme-color" content="#f5e642" />
+  <title>Jang — Lecture HTML Rebuilder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Jang home">
+      <span class="brand-mark" aria-hidden="true">J</span>
+      <span>
+        <strong>Jang</strong>
+        <small>Lecture Rebuilder</small>
+      </span>
+    </a>
+    <div class="header-status" id="backendStatus" role="status" aria-live="polite">
+      <span class="status-dot"></span>
+      Checking AI service
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-copy">
+        <p class="eyebrow"><span>01</span> Import · Reorganize · Download</p>
+        <h1 id="heroTitle">Make every lecture<br /><em>worth reading.</em></h1>
+        <p class="hero-description">
+          Upload a lecture HTML file. Jang extracts its academic content, images and diagrams, asks Gemini to reorganize it, then creates a polished, printable HTML document.
+        </p>
+        <div class="trust-row" aria-label="Product promises">
+          <span>Browser-first extraction</span>
+          <span>No account required</span>
+          <span>Downloadable HTML</span>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="paper-stack paper-back"></div>
+        <div class="paper-stack paper-mid"></div>
+        <div class="sample-page">
+          <div class="sample-top"><span>BIO 214</span><span>Lecture 08</span></div>
+          <div class="sample-body">
+            <span class="sample-kicker">Cellular respiration</span>
+            <h2>Energy conversion,<br />clearly arranged.</h2>
+            <div class="yellow-stroke"></div>
+            <div class="sample-lines"><i></i><i></i><i></i></div>
+            <div class="sample-grid"><b></b><b></b><b></b></div>
+          </div>
+          <div class="sample-footer"><span>Course notes</span><span>08 / 12</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace" aria-labelledby="workspaceTitle">
+      <div class="workspace-heading">
+        <div>
+          <p class="section-label">Workspace</p>
+          <h2 id="workspaceTitle">Rebuild a lecture</h2>
+        </div>
+        <p>HTML stays on your device until the extracted text is sent for restructuring.</p>
+      </div>
+
+      <div class="workspace-grid">
+        <section class="control-panel" aria-label="Lecture import controls">
+          <div class="step-heading">
+            <span>1</span>
+            <div><strong>Choose the source</strong><small>One .html or .htm file</small></div>
+          </div>
+
+          <label class="drop-zone" id="dropZone" for="fileInput">
+            <input id="fileInput" type="file" accept=".html,.htm,text/html" />
+            <span class="upload-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0 4 4m-4-4L8 8M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <strong>Drop lecture HTML here</strong>
+            <span>or click to browse</span>
+            <small>Maximum 8 MB · embedded and remote images are preserved</small>
+          </label>
+
+          <div class="file-card" id="fileCard" hidden>
+            <div class="file-type">HTML</div>
+            <div class="file-details"><strong id="fileName"></strong><span id="fileMeta"></span></div>
+            <button class="icon-button" id="removeFile" type="button" aria-label="Remove selected file">×</button>
+          </div>
+
+          <div class="step-heading settings-heading">
+            <span>2</span>
+            <div><strong>Set the details</strong><small>Optional metadata for the cover</small></div>
+          </div>
+
+          <div class="form-grid">
+            <label>
+              <span>Course code</span>
+              <input id="courseCode" type="text" maxlength="40" placeholder="e.g. BIO 214" />
+            </label>
+            <label>
+              <span>Lecture label</span>
+              <input id="lectureLabel" type="text" maxlength="60" placeholder="e.g. Lecture 08" />
+            </label>
+            <label>
+              <span>Instructor</span>
+              <input id="instructor" type="text" maxlength="80" placeholder="Optional" />
+            </label>
+            <label>
+              <span>Language</span>
+              <select id="language">
+                <option value="auto">Auto-detect</option>
+                <option value="English">English</option>
+                <option value="Arabic">Arabic</option>
+                <option value="Kurdish">Kurdish</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="option-row">
+            <label class="check-option"><input id="includeToc" type="checkbox" checked /><span><b>Table of contents</b><small>Add an overview page</small></span></label>
+            <label class="check-option"><input id="conciseMode" type="checkbox" /><span><b>Concise mode</b><small>Reduce repetition</small></span></label>
+          </div>
+
+          <div id="turnstileArea" class="turnstile-area" hidden>
+            <p>Verification protects the free Gemini quota from automated abuse.</p>
+            <div id="turnstileWidget"></div>
+          </div>
+
+          <button class="primary-button" id="processButton" type="button" disabled>
+            <span>Rebuild lecture</span>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <p class="control-note">The Gemini key is stored only as a Cloudflare secret and is never exposed to visitors.</p>
+        </section>
+
+        <section class="result-panel" aria-label="Generated lecture result">
+          <div class="result-toolbar">
+            <div>
+              <span class="result-kicker">Output</span>
+              <strong id="resultTitle">Waiting for a lecture</strong>
+            </div>
+            <div class="toolbar-actions">
+              <button class="secondary-button" id="openPreviewButton" type="button" disabled>Open preview</button>
+              <button class="download-button" id="downloadButton" type="button" disabled>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Download HTML
+              </button>
+            </div>
+          </div>
+
+          <div class="empty-state" id="emptyState">
+            <div class="empty-orbit"><span></span><i></i><b></b></div>
+            <h3>Your redesigned lecture appears here</h3>
+            <p>Jang will show the generated pages in a safe preview before you download them.</p>
+          </div>
+
+          <div class="processing-state" id="processingState" hidden>
+            <div class="processing-header">
+              <div class="spinner" aria-hidden="true"></div>
+              <div><strong id="processingTitle">Reading the lecture</strong><span id="processingDetail">Preparing content for extraction…</span></div>
+            </div>
+            <ol class="progress-list">
+              <li id="stageRead"><span></span><div><b>Read HTML</b><small>Validate and parse the source</small></div></li>
+              <li id="stageExtract"><span></span><div><b>Extract content</b><small>Text, tables, images and diagrams</small></div></li>
+              <li id="stagePlan"><span></span><div><b>Reorganize with Gemini</b><small>Create a faithful academic structure</small></div></li>
+              <li id="stageRender"><span></span><div><b>Build the new file</b><small>Apply the lecture design system</small></div></li>
+            </ol>
+          </div>
+
+          <div class="preview-shell" id="previewShell" hidden>
+            <iframe id="previewFrame" title="Generated lecture preview" sandbox="allow-scripts"></iframe>
+          </div>
+
+          <div class="result-message" id="resultMessage" hidden role="alert"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="how-it-works" aria-labelledby="howTitle">
+      <div class="how-heading"><p class="section-label">The pipeline</p><h2 id="howTitle">Four clear steps. One clean file.</h2></div>
+      <div class="process-cards">
+        <article><span>01</span><h3>Import</h3><p>Select a lecture HTML file. Parsing happens locally in the visitor’s browser.</p></article>
+        <article><span>02</span><h3>Extract</h3><p>Headings, paragraphs, lists, tables, embedded images, SVG and Mermaid diagrams are identified.</p></article>
+        <article><span>03</span><h3>Rebuild</h3><p>Gemini creates a content plan while preserving the lecture’s meaning and factual detail.</p></article>
+        <article><span>04</span><h3>Download</h3><p>A self-contained, printable HTML lecture is rendered and returned to the visitor.</p></article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div><strong>Jang</strong><span>Designed for clearer lectures.</span></div>
+    <p>Open-source · Cloudflare Pages · Gemini API</p>
+  </footer>
+
+  <dialog id="previewDialog" class="preview-dialog">
+    <div class="dialog-bar"><strong>Lecture preview</strong><button id="closeDialog" type="button" aria-label="Close preview">×</button></div>
+    <iframe id="dialogFrame" title="Full generated lecture preview" sandbox="allow-scripts"></iframe>
+  </dialog>
+</body>
+</html>
