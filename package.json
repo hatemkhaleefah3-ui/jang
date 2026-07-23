@@ -1,12 +1,15 @@
 {
   "name": "jang-lecture-rebuilder",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
-  "description": "Browser-first PPTX and HTML lecture redesign tool deployed on Cloudflare Pages.",
+  "description": "Browser-first PPTX, PDF, and HTML lecture redesign tool deployed on Cloudflare Pages.",
   "scripts": {
     "dev": "npm run build && wrangler pages dev dist --compatibility-date=2026-07-23",
-    "check": "node --check app-v2.js && node --check extractor-v2.js && node --check source-importer.js && node --check pptx-exporter.js && node --check lecture-template.js && node --check functions/api/config.js && node --check functions/api/redesign-large.js && node --check scripts/build.mjs",
+    "check": "node --check app-v2.js && node --check extractor-v2.js && node --check source-importer.js && node --check pptx-exporter.js && node --check lecture-template.js && node --check functions/api/config.js && node --check functions/api/redesign.js && node --check functions/api/redesign-large.js && node --check scripts/build.mjs",
     "build": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "pdfjs-dist": "6.1.200"
   },
   "devDependencies": {
     "wrangler": "^4.25.0"
