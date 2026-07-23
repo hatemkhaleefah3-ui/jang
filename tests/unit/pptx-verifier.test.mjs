@@ -7,12 +7,35 @@ globalThis.JSZip = JSZip;
 
 async function packageBuffer({ text = [], mediaCount = 0 }) {
   const zip = new JSZip();
-  zip.file(
-    "ppt/slides/slide1.xml",
-    `<p:sld xmlns:p="urn:p" xmlns:a="urn:a"><p:cSld><p:spTree><p:sp><p:txBody>${text
-      .map((value) => `<a:p><a:r><a:t>${value}</a:t></a:r></a:p>`)
-      .join("")}</p:txBody></p:sp></p:spTree></p:cSld></p:sld>`,
-  );
+  const slideXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
+       xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:cSld>
+    <p:spTree>
+      <p:nvGrpSpPr>
+        <p:cNvPr id="1" name=""/>
+        <p:cNvGrpSpPr/>
+        <p:nvPr/>
+      </p:nvGrpSpPr>
+      <p:grpSpPr/>
+      <p:sp>
+        <p:nvSpPr>
+          <p:cNvPr id="2" name="TextBox 1"/>
+          <p:cNvSpPr txBox="1"/>
+          <p:nvPr/>
+        </p:nvSpPr>
+        <p:spPr/>
+        <p:txBody>
+          <a:bodyPr/>
+          <a:lstStyle/>
+          ${text.map((value) => `<a:p><a:r><a:rPr lang="en-US"/><a:t>${value}</a:t></a:r><a:endParaRPr lang="en-US"/></a:p>`).join("")}
+        </p:txBody>
+      </p:sp>
+    </p:spTree>
+  </p:cSld>
+  <p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>
+</p:sld>`;
+  zip.file("ppt/slides/slide1.xml", slideXml);
   for (let index = 0; index < mediaCount; index += 1) {
     zip.file(`ppt/media/image${index + 1}.png`, new Uint8Array([137, 80, 78, 71]));
   }
