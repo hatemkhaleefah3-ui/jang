@@ -8,6 +8,7 @@ function uniq(values) { return [...new Set(values.filter(Boolean))]; }
 function allTerms(section, key) { return uniq(list(section?.[key])); }
 function shape(deck, name) { if (deck?.ShapeType?.[name]) return deck.ShapeType[name]; if (globalThis.PptxGenJS?.ShapeType?.[name]) return globalThis.PptxGenJS.ShapeType[name]; return name; }
 function normalizeText(value) { return String(value || "").replace(/\s+/g, " ").trim(); }
+function decodeXmlText(value) { return String(value || "").replace(/&quot;/g, "\"").replace(/&apos;/g, "'").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">"); }
 
 function styledRuns(value, critical = [], important = []) {
   const source = text(value); if (!source) return [];
@@ -45,8 +46,9 @@ export async function verifyPptxPackage(arrayBuffer, manifest) {
   const zip = await globalThis.JSZip.loadAsync(arrayBuffer);
   const slidePaths = Object.keys(zip.files).filter((path) => /^ppt\/slides\/slide\d+\.xml$/i.test(path) && !zip.files[path]?.dir).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   const slideXml = (await Promise.all(slidePaths.map((path) => zip.file(path)?.async("text")))).filter(Boolean).join("\n");
-  const xmlText = [...slideXml.matchAll(/<a:t(?:\s[^>]*)?>([\s\S]*?)<\/a:t>/g)].map((match) => match[1].replace(/&quot;/g, "\"").replace(/&apos;/g, "'").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")).join(" ");
-  const normalizedXml = normalizeText(xmlText);
+  const paragraphText = [...slideXml.matchAll(/<a:p(?:\s[^>]*)?>([\s\S]*?)<\/a:p>/g)].map((paragraph) => [...paragraph[1].matchAll(/<a:t(?:\s[^>]*)?>([\s\S]*?)<\/a:t>/g)].map((match) => decodeXmlText(match[1])).join(""));
+  const fallbackRuns = [...slideXml.matchAll(/<a:t(?:\s[^>]*)?>([\s\S]*?)<\/a:t>/g)].map((match) => decodeXmlText(match[1]));
+  const normalizedXml = normalizeText((paragraphText.length ? paragraphText : fallbackRuns).join(" "));
   const missingText = (manifest?.sourceText || []).filter((value) => { const normalized = normalizeText(value); return normalized && !normalizedXml.includes(normalized); });
   const mediaPaths = Object.keys(zip.files).filter((path) => /^ppt\/media\/[^/]+$/i.test(path) && !zip.files[path]?.dir);
   const expectedMediaCount = (manifest?.expectedAssets || []).length;
