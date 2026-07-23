@@ -1,0 +1,38 @@
+name: Browser lecture pipeline
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [agent/pdf-import-gemini-config]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm install
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium webkit
+      - name: Run syntax, unit, and browser pipeline tests
+        run: npm test
+      - name: Upload educational PPTX outputs and browser report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jang-browser-pipeline-${{ github.sha }}
+          path: |
+            playwright-report
+            test-results
+            tests/fixtures
+          if-no-files-found: ignore
+          retention-days: 14
