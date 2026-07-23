@@ -4,8 +4,9 @@
   "private": true,
   "description": "Browser-first lecture HTML redesign tool deployed on Cloudflare Pages.",
   "scripts": {
-    "dev": "wrangler pages dev . --compatibility-date=2026-07-23",
-    "check": "node --check app.js && node --check extractor.js && node --check lecture-template.js && node --check functions/api/config.js && node --check functions/api/redesign.js"
+    "dev": "npm run build && wrangler pages dev dist --compatibility-date=2026-07-23",
+    "check": "node --check app.js && node --check extractor.js && node --check lecture-template.js && node --check functions/api/config.js && node --check functions/api/redesign.js",
+    "build": "node scripts/build.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.25.0"

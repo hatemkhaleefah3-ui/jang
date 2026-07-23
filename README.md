@@ -30,8 +30,8 @@ The repository is ready for Cloudflare Pages Git deployment.
 1. In Cloudflare, open **Workers & Pages** and create or open the Pages project connected to this GitHub repository.
 2. Set the production branch to `main`.
 3. Use **no framework preset**.
-4. Use `exit 0` as the build command.
-5. Use `.` as the build output directory.
+4. Use `npm run build` as the build command.
+5. Use `dist` as the build output directory.
 6. In **Settings → Variables and Secrets**, add:
    - `GEMINI_API_KEY` as an encrypted secret.
    - Optional `GEMINI_MODEL` as a normal variable. Default: `gemini-2.5-flash`.
@@ -74,6 +74,7 @@ Never commit `.dev.vars` or `.env` files.
 
 ```bash
 npm run check
+npm run build
 ```
 
 ## Important limitations
