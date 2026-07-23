@@ -40,7 +40,6 @@ await writeFile(resolve(output, "lecture.pptx"), await pptx.generateAsync({ type
 const pdf = await PDFDocument.create();
 const font = await pdf.embedFont(StandardFonts.Helvetica);
 const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
-const image = await pdf.embedPng(pngBytes);
 let page = pdf.addPage([960, 540]);
 page.drawText("Carbohydrate Metabolism", { x: 60, y: 465, size: 28, font: bold, color: rgb(0.08, 0.08, 0.08) });
 page.drawText("Pentose Phosphate Pathway", { x: 60, y: 410, size: 21, font: bold });
@@ -50,7 +49,8 @@ page = pdf.addPage([960, 540]);
 page.drawText("Regulation and Clinical Significance", { x: 60, y: 465, size: 24, font: bold });
 page.drawText("Glucose-6-phosphate dehydrogenase is the rate-limiting enzyme.", { x: 60, y: 410, size: 15, font });
 page.drawText("NADPH supports glutathione reduction and erythrocyte protection.", { x: 60, y: 375, size: 15, font });
-page.drawImage(image, { x: 620, y: 155, width: 220, height: 220 });
+page.drawRectangle({ x: 620, y: 155, width: 220, height: 220, borderColor: rgb(0.2, 0.2, 0.2), borderWidth: 2, color: rgb(0.93, 0.93, 0.88) });
+page.drawText("Pathway overview", { x: 658, y: 258, size: 16, font: bold });
 await writeFile(resolve(output, "lecture.pdf"), await pdf.save());
 
 console.log(`Created browser test fixtures in ${output}`);
