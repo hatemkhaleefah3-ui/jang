@@ -43,13 +43,13 @@ export async function buildPptx(plan, assets = []) {
 export async function verifyPptxPackage(arrayBuffer, manifest) {
   if (!globalThis.JSZip) throw new Error("PowerPoint verification could not load JSZip.");
   const zip = await globalThis.JSZip.loadAsync(arrayBuffer);
-  const slidePaths = Object.keys(zip.files).filter((path) => /^ppt\/slides\/slide\d+\.xml$/i.test(path)).sort();
+  const slidePaths = Object.keys(zip.files).filter((path) => /^ppt\/slides\/slide\d+\.xml$/i.test(path) && !zip.files[path]?.dir).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   const slideXml = (await Promise.all(slidePaths.map((path) => zip.file(path)?.async("text")))).filter(Boolean).join("\n");
-  const xmlText = [...slideXml.matchAll(/<a:t>([\s\S]*?)<\/a:t>/g)].map((match) => match[1].replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")).join(" ");
+  const xmlText = [...slideXml.matchAll(/<a:t(?:\s[^>]*)?>([\s\S]*?)<\/a:t>/g)].map((match) => match[1].replace(/&quot;/g, "\"").replace(/&apos;/g, "'").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")).join(" ");
   const normalizedXml = normalizeText(xmlText);
-  const missingText = manifest.sourceText.filter((value) => { const normalized = normalizeText(value); return normalized && !normalizedXml.includes(normalized); });
-  const mediaPaths = Object.keys(zip.files).filter((path) => /^ppt\/media\//i.test(path));
-  const expectedMediaCount = manifest.expectedAssets.length;
+  const missingText = (manifest?.sourceText || []).filter((value) => { const normalized = normalizeText(value); return normalized && !normalizedXml.includes(normalized); });
+  const mediaPaths = Object.keys(zip.files).filter((path) => /^ppt\/media\/[^/]+$/i.test(path) && !zip.files[path]?.dir);
+  const expectedMediaCount = (manifest?.expectedAssets || []).length;
   return { valid: missingText.length === 0 && mediaPaths.length >= expectedMediaCount, missingText, expectedMediaCount, embeddedMediaCount: mediaPaths.length, slideCount: slidePaths.length };
 }
 
