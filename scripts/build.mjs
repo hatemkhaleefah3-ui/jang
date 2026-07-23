@@ -3,11 +3,15 @@ import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const output = resolve(root, "dist");
-const staticFiles = ["styles.css", "app-v2.js", "extractor-v2.js", "source-importer.js", "pptx-exporter.js", "lecture-template.js", "_headers"];
+const staticFiles = ["styles.css", "app-v2.js", "source-importer.js", "pptx-exporter.js", "lecture-template.js", "_headers"];
 
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 await Promise.all(staticFiles.map((file) => cp(resolve(root, file), resolve(output, file))));
+
+const extractor = (await readFile(resolve(root, "extractor-v2.js"), "utf8"))
+  .replace(/clone\.removeAttribute\(attr\.name\)/g, "node.removeAttribute(attr.name)");
+await writeFile(resolve(output, "extractor-v2.js"), extractor);
 
 const index = (await readFile(resolve(root, "index.html"), "utf8"))
   .replace('src="/app.js"', 'src="/app-v2.js"')
@@ -24,4 +28,4 @@ const index = (await readFile(resolve(root, "index.html"), "utf8"))
   .replace('A self-contained, printable HTML lecture is rendered and returned to the visitor.', 'A PowerPoint deck and a self-contained HTML lecture are generated in the browser.');
 await writeFile(resolve(output, "index.html"), index);
 
-console.log(`Prepared ${staticFiles.length + 1} static files in dist/ with direct PPTX import and export.`);
+console.log(`Prepared ${staticFiles.length + 2} static files in dist/ with direct PPTX import and export.`);
