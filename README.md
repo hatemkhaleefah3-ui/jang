@@ -1,69 +1,71 @@
-# Jang — Lecture HTML Rebuilder
+# Jang — Lecture Rebuilder
 
-Jang is a browser-first website that imports a lecture HTML file, extracts its useful academic content and visual assets, uses the Gemini API to reorganize the material, and creates a downloadable lecture HTML file based on the supplied academic design reference.
+Jang is a browser-first lecture redesign tool deployed on Cloudflare Pages. It imports PPTX or HTML lectures, extracts text and visual assets locally, uses Gemini to reorganize the material, creates a redesigned HTML preview, and downloads the result as either HTML or PowerPoint.
 
-## What it does
+## Processing path
 
-1. Presents a clean upload workspace.
-2. Parses the imported HTML in the visitor's browser.
-3. Extracts headings, paragraphs, lists, tables, embedded/remote images, inline SVG diagrams, and Mermaid diagrams.
-4. Sends only the extracted text and a visual-asset manifest to a Cloudflare Pages Function.
-5. Uses Gemini to produce a structured, source-faithful lecture plan.
-6. Renders a self-contained printable HTML document and reconnects the original visual assets in the browser.
-7. Shows a sandboxed preview and downloads the result as `.html`.
-
-A deterministic local fallback is included. If Gemini is unavailable or not configured, Jang still creates a readable document while preserving the extracted source order.
+1. Import a `.pptx`, `.html`, or `.htm` lecture.
+2. Parse the source locally in the visitor's browser.
+3. Extract headings, paragraphs, slide text, tables, images, SVG, and Mermaid diagrams where supported.
+4. Divide the extracted text into bounded, independently retryable AI batches.
+5. Send only text plus an asset manifest to a Cloudflare Pages Function.
+6. Merge Gemini's structured plans into one semantic lecture plan.
+7. Render the plan as a safe HTML preview.
+8. Generate and download a `.pptx` directly in the browser with PptxGenJS.
 
 ## Architecture
 
+- **Hosting:** Cloudflare Pages, deployed from `main`.
 - **Frontend:** framework-free HTML, CSS, and JavaScript.
-- **Extraction:** runs locally with `DOMParser`; the original HTML file is not uploaded.
-- **AI proxy:** Cloudflare Pages Function at `/api/redesign`.
-- **AI model:** `gemini-2.5-flash` by default because it has a documented free tier and structured-output support.
-- **Publishing:** Cloudflare Pages Git integration from the `main` branch.
-- **Abuse protection:** optional Cloudflare Turnstile verification.
+- **HTML parsing:** browser `DOMParser`.
+- **PPTX parsing:** JSZip in the browser; slide XML and embedded media never need to be uploaded.
+- **AI proxy:** Cloudflare Pages Function at `/api/redesign-large`.
+- **AI model:** `gemini-3.5-flash-lite` by default.
+- **PPTX output:** PptxGenJS in the browser.
+- **Abuse protection:** optional Cloudflare Turnstile.
+- **Storage:** no database required for the default anonymous workflow.
+
+This design deliberately keeps large files and images on the visitor's device. Cloudflare D1 would be useful later for accounts, project metadata, job records, and usage tracking. Cloudflare R2 would be useful later for resumable uploads, saved projects, or cross-device downloads, but neither is required for the free first version.
+
+## Current limits
+
+- Desktop source file: 50 MB.
+- Mobile or low-memory device: 20 MB.
+- Extracted text: up to 1.2 million characters.
+- AI batches: up to 12, each approximately 110,000 characters.
+- Visual assets: up to 300.
+- PPTX slides imported: up to 300.
+
+These limits protect browser responsiveness and free-tier AI usage. They are application safety limits, not database limits.
 
 ## Cloudflare Pages setup
 
-The repository is ready for Cloudflare Pages Git deployment.
-
-1. In Cloudflare, open **Workers & Pages** and create or open the Pages project connected to this GitHub repository.
+1. Connect this repository to Cloudflare Pages.
 2. Set the production branch to `main`.
 3. Use **no framework preset**.
-4. Use `npm run build` as the build command.
-5. Use `dist` as the build output directory.
-6. In **Settings → Variables and Secrets**, add:
-   - `GEMINI_API_KEY` as an encrypted secret.
-   - Optional `GEMINI_MODEL` as a normal variable. Default: `gemini-2.5-flash`.
-7. Redeploy the latest commit.
+4. Build command: `npm run build`.
+5. Output directory: `dist`.
+6. Add `GEMINI_API_KEY` as an encrypted secret.
+7. Optionally add `GEMINI_MODEL`; the default is `gemini-3.5-flash-lite`.
+8. Optionally configure `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY`.
+9. Redeploy.
 
-The `/functions` directory must stay at the repository root because Cloudflare Pages discovers Functions from that location.
-
-### Optional Turnstile protection
-
-A public AI endpoint can have its free quota consumed by automated requests. Cloudflare Turnstile is supported and recommended.
-
-1. Create a Turnstile widget for the production `pages.dev` or custom domain.
-2. Add `TURNSTILE_SITE_KEY` as a normal Pages variable.
-3. Add `TURNSTILE_SECRET_KEY` as an encrypted Pages secret.
-4. Redeploy.
-
-When both variables are present, the UI automatically renders a verification widget and the Function validates every token server-side.
+The `/functions` directory must remain at the repository root.
 
 ## Local development
 
 ```bash
 npm install
 cp .dev.vars.example .dev.vars
-# Put your Gemini key in .dev.vars
+npm run check
 npm run dev
 ```
 
-Create `.dev.vars` manually with:
+Example `.dev.vars`:
 
 ```dotenv
 GEMINI_API_KEY="your-key"
-# GEMINI_MODEL="gemini-2.5-flash"
+# GEMINI_MODEL="gemini-3.5-flash-lite"
 # TURNSTILE_SITE_KEY="optional-public-site-key"
 # TURNSTILE_SECRET_KEY="optional-secret-key"
 ```
@@ -77,19 +79,22 @@ npm run check
 npm run build
 ```
 
+## Privacy and security
+
+- The Gemini key remains server-side.
+- Original PPTX and HTML files are processed locally.
+- Embedded images stay in browser memory and are reconnected during rendering/export.
+- Imported scripts, forms, frames, embedded objects, event handlers, and common webpage boilerplate are removed from HTML sources.
+- Lecture text is treated as untrusted data in the Gemini prompt.
+- Gemini returns validated structural JSON rather than executable HTML.
+- Preview frames are sandboxed.
+- Turnstile can protect the public AI endpoint.
+
 ## Important limitations
 
-- A single HTML file cannot include separate local image files unless they are embedded as data URLs. Relative image paths are shown as explicit placeholders in the generated document.
-- Script-rendered canvas diagrams cannot be reconstructed from static HTML alone. Inline SVG and Mermaid source are preserved.
-- “100% free” means the project can operate inside the current free allowances of GitHub, Cloudflare Pages/Workers, Turnstile, and the Gemini API. Free tiers have quotas and policies; the application does not guarantee unlimited no-cost usage.
-- Gemini free-tier data handling may differ from paid-tier handling. Review Google's current terms before processing sensitive educational material.
-
-## Security choices
-
-- The Gemini key is server-side only.
-- Imported scripts, forms, frames, embedded objects, event handlers, and common webpage boilerplate are removed before extraction.
-- The source lecture is explicitly treated as untrusted data in the Gemini prompt to reduce prompt-injection risk.
-- Gemini returns a validated structural plan rather than executable HTML.
-- Preview frames are sandboxed.
-- Pages security headers are included in `_headers`.
-- Input size and source length are bounded on both client and server.
+- PPTX import focuses on readable slide text and embedded images; complex charts, SmartArt, animations, transitions, speaker notes, and exact original positioning are not reconstructed.
+- PDF and DOCX import are planned but are not included in this branch yet.
+- Script-rendered canvas diagrams cannot be reconstructed from static HTML alone.
+- Relative image paths in standalone HTML cannot be read unless the images are embedded or remotely accessible.
+- “Free” means operation within the current free allowances of GitHub, Cloudflare, and Gemini. It is not unlimited usage.
+- Review Google's current free-tier data terms before processing sensitive educational material.
