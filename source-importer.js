@@ -213,7 +213,7 @@ function pdfTextLines(items) {
     .filter(Boolean);
 }
 
-function pageHasVisualContent(pdfjs, operatorList, text) {
+function pageHasVisualContent(pdfjs, operatorList) {
   const visualOps = new Set([
     pdfjs?.OPS?.paintImageXObject,
     pdfjs?.OPS?.paintImageXObjectRepeat,
@@ -223,7 +223,7 @@ function pageHasVisualContent(pdfjs, operatorList, text) {
     pdfjs?.OPS?.paintImageMaskXObjectGroup,
   ].filter((value) => Number.isFinite(value)));
   const operations = Array.from(operatorList?.fnArray || []);
-  return text.length < 120 || operations.some((operation) => visualOps.has(operation));
+  return operations.some((operation) => visualOps.has(operation));
 }
 
 async function renderPdfPage(page, pageNumber, title) {
@@ -269,7 +269,6 @@ async function extractPdf(file, onProgress) {
     cMapPacked: true,
     standardFontDataUrl: "/vendor/standard_fonts/",
     wasmUrl: "/vendor/wasm/",
-    useWorkerFetch: true,
   });
   const pdf = await loadingTask.promise;
   const pageCount = Math.min(pdf.numPages, MAX_PDF_PAGES);
@@ -288,8 +287,9 @@ async function extractPdf(file, onProgress) {
 
     for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
       onProgress(`Reading PDF page ${pageNumber} of ${pageCount}…`);
-      const page = await pdf.getPage(pageNumber);
+      let page;
       try {
+        page = await pdf.getPage(pageNumber);
         const textContent = await page.getTextContent();
         const lines = pdfTextLines(textContent?.items);
         const title = lines.find((line) => line.length >= 3) || `Page ${pageNumber}`;
@@ -301,8 +301,12 @@ async function extractPdf(file, onProgress) {
 
         if (assets.length < MAX_PDF_PAGE_IMAGES) {
           try {
-            const operatorList = await page.getOperatorList();
-            if (pageHasVisualContent(pdfjs, operatorList, pageText)) {
+            let shouldSnapshot = pageText.length < 120;
+            if (!policy.mobile && !shouldSnapshot && typeof page.getOperatorList === "function") {
+              const operatorList = await page.getOperatorList();
+              shouldSnapshot = pageHasVisualContent(pdfjs, operatorList);
+            }
+            if (shouldSnapshot) {
               const asset = await renderPdfPage(page, pageNumber, title);
               if (asset) {
                 assets.push(asset);
@@ -314,8 +318,10 @@ async function extractPdf(file, onProgress) {
           }
         }
         sections.push({ title, body, assets: pageAssets });
+      } catch (error) {
+        throw new Error(`PDF page ${pageNumber} could not be read: ${error instanceof Error ? error.message : String(error)}`);
       } finally {
-        if (typeof page.cleanup === "function") page.cleanup();
+        if (typeof page?.cleanup === "function") page.cleanup();
       }
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
