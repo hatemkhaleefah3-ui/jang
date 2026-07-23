@@ -3,32 +3,54 @@ name: Browser lecture pipeline
 on:
   pull_request:
     branches: [main]
-  push:
-    branches: [agent/pdf-import-gemini-config]
 
 permissions:
   contents: read
 
 jobs:
-  test:
+  build-and-unit:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install dependencies
-        run: npm install
-      - name: Install browser engines
-        run: npx playwright install --with-deps chromium webkit
-      - name: Run syntax, unit, and browser pipeline tests
-        run: npm test
+      - run: npm install
+      - name: Run syntax and unit checks
+        run: npm run check && npm run test:unit
+      - name: Build deployable Pages output
+        run: npm run build
+
+  browser:
+    needs: build-and-unit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: chromium
+            browser: chromium
+          - project: webkit-mobile
+            browser: webkit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - name: Install ${{ matrix.browser }}
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Build and generate fixtures
+        run: npm run build && npm run test:fixtures
+      - name: Test ${{ matrix.project }} lecture imports and PPTX exports
+        run: npx playwright test --project=${{ matrix.project }}
       - name: Upload educational PPTX outputs and browser report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: jang-browser-pipeline-${{ github.sha }}
+          name: jang-${{ matrix.project }}-${{ github.sha }}
           path: |
             playwright-report
             test-results
