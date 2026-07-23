@@ -1,20 +1,38 @@
 const text = (value) => typeof value === "string" ? value.trim() : "";
 const list = (value) => Array.isArray(value) ? value.filter((item) => typeof item === "string" && item.trim()).map((item) => item.trim()) : [];
 const blocks = (value) => Array.isArray(value) ? value.filter((item) => item && typeof item === "object") : [];
+const COLORS = { ink: "111110", ink2: "3A3A38", muted: "787874", line: "C8C8C2", line2: "9A9A92", surface: "F5F5F3", surface2: "E0E0DB", yellow: "F5E642", red: "922B21", white: "FFFFFF" };
 
-function imageData(asset) {
-  return asset?.type === "image" && /^data:image\//i.test(asset.source || "") ? asset.source : null;
+function imageData(asset) { return asset?.type === "image" && /^data:image\//i.test(asset.source || "") ? asset.source : null; }
+function uniq(values) { return [...new Set(values.filter(Boolean))]; }
+function allTerms(section, key) { return uniq(list(section?.[key])); }
+
+function styledRuns(value, critical = [], important = []) {
+  const source = text(value);
+  if (!source) return [];
+  const terms = [...critical.map((term) => ({ term, kind: "critical" })), ...important.map((term) => ({ term, kind: "important" }))]
+    .filter((item) => item.term.length > 1).sort((a, b) => b.term.length - a.term.length);
+  if (!terms.length) return [{ text: source, options: { color: COLORS.ink } }];
+  const escaped = terms.map((item) => item.term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const regex = new RegExp(`(${escaped.join("|")})`, "giu");
+  return source.split(regex).filter((part) => part !== "").map((part) => {
+    const match = terms.find((item) => item.term.localeCompare(part, undefined, { sensitivity: "accent" }) === 0);
+    if (!match) return { text: part, options: { color: COLORS.ink } };
+    if (match.kind === "critical") return { text: part, options: { color: COLORS.ink, highlight: COLORS.yellow, bold: true } };
+    return { text: part, options: { color: COLORS.red, italic: true, fontFace: "Georgia" } };
+  });
 }
 
 function addFooter(slide, index, total, metadata) {
-  slide.addText(`${metadata.courseCode || "Course"} · ${metadata.lectureLabel || "Lecture"}`, { x: 0.45, y: 7.08, w: 8.5, h: 0.2, fontFace: "Aptos", fontSize: 8, color: "666666", margin: 0 });
-  slide.addText(`${index} / ${total}`, { x: 11.7, y: 7.08, w: 0.8, h: 0.2, align: "right", fontFace: "Aptos", fontSize: 8, color: "666666", margin: 0 });
+  slide.addShape(globalThis.PptxGenJS.ShapeType.rect, { x: 0, y: 6.95, w: 13.333, h: 0.55, line: { color: COLORS.line, width: 1 }, fill: { color: COLORS.surface2 } });
+  slide.addText(`${metadata.courseCode || "Course"} · ${metadata.lectureLabel || "Lecture"}`, { x: 0.45, y: 7.08, w: 8.5, h: 0.2, fontFace: "Aptos", fontSize: 8, color: COLORS.muted, margin: 0 });
+  slide.addText(`${index} / ${total}`, { x: 11.7, y: 7.08, w: 0.8, h: 0.2, align: "right", fontFace: "Aptos", fontSize: 8, color: COLORS.ink2, bold: true, margin: 0 });
 }
 
 function addTitle(deck, slide, title, kicker = "") {
-  if (kicker) slide.addText(kicker.toUpperCase(), { x: 0.65, y: 0.38, w: 5.5, h: 0.25, fontFace: "Aptos", fontSize: 9, bold: true, color: "7A6810", charSpacing: 1.5, margin: 0 });
-  slide.addText(title || "Untitled section", { x: 0.65, y: 0.72, w: 11.8, h: 0.7, fontFace: "Aptos Display", fontSize: 25, bold: true, color: "161616", margin: 0.01, breakLine: false, fit: "shrink" });
-  slide.addShape(deck.ShapeType.line, { x: 0.65, y: 1.5, w: 1.45, h: 0, line: { color: "D8C328", width: 4 } });
+  slide.addShape(deck.ShapeType.rect, { x: 0, y: 0, w: 13.333, h: 0.52, line: { color: COLORS.line, width: 1 }, fill: { color: COLORS.surface2 } });
+  if (kicker) slide.addText(kicker.toUpperCase(), { x: 0.65, y: 0.15, w: 3.2, h: 0.18, fontFace: "Aptos", fontSize: 8, bold: true, color: COLORS.muted, charSpacing: 1.2, margin: 0 });
+  slide.addText(title || "Untitled section", { x: 3.15, y: 0.12, w: 7.0, h: 0.25, fontFace: "Georgia", fontSize: 14, bold: true, color: COLORS.ink, align: "center", margin: 0, fit: "shrink" });
 }
 
 function blockText(block) {
@@ -28,44 +46,27 @@ function blockText(block) {
 
 function blockWeight(block) {
   if (block.type === "table") return 7;
-  if (block.assetId) return 5;
-  const content = blockText(block);
-  return Math.max(1, Math.ceil(content.length / 420));
+  if (block.assetId) return 4;
+  return Math.max(1, Math.ceil(blockText(block).length / 420));
 }
 
 function chunkBlocks(sectionBlocks) {
-  const chunks = [];
-  let current = [];
-  let weight = 0;
-  const flush = () => {
-    if (current.length) chunks.push(current);
-    current = [];
-    weight = 0;
-  };
-
+  const chunks = []; let current = []; let weight = 0;
+  const flush = () => { if (current.length) chunks.push(current); current = []; weight = 0; };
   for (const block of blocks(sectionBlocks)) {
     const nextWeight = blockWeight(block);
-    const dedicated = block.type === "table";
-    if (dedicated) {
-      flush();
-      chunks.push([block]);
-      continue;
-    }
-    if (current.length && (weight + nextWeight > 7 || current.length >= 5 || (block.assetId && current.some((item) => item.assetId)))) flush();
-    current.push(block);
-    weight += nextWeight;
+    if (block.type === "table") { flush(); chunks.push([block]); continue; }
+    if (current.length && (weight + nextWeight > 7 || current.length >= 6 || (block.assetId && current.filter((item) => item.assetId).length >= 4))) flush();
+    current.push(block); weight += nextWeight;
   }
   flush();
   return chunks.length ? chunks : [[{ type: "paragraph", text: "No readable content was available for this section." }]];
 }
 
-function textGroup(chunk) {
-  return chunk.filter((block) => block.type !== "table" && !block.assetId).map((block) => {
-    const value = blockText(block);
-    const heading = text(block.heading || block.label);
-    if (heading && value && heading !== value) return `${heading.toUpperCase()}\n${value}`;
-    return value || heading;
-  }).filter(Boolean).join("\n\n");
+function addStyledParagraph(slide, value, box, critical, important, options = {}) {
+  const runs = styledRuns(value, critical, important);
+  if (!runs.length) return;
+  slide.addText(runs, { ...box, fontFace: "Aptos", fontSize: options.fontSize || 15, color: COLORS.ink, margin: options.margin ?? 0.08, valign: options.valign || "top", fit: "shrink", breakLine: false, paraSpaceAfterPt: options.paraSpaceAfterPt || 7, bullet: options.bullet });
 }
 
 function addTableSlide(slide, block) {
@@ -73,114 +74,113 @@ function addTableSlide(slide, block) {
   const rows = Array.isArray(block.rows) ? block.rows.map((row) => Array.isArray(row) ? row.map((cell) => text(cell)) : []) : [];
   const width = Math.max(headers.length, ...rows.map((row) => row.length), 1);
   const head = headers.length ? headers : Array.from({ length: width }, (_, index) => `Column ${index + 1}`);
-  const tableRows = [head, ...rows].map((row) => Array.from({ length: width }, (_, index) => row[index] || ""));
-  slide.addTable(tableRows, {
-    x: 0.72, y: 1.82, w: 11.85, h: 4.95,
-    border: { type: "solid", color: "C8C8C2", pt: 1 },
-    fill: "FFFFFF", color: "252525", fontFace: "Aptos", fontSize: 11,
-    margin: 0.06, rowH: 0.42, autoFit: false,
-    bold: false,
-  });
+  const type = text(block.tableStyle || block.variant || "standard").toLowerCase();
+  const tableRows = [head.map((cell) => ({ text: cell, options: { bold: true, color: COLORS.ink2, fill: COLORS.surface2 } })), ...rows.map((row, rowIndex) => Array.from({ length: width }, (_, index) => ({ text: row[index] || "", options: { fill: type === "stat" && rowIndex === rows.length - 1 ? COLORS.surface2 : rowIndex % 2 ? "EEEEEA" : "FBFBF9", bold: type === "stat" && rowIndex === rows.length - 1 } })) )];
+  slide.addTable(tableRows, { x: 0.72, y: 1.05, w: 11.85, h: 5.65, border: { type: "solid", color: COLORS.line, pt: 1 }, color: COLORS.ink, fontFace: "Aptos", fontSize: 10.5, margin: 0.06, rowH: 0.38, autoFit: false, bold: false });
 }
 
-function addContentSlide(deck, slide, chunk, assets) {
+function addImageFrame(deck, slide, asset, x, y, w, h, caption = "") {
+  slide.addShape(deck.ShapeType.roundRect, { x, y, w, h, rectRadius: 0.08, line: { color: COLORS.line, width: 1 }, fill: { color: "FAFAF7" } });
+  slide.addImage({ data: asset.source, x: x + 0.1, y: y + 0.1, w: w - 0.2, h: h - (caption ? 0.48 : 0.2), transparency: 0, sizing: "contain" });
+  if (caption) slide.addText(caption, { x: x + 0.1, y: y + h - 0.34, w: w - 0.2, h: 0.22, fontFace: "Aptos", fontSize: 8, italic: true, color: COLORS.muted, align: "center", margin: 0, fit: "shrink" });
+}
+
+function addImages(deck, slide, imageBlocks, assets, contentPresent) {
+  const resolved = imageBlocks.map((block) => ({ block, asset: assets.find((asset) => asset.id === block.assetId) })).filter((item) => imageData(item.asset));
+  if (!resolved.length) return 0;
+  const startX = contentPresent ? 7.35 : 0.78;
+  const areaW = contentPresent ? 5.15 : 11.75;
+  if (resolved.length === 1) {
+    const item = resolved[0]; addImageFrame(deck, slide, item.asset, startX, 1.1, areaW, 5.45, text(item.block.caption || item.asset.caption)); return 1;
+  }
+  const cols = resolved.length <= 2 ? 2 : 2; const rows = Math.ceil(Math.min(resolved.length, 4) / cols);
+  const gap = 0.18; const cellW = (areaW - gap) / cols; const cellH = (5.45 - gap * (rows - 1)) / rows;
+  resolved.slice(0, 4).forEach((item, index) => addImageFrame(deck, slide, item.asset, startX + (index % cols) * (cellW + gap), 1.1 + Math.floor(index / cols) * (cellH + gap), cellW, cellH, text(item.block.caption || item.asset.caption)));
+  return Math.min(resolved.length, 4);
+}
+
+function addDiagram(deck, slide, block, critical, important) {
+  const items = list(block.items);
+  if (!items.length) return false;
+  slide.addShape(deck.ShapeType.roundRect, { x: 0.85, y: 1.15, w: 11.6, h: 5.25, rectRadius: 0.08, line: { color: COLORS.line, width: 1 }, fill: { color: COLORS.surface } });
+  const count = Math.min(items.length, 6); const gap = 0.22; const boxW = (10.5 - gap * (count - 1)) / count;
+  items.slice(0, count).forEach((item, index) => {
+    const x = 1.4 + index * (boxW + gap);
+    slide.addShape(deck.ShapeType.roundRect, { x, y: 2.75, w: boxW, h: 1.1, rectRadius: 0.05, line: { color: "B0B0A8", width: 1 }, fill: { color: "F8F8F6" } });
+    addStyledParagraph(slide, item, { x: x + 0.08, y: 2.95, w: boxW - 0.16, h: 0.7 }, critical, important, { fontSize: 10.5, valign: "mid", margin: 0.02 });
+    if (index < count - 1) slide.addShape(deck.ShapeType.chevron, { x: x + boxW + 0.03, y: 3.05, w: 0.15, h: 0.35, line: { color: "555550", width: 1 }, fill: { color: "555550" } });
+  });
+  return true;
+}
+
+function addContentSlide(deck, slide, chunk, assets, critical, important, report) {
   const table = chunk.find((block) => block.type === "table");
-  if (table) {
-    addTableSlide(slide, table);
-    return;
-  }
-
-  const assetBlock = chunk.find((block) => block.assetId && imageData(assets.find((asset) => asset.id === block.assetId)));
-  const content = textGroup(chunk);
-  const hasImage = Boolean(assetBlock);
-  const x = 0.72;
-  const y = 1.82;
-  const w = hasImage ? 6.35 : 11.85;
-  const h = 4.92;
-
-  if (content) {
-    slide.addText(content, {
-      x, y, w, h, fontFace: "Aptos", fontSize: 15.5, color: "252525",
-      breakLine: false, valign: "top", margin: 0.08, fit: "shrink",
-      paraSpaceAfterPt: 8, breakLineOnOverflow: false,
-    });
-  }
-
-  if (hasImage) {
-    const asset = assets.find((item) => item.id === assetBlock.assetId);
-    slide.addShape(deck.ShapeType.roundRect, { x: 7.4, y: 1.78, w: 5.2, h: 4.72, rectRadius: 0.08, line: { color: "D8D8D2", width: 1 }, fill: { color: "FAFAF7" } });
-    slide.addImage({ data: asset.source, x: 7.55, y: 1.95, w: 4.9, h: 4.1, transparency: 0 });
-    const caption = text(assetBlock.caption || asset.caption);
-    if (caption) slide.addText(caption, { x: 7.55, y: 6.18, w: 4.9, h: 0.34, fontFace: "Aptos", fontSize: 9, italic: true, color: "666666", align: "center", margin: 0, fit: "shrink" });
-  }
+  if (table) { addTableSlide(slide, table); report.renderedText.push(...list(table.headers), ...(table.rows || []).flat().map(text)); return; }
+  const diagram = chunk.find((block) => ["diagram", "flow", "mindmap"].includes(block.type) && list(block.items).length);
+  if (diagram && addDiagram(deck, slide, diagram, critical, important)) { report.renderedText.push(...list(diagram.items)); return; }
+  const imageBlocks = chunk.filter((block) => block.assetId);
+  const textBlocks = chunk.filter((block) => block.type !== "table" && !block.assetId);
+  const content = textBlocks.map((block) => { const value = blockText(block); const heading = text(block.heading || block.label); return heading && value && heading !== value ? `${heading.toUpperCase()}\n${value}` : value || heading; }).filter(Boolean).join("\n\n");
+  const imageCount = addImages(deck, slide, imageBlocks, assets, Boolean(content));
+  if (content) { addStyledParagraph(slide, content, { x: 0.72, y: 1.08, w: imageCount ? 6.25 : 11.85, h: 5.55 }, critical, important, { fontSize: 14.5 }); report.renderedText.push(content); }
+  imageBlocks.forEach((block) => { const asset = assets.find((item) => item.id === block.assetId); if (imageData(asset)) report.renderedAssets.push(block.assetId); else report.missingAssets.push(block.assetId); });
 }
 
 function makeSlideSpecs(plan) {
   const specs = [];
   const overviewItems = list(plan?.learningObjectives);
-  if (text(plan?.overview) || overviewItems.length) {
-    specs.push({ kind: "overview", title: "Lecture overview", category: "Orientation", overview: text(plan.overview), objectives: overviewItems });
-  }
-
+  if (text(plan?.overview) || overviewItems.length) specs.push({ kind: "overview", title: "Lecture overview", category: "Orientation", overview: text(plan.overview), objectives: overviewItems });
   for (const section of Array.isArray(plan?.sections) ? plan.sections : []) {
     const chunks = chunkBlocks(section.blocks);
-    chunks.forEach((chunk, index) => specs.push({
-      kind: "section",
-      title: chunks.length > 1 ? `${text(section.title) || "Concept"} · Part ${index + 1}` : text(section.title) || "Concept",
-      category: text(section.category) || "Concept",
-      chunk,
-    }));
+    chunks.forEach((chunk, index) => specs.push({ kind: "section", title: chunks.length > 1 ? `${text(section.title) || "Concept"} · Part ${index + 1}` : text(section.title) || "Concept", category: text(section.category) || "Concept", chunk, critical: allTerms(section, "keyTermsCritical"), important: allTerms(section, "keyTermsImportant") }));
   }
-
   const takeaways = list(plan?.finalTakeaways);
   if (takeaways.length) specs.push({ kind: "summary", title: "Key takeaways", category: "Review", takeaways });
   return specs;
 }
 
+export function createFidelityManifest(plan, assets = []) {
+  const sourceText = [];
+  for (const section of Array.isArray(plan?.sections) ? plan.sections : []) for (const block of blocks(section.blocks)) {
+    if (block.type === "table") sourceText.push(...list(block.headers), ...(block.rows || []).flat().map(text));
+    else sourceText.push(blockText(block));
+  }
+  const expectedAssets = uniq((plan?.sections || []).flatMap((section) => blocks(section.blocks).map((block) => block.assetId)));
+  return { sourceText: sourceText.filter(Boolean), expectedAssets, availableAssets: assets.filter((asset) => imageData(asset)).map((asset) => asset.id) };
+}
+
 export async function buildPptx(plan, assets = []) {
   if (!globalThis.PptxGenJS) throw new Error("PowerPoint export could not load. Refresh the page and try again.");
   const deck = new globalThis.PptxGenJS();
-  deck.layout = "LAYOUT_WIDE";
-  deck.author = "Jang Lecture Rebuilder";
-  deck.subject = "Redesigned educational lecture";
-  deck.title = plan?.metadata?.title || "Redesigned lecture";
-  deck.company = "Jang";
-  deck.lang = plan?.metadata?.language || "en-US";
-  deck.theme = { headFontFace: "Aptos Display", bodyFontFace: "Aptos", lang: deck.lang };
-
-  const metadata = plan?.metadata || {};
-  const specs = makeSlideSpecs(plan);
-  const total = Math.max(1, specs.length + 1);
-  const cover = deck.addSlide();
-  cover.background = { color: "F7F6EF" };
-  cover.addShape(deck.ShapeType.rect, { x: 0, y: 0, w: 13.333, h: 0.18, line: { transparency: 100 }, fill: { color: "E4D431" } });
-  cover.addText(metadata.courseCode || "COURSE", { x: 0.75, y: 0.65, w: 3.4, h: 0.3, fontFace: "Aptos", fontSize: 10, bold: true, color: "756817", charSpacing: 1.4, margin: 0 });
-  cover.addText(metadata.title || "Redesigned lecture", { x: 0.75, y: 1.55, w: 10.8, h: 1.6, fontFace: "Aptos Display", fontSize: 34, bold: true, color: "151515", margin: 0.02, breakLine: false, fit: "shrink" });
-  cover.addText(metadata.subtitle || plan?.overview || "Clear, structured educational notes", { x: 0.78, y: 3.5, w: 8.8, h: 0.8, fontFace: "Aptos", fontSize: 17, color: "4F4F4F", margin: 0, fit: "shrink" });
-  cover.addText([metadata.lectureLabel, metadata.instructor].filter(Boolean).join(" · "), { x: 0.78, y: 6.45, w: 8.5, h: 0.3, fontFace: "Aptos", fontSize: 11, color: "555555", margin: 0 });
-  addFooter(cover, 1, total, metadata);
-
+  deck.layout = "LAYOUT_WIDE"; deck.author = "Jang Lecture Rebuilder"; deck.subject = "Redesigned educational lecture"; deck.title = plan?.metadata?.title || "Redesigned lecture"; deck.company = "Jang"; deck.lang = plan?.metadata?.language || "en-US"; deck.theme = { headFontFace: "Georgia", bodyFontFace: "Aptos", lang: deck.lang };
+  const metadata = plan?.metadata || {}; const specs = makeSlideSpecs(plan); const total = Math.max(1, specs.length + 1); const report = { renderedText: [], renderedAssets: [], missingAssets: [] };
+  const cover = deck.addSlide(); cover.background = { color: "1E1E1C" };
+  cover.addText(metadata.courseCode || "COURSE", { x: 0.75, y: 0.65, w: 3.4, h: 0.3, fontFace: "Aptos", fontSize: 10, bold: true, color: "FFFFFF", transparency: 55, charSpacing: 1.4, margin: 0 });
+  cover.addText(metadata.title || "Redesigned lecture", { x: 0.75, y: 1.55, w: 10.8, h: 1.6, fontFace: "Georgia", fontSize: 34, bold: true, color: "F0F0EC", margin: 0.02, fit: "shrink" });
+  cover.addShape(deck.ShapeType.line, { x: 0.78, y: 3.35, w: 0.7, h: 0, line: { color: "F0D21E", transparency: 35, width: 3 } });
+  cover.addText(metadata.subtitle || plan?.overview || "Clear, structured educational notes", { x: 0.78, y: 3.65, w: 8.8, h: 0.8, fontFace: "Aptos", fontSize: 17, color: "FFFFFF", transparency: 40, margin: 0, fit: "shrink" });
+  cover.addText([metadata.lectureLabel, metadata.instructor].filter(Boolean).join(" · "), { x: 0.78, y: 6.45, w: 8.5, h: 0.3, fontFace: "Aptos", fontSize: 11, color: "FFFFFF", transparency: 35, margin: 0 }); addFooter(cover, 1, total, metadata);
   specs.forEach((spec, specIndex) => {
-    const slide = deck.addSlide();
-    slide.background = { color: "FFFFFF" };
-    addTitle(deck, slide, spec.title, spec.category);
-
+    const slide = deck.addSlide(); slide.background = { color: "FFFFFF" }; addTitle(deck, slide, spec.title, spec.category);
     if (spec.kind === "overview") {
-      const objectiveText = spec.objectives.map((item) => `• ${item}`).join("\n");
-      const body = [spec.overview, objectiveText ? `LEARNING OBJECTIVES\n${objectiveText}` : ""].filter(Boolean).join("\n\n");
-      slide.addText(body, { x: 0.75, y: 1.9, w: 11.7, h: 4.75, fontFace: "Aptos", fontSize: 17, color: "252525", valign: "top", margin: 0.1, fit: "shrink", paraSpaceAfterPt: 10 });
+      const body = [spec.overview, spec.objectives.length ? `LEARNING OBJECTIVES\n${spec.objectives.map((item) => `• ${item}`).join("\n")}` : ""].filter(Boolean).join("\n\n");
+      addStyledParagraph(slide, body, { x: 0.75, y: 1.08, w: 11.7, h: 5.55 }, [], [], { fontSize: 16 }); report.renderedText.push(body);
     } else if (spec.kind === "summary") {
-      slide.addText(spec.takeaways.map((item) => `• ${item}`).join("\n\n"), { x: 0.9, y: 1.95, w: 11.4, h: 4.7, fontFace: "Aptos", fontSize: 18, color: "252525", valign: "mid", margin: 0.12, fit: "shrink" });
-    } else {
-      addContentSlide(deck, slide, spec.chunk, assets);
-    }
+      const body = spec.takeaways.map((item) => `• ${item}`).join("\n\n"); addStyledParagraph(slide, body, { x: 0.9, y: 1.2, w: 11.4, h: 5.35 }, [], [], { fontSize: 17, valign: "mid" }); report.renderedText.push(body);
+    } else addContentSlide(deck, slide, spec.chunk, assets, spec.critical, spec.important, report);
     addFooter(slide, specIndex + 2, total, metadata);
   });
-
+  const manifest = createFidelityManifest(plan, assets);
+  report.expectedTextCount = manifest.sourceText.length; report.expectedAssetCount = manifest.expectedAssets.length; report.renderedAssets = uniq(report.renderedAssets); report.missingAssets = uniq(report.missingAssets);
+  report.complete = report.missingAssets.length === 0 && manifest.expectedAssets.every((id) => report.renderedAssets.includes(id));
+  deck._jangFidelity = { manifest, report };
   return deck;
 }
 
 export async function downloadPptx(plan, assets, filename = "redesigned-lecture.pptx") {
   const deck = await buildPptx(plan, assets);
+  const fidelity = deck._jangFidelity;
+  if (fidelity?.report?.missingAssets?.length) throw new Error(`PowerPoint export stopped because ${fidelity.report.missingAssets.length} expected image(s) could not be embedded: ${fidelity.report.missingAssets.join(", ")}.`);
   await deck.writeFile({ fileName: filename });
+  return fidelity;
 }
