@@ -3,7 +3,7 @@ const RETIRED_MODELS = new Set(["gemini-2.5-flash", "models/gemini-2.5-flash"]);
 
 const headers = {
   "content-type": "application/json; charset=utf-8",
-  "cache-control": "no-store",
+  "cache-control": "no-store, max-age=0",
   "x-content-type-options": "nosniff",
 };
 
@@ -18,6 +18,15 @@ function keySource(env) {
   return null;
 }
 
+function deploymentInfo(env) {
+  const branch = String(env.CF_PAGES_BRANCH || "").trim();
+  return {
+    branch,
+    deploymentUrl: String(env.CF_PAGES_URL || "").trim(),
+    environment: branch && branch !== "main" ? "preview" : "production",
+  };
+}
+
 export const onRequestGet = async ({ env }) => {
   const source = keySource(env);
   return new Response(JSON.stringify({
@@ -28,5 +37,6 @@ export const onRequestGet = async ({ env }) => {
     maxSourceChars: 1_200_000,
     maxFileBytes: 50 * 1024 * 1024,
     supportedFormats: ["pptx", "pdf", "html", "htm"],
+    ...deploymentInfo(env),
   }), { headers });
 };
