@@ -6,6 +6,13 @@ const COLORS = { ink: "111110", ink2: "3A3A38", muted: "787874", line: "C8C8C2",
 function imageData(asset) { return asset?.type === "image" && /^data:image\//i.test(asset.source || "") ? asset.source : null; }
 function uniq(values) { return [...new Set(values.filter(Boolean))]; }
 function allTerms(section, key) { return uniq(list(section?.[key])); }
+function shape(deck, name) {
+  const candidates = [deck?.ShapeType, globalThis.PptxGenJS?.ShapeType, globalThis.PptxGenJS?.ShapeType?.[name]];
+  if (typeof candidates[2] === "string") return candidates[2];
+  if (candidates[0]?.[name]) return candidates[0][name];
+  if (candidates[1]?.[name]) return candidates[1][name];
+  return name;
+}
 
 function styledRuns(value, critical = [], important = []) {
   const source = text(value);
@@ -23,14 +30,14 @@ function styledRuns(value, critical = [], important = []) {
   });
 }
 
-function addFooter(slide, index, total, metadata) {
-  slide.addShape(globalThis.PptxGenJS.ShapeType.rect, { x: 0, y: 6.95, w: 13.333, h: 0.55, line: { color: COLORS.line, width: 1 }, fill: { color: COLORS.surface2 } });
+function addFooter(deck, slide, index, total, metadata) {
+  slide.addShape(shape(deck, "rect"), { x: 0, y: 6.95, w: 13.333, h: 0.55, line: { color: COLORS.line, width: 1 }, fill: { color: COLORS.surface2 } });
   slide.addText(`${metadata.courseCode || "Course"} · ${metadata.lectureLabel || "Lecture"}`, { x: 0.45, y: 7.08, w: 8.5, h: 0.2, fontFace: "Aptos", fontSize: 8, color: COLORS.muted, margin: 0 });
   slide.addText(`${index} / ${total}`, { x: 11.7, y: 7.08, w: 0.8, h: 0.2, align: "right", fontFace: "Aptos", fontSize: 8, color: COLORS.ink2, bold: true, margin: 0 });
 }
 
 function addTitle(deck, slide, title, kicker = "") {
-  slide.addShape(deck.ShapeType.rect, { x: 0, y: 0, w: 13.333, h: 0.52, line: { color: COLORS.line, width: 1 }, fill: { color: COLORS.surface2 } });
+  slide.addShape(shape(deck, "rect"), { x: 0, y: 0, w: 13.333, h: 0.52, line: { color: COLORS.line, width: 1 }, fill: { color: COLORS.surface2 } });
   if (kicker) slide.addText(kicker.toUpperCase(), { x: 0.65, y: 0.15, w: 3.2, h: 0.18, fontFace: "Aptos", fontSize: 8, bold: true, color: COLORS.muted, charSpacing: 1.2, margin: 0 });
   slide.addText(title || "Untitled section", { x: 3.15, y: 0.12, w: 7.0, h: 0.25, fontFace: "Georgia", fontSize: 14, bold: true, color: COLORS.ink, align: "center", margin: 0, fit: "shrink" });
 }
@@ -80,8 +87,8 @@ function addTableSlide(slide, block) {
 }
 
 function addImageFrame(deck, slide, asset, x, y, w, h, caption = "") {
-  slide.addShape(deck.ShapeType.roundRect, { x, y, w, h, rectRadius: 0.08, line: { color: COLORS.line, width: 1 }, fill: { color: "FAFAF7" } });
-  slide.addImage({ data: asset.source, x: x + 0.1, y: y + 0.1, w: w - 0.2, h: h - (caption ? 0.48 : 0.2), transparency: 0, sizing: "contain" });
+  slide.addShape(shape(deck, "roundRect"), { x, y, w, h, rectRadius: 0.08, line: { color: COLORS.line, width: 1 }, fill: { color: "FAFAF7" } });
+  slide.addImage({ data: asset.source, x: x + 0.1, y: y + 0.1, w: w - 0.2, h: h - (caption ? 0.48 : 0.2), transparency: 0 });
   if (caption) slide.addText(caption, { x: x + 0.1, y: y + h - 0.34, w: w - 0.2, h: 0.22, fontFace: "Aptos", fontSize: 8, italic: true, color: COLORS.muted, align: "center", margin: 0, fit: "shrink" });
 }
 
@@ -93,7 +100,7 @@ function addImages(deck, slide, imageBlocks, assets, contentPresent) {
   if (resolved.length === 1) {
     const item = resolved[0]; addImageFrame(deck, slide, item.asset, startX, 1.1, areaW, 5.45, text(item.block.caption || item.asset.caption)); return 1;
   }
-  const cols = resolved.length <= 2 ? 2 : 2; const rows = Math.ceil(Math.min(resolved.length, 4) / cols);
+  const cols = 2; const rows = Math.ceil(Math.min(resolved.length, 4) / cols);
   const gap = 0.18; const cellW = (areaW - gap) / cols; const cellH = (5.45 - gap * (rows - 1)) / rows;
   resolved.slice(0, 4).forEach((item, index) => addImageFrame(deck, slide, item.asset, startX + (index % cols) * (cellW + gap), 1.1 + Math.floor(index / cols) * (cellH + gap), cellW, cellH, text(item.block.caption || item.asset.caption)));
   return Math.min(resolved.length, 4);
@@ -102,13 +109,13 @@ function addImages(deck, slide, imageBlocks, assets, contentPresent) {
 function addDiagram(deck, slide, block, critical, important) {
   const items = list(block.items);
   if (!items.length) return false;
-  slide.addShape(deck.ShapeType.roundRect, { x: 0.85, y: 1.15, w: 11.6, h: 5.25, rectRadius: 0.08, line: { color: COLORS.line, width: 1 }, fill: { color: COLORS.surface } });
+  slide.addShape(shape(deck, "roundRect"), { x: 0.85, y: 1.15, w: 11.6, h: 5.25, rectRadius: 0.08, line: { color: COLORS.line, width: 1 }, fill: { color: COLORS.surface } });
   const count = Math.min(items.length, 6); const gap = 0.22; const boxW = (10.5 - gap * (count - 1)) / count;
   items.slice(0, count).forEach((item, index) => {
     const x = 1.4 + index * (boxW + gap);
-    slide.addShape(deck.ShapeType.roundRect, { x, y: 2.75, w: boxW, h: 1.1, rectRadius: 0.05, line: { color: "B0B0A8", width: 1 }, fill: { color: "F8F8F6" } });
+    slide.addShape(shape(deck, "roundRect"), { x, y: 2.75, w: boxW, h: 1.1, rectRadius: 0.05, line: { color: "B0B0A8", width: 1 }, fill: { color: "F8F8F6" } });
     addStyledParagraph(slide, item, { x: x + 0.08, y: 2.95, w: boxW - 0.16, h: 0.7 }, critical, important, { fontSize: 10.5, valign: "mid", margin: 0.02 });
-    if (index < count - 1) slide.addShape(deck.ShapeType.chevron, { x: x + boxW + 0.03, y: 3.05, w: 0.15, h: 0.35, line: { color: "555550", width: 1 }, fill: { color: "555550" } });
+    if (index < count - 1) slide.addShape(shape(deck, "chevron"), { x: x + boxW + 0.03, y: 3.05, w: 0.15, h: 0.35, line: { color: "555550", width: 1 }, fill: { color: "555550" } });
   });
   return true;
 }
@@ -157,9 +164,9 @@ export async function buildPptx(plan, assets = []) {
   const cover = deck.addSlide(); cover.background = { color: "1E1E1C" };
   cover.addText(metadata.courseCode || "COURSE", { x: 0.75, y: 0.65, w: 3.4, h: 0.3, fontFace: "Aptos", fontSize: 10, bold: true, color: "FFFFFF", transparency: 55, charSpacing: 1.4, margin: 0 });
   cover.addText(metadata.title || "Redesigned lecture", { x: 0.75, y: 1.55, w: 10.8, h: 1.6, fontFace: "Georgia", fontSize: 34, bold: true, color: "F0F0EC", margin: 0.02, fit: "shrink" });
-  cover.addShape(deck.ShapeType.line, { x: 0.78, y: 3.35, w: 0.7, h: 0, line: { color: "F0D21E", transparency: 35, width: 3 } });
+  cover.addShape(shape(deck, "line"), { x: 0.78, y: 3.35, w: 0.7, h: 0, line: { color: "F0D21E", transparency: 35, width: 3 } });
   cover.addText(metadata.subtitle || plan?.overview || "Clear, structured educational notes", { x: 0.78, y: 3.65, w: 8.8, h: 0.8, fontFace: "Aptos", fontSize: 17, color: "FFFFFF", transparency: 40, margin: 0, fit: "shrink" });
-  cover.addText([metadata.lectureLabel, metadata.instructor].filter(Boolean).join(" · "), { x: 0.78, y: 6.45, w: 8.5, h: 0.3, fontFace: "Aptos", fontSize: 11, color: "FFFFFF", transparency: 35, margin: 0 }); addFooter(cover, 1, total, metadata);
+  cover.addText([metadata.lectureLabel, metadata.instructor].filter(Boolean).join(" · "), { x: 0.78, y: 6.45, w: 8.5, h: 0.3, fontFace: "Aptos", fontSize: 11, color: "FFFFFF", transparency: 35, margin: 0 }); addFooter(deck, cover, 1, total, metadata);
   specs.forEach((spec, specIndex) => {
     const slide = deck.addSlide(); slide.background = { color: "FFFFFF" }; addTitle(deck, slide, spec.title, spec.category);
     if (spec.kind === "overview") {
@@ -168,7 +175,7 @@ export async function buildPptx(plan, assets = []) {
     } else if (spec.kind === "summary") {
       const body = spec.takeaways.map((item) => `• ${item}`).join("\n\n"); addStyledParagraph(slide, body, { x: 0.9, y: 1.2, w: 11.4, h: 5.35 }, [], [], { fontSize: 17, valign: "mid" }); report.renderedText.push(body);
     } else addContentSlide(deck, slide, spec.chunk, assets, spec.critical, spec.important, report);
-    addFooter(slide, specIndex + 2, total, metadata);
+    addFooter(deck, slide, specIndex + 2, total, metadata);
   });
   const manifest = createFidelityManifest(plan, assets);
   report.expectedTextCount = manifest.sourceText.length; report.expectedAssetCount = manifest.expectedAssets.length; report.renderedAssets = uniq(report.renderedAssets); report.missingAssets = uniq(report.missingAssets);
