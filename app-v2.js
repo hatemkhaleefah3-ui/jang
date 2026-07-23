@@ -113,114 +113,75 @@ function options() {
   };
 }
 
-const genericSection = /^(?:continued|continuation|cont\.?|slide\s+\d+|page\s+\d+|\d+)$/i;
-function compactBlocks(blocks) {
-  const output = [];
-  for (const raw of Array.isArray(blocks) ? blocks : []) {
-    const block = { ...raw };
-    const previous = output.at(-1);
-    if (block.type === "paragraph" && previous?.type === "paragraph" && !block.heading && !previous.heading) {
-      const joined = `${previous.text || ""} ${block.text || ""}`.replace(/\s+/g, " ").trim();
-      if (joined.length <= 1800 && (!/[.!?)]$/.test(previous.text || "") || (previous.text || "").length < 160 || (block.text || "").length < 120)) {
-        previous.text = joined;
-        continue;
+function structuredDraftToPlan(draft, extraction, userOptions) {
+  const sections = [];
+  for (const title of Array.isArray(draft?.titles) ? draft.titles : []) {
+    for (const subtitle of Array.isArray(title?.children) ? title.children : []) {
+      const blocks = [];
+      for (const element of Array.isArray(subtitle?.children) ? subtitle.children : []) {
+        if (element.type === "image_ref") {
+          blocks.push({ type: "image", assetId: element.assetId || "", caption: element.caption || "", sourceIds: element.sourceIds || [] });
+        } else if (element.type === "table") {
+          blocks.push({ type: "table", heading: element.heading || "", headers: element.headers || [], rows: element.rows || [], sourceIds: element.sourceIds || [], variant: element.variant || "standard" });
+        } else if (element.type === "diagram") {
+          blocks.push({ type: "diagram", heading: element.heading || "", items: element.items || element.nodes?.map((node) => node.label) || [], sourceIds: element.sourceIds || [] });
+        } else if (element.type === "note") {
+          blocks.push({ type: "callout", heading: element.heading || "Note", text: element.text || "", sourceIds: element.sourceIds || [] });
+        } else {
+          blocks.push({ type: "paragraph", heading: element.heading || "", text: element.text || "", sourceIds: element.sourceIds || [] });
+        }
       }
-    }
-    output.push(block);
-  }
-  return output;
-}
-function compactSections(sections) {
-  const grouped = [];
-  for (const raw of Array.isArray(sections) ? sections : []) {
-    const title = String(raw?.title || "Concept").trim() || "Concept";
-    const section = { ...raw, title, blocks: compactBlocks(raw?.blocks) };
-    if (!section.blocks.length) continue;
-    const previous = grouped.at(-1);
-    if (previous && (genericSection.test(title) || previous.title.toLowerCase() === title.toLowerCase())) {
-      previous.blocks = compactBlocks([...previous.blocks, ...section.blocks]);
-      continue;
-    }
-    grouped.push(section);
-  }
-
-  const chunked = [];
-  for (const section of grouped) {
-    for (let offset = 0, part = 1; offset < section.blocks.length; offset += 12, part += 1) {
-      chunked.push({ ...section, title: part === 1 ? section.title : `${section.title} · Part ${part}`, blocks: section.blocks.slice(offset, offset + 12) });
+      if (blocks.length) sections.push({
+        title: subtitle.text || title.text || "Concept",
+        category: title.text || "Concept",
+        keyTermsCritical: [],
+        keyTermsImportant: [],
+        blocks,
+      });
     }
   }
-  return chunked.slice(0, 60);
-}
-function compactPlan(plan, extraction, userOptions) {
-  const source = plan && typeof plan === "object" ? plan : {};
   return {
-    ...source,
     metadata: {
-      ...(source.metadata || {}),
-      title: source?.metadata?.title || extraction.title,
-      courseCode: userOptions.courseCode || source?.metadata?.courseCode || "Course",
-      lectureLabel: userOptions.lectureLabel || source?.metadata?.lectureLabel || "Lecture",
-      instructor: userOptions.instructor || source?.metadata?.instructor || "",
+      title: draft?.metadata?.title || extraction.title,
+      courseCode: userOptions.courseCode || "Course",
+      lectureLabel: userOptions.lectureLabel || "Lecture",
+      instructor: userOptions.instructor || "",
+      language: draft?.metadata?.language || userOptions.language || "auto",
+      direction: draft?.metadata?.direction || "ltr",
     },
-    learningObjectives: [...new Set(Array.isArray(source.learningObjectives) ? source.learningObjectives : [])].slice(0, 8),
-    sections: compactSections(source.sections),
-    finalTakeaways: [...new Set(Array.isArray(source.finalTakeaways) ? source.finalTakeaways : [])].slice(0, 10),
+    overview: "",
+    learningObjectives: [],
+    sections,
+    finalTakeaways: [],
+    sourceManifest: draft?.sourceManifest || null,
   };
 }
-function mergePlans(plans, extraction, userOptions) {
-  const first = plans[0] || {};
-  return compactPlan({
-    metadata: { ...(first.metadata || {}) },
-    overview: first.overview || "",
-    learningObjectives: plans.flatMap((plan) => Array.isArray(plan.learningObjectives) ? plan.learningObjectives : []),
-    sections: plans.flatMap((plan) => Array.isArray(plan.sections) ? plan.sections : []),
-    finalTakeaways: plans.flatMap((plan) => Array.isArray(plan.finalTakeaways) ? plan.finalTakeaways : []),
-  }, extraction, userOptions);
-}
 
-async function requestBatch(extraction, userOptions, batch, index, total) {
-  let lastError;
-  for (let attempt = 1; attempt <= 2; attempt += 1) {
-    stage(2, "Reorganizing with Gemini", `Batch ${index + 1} of ${total}${attempt > 1 ? " · retrying" : ""}…`);
-    try {
-      const response = await fetch("/api/redesign", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          turnstileToken: state.turnstileToken || undefined,
-          source: {
-            title: extraction.title,
-            batches: [batch],
-            assets: extraction.assets.map(({ id, type, alt, caption, sourceKind }) => ({ id, type, alt, caption, sourceKind })),
-          },
-          options: userOptions,
-        }),
-      });
-      const payload = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        const error = new Error(payload.error || `The AI service returned HTTP ${response.status}.`);
-        error.code = payload.code || "AI_REQUEST_FAILED";
-        error.environment = payload.environment || state.config.environment;
-        error.nonRetryable = response.status === 400 || response.status === 401 || response.status === 403 || response.status === 413 || response.status === 503;
-        throw error;
-      }
-      if (!payload.plan) throw new Error("The AI service did not return a lecture plan.");
-      return payload.plan;
-    } catch (error) {
-      lastError = error;
-      if (error?.nonRetryable || attempt >= 2) break;
-      await new Promise((resolve) => setTimeout(resolve, 800));
-    }
-  }
-  throw lastError;
-}
 async function requestPlan(extraction, userOptions) {
-  const plans = [];
-  for (let index = 0; index < extraction.batches.length; index += 1) {
-    plans.push(await requestBatch(extraction, userOptions, extraction.batches[index], index, extraction.batches.length));
+  stage(2, "Reorganizing with Gemini", "Creating and verifying a complete structured draft…");
+  const response = await fetch("/api/redesign", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      turnstileToken: state.turnstileToken || undefined,
+      source: {
+        title: extraction.title,
+        batches: extraction.batches,
+        assets: extraction.assets.map(({ id, type, alt, caption, sourceKind }) => ({ id, type, alt, caption, sourceKind })),
+      },
+      options: userOptions,
+    }),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(payload.error || `The AI service returned HTTP ${response.status}.`);
+    error.code = payload.code || "AI_REQUEST_FAILED";
+    error.environment = payload.environment || state.config.environment;
+    error.nonRetryable = response.status === 400 || response.status === 401 || response.status === 403 || response.status === 413 || response.status === 422 || response.status === 503;
+    throw error;
   }
-  return mergePlans(plans, extraction, userOptions);
+  if (!payload.draftV2 || payload.verification?.valid !== true) throw new Error("The AI service did not return a verified structured draft.");
+  return structuredDraftToPlan(payload.draftV2, extraction, userOptions);
 }
 function resetTurnstile() {
   state.turnstileToken = "";
@@ -262,22 +223,14 @@ async function processLecture() {
       resetTurnstile();
     }
 
-    state.plan = compactPlan(state.plan, state.extraction, userOptions);
     stage(3, "Building the outputs", state.resultMode === "ai" ? "Creating the final HTML preview and PowerPoint deck…" : "Creating a local draft preview for inspection…");
     state.generatedHTML = buildLectureHTML(state.plan, state.extraction.assets, userOptions);
-    state.generatedFilename = safeFilename(state.plan?.metadata?.title || state.extraction.title);
+    state.generatedFilename = safeFilename(state.plan?.metadata?.title || state.extraction.title || "redesigned-lecture");
     showPreview();
-
-    const notices = [...state.extraction.warnings];
-    if (localMode) notices.unshift(`The ${deploymentLabel()} cannot access an AI key. A local draft preview was created, but final PPTX export is disabled until Gemini is available in this same Cloudflare environment and the deployment is rebuilt.`);
-    else if (fallbackReason) notices.unshift(`AI request failed: ${fallbackReason} A local draft preview was created; final PPTX export is disabled so it is not mistaken for the AI-redesigned result.`);
-    else notices.unshift(`Gemini reorganized ${stats.batchCount} independently retryable batch${stats.batchCount === 1 ? "" : "es"}. Final PPTX export is enabled.`);
-    const tone = fallbackReason || state.extraction.warnings.length ? "warning" : "success";
-    message(notices.join(" "), tone);
+    if (fallbackReason) message(localMode ? "AI is not configured for this deployment. A local draft was created." : `AI redesign failed, so a local draft was created: ${fallbackReason}`, "warning");
   } catch (error) {
-    el.processingState.hidden = true;
-    el.emptyState.hidden = false;
-    message(error instanceof Error ? error.message : "The lecture could not be processed.");
+    clearResult();
+    message(error instanceof Error ? error.message : "Unable to process this lecture.");
   } finally {
     state.busy = false;
     updateButton();
@@ -290,75 +243,65 @@ function downloadHtml() {
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = state.generatedFilename || "redesigned-lecture.html";
+  anchor.download = `${state.generatedFilename || "redesigned-lecture"}.html`;
   document.body.append(anchor);
   anchor.click();
   anchor.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  URL.revokeObjectURL(url);
 }
 async function downloadPowerPoint() {
-  if (!state.plan || !state.extraction) return;
-  if (state.resultMode !== "ai") {
-    message("Final PowerPoint export requires a successful Gemini redesign. This result is a local draft because the current Cloudflare deployment could not use AI.", "warning");
-    return;
-  }
-  el.downloadPptxButton.disabled = true;
+  if (!state.plan || !state.extraction || state.resultMode !== "ai") return;
   try {
-    await downloadPptx(state.plan, state.extraction.assets, (state.generatedFilename || "redesigned-lecture.html").replace(/\.html$/i, ".pptx"));
+    el.downloadPptxButton.disabled = true;
+    el.downloadPptxButton.textContent = "Building PPTX…";
+    await downloadPptx(state.plan, state.extraction.assets, `${state.generatedFilename || "redesigned-lecture"}.pptx`);
   } catch (error) {
-    message(error instanceof Error ? error.message : "PowerPoint export failed.");
+    message(error instanceof Error ? error.message : "Unable to create the PowerPoint file.");
   } finally {
+    el.downloadPptxButton.textContent = "Download PPTX";
     el.downloadPptxButton.disabled = false;
   }
 }
-function openPreview() { if (!state.generatedHTML) return; el.dialogFrame.srcdoc = state.generatedHTML; el.previewDialog.showModal(); }
-function loadTurnstile(siteKey) {
-  if (!siteKey) return;
-  el.turnstileArea.hidden = false;
-  const started = Date.now();
-  const attempt = () => {
-    if (window.turnstile?.render) {
-      state.turnstileId = window.turnstile.render(el.turnstileWidget, {
-        sitekey: siteKey,
-        theme: "light",
-        size: "flexible",
-        action: "redesign_lecture",
-        callback: (token) => { state.turnstileToken = token; updateButton(); },
-        "expired-callback": () => { state.turnstileToken = ""; updateButton(); },
-        "error-callback": () => { state.turnstileToken = ""; message("Verification could not load. Refresh the page or check the Turnstile domain configuration.", "warning"); updateButton(); },
-      });
-      return;
-    }
-    if (Date.now() - started < 10000) setTimeout(attempt, 150);
-    else message("Turnstile did not load. Check your content-security policy or network connection.", "warning");
-  };
-  attempt();
-}
-async function loadConfig() {
-  try {
-    const response = await fetch(`/api/config?ts=${Date.now()}`, { headers: { accept: "application/json" }, cache: "no-store" });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    state.config = { ...state.config, ...(await response.json()) };
-    backendStatus(state.config.configured ? "ready" : "warning", state.config.configured ? `Gemini ready · ${state.config.model}` : "Local draft mode · AI key unavailable");
-    if (el.aiSetupHint) el.aiSetupHint.textContent = state.config.configured
-      ? `AI reorganization is active through ${state.config.keySource || "a Cloudflare secret"}; final PPTX export is enabled after a successful redesign.`
-      : `This ${deploymentLabel()} cannot access GEMINI_API_KEY or GOOGLE_API_KEY. Add the secret to this exact Cloudflare environment and redeploy. Until then, only a local draft preview is available.`;
-    loadTurnstile(state.config.turnstileSiteKey);
-  } catch {
-    backendStatus("warning", "Local draft mode · API unavailable");
-    if (el.aiSetupHint) el.aiSetupHint.textContent = "The Cloudflare API endpoint is unavailable. Local draft preview remains available, but final PPTX export requires a working AI endpoint.";
-  } finally { updateButton(); }
-}
 
 el.fileInput.addEventListener("change", () => selectFile(el.fileInput.files?.[0]));
+el.dropZone.addEventListener("click", () => el.fileInput.click());
+el.dropZone.addEventListener("dragover", (event) => { event.preventDefault(); el.dropZone.classList.add("dragging"); });
+el.dropZone.addEventListener("dragleave", () => el.dropZone.classList.remove("dragging"));
+el.dropZone.addEventListener("drop", (event) => { event.preventDefault(); el.dropZone.classList.remove("dragging"); selectFile(event.dataTransfer?.files?.[0]); });
 el.removeFile.addEventListener("click", removeFile);
 el.processButton.addEventListener("click", processLecture);
-el.downloadButton.addEventListener("click", downloadHtml);
+el.downloadButton?.addEventListener("click", downloadHtml);
 el.downloadPptxButton?.addEventListener("click", downloadPowerPoint);
-el.openPreviewButton.addEventListener("click", openPreview);
-el.closeDialog.addEventListener("click", () => el.previewDialog.close());
-el.previewDialog.addEventListener("click", (event) => { if (event.target === el.previewDialog) el.previewDialog.close(); });
-["dragenter", "dragover"].forEach((name) => el.dropZone.addEventListener(name, (event) => { event.preventDefault(); el.dropZone.classList.add("dragging"); }));
-["dragleave", "drop"].forEach((name) => el.dropZone.addEventListener(name, (event) => { event.preventDefault(); el.dropZone.classList.remove("dragging"); }));
-el.dropZone.addEventListener("drop", (event) => selectFile(event.dataTransfer?.files?.[0]));
-loadConfig();
+el.openPreviewButton?.addEventListener("click", () => { el.dialogFrame.srcdoc = state.generatedHTML; el.previewDialog.showModal(); });
+el.closeDialog?.addEventListener("click", () => el.previewDialog.close());
+
+window.onTurnstileSuccess = (token) => { state.turnstileToken = token; updateButton(); };
+window.onTurnstileExpired = () => { state.turnstileToken = ""; updateButton(); };
+
+async function init() {
+  try {
+    const response = await fetch("/api/config", { cache: "no-store" });
+    const config = await response.json();
+    state.config = { ...state.config, ...config };
+    if (config.configured) backendStatus("ready", `${config.model || "Gemini"} ready · ${deploymentLabel()}`);
+    else backendStatus("warning", `AI unavailable · ${deploymentLabel()}`);
+    if (config.turnstileSiteKey) {
+      el.turnstileArea.hidden = false;
+      const render = () => {
+        if (!window.turnstile || state.turnstileId !== null) return;
+        state.turnstileId = window.turnstile.render(el.turnstileWidget, {
+          sitekey: config.turnstileSiteKey,
+          callback: window.onTurnstileSuccess,
+          "expired-callback": window.onTurnstileExpired,
+          theme: "light",
+        });
+      };
+      if (window.turnstile) render(); else window.addEventListener("load", render, { once: true });
+    }
+  } catch {
+    backendStatus("warning", "Unable to check AI status");
+  }
+  updateButton();
+}
+
+init();
