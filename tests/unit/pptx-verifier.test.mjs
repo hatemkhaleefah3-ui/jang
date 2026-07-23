@@ -5,8 +5,9 @@ import { verifyPptxPackage } from "../../pptx-exporter.js";
 
 globalThis.JSZip = JSZip;
 
-async function packageBuffer({ text = [], mediaCount = 0 }) {
+async function packageBuffer({ text = [], mediaCount = 0, paragraphXml = "" }) {
   const zip = new JSZip();
+  const paragraphs = paragraphXml || text.map((value) => `<a:p><a:r><a:rPr lang="en-US"/><a:t>${value}</a:t></a:r><a:endParaRPr lang="en-US"/></a:p>`).join("");
   const slideXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"
        xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
@@ -28,7 +29,7 @@ async function packageBuffer({ text = [], mediaCount = 0 }) {
         <p:txBody>
           <a:bodyPr/>
           <a:lstStyle/>
-          ${text.map((value) => `<a:p><a:r><a:rPr lang="en-US"/><a:t>${value}</a:t></a:r><a:endParaRPr lang="en-US"/></a:p>`).join("")}
+          ${paragraphs}
         </p:txBody>
       </p:sp>
     </p:spTree>
@@ -50,6 +51,18 @@ test("accepts a package containing all expected text and media", async () => {
   });
   assert.equal(result.valid, true);
   assert.equal(result.embeddedMediaCount, 2);
+});
+
+test("preserves adjacency across styled runs and punctuation", async () => {
+  const buffer = await packageBuffer({
+    paragraphXml: `<a:p><a:r><a:t xml:space="preserve">It produces </a:t></a:r><a:r><a:rPr b="1"><a:highlight><a:srgbClr val="F5E642"/></a:highlight></a:rPr><a:t>NADPH</a:t></a:r><a:r><a:t>.</a:t></a:r></a:p>`,
+  });
+  const result = await verifyPptxPackage(buffer, {
+    sourceText: ["It produces NADPH."],
+    expectedAssets: [],
+  });
+  assert.equal(result.valid, true);
+  assert.deepEqual(result.missingText, []);
 });
 
 test("reports missing text and media", async () => {
