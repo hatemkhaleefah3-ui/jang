@@ -18,17 +18,67 @@ function environmentName(env) {
   return branch && branch !== "main" ? "preview" : "production";
 }
 
-export const onRequestPost = (context) => {
-  const env = normalizeEnvironment(context.env);
-  if (!env.GEMINI_API_KEY) {
-    const environment = environmentName(env);
-    return new Response(JSON.stringify({
-      code: "AI_NOT_CONFIGURED",
-      environment,
-      error: `This ${environment} deployment cannot access GEMINI_API_KEY or GOOGLE_API_KEY. Add the secret to the same Cloudflare Pages environment and redeploy.`,
-    }), { status: 503, headers });
+function sameOrigin(request) {
+  const origin = request.headers.get("origin");
+  if (!origin) return true;
+  try { return new URL(origin).host === new URL(request.url).host; } catch { return false; }
+}
+
+function productionOrigin(request, env) {
+  const explicit = String(env.AI_FALLBACK_ORIGIN || "").trim();
+  if (explicit) {
+    try { return new URL(explicit).origin; } catch { /* ignore invalid override */ }
   }
-  return redesignPost({ ...context, env });
+  if (environmentName(env) !== "preview") return "";
+  try {
+    const current = new URL(String(env.CF_PAGES_URL || "").trim() || request.url);
+    const labels = current.hostname.split(".");
+    if (labels.length >= 4 && labels.at(-2) === "pages" && labels.at(-1) === "dev") {
+      return `https://${labels.at(-3)}.pages.dev`;
+    }
+  } catch { /* unable to infer production origin */ }
+  return "";
+}
+
+async function proxyToProduction(request, env) {
+  const origin = productionOrigin(request, env);
+  if (!origin || origin === new URL(request.url).origin) return null;
+  const body = await request.arrayBuffer();
+  const upstream = await fetch(`${origin}/api/redesign-large`, {
+    method: "POST",
+    headers: {
+      "content-type": request.headers.get("content-type") || "application/json",
+      "accept": "application/json",
+      "x-jang-preview-proxy": "1",
+    },
+    body,
+  });
+  const responseHeaders = new Headers(headers);
+  responseHeaders.set("x-jang-ai-source", "production-proxy");
+  return new Response(upstream.body, { status: upstream.status, headers: responseHeaders });
+}
+
+export const onRequestPost = async (context) => {
+  if (!sameOrigin(context.request)) {
+    return new Response(JSON.stringify({ code: "CROSS_ORIGIN_DENIED", error: "Cross-origin requests are not allowed." }), { status: 403, headers });
+  }
+
+  const env = normalizeEnvironment(context.env);
+  if (env.GEMINI_API_KEY) return redesignPost({ ...context, env });
+
+  try {
+    const proxied = await proxyToProduction(context.request, env);
+    if (proxied) return proxied;
+  } catch (error) {
+    console.error(JSON.stringify({ event: "preview_ai_proxy_error", message: error instanceof Error ? error.message : String(error) }));
+  }
+
+  const environment = environmentName(env);
+  return new Response(JSON.stringify({
+    code: "AI_NOT_CONFIGURED",
+    environment,
+    error: `This ${environment} deployment cannot access GEMINI_API_KEY or GOOGLE_API_KEY, and no configured production endpoint was available.`,
+  }), { status: 503, headers });
 };
 
 export const onRequestOptions = redesignOptions;
