@@ -5,7 +5,7 @@ const root = resolve(import.meta.dirname, "..");
 const output = resolve(root, "dist");
 const vendor = resolve(output, "vendor");
 const pdfRoot = resolve(root, "node_modules", "pdfjs-dist");
-const staticFiles = ["index.html", "styles.css", "app-v2.js", "source-importer.js", "pptx-exporter.js", "lecture-template.js", "_headers"];
+const staticFiles = ["index.html", "styles.css", "app-v2.js", "source-importer.js", "fallback-plan.js", "pptx-exporter.js", "lecture-template.js", "_headers"];
 
 await rm(output, { recursive: true, force: true });
 await mkdir(vendor, { recursive: true });
