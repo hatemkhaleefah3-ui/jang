@@ -22,7 +22,6 @@ await Promise.all([
   cp(resolve(pdfRoot, "legacy", "build", "pdf.worker.min.mjs"), resolve(vendor, "pdf.worker.min.mjs")),
   cp(resolve(pdfRoot, "cmaps"), resolve(vendor, "cmaps"), { recursive: true }),
   cp(resolve(pdfRoot, "standard_fonts"), resolve(vendor, "standard_fonts"), { recursive: true }),
-  cp(resolve(pdfRoot, "wasm"), resolve(vendor, "wasm"), { recursive: true }),
 ]);
 
 console.log(`Prepared ${staticFiles.length + 1} static files plus local JSZip, PptxGenJS, and legacy PDF.js assets in dist/.`);
