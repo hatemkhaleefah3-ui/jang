@@ -184,6 +184,9 @@ async function loadPdfJs() {
     pdfJsPromise = import("/vendor/pdf.min.mjs").then((pdfjs) => {
       pdfjs.GlobalWorkerOptions.workerSrc = "/vendor/pdf.worker.min.mjs";
       return pdfjs;
+    }).catch((error) => {
+      pdfJsPromise = null;
+      throw error;
     });
   }
   return pdfJsPromise;
@@ -191,7 +194,8 @@ async function loadPdfJs() {
 
 function pdfTextLines(items) {
   const rows = [];
-  for (const item of items) {
+  const safeItems = Array.isArray(items) ? items : [];
+  for (const item of safeItems) {
     const value = clean(item?.str);
     if (!value) continue;
     const x = Number(item?.transform?.[4] || 0);
@@ -211,14 +215,15 @@ function pdfTextLines(items) {
 
 function pageHasVisualContent(pdfjs, operatorList, text) {
   const visualOps = new Set([
-    pdfjs.OPS.paintImageXObject,
-    pdfjs.OPS.paintImageXObjectRepeat,
-    pdfjs.OPS.paintInlineImageXObject,
-    pdfjs.OPS.paintInlineImageXObjectGroup,
-    pdfjs.OPS.paintImageMaskXObject,
-    pdfjs.OPS.paintImageMaskXObjectGroup,
-  ].filter(Number.isFinite));
-  return text.length < 120 || operatorList.fnArray.some((operation) => visualOps.has(operation));
+    pdfjs?.OPS?.paintImageXObject,
+    pdfjs?.OPS?.paintImageXObjectRepeat,
+    pdfjs?.OPS?.paintInlineImageXObject,
+    pdfjs?.OPS?.paintInlineImageXObjectGroup,
+    pdfjs?.OPS?.paintImageMaskXObject,
+    pdfjs?.OPS?.paintImageMaskXObjectGroup,
+  ].filter((value) => Number.isFinite(value)));
+  const operations = Array.from(operatorList?.fnArray || []);
+  return text.length < 120 || operations.some((operation) => visualOps.has(operation));
 }
 
 async function renderPdfPage(page, pageNumber, title) {
@@ -256,7 +261,7 @@ async function destroyPdf(pdf, loadingTask) {
 async function extractPdf(file, onProgress) {
   const policy = getUploadPolicy();
   if (file.size > policy.maxBytes) throw new Error(`This device can safely process files up to ${policy.mobile ? "20" : "50"} MB.`);
-  const pdfjs = await loadPdfJs().catch(() => { throw new Error("PDF support could not load. Redeploy the latest build or refresh the page."); });
+  const pdfjs = await loadPdfJs().catch(() => { throw new Error("PDF support could not load in this browser. Redeploy the latest build or refresh the page."); });
   onProgress("Opening the PDF document…");
   const loadingTask = pdfjs.getDocument({
     data: new Uint8Array(await file.arrayBuffer()),
@@ -264,6 +269,7 @@ async function extractPdf(file, onProgress) {
     cMapPacked: true,
     standardFontDataUrl: "/vendor/standard_fonts/",
     wasmUrl: "/vendor/wasm/",
+    useWorkerFetch: true,
   });
   const pdf = await loadingTask.promise;
   const pageCount = Math.min(pdf.numPages, MAX_PDF_PAGES);
@@ -271,6 +277,7 @@ async function extractPdf(file, onProgress) {
   const sections = [];
   const warnings = [];
   let imageOnlyPages = 0;
+  let snapshotFailures = 0;
   let documentTitle = file.name.replace(/\.pdf$/i, "");
 
   try {
@@ -282,27 +289,34 @@ async function extractPdf(file, onProgress) {
     for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
       onProgress(`Reading PDF page ${pageNumber} of ${pageCount}…`);
       const page = await pdf.getPage(pageNumber);
-      const textContent = await page.getTextContent();
-      const lines = pdfTextLines(textContent.items);
-      const title = lines.find((line) => line.length >= 3) || `Page ${pageNumber}`;
-      const titleIndex = lines.indexOf(title);
-      const body = titleIndex >= 0 ? lines.filter((_, index) => index !== titleIndex) : lines;
-      const pageAssets = [];
-      const pageText = lines.join(" ");
-      if (!pageText) imageOnlyPages += 1;
+      try {
+        const textContent = await page.getTextContent();
+        const lines = pdfTextLines(textContent?.items);
+        const title = lines.find((line) => line.length >= 3) || `Page ${pageNumber}`;
+        const titleIndex = lines.indexOf(title);
+        const body = titleIndex >= 0 ? lines.filter((_, index) => index !== titleIndex) : lines;
+        const pageAssets = [];
+        const pageText = lines.join(" ");
+        if (!pageText) imageOnlyPages += 1;
 
-      if (assets.length < MAX_PDF_PAGE_IMAGES) {
-        const operatorList = await page.getOperatorList();
-        if (pageHasVisualContent(pdfjs, operatorList, pageText)) {
-          const asset = await renderPdfPage(page, pageNumber, title);
-          if (asset) {
-            assets.push(asset);
-            pageAssets.push(asset.id);
+        if (assets.length < MAX_PDF_PAGE_IMAGES) {
+          try {
+            const operatorList = await page.getOperatorList();
+            if (pageHasVisualContent(pdfjs, operatorList, pageText)) {
+              const asset = await renderPdfPage(page, pageNumber, title);
+              if (asset) {
+                assets.push(asset);
+                pageAssets.push(asset.id);
+              }
+            }
+          } catch {
+            snapshotFailures += 1;
           }
         }
+        sections.push({ title, body, assets: pageAssets });
+      } finally {
+        if (typeof page.cleanup === "function") page.cleanup();
       }
-      sections.push({ title, body, assets: pageAssets });
-      if (typeof page.cleanup === "function") page.cleanup();
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
   } finally {
@@ -312,6 +326,7 @@ async function extractPdf(file, onProgress) {
   if (pdf.numPages > pageCount) warnings.push(`Only the first ${MAX_PDF_PAGES} PDF pages were imported.`);
   if (assets.length >= MAX_PDF_PAGE_IMAGES) warnings.push(`PDF visual snapshots were limited to the first ${MAX_PDF_PAGE_IMAGES} relevant pages to protect browser memory.`);
   if (imageOnlyPages) warnings.push(`${imageOnlyPages} PDF page${imageOnlyPages === 1 ? "" : "s"} contained no extractable text. Page snapshots were preserved where possible, but OCR is not performed.`);
+  if (snapshotFailures) warnings.push(`${snapshotFailures} PDF page snapshot${snapshotFailures === 1 ? "" : "s"} could not be rendered, but their extractable text was preserved.`);
 
   const rawContent = sections.map((section, index) => {
     const imageMarkers = section.assets.map((id) => `[ASSET:${id}]`).join("\n\n");
