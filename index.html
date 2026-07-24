@@ -1,187 +1,45 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Build editable HTML lectures from pasted or imported text, or convert PPTX, PDF, and HTML lectures into verified PowerPoint files." />
-  <meta name="theme-color" content="#f5e642" />
-  <title>Jang — Lecture Rebuilder</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/styles.css" />
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
-  <script src="/vendor/jszip.min.js" defer></script>
-  <script src="/vendor/pptxgen.bundle.js" defer></script>
-  <script type="module" src="/app-v2.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Paste lecture text or import a text file, then build and download a responsive one-page HTML slide lecture.">
+  <meta name="theme-color" content="#11120f">
+  <title>Jang — Build lecture HTML</title>
+  <link rel="stylesheet" href="/builder.css">
+  <script type="module" src="/builder-app.js"></script>
 </head>
 <body>
-  <div class="noise" aria-hidden="true"></div>
+  <main class="app-shell">
+    <section class="builder" aria-labelledby="page-title">
+      <header class="intro">
+        <a class="brand" href="/" aria-label="Jang home"><span>J</span> Jang</a>
+        <p class="eyebrow">Lecture HTML builder</p>
+        <h1 id="page-title">Paste. Build. Download.</h1>
+        <p class="lede">Turn lecture content into one responsive HTML file made of continuous 16:9 slides. Nothing to preview, edit, or convert.</p>
+      </header>
 
-  <header class="site-header">
-    <a class="brand" href="/" aria-label="Jang home">
-      <span class="brand-mark" aria-hidden="true">J</span>
-      <span><strong>Jang</strong><small>Lecture Rebuilder</small></span>
-    </a>
-    <a class="download-button" href="/builder.html">Text → editable HTML</a>
-    <div class="header-status" id="backendStatus" role="status" aria-live="polite">
-      <span class="status-dot"></span>
-      Checking AI service
-    </div>
-  </header>
+      <section class="input-card" aria-label="Lecture source">
+        <label for="lectureText">Lecture content</label>
+        <textarea id="lectureText" spellcheck="false" placeholder="Paste the complete lecture here…"></textarea>
 
-  <main>
-    <section class="hero" aria-labelledby="heroTitle">
-      <div class="hero-copy">
-        <p class="eyebrow"><span>01</span> Import · Reorganize · Download</p>
-        <h1 id="heroTitle">Make every lecture<br /><em>worth reading.</em></h1>
-        <p class="hero-description">
-          Paste or import structured text to build an exact editable HTML lecture, or upload a PPTX, PDF, or HTML lecture for the verified PowerPoint workflow.
-        </p>
-        <div class="trust-row" aria-label="Product promises">
-          <span>Exact text preservation</span>
-          <span>Editable responsive HTML</span>
-          <span>Verified PowerPoint package</span>
-        </div>
-      </div>
-
-      <div class="hero-visual" aria-hidden="true">
-        <div class="paper-stack paper-back"></div>
-        <div class="paper-stack paper-mid"></div>
-        <div class="sample-page">
-          <div class="sample-top"><span>BIO 214</span><span>Lecture 08</span></div>
-          <div class="sample-body">
-            <span class="sample-kicker">Cellular respiration</span>
-            <h2>Energy conversion,<br />clearly arranged.</h2>
-            <div class="yellow-stroke"></div>
-            <div class="sample-lines"><i></i><i></i><i></i></div>
-            <div class="sample-grid"><b></b><b></b><b></b></div>
-          </div>
-          <div class="sample-footer"><span>Course notes</span><span>08 / 12</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="workspace" aria-labelledby="workspaceTitle">
-      <div class="workspace-heading">
-        <div><p class="section-label">Workspace</p><h2 id="workspaceTitle">Rebuild a lecture</h2></div>
-        <p>The source file is parsed in the browser. Extracted text, the visual manifest, and only OCR-required page snapshots are sent to Gemini when configured.</p>
-      </div>
-
-      <div class="workspace-grid">
-        <section class="control-panel" aria-label="Lecture import controls">
-          <div class="step-heading">
-            <span>1</span>
-            <div><strong>Choose the source</strong><small>One .pptx, .pdf, .html, or .htm file</small></div>
-          </div>
-
-          <label class="drop-zone" id="dropZone" for="fileInput">
-            <input id="fileInput" type="file" accept=".pptx,.pdf,.html,.htm,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/html" />
-            <span class="upload-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0 4 4m-4-4L8 8M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </span>
-            <strong>Drop a PPTX, PDF, or HTML lecture here</strong>
-            <span>or click to browse</span>
-            <small>Up to 50 MB desktop / 20 MB mobile</small>
+        <div class="input-footer">
+          <span id="textStats" aria-live="polite">0 characters</span>
+          <label class="import-button" for="textFile">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0 4 4m-4-4L8 8M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>
+            Import text file
           </label>
+          <input id="textFile" class="visually-hidden" type="file" accept=".txt,.ptx,text/plain">
+        </div>
+        <p id="fileMeta" class="file-meta" aria-live="polite"></p>
+      </section>
 
-          <div class="file-card" id="fileCard" hidden>
-            <div class="file-type" id="fileType">FILE</div>
-            <div class="file-details"><strong id="fileName"></strong><span id="fileMeta"></span></div>
-            <button class="icon-button" id="removeFile" type="button" aria-label="Remove selected file">×</button>
-          </div>
-
-          <div id="turnstileArea" class="turnstile-area" hidden>
-            <p>Verification protects the Gemini quota from automated abuse.</p>
-            <div id="turnstileWidget"></div>
-          </div>
-
-          <button class="primary-button confirm-button" id="processButton" type="button" disabled>
-            <span>Confirm &amp; Build PowerPoint</span>
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <p class="control-note confirm-note">Select a file, then press Confirm &amp; Build PowerPoint. Cover details below are optional.</p>
-
-          <div class="step-heading settings-heading">
-            <span>2</span>
-            <div><strong>Optional cover details</strong><small>Edit these before confirming only when needed</small></div>
-          </div>
-
-          <div class="form-grid">
-            <label><span>Course code</span><input id="courseCode" type="text" maxlength="40" placeholder="e.g. BIO 214" /></label>
-            <label><span>Lecture label</span><input id="lectureLabel" type="text" maxlength="60" placeholder="e.g. Lecture 08" /></label>
-            <label><span>Instructor</span><input id="instructor" type="text" maxlength="80" placeholder="Optional" /></label>
-            <label>
-              <span>Language</span>
-              <select id="language">
-                <option value="auto">Auto-detect</option>
-                <option value="English">English</option>
-                <option value="Arabic">Arabic</option>
-                <option value="Kurdish">Kurdish</option>
-              </select>
-            </label>
-          </div>
-
-          <div class="option-row">
-            <label class="check-option"><input id="includeToc" type="checkbox" checked /><span><b>Table of contents</b><small>Add an overview slide</small></span></label>
-            <label class="check-option"><input id="conciseMode" type="checkbox" /><span><b>Concise layout</b><small>Use tighter slide grouping without deleting source content</small></span></label>
-          </div>
-          <p class="control-note" id="aiSetupHint">Checking the Cloudflare AI configuration…</p>
-        </section>
-
-        <section class="result-panel" aria-label="Generated PowerPoint result">
-          <div class="result-toolbar">
-            <div><span class="result-kicker">PowerPoint output</span><strong id="resultTitle">Waiting for a lecture</strong></div>
-            <div class="toolbar-actions">
-              <button class="download-button" id="downloadPptxButton" type="button" disabled>
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Download file (.pptx)
-              </button>
-            </div>
-          </div>
-
-          <div class="empty-state" id="emptyState">
-            <div class="empty-orbit"><span></span><i></i><b></b></div>
-            <h3>Your PowerPoint slide preview appears here</h3>
-            <p>The .pptx file is built and verified before the preview and download button are enabled.</p>
-          </div>
-
-          <div class="processing-state" id="processingState" hidden>
-            <div class="processing-header">
-              <div class="spinner" aria-hidden="true"></div>
-              <div><strong id="processingTitle">Reading the lecture</strong><span id="processingDetail">Preparing content for extraction…</span></div>
-            </div>
-            <ol class="progress-list">
-              <li id="stageRead"><span></span><div><b>Read source</b><small>Validate and parse PPTX, PDF, or HTML</small></div></li>
-              <li id="stageExtract"><span></span><div><b>Extract and OCR</b><small>Text, tables, images, diagrams, and sparse PDF pages</small></div></li>
-              <li id="stagePlan"><span></span><div><b>Reorganize with Gemini</b><small>Create a source-traceable structure</small></div></li>
-              <li id="stageRender"><span></span><div><b>Build and verify PPTX</b><small>Create the final file and verify text and image occurrences</small></div></li>
-            </ol>
-          </div>
-
-          <div class="preview-shell" id="previewShell" hidden>
-            <iframe id="previewFrame" title="PowerPoint slide preview" sandbox="allow-scripts"></iframe>
-          </div>
-
-          <div class="result-message" id="resultMessage" hidden role="alert"></div>
-        </section>
-      </div>
-    </section>
-
-    <section class="how-it-works" aria-labelledby="howTitle">
-      <div class="how-heading"><p class="section-label">The pipeline</p><h2 id="howTitle">Four clear steps. One verified file.</h2></div>
-      <div class="process-cards">
-        <article><span>01</span><h3>Import</h3><p>Select a PPTX, PDF, or HTML lecture. Parsing and media extraction begin locally.</p></article>
-        <article><span>02</span><h3>Extract</h3><p>Text, embedded images, page snapshots, and source diagrams are collected. Sparse PDF pages are sent through OCR when available.</p></article>
-        <article><span>03</span><h3>Rebuild</h3><p>Gemini organizes the verified source units without allowing diagrams to replace ordinary text or images.</p></article>
-        <article><span>04</span><h3>Download</h3><p>The final PowerPoint package is built, checked for expected text and image occurrences, previewed, and downloaded as .pptx.</p></article>
-      </div>
+      <button id="actionButton" class="action-button" type="button" disabled>
+        <span id="actionLabel">Build HTML</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>
+      </button>
+      <p id="status" class="status" role="status" aria-live="polite">Paste lecture content or import a text file to begin.</p>
     </section>
   </main>
-
-  <footer class="site-footer">
-    <div><strong>Jang</strong><span>Designed for clearer lectures.</span></div>
-    <p>Open-source · Cloudflare Pages · PDF.js · Gemini API</p>
-  </footer>
 </body>
 </html>
