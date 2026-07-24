@@ -53,4 +53,13 @@ page.drawRectangle({ x: 620, y: 155, width: 220, height: 220, borderColor: rgb(0
 page.drawText("Pathway overview", { x: 658, y: 258, size: 16, font: bold });
 await writeFile(resolve(output, "lecture.pdf"), await pdf.save());
 
+const scannedPdf = await PDFDocument.create();
+const scannedPage = scannedPdf.addPage([960, 540]);
+scannedPage.drawRectangle({ x: 80, y: 80, width: 800, height: 380, borderColor: rgb(0.15, 0.15, 0.15), borderWidth: 3, color: rgb(0.96, 0.96, 0.93) });
+scannedPage.drawRectangle({ x: 130, y: 345, width: 700, height: 55, color: rgb(0.2, 0.2, 0.2) });
+scannedPage.drawRectangle({ x: 130, y: 250, width: 620, height: 20, color: rgb(0.45, 0.45, 0.45) });
+scannedPage.drawRectangle({ x: 130, y: 205, width: 680, height: 20, color: rgb(0.45, 0.45, 0.45) });
+scannedPage.drawRectangle({ x: 130, y: 160, width: 560, height: 20, color: rgb(0.45, 0.45, 0.45) });
+await writeFile(resolve(output, "scanned.pdf"), await scannedPdf.save());
+
 console.log(`Created browser test fixtures in ${output}`);
