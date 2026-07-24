@@ -1,14 +1,14 @@
 const text = (value) => typeof value === "string" ? value.trim() : "";
 const list = (value) => Array.isArray(value) ? value.filter((item) => typeof item === "string" && item.trim()).map((item) => item.trim()) : [];
 const blocks = (value) => Array.isArray(value) ? value.filter((item) => item && typeof item === "object") : [];
-const COLORS = { ink: "111110", ink2: "3A3A38", muted: "787874", line: "C8C8C2", line2: "9A9A92", surface: "F5F5F3", surface2: "E0E0DB", yellow: "F5E642", red: "922B21", white: "FFFFFF" };
+const COLORS = { ink: "111110", ink2: "3A3A38", muted: "787874", line: "C8C8C2", surface: "F5F5F3", surface2: "E0E0DB", yellow: "F5E642", red: "922B21" };
 const MAX_HIGHLIGHTS = 10;
 const MAX_RED_TERMS = 5;
 
 function imageData(asset) { return asset?.type === "image" && /^data:image\//i.test(asset.source || "") ? asset.source : null; }
 function uniq(values) { return [...new Set(values.filter(Boolean))]; }
 function allTerms(section, key) { return uniq(list(section?.[key])); }
-function shape(deck, name) { if (deck?.ShapeType?.[name]) return deck.ShapeType[name]; if (globalThis.PptxGenJS?.ShapeType?.[name]) return globalThis.PptxGenJS.ShapeType[name]; return name; }
+function shape(deck, name) { return deck?.ShapeType?.[name] || globalThis.PptxGenJS?.ShapeType?.[name] || name; }
 function normalizeText(value) { return String(value || "").replace(/\s+/g, " ").trim(); }
 function decodeXmlText(value) { return String(value || "").replace(/&quot;/g, "\"").replace(/&apos;/g, "'").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">"); }
 
@@ -22,9 +22,10 @@ function splitLongText(value, max = 1700) {
     if (cut < max * 0.55) cut = remaining.lastIndexOf(". ", max);
     if (cut < max * 0.55) cut = remaining.lastIndexOf(" ", max);
     if (cut < 1) cut = max;
-    const part = remaining.slice(0, cut + (remaining.slice(cut, cut + 2) === ". " ? 1 : 0)).trim();
+    const includePeriod = remaining.slice(cut, cut + 2) === ". " ? 1 : 0;
+    const part = remaining.slice(0, cut + includePeriod).trim();
     if (part) chunks.push(part);
-    remaining = remaining.slice(cut + (remaining.slice(cut, cut + 2) === ". " ? 1 : 0)).trimStart();
+    remaining = remaining.slice(cut + includePeriod).trimStart();
   }
   if (remaining.trim()) chunks.push(remaining.trim());
   return chunks;
@@ -65,7 +66,7 @@ function addFooter(deck, slide, index, total, metadata) {
 function addTitle(deck, slide, title, kicker = "") {
   slide.addShape(shape(deck, "rect"), { x: 0, y: 0, w: 13.333, h: 0.52, line: { color: COLORS.line, width: 1 }, fill: { color: COLORS.surface2 } });
   if (kicker) slide.addText(kicker.toUpperCase(), { x: 0.65, y: 0.15, w: 3.2, h: 0.18, fontFace: "Aptos", fontSize: 8, bold: true, color: COLORS.muted, charSpacing: 1.2, margin: 0 });
-  slide.addText(title || "Untitled section", { x: 3.15, y: 0.12, w: 7.0, h: 0.25, fontFace: "Georgia", fontSize: 14, bold: true, color: COLORS.ink, align: "center", margin: 0, fit: "shrink" });
+  slide.addText(title || "Untitled section", { x: 3.15, y: 0.12, w: 7, h: 0.25, fontFace: "Georgia", fontSize: 14, bold: true, color: COLORS.ink, align: "center", margin: 0, fit: "shrink" });
 }
 
 function blockText(block) {
@@ -99,7 +100,12 @@ function expandBlocks(sectionBlocks) {
   return expanded;
 }
 
-function blockWeight(block) { if (block.type === "table") return 7; if (block.assetId) return 4; if (["diagram", "flow", "mindmap"].includes(block.type)) return 7; return Math.max(1, Math.ceil(blockText(block).length / 420)); }
+function blockWeight(block) {
+  if (block.type === "table" || ["diagram", "flow", "mindmap"].includes(block.type)) return 7;
+  if (block.assetId) return 4;
+  return Math.max(1, Math.ceil(blockText(block).length / 420));
+}
+
 function chunkBlocks(sectionBlocks) {
   const chunks = [];
   let current = [];
@@ -176,6 +182,19 @@ function addDiagram(deck, slide, block, critical, important, budget) {
   return true;
 }
 
+function bodyRuns(textBlocks, critical, important, budget) {
+  const runs = [];
+  textBlocks.forEach((block, index) => {
+    const value = blockText(block);
+    const heading = text(block.heading || block.label);
+    if (index && (heading || value)) runs.push({ text: "\n\n", options: { color: COLORS.ink } });
+    if (heading && heading !== value) runs.push({ text: `${heading.toUpperCase()}\n`, options: { color: COLORS.muted, bold: true, fontFace: "Aptos" } });
+    if (value) runs.push(...styledRuns(value, critical, important, budget, true));
+    else if (heading) runs.push({ text: heading, options: { color: COLORS.muted, bold: true, fontFace: "Aptos" } });
+  });
+  return runs;
+}
+
 function addContentSlide(deck, slide, chunk, assets, critical, important, report, budget) {
   const table = chunk.find((block) => block.type === "table");
   if (table) { addTableSlide(slide, table); report.renderedText.push(...list(table.headers), ...(table.rows || []).flat().map(text)); return; }
@@ -183,15 +202,12 @@ function addContentSlide(deck, slide, chunk, assets, critical, important, report
   if (diagram && addDiagram(deck, slide, diagram, critical, important, budget)) { report.renderedText.push(...list(diagram.items)); return; }
   const imageBlocks = chunk.filter((block) => block.assetId);
   const textBlocks = chunk.filter((block) => block.type !== "table" && !block.assetId);
-  const content = textBlocks.map((block) => {
-    const value = blockText(block);
-    const heading = text(block.heading || block.label);
-    return heading && value && heading !== value ? `${heading.toUpperCase()}\n${value}` : value || heading;
-  }).filter(Boolean).join("\n\n");
-  const imageCount = addImages(deck, slide, imageBlocks, assets, Boolean(content));
-  if (content) {
-    addStyledParagraph(slide, content, { x: 0.72, y: 1.08, w: imageCount ? 6.25 : 11.85, h: 5.55 }, critical, important, budget, { fontSize: 14.5 });
-    report.renderedText.push(content);
+  const hasText = textBlocks.some((block) => blockText(block) || text(block.heading || block.label));
+  const imageCount = addImages(deck, slide, imageBlocks, assets, hasText);
+  const runs = bodyRuns(textBlocks, critical, important, budget);
+  if (runs.length) {
+    slide.addText(runs, { x: 0.72, y: 1.08, w: imageCount ? 6.25 : 11.85, h: 5.55, fontFace: "Aptos", fontSize: 14.5, color: COLORS.ink, margin: 0.08, valign: "top", fit: "shrink", breakLine: false, paraSpaceAfterPt: 7 });
+    report.renderedText.push(...textBlocks.map(blockText).filter(Boolean));
   }
   imageBlocks.forEach((block) => {
     const asset = assets.find((item) => item.id === block.assetId);
