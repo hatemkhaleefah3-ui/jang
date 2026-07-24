@@ -10,21 +10,8 @@ const compact = (value) => clean(value).replace(/\s+/g, " ");
 const asArray = (value) => Array.isArray(value) ? value : [];
 
 const emptyBlock = (type, values = {}) => ({
-  type,
-  heading: "",
-  text: "",
-  label: "",
-  items: [],
-  pairs: [],
-  headers: [],
-  rows: [],
-  assetId: "",
-  caption: "",
-  alt: "",
-  question: "",
-  answer: "",
-  sourceIds: [],
-  ...values,
+  type, heading: "", text: "", label: "", items: [], pairs: [], headers: [], rows: [],
+  assetId: "", caption: "", alt: "", question: "", answer: "", sourceIds: [], ...values,
 });
 
 const genericTitle = /^(?:(?:slide|page)\s*\d+|continued|continuation|cont\.?|untitled)$/i;
@@ -39,6 +26,18 @@ function sourceId(unit) {
   const order = Number(unit?.order ?? unit?.sourceOrder ?? 0);
   const kind = String(unit?.kind || "paragraph").replace(/[^a-z0-9_-]+/gi, "_").toLowerCase();
   return `src_${page}_${order}_${kind}`;
+}
+
+function manifestUnit(unit) {
+  return {
+    id: sourceId(unit),
+    kind: String(unit?.kind || "paragraph"),
+    sourcePage: Number(unit?.page ?? unit?.sourcePage ?? 0),
+    sourceOrder: Number(unit?.order ?? unit?.sourceOrder ?? 0),
+    verbatimText: clean(unit?.text ?? unit?.verbatimText),
+    extractionMethod: String(unit?.extractionMethod || "native"),
+    confidence: Number.isFinite(unit?.confidence) ? unit.confidence : 1,
+  };
 }
 
 function usableTitle(value) {
@@ -61,13 +60,15 @@ function tableCells(value) {
   return compact(value).split(/\s*\|\s*/).map(compact);
 }
 
-function blocksFromUnits(units) {
+function blocksFromUnits(units, sectionTitle) {
   const result = [];
-  for (let index = 0; index < units.length;) {
+  let index = 0;
+  if (units.length && compact(units[0]?.text ?? units[0]?.verbatimText) === compact(sectionTitle)) index = 1;
+
+  while (index < units.length) {
     const unit = units[index];
     const value = clean(unit?.text ?? unit?.verbatimText);
-    if (!value) { index += 1; continue; }
-    if (unit.kind === "title") { index += 1; continue; }
+    if (!value || unit.kind === "title") { index += 1; continue; }
 
     if (unit.kind === "table") {
       const rows = [];
@@ -101,15 +102,16 @@ function blocksFromUnits(units) {
 
 function pagePreservingPlan(extraction, options) {
   const pages = asArray(extraction?.sourcePages).slice().sort((a, b) => Number(a?.page) - Number(b?.page));
+  const allUnits = asArray(extraction?.sourceUnits).map(manifestUnit).filter((unit) => unit.verbatimText);
   const unitsByPage = new Map();
-  for (const unit of asArray(extraction?.sourceUnits)) {
-    const page = Number(unit?.page ?? unit?.sourcePage ?? 0);
-    if (!unitsByPage.has(page)) unitsByPage.set(page, []);
-    unitsByPage.get(page).push(unit);
+  for (const unit of allUnits) {
+    if (!unitsByPage.has(unit.sourcePage)) unitsByPage.set(unit.sourcePage, []);
+    unitsByPage.get(unit.sourcePage).push({ ...unit, page: unit.sourcePage, order: unit.sourceOrder, text: unit.verbatimText });
   }
-  for (const units of unitsByPage.values()) units.sort((a, b) => Number(a?.order ?? a?.sourceOrder ?? 0) - Number(b?.order ?? b?.sourceOrder ?? 0));
+  for (const units of unitsByPage.values()) units.sort((a, b) => a.sourceOrder - b.sourceOrder);
 
-  const assetMap = new Map(asArray(extraction?.assets).map((asset) => [asset.id, asset]));
+  const assets = asArray(extraction?.assets);
+  const assetMap = new Map(assets.map((asset) => [asset.id, asset]));
   const sections = [];
   let previousTitle = extraction?.title || "Source lecture";
 
@@ -117,7 +119,7 @@ function pagePreservingPlan(extraction, options) {
     const page = Number(record?.page || sections.length + 1);
     const units = unitsByPage.get(page) || [];
     const title = chooseTitle(record, units, previousTitle);
-    const contentBlocks = blocksFromUnits(units);
+    const contentBlocks = blocksFromUnits(units, title);
     const imageBlocks = asArray(record?.assets).map((assetId) => {
       const asset = assetMap.get(assetId) || {};
       const caption = technicalCaption.test(compact(asset.caption)) ? "" : compact(asset.caption);
@@ -125,32 +127,23 @@ function pagePreservingPlan(extraction, options) {
     });
     const blocks = [...contentBlocks, ...imageBlocks];
     if (!blocks.length) continue;
-    sections.push({
-      title,
-      category: `Source slide ${page}`,
-      sourcePage: page,
-      keyTermsCritical: [],
-      keyTermsImportant: [],
-      blocks,
-    });
+    sections.push({ title, category: `Source slide ${page}`, sourcePage: page, keyTermsCritical: [], keyTermsImportant: [], blocks });
     previousTitle = title;
   }
 
   if (!sections.length) return null;
   return {
     metadata: {
-      title: compact(extraction?.title) || "Untitled lecture",
-      subtitle: "",
-      courseCode: options.courseCode || "Course",
-      lectureLabel: options.lectureLabel || "Lecture",
-      instructor: options.instructor || "",
-      language: options.language === "auto" ? "" : options.language,
+      title: compact(extraction?.title) || "Untitled lecture", subtitle: "",
+      courseCode: options.courseCode || "Course", lectureLabel: options.lectureLabel || "Lecture",
+      instructor: options.instructor || "", language: options.language === "auto" ? "" : options.language,
       direction: options.language === "Arabic" ? "rtl" : "ltr",
     },
-    overview: "",
-    learningObjectives: [],
-    sections,
-    finalTakeaways: [],
+    overview: "", learningObjectives: [], sections, finalTakeaways: [],
+    sourceManifest: {
+      units: allUnits,
+      assets: assets.map((asset, index) => ({ id: asset.id, kind: asset.type || "image", sourcePage: Number(asset.sourcePage || 0), sourceOrder: index + 1, status: "available" })),
+    },
   };
 }
 
@@ -180,8 +173,7 @@ function legacyPlan(extraction, options) {
 
   return {
     metadata: { title: sourceTitle, subtitle: "", courseCode: options.courseCode || "Course", lectureLabel: options.lectureLabel || "Lecture", instructor: options.instructor || "", language: options.language === "auto" ? "" : options.language, direction: options.language === "Arabic" ? "rtl" : "ltr" },
-    overview: "",
-    learningObjectives: [],
+    overview: "", learningObjectives: [],
     sections: sections.length ? sections : [{ title: sourceTitle, category: "Lecture", keyTermsCritical: [], keyTermsImportant: [], blocks: [emptyBlock("paragraph", { text: "No readable lecture content was found." })] }],
     finalTakeaways: [],
   };
