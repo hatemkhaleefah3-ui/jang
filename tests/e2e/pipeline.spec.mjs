@@ -82,6 +82,7 @@ async function mockApi(page, captured) {
       body: JSON.stringify({
         plan: educationalPlan(payload.source),
         model: "test-structured-model",
+        ocr: { applied: false, pages: [] },
         verification: {
           valid: true,
           expectedSourceCount: payload.source.sourceUnits?.length || payload.source.batches.length,
@@ -121,18 +122,19 @@ for (const format of formats) {
 
     await expect(page.locator("#previewShell")).toBeVisible();
     await expect(page.locator("#downloadPptxButton")).toBeEnabled();
-    await expect(page.locator("#resultMessage")).toContainText("Structured draft verified");
+    await expect(page.locator(".toolbar-actions button")).toHaveCount(1);
+    await expect(page.locator("#resultMessage")).toContainText("PowerPoint ready and verified");
     expect(captured.join(" ")).toContain("NADPH");
 
     const preview = page.frameLocator("#previewFrame");
     await expect(preview.locator("body")).toContainText("Pentose phosphate pathway");
     await expect(preview.locator("body")).toContainText("Regulation and clinical significance");
     await expect(preview.locator("body")).not.toContainText("Next concept");
-    await expect(preview.locator("body")).not.toContainText("Continued");
 
     const downloadPromise = page.waitForEvent("download");
     await page.locator("#downloadPptxButton").click();
     const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe("Carbohydrate-Metabolism.pptx");
     const savedPath = testInfo.outputPath(`${format.name.toLowerCase()}-educational-output.pptx`);
     await download.saveAs(savedPath);
 
@@ -146,15 +148,16 @@ for (const format of formats) {
   });
 }
 
-test("local fallback groups fragments without Next concept or Continued pages", async ({ page }) => {
+test("local fallback produces one downloadable PowerPoint without fragment pages", async ({ page }) => {
   await page.route("**/api/config*", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ configured: false, environment: "preview", branch: "test", turnstileSiteKey: null }) }));
   await page.route("**/api/redesign", (route) => route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ code: "AI_NOT_CONFIGURED", environment: "preview", error: "AI unavailable in test" }) }));
   await page.goto("/");
   await page.locator("#fileInput").setInputFiles(resolve(fixtures, "lecture.html"));
   await page.locator("#processButton").click();
   await expect(page.locator("#previewShell")).toBeVisible();
+  await expect(page.locator("#downloadPptxButton")).toBeEnabled();
+  await expect(page.locator(".toolbar-actions button")).toHaveCount(1);
   const preview = page.frameLocator("#previewFrame");
   await expect(preview.locator("body")).toContainText("Pentose Phosphate Pathway");
   await expect(preview.locator("body")).not.toContainText("Next concept");
-  await expect(preview.locator("body")).not.toContainText("Continued");
 });
