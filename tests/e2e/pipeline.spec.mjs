@@ -148,6 +148,63 @@ for (const format of formats) {
   });
 }
 
+test("image-only PDF is OCR-processed before the redesign verification gate", async ({ page }, testInfo) => {
+  await page.addInitScript(() => {
+    globalThis.__jangTesseract = {
+      createWorker: async () => ({
+        setParameters: async () => undefined,
+        recognize: async () => ({ data: { text: "Scanned lecture heading\nComplete scanned lecture body text.", confidence: 98 } }),
+        terminate: async () => undefined,
+      }),
+    };
+  });
+
+  let capturedSource;
+  await page.route("**/api/config*", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ configured: true, model: "test-structured-model", environment: "preview", branch: "test", turnstileSiteKey: null }) }));
+  await page.route("**/api/redesign", async (route) => {
+    const payload = route.request().postDataJSON();
+    capturedSource = payload.source;
+    const exactText = payload.source.sourceUnits.map((unit) => unit.text).join("\n");
+    const assetId = payload.source.assets[0]?.id || "";
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        plan: {
+          metadata: { title: "Scanned OCR Lecture", courseCode: "OCR", lectureLabel: "Lecture", language: "English", direction: "ltr" },
+          overview: "",
+          learningObjectives: [],
+          sections: [{ title: "Scanned source", category: "OCR", keyTermsCritical: [], keyTermsImportant: [], blocks: [emptyBlock("paragraph", { text: exactText }), ...(assetId ? [emptyBlock("image", { assetId, caption: "Original scanned page" })] : [])] }],
+          finalTakeaways: [],
+        },
+        model: "test-structured-model",
+        ocr: { applied: false, pages: [] },
+        verification: { valid: true, missingSourceIds: [], duplicatedSourceIds: [], unknownSourceIds: [], missingAssetIds: [], duplicatedAssetIds: [], unknownAssetIds: [], structuralErrors: [] },
+      }),
+    });
+  });
+
+  await page.goto("/");
+  await page.locator("#fileInput").setInputFiles(resolve(fixtures, "scanned.pdf"));
+  await page.locator("#processButton").click();
+
+  await expect(page.locator("#previewShell")).toBeVisible();
+  await expect(page.locator("#downloadPptxButton")).toBeEnabled();
+  await expect(page.locator("#resultMessage")).toContainText("Browser OCR completed before redesign");
+  expect(capturedSource.extractionStatus).toBe("verified-native");
+  expect(capturedSource.ocrPages).toEqual([]);
+  expect(capturedSource.sourceUnits.some((unit) => unit.text === "Scanned lecture heading" && unit.extractionMethod === "ocr")).toBe(true);
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.locator("#downloadPptxButton").click();
+  const download = await downloadPromise;
+  const savedPath = testInfo.outputPath("scanned-ocr-output.pptx");
+  await download.saveAs(savedPath);
+  const { slideXml } = await inspectPptx(savedPath);
+  expect(slideXml).toContain("Scanned lecture heading");
+  expect(slideXml).toContain("Complete scanned lecture body text.");
+});
+
 test("local fallback produces one downloadable PowerPoint without fragment pages", async ({ page }) => {
   await page.route("**/api/config*", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ configured: false, environment: "preview", branch: "test", turnstileSiteKey: null }) }));
   await page.route("**/api/redesign", (route) => route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ code: "AI_NOT_CONFIGURED", environment: "preview", error: "AI unavailable in test" }) }));
