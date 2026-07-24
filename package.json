@@ -1,14 +1,14 @@
 {
   "name": "jang-lecture-html-builder",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "private": true,
-  "description": "Paste or import lecture text and download a responsive standalone HTML lecture.",
+  "description": "Import a PDF or PPTX lecture, structure it with Gemini, add recognized images, and download a standalone HTML lecture.",
   "type": "module",
   "scripts": {
-    "check": "node --check app.js && node --check lecture-html.js && node --check lecture-source-parser.js && node --check scripts/build.mjs && node --check scripts/serve.mjs",
+    "check": "node --check app.js && node --check lecture-html.js && node --check pptx-reader.js && node --check functions/api/extract.js && node --check scripts/build.mjs && node --check scripts/serve.mjs",
     "build": "node scripts/build.mjs",
     "dev": "npm run build && node scripts/serve.mjs",
-    "unit": "node --test tests/unit/lecture-source-parser.test.mjs tests/unit/lecture-html.test.mjs",
+    "unit": "node --test tests/unit/lecture-html.test.mjs tests/unit/extract-function.test.mjs",
     "test": "npm run check && npm run unit && npm run build"
   }
 }
