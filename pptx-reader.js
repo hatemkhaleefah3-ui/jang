@@ -112,6 +112,32 @@ function parseTables(document) {
   }).filter((table) => table.some((row) => row.some(Boolean)));
 }
 
+function boxDistance(a, b) {
+  const aRight = a.x + a.width;
+  const aBottom = a.y + a.height;
+  const bRight = b.x + b.width;
+  const bBottom = b.y + b.height;
+  const dx = Math.max(0, a.x - bRight, b.x - aRight);
+  const dy = Math.max(0, a.y - bBottom, b.y - aBottom);
+  return Math.hypot(dx, dy);
+}
+
+function nearbyTextForImage(image, textRuns, title) {
+  const seen = new Set();
+  return textRuns
+    .filter((run) => run.text && run.text !== title)
+    .map((run) => ({ text: run.text, distance: boxDistance(image, run) }))
+    .sort((a, b) => a.distance - b.distance)
+    .filter((item) => {
+      const key = item.text.toLocaleLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 5)
+    .map((item) => item.text);
+}
+
 function parseSlide(document, slideNumber, slideSize) {
   const textRuns = descendantsByLocalName(document, "sp").map((shape) => ({
     text: textFromNode(shape),
@@ -119,19 +145,24 @@ function parseSlide(document, slideNumber, slideSize) {
   })).filter((item) => item.text);
 
   textRuns.sort((a, b) => a.y - b.y || a.x - b.x);
+  const titleCandidate = textRuns.find((item) => item.y < 30 && item.text.length <= 180)?.text || textRuns[0]?.text || `Slide ${slideNumber}`;
 
   const images = descendantsByLocalName(document, "pic").map((picture, index) => {
     const properties = firstByLocalName(picture, "cNvPr");
     const name = properties?.getAttribute("name") || `Image ${index + 1}`;
     const description = properties?.getAttribute("descr") || properties?.getAttribute("title") || "";
+    const box = elementBox(picture, slideSize);
+    const nearbyText = nearbyTextForImage(box, textRuns, titleCandidate);
     return {
       name,
       label: description || name,
-      ...elementBox(picture, slideSize),
+      description,
+      nearbyText,
+      contextHint: [titleCandidate, ...nearbyText].filter(Boolean).join(" · "),
+      ...box,
     };
   });
 
-  const titleCandidate = textRuns.find((item) => item.y < 30 && item.text.length <= 180)?.text || textRuns[0]?.text || `Slide ${slideNumber}`;
   return {
     number: slideNumber,
     title: titleCandidate,
