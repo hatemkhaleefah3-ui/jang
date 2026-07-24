@@ -2,40 +2,27 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { parseLectureSource } from "../../lecture-source-parser.js";
 
-test("preserves explicit lecture blocks in their original order", () => {
-  const source = `[TITLE]\nGlycine Metabolism\n[SUBTITLE]\nBiosynthesis\n[PARAGRAPH]\nGlycine  is synthesized from serine.\nSecond line stays here.\n[NOTE]\nDo not rewrite this note.`;
-  const document = parseLectureSource(source);
-
-  assert.deepEqual(document.blocks.map((block) => block.type), ["title", "subtitle", "paragraph", "note"]);
-  assert.equal(document.blocks[0].content, "Glycine Metabolism");
-  assert.equal(document.blocks[2].content, "Glycine  is synthesized from serine.\nSecond line stays here.");
-  assert.equal(document.blocks[3].content, "Do not rewrite this note.");
-  assert.equal(document.source, source);
+test("recognizes the imported lecture text vocabulary", () => {
+  const source = `[SOURCE FILE]\nLec.4.pdf\n[DOCUMENT TITLE]\nImmunoglobulin\n[TOPIC MAP]\nExact overview\n[INFO BOX]\nLecturer: Name\n[SECTION]\nIntroduction\n[NOTE BOX]\nExact note\n[BULLET LIST]\n- First\n- Second\n[NUMBERED LIST]\n1. One\n2. Two\n[DIAGRAM]\nType: labeled structural diagram\nTitle: Antibody structure\nStructure:\n- Arm\n- Stem\n[PATHWAY]\nType: linear\nA → B\n[QUICK REVIEW]\n- Review\n[FOOTER]\nEnd`;
+  const parsed = parseLectureSource(source);
+  assert.equal(parsed.source, source);
+  assert.deepEqual(parsed.blocks.map((block) => block.type), ["source-file","title","topic-map","info","section","note","bullets","numbered","diagram","pathway","quick-review","footer"]);
+  assert.equal(parsed.blocks[8].label, "Antibody structure");
+  assert.equal(parsed.blocks[9].pathwayType, "linear");
+  assert.equal(parsed.blocks[9].pathwayContent, "A → B");
 });
 
-test("requires and preserves an image label", () => {
-  const document = parseLectureSource(`[IMAGE]\nlabel: Glycolysis pathway\nOptional image instructions`);
-  assert.equal(document.blocks[0].type, "image");
-  assert.equal(document.blocks[0].label, "Glycolysis pathway");
-  assert.equal(document.blocks[0].content, "label: Glycolysis pathway\nOptional image instructions");
-
-  assert.throws(() => parseLectureSource(`[IMAGE]\nMissing label`), /requires.*label/i);
+test("preserves exact text, spacing, and source order", () => {
+  const source = `[PARAGRAPH]\nGlycine  is synthesized.\nSecond line.\n[NOTE BOX]\nDo not rewrite this.`;
+  const parsed = parseLectureSource(source);
+  assert.equal(parsed.source, source);
+  assert.equal(parsed.blocks[0].content, "Glycine  is synthesized.\nSecond line.");
+  assert.equal(parsed.blocks[1].content, "Do not rewrite this.");
+  assert.ok(parsed.blocks[0].sourceEnd <= parsed.blocks[1].sourceStart);
 });
 
-test("accepts only declared pathway types", () => {
-  const document = parseLectureSource(`[PATHWAY type="branched"]\nA -> B\nA -> C`);
-  assert.equal(document.blocks[0].type, "pathway");
-  assert.equal(document.blocks[0].type, "pathway");
-  assert.equal(document.blocks[0].attributes.type, "branched");
-  assert.equal(document.blocks[0].content, "A -> B\nA -> C");
-
-  assert.throws(() => parseLectureSource(`[PATHWAY type="spiral"]\nA -> B`), /requires type=linear/i);
-});
-
-test("treats unmarked input as one unchanged paragraph", () => {
-  const source = "First line\n\nSecond  line";
-  const document = parseLectureSource(source);
-  assert.equal(document.blocks.length, 1);
-  assert.equal(document.blocks[0].type, "paragraph");
-  assert.equal(document.blocks[0].content, source);
+test("requires an image label and accepts pathway type lines", () => {
+  assert.equal(parseLectureSource(`[IMAGE]\nlabel: Antibody image`).blocks[0].label, "Antibody image");
+  assert.throws(() => parseLectureSource(`[IMAGE]\nNo label`), /requires exactly one/i);
+  assert.equal(parseLectureSource(`[PATHWAY]\nType: closed circular\nA → B`).blocks[0].pathwayType, "closed-circle");
 });
