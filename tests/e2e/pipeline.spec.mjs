@@ -142,16 +142,13 @@ test("image-only PDF is OCR-processed before the HTML design verification gate",
   expect(slideXml).toContain("Complete scanned lecture body text.");
 });
 
-test("local fallback produces one downloadable PowerPoint without fragment pages", async ({ page }) => {
+test("AI-unavailable file conversion fails closed without offering a low-quality PowerPoint", async ({ page }) => {
   await page.route("**/api/config*", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ configured: false, environment: "preview", branch: "test", turnstileSiteKey: null }) }));
   await page.route("**/api/design-html", (route) => route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ code: "AI_NOT_CONFIGURED", environment: "preview", error: "AI unavailable in test" }) }));
   await page.goto("/");
   await page.locator("#fileInput").setInputFiles(resolve(fixtures, "lecture.html"));
   await page.locator("#processButton").click();
-  await expect(page.locator("#previewShell")).toBeVisible();
-  await expect(page.locator("#downloadPptxButton")).toBeEnabled();
-  await expect(page.locator(".toolbar-actions button")).toHaveCount(1);
-  const preview = page.frameLocator("#previewFrame");
-  await expect(preview.locator("body")).toContainText("Pentose Phosphate Pathway");
-  await expect(preview.locator("body")).not.toContainText("Next concept");
+  await expect(page.locator("#resultMessage")).toContainText("will not generate or offer a low-quality fallback PowerPoint");
+  await expect(page.locator("#previewShell")).toBeHidden();
+  await expect(page.locator("#downloadPptxButton")).toBeDisabled();
 });

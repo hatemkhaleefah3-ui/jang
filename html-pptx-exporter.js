@@ -112,7 +112,7 @@ export function hydrateHtmlAssetSources(htmlInput, assets = []) {
 
 async function renderHtml(html) {
   const frame = document.createElement("iframe");
-  frame.setAttribute("sandbox", "");
+  frame.setAttribute("sandbox", "allow-same-origin");
   frame.setAttribute("aria-hidden", "true");
   Object.assign(frame.style, {
     position: "fixed",
