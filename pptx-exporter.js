@@ -38,6 +38,35 @@ function containsTokenSubsequence(haystack, needle) {
   return false;
 }
 
+function planWithCompleteAssetCoverage(plan, assets) {
+  const source = plan && typeof plan === "object" ? plan : {};
+  const sections = Array.isArray(source.sections)
+    ? source.sections.map((section) => ({ ...section, blocks: Array.isArray(section?.blocks) ? section.blocks.map((block) => ({ ...block })) : [] }))
+    : [];
+  const referenced = new Set(sections.flatMap((section) => section.blocks.map((block) => block?.assetId).filter(Boolean)));
+  const expected = Array.isArray(source?.sourceManifest?.assets) && source.sourceManifest.assets.length
+    ? source.sourceManifest.assets.map((asset) => asset?.id || asset?.occurrenceId).filter(Boolean)
+    : (Array.isArray(assets) ? assets.map((asset) => asset?.id).filter(Boolean) : []);
+  const missing = expected.filter((id) => !referenced.has(id));
+  if (!missing.length) return { ...source, sections };
+
+  const byId = new Map((Array.isArray(assets) ? assets : []).map((asset) => [asset?.id, asset]));
+  sections.push({
+    title: missing.length === 1 ? "Source visual" : "Source visuals",
+    category: "Preserved source media",
+    sourcePage: 0,
+    layoutHint: "visual",
+    keyTermsCritical: [],
+    keyTermsImportant: [],
+    blocks: missing.map((assetId) => {
+      const asset = byId.get(assetId) || {};
+      const technical = /^(?:converted from|source (?:pdf )?page|embedded (?:image|visual)|office visual)/i.test(String(asset.caption || "").trim());
+      return { type: "image", assetId, caption: technical ? "" : String(asset.caption || "").trim(), alt: String(asset.alt || "").trim() };
+    }),
+  });
+  return { ...source, sections };
+}
+
 function addOccurrenceMarkers(deck, expectedAssets) {
   const ids = Array.isArray(expectedAssets) ? expectedAssets.filter(Boolean) : [];
   if (!ids.length) return;
@@ -58,7 +87,8 @@ function addOccurrenceMarkers(deck, expectedAssets) {
 }
 
 export async function buildPptx(plan, assets = []) {
-  const deck = await exporter.buildPptx(plan, assets);
+  const completePlan = planWithCompleteAssetCoverage(plan, assets);
+  const deck = await exporter.buildPptx(completePlan, assets);
   addOccurrenceMarkers(deck, deck?._jangFidelity?.manifest?.expectedAssets || []);
   return deck;
 }
