@@ -31,6 +31,7 @@ const extractor = (await readFile(resolve(root, "extractor-v2.js"), "utf8"))
 await writeFile(resolve(output, "extractor-v2.js"), extractor);
 
 await Promise.all([
+  copyRequired(resolve(root, "node_modules", "emf-converter", "dist", "index.mjs"), resolve(vendor, "emf-converter.mjs")),
   copyRequired(resolve(root, "node_modules", "jszip", "dist", "jszip.min.js"), resolve(vendor, "jszip.min.js")),
   copyRequired(resolve(root, "node_modules", "pptxgenjs", "dist", "pptxgen.bundle.js"), resolve(vendor, "pptxgen.bundle.js")),
   copyRequired(resolve(pdfRoot, "legacy", "build", "pdf.min.mjs"), resolve(vendor, "pdf.min.mjs")),
@@ -44,4 +45,4 @@ const optionalResults = await Promise.all([
 ]);
 
 const optionalCount = optionalResults.filter(Boolean).length;
-console.log(`Prepared ${staticFiles.length + 1} static files plus local JSZip, PptxGenJS, PDF.js, and ${optionalCount} optional PDF.js asset directories in dist/.`);
+console.log(`Prepared ${staticFiles.length + 1} static files plus local Office visual conversion, JSZip, PptxGenJS, PDF.js, and ${optionalCount} optional PDF.js asset directories in dist/.`);
