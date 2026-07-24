@@ -478,7 +478,7 @@ function imageEditorScript(filename) {
     if (clonedBar) clonedBar.hidden = true;
     clone.querySelectorAll("[data-image-input]").forEach((input) => input.removeAttribute("value"));
     clone.querySelectorAll(".image-error").forEach((notice) => notice.remove());
-    return "<!doctype html>\n" + clone.outerHTML;
+    return "<!doctype html>" + String.fromCharCode(10) + clone.outerHTML;
   };
 
   const downloadBlob = (blob) => {
