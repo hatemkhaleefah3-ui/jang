@@ -10,8 +10,6 @@ test("imports structured text and builds a verified editable HTML project", asyn
     buffer: Buffer.from(lectureText, "utf8"),
   });
   await expect(page.locator("#lectureText")).toHaveValue(lectureText);
-  await page.locator("#courseCode").fill("BIO");
-  await page.locator("#lectureLabel").fill("Lecture 4");
   await page.locator("#buildHtml").click();
 
   await expect(page.locator("#status")).toContainText("No block was changed, omitted, duplicated, or reordered");
