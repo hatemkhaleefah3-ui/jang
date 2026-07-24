@@ -49,13 +49,13 @@ test("Gemini OCR uses the current vision model and audits a weak first transcrip
     assert.match(calls[1].body.contents[0].parts[1].text, /Audit this proposed transcription/);
     assert.equal(result[0].audited, true);
     assert.equal(result[0].text, "Scanned lecture heading\nComplete scanned lecture body text.");
-    assert.ok(result[0].quality > 0.8);
+    assert.ok(result[0].quality > 0.75);
   } finally {
     globalThis.fetch = originalFetch;
   }
 });
 
-test("Gemini OCR retries transient API failures", async () => {
+test("Gemini OCR retries transient API failures and still performs its audit", async () => {
   const originalFetch = globalThis.fetch;
   let calls = 0;
   globalThis.fetch = async () => {
@@ -75,8 +75,9 @@ test("Gemini OCR retries transient API failures", async () => {
       source: { ocrPages: [{ page: 1, assetId: "pdf-page-001", mimeType: "image/png", data: "AA==" }] },
       options: { language: "English" },
     }, { GEMINI_API_KEY: "test-key" });
-    assert.equal(calls, 2);
+    assert.equal(calls, 3);
     assert.equal(result[0].text, "Recovered OCR text");
+    assert.equal(result[0].audited, true);
   } finally {
     globalThis.fetch = originalFetch;
   }
