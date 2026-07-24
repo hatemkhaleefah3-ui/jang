@@ -3,12 +3,13 @@ import { appendRecoverySection, createAssetRecord, createDraftV1, createSourceUn
 const MAX_BODY_BYTES = 8_000_000;
 const MAX_VERIFY_RETRIES = 2;
 const MAX_OCR_PAGES = 40;
-const OCR_BATCH_IMAGES = 8;
-const OCR_BATCH_BASE64_CHARS = 2_400_000;
-const DEFAULT_MODEL = "gemini-3.5-flash-lite";
+const GEMINI_REQUEST_RETRIES = 2;
+const DEFAULT_MODEL = "gemini-3.5-flash";
+const DEFAULT_OCR_MODEL = "gemini-3.6-flash";
 const headers = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff" };
 const respond = (payload, status = 200) => new Response(JSON.stringify(payload), { status, headers });
 const asArray = (value) => Array.isArray(value) ? value : [];
+const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 function cleanText(value) { return typeof value === "string" ? value.replace(/\u0000/g, "").trim() : ""; }
 function boundedText(value, max, label) {
@@ -16,7 +17,15 @@ function boundedText(value, max, label) {
   if (result.length > max) throw new Error(`${label} exceeds the supported request size.`);
   return result;
 }
-function resolveModel(env) { const requested = boundedText(env.GEMINI_MODEL, 80, "Model name").replace(/^models\//, ""); return !requested || requested === "gemini-2.5-flash" ? DEFAULT_MODEL : requested; }
+function cleanModel(value) { return boundedText(value, 80, "Model name").replace(/^models\//, ""); }
+function resolveModel(env) {
+  const requested = cleanModel(env.GEMINI_MODEL);
+  return !requested || ["gemini-2.5-flash", "gemini-3.5-flash-lite"].includes(requested) ? DEFAULT_MODEL : requested;
+}
+export function resolveOcrModel(env) {
+  const requested = cleanModel(env.GEMINI_OCR_MODEL);
+  return !requested || requested === "gemini-3.5-flash-lite" ? DEFAULT_OCR_MODEL : requested;
+}
 function sameOrigin(request) { const origin = request.headers.get("origin"); if (!origin) return true; try { return new URL(origin).host === new URL(request.url).host || new URL(request.url).hostname === "localhost"; } catch { return false; } }
 async function verifyTurnstile(token, env, request) { if (!env.TURNSTILE_SECRET_KEY) return true; if (!token || typeof token !== "string" || token.length > 2048) return false; const verification = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: token, remoteip: request.headers.get("CF-Connecting-IP") || undefined, idempotency_key: crypto.randomUUID() }) }); return verification.ok && (await verification.json()).success === true; }
 async function readLimited(request) { if (!request.body) return ""; const reader = request.body.getReader(); const decoder = new TextDecoder(); let total = 0; let result = ""; try { while (true) { const { done, value } = await reader.read(); if (done) break; total += value.byteLength; if (total > MAX_BODY_BYTES) throw new Error("REQUEST_TOO_LARGE"); result += decoder.decode(value, { stream: true }); } return result + decoder.decode(); } finally { reader.releaseLock(); } }
@@ -28,7 +37,7 @@ function normalizeOcrPage(page) {
   const match = imageData.match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=\s]+)$/i);
   if (!Number.isInteger(pageNumber) || pageNumber < 1 || !assetId || !match) return null;
   const data = match[2].replace(/\s+/g, "");
-  if (data.length > 1_600_000) throw new Error(`OCR image for page ${pageNumber} is too large.`);
+  if (data.length > 2_400_000) throw new Error(`OCR image for page ${pageNumber} is too large.`);
   return { page: pageNumber, assetId, mimeType: match[1].toLowerCase(), data };
 }
 
@@ -90,61 +99,104 @@ function removeTrailingCommas(value) { return value.replace(/,\s*([}\]])/g, "$1"
 function parseJsonOutput(raw) { const base = extractObject(raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").replace(/[\u201c\u201d]/g, '"').trim()); for (const candidate of [base, removeTrailingCommas(base)]) { try { const parsed = JSON.parse(candidate); if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) return parsed; } catch {} } throw new Error("Gemini returned malformed JSON."); }
 function verificationSummary(diff) { return JSON.stringify({ missingSourceIds: diff.missingSourceIds, duplicatedSourceIds: diff.duplicatedSourceIds, unknownSourceIds: diff.unknownSourceIds, missingAssetIds: diff.missingAssetIds, duplicatedAssetIds: diff.duplicatedAssetIds, unknownAssetIds: diff.unknownAssetIds, structuralErrors: diff.structuralErrors }); }
 
-async function callGeminiParts(parts, env, model, systemText, maxOutputTokens = 32000) {
+async function callGeminiParts(parts, env, model, systemText, maxOutputTokens = 32000, responseSchema = null) {
   const apiKey = env.GEMINI_API_KEY || env.GOOGLE_API_KEY;
-  const result = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-goog-api-key": apiKey },
-    body: JSON.stringify({
-      system_instruction: { parts: [{ text: systemText }] },
-      contents: [{ role: "user", parts }],
-      generationConfig: { maxOutputTokens, responseMimeType: "application/json", temperature: 0.05 },
-    }),
-  });
-  const payload = await result.json().catch(() => ({}));
-  if (!result.ok) throw new Error(payload?.error?.message || `Gemini returned HTTP ${result.status}.`);
-  const raw = modelText(payload);
-  if (!raw) throw new Error("Gemini returned an empty response.");
-  return parseJsonOutput(raw);
-}
-
-function ocrBatches(pages) {
-  const batches = [];
-  let current = [];
-  let chars = 0;
-  for (const page of pages) {
-    if (current.length && (current.length >= OCR_BATCH_IMAGES || chars + page.data.length > OCR_BATCH_BASE64_CHARS)) {
-      batches.push(current);
-      current = [];
-      chars = 0;
+  let lastError;
+  for (let attempt = 0; attempt <= GEMINI_REQUEST_RETRIES; attempt += 1) {
+    try {
+      const generationConfig = { maxOutputTokens, responseMimeType: "application/json", temperature: 0 };
+      if (responseSchema) generationConfig.responseSchema = responseSchema;
+      const result = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-goog-api-key": apiKey },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: systemText }] },
+          contents: [{ role: "user", parts }],
+          generationConfig,
+        }),
+      });
+      const payload = await result.json().catch(() => ({}));
+      if (!result.ok) {
+        const error = new Error(payload?.error?.message || `Gemini returned HTTP ${result.status}.`);
+        error.retryable = result.status === 429 || result.status >= 500;
+        throw error;
+      }
+      const raw = modelText(payload);
+      if (!raw) throw new Error("Gemini returned an empty response.");
+      return parseJsonOutput(raw);
+    } catch (error) {
+      lastError = error;
+      if (attempt >= GEMINI_REQUEST_RETRIES || error?.retryable === false) break;
+      await sleep(500 * (2 ** attempt));
     }
-    current.push(page);
-    chars += page.data.length;
   }
-  if (current.length) batches.push(current);
-  return batches;
+  throw lastError || new Error("Gemini request failed.");
 }
 
-async function callOcr(data, env, model) {
+const OCR_SCHEMA = {
+  type: "object",
+  properties: {
+    page: { type: "integer" },
+    text: { type: "string" },
+    lines: { type: "array", items: { type: "string" } },
+    confidence: { type: "number", minimum: 0, maximum: 1 },
+    uncertainFragments: { type: "array", items: { type: "string" } },
+  },
+  required: ["page", "text", "lines", "confidence", "uncertainFragments"],
+  additionalProperties: false,
+};
+
+function normalizeOcrCandidate(value, pageNumber) {
+  const item = value?.pages?.[0] || value;
+  const lines = asArray(item?.lines).map(cleanText).filter(Boolean);
+  const text = cleanText(item?.text) || lines.join("\n");
+  return {
+    page: pageNumber,
+    text,
+    lines: lines.length ? lines : text.split(/\r?\n/).map(cleanText).filter(Boolean),
+    confidence: Number.isFinite(item?.confidence) ? Math.max(0, Math.min(1, item.confidence)) : 0,
+    uncertainFragments: asArray(item?.uncertainFragments).map(cleanText).filter(Boolean),
+  };
+}
+
+function ocrQuality(candidate) {
+  const text = cleanText(candidate?.text);
+  if (!text) return 0;
+  const meaningful = (text.match(/[\p{L}\p{N}]/gu) || []).length;
+  const suspicious = (text.match(/[�□◇]/g) || []).length;
+  const confidence = Math.max(0, Math.min(1, Number(candidate?.confidence) || 0));
+  const uncertaintyPenalty = Math.min(0.3, asArray(candidate?.uncertainFragments).length * 0.04);
+  return Math.max(0, confidence * 0.72 + Math.min(1, meaningful / 180) * 0.28 - (meaningful ? suspicious / meaningful : 0.25) - uncertaintyPenalty);
+}
+
+async function transcribeOcrPage(page, env, model, language) {
+  const languageHint = language && language !== "auto" ? `The expected lecture language is ${language}. Preserve any other languages that also appear.` : "The page may contain English, Arabic, or mixed-language text. Preserve each script exactly.";
+  const promptText = `Transcribe every visible text item on PDF page ${page.page}. ${languageHint} Preserve reading order, repeated text, punctuation, formulas, subscripts, superscripts, table cells, chart labels, arrows, diagram labels, and captions. Do not summarize, translate, explain, or infer hidden text. Return the required JSON object for page ${page.page}. Put anything genuinely unreadable in uncertainFragments without replacing it with a guess.`;
+  const initial = normalizeOcrCandidate(await callGeminiParts([
+    { inline_data: { mime_type: page.mimeType, data: page.data } },
+    { text: promptText },
+  ], env, model, "You are a forensic document OCR engine. Transcribe exactly and never summarize.", 24000, OCR_SCHEMA), page.page);
+
+  if (!initial.text) throw new Error(`Gemini OCR returned no readable text for PDF page ${page.page}.`);
+  const initialQuality = ocrQuality(initial);
+  if (initialQuality >= 0.92 && initial.confidence >= 0.9 && !initial.uncertainFragments.length) return { ...initial, quality: initialQuality, audited: false };
+
+  const auditPrompt = `Audit this proposed transcription against the supplied image of PDF page ${page.page}. Correct every omitted, added, reordered, or misread character. Re-check small text, Arabic shaping, numbers, formulas, tables, chart axes, diagram labels, and captions. Do not paraphrase. PROPOSED TRANSCRIPTION:\n${initial.text}`;
+  const audited = normalizeOcrCandidate(await callGeminiParts([
+    { inline_data: { mime_type: page.mimeType, data: page.data } },
+    { text: auditPrompt },
+  ], env, model, "You are the second-pass OCR auditor. Compare the image to the proposed transcript character by character and return corrected JSON only.", 24000, OCR_SCHEMA), page.page);
+  const auditedQuality = ocrQuality(audited);
+  const best = audited.text && auditedQuality >= initialQuality * 0.85 ? audited : initial;
+  const quality = Math.max(initialQuality, auditedQuality);
+  if (!best.text || quality < 0.35) throw new Error(`Gemini OCR could not transcribe PDF page ${page.page} reliably after two passes.`);
+  return { ...best, quality, audited: true };
+}
+
+export async function callOcr(data, env, model = resolveOcrModel(env)) {
   const results = [];
-  for (const batch of ocrBatches(data.source.ocrPages)) {
-    const parts = [{ text: "OCR each supplied lecture page. Return one JSON object with a pages array. Every item must have page, text, lines, and confidence. Copy all visible text exactly in reading order. Preserve numbers, formulas, punctuation, symbols, labels, captions, table cells, and diagram labels. Do not summarize, translate, infer, or omit repeated text. Use the page number written immediately before each image." }];
-    for (const page of batch) {
-      parts.push({ text: `PAGE ${page.page}` });
-      parts.push({ inline_data: { mime_type: page.mimeType, data: page.data } });
-    }
-    const parsed = await callGeminiParts(parts, env, model, "You are a strict OCR engine. Return JSON only and transcribe, never summarize.", 32000);
-    results.push(...asArray(parsed?.pages));
-  }
-  const byPage = new Map(results.map((item) => [Number(item?.page), item]));
-  const normalized = data.source.ocrPages.map((page) => {
-    const item = byPage.get(page.page);
-    const lines = asArray(item?.lines).map(cleanText).filter(Boolean);
-    const text = cleanText(item?.text) || lines.join("\n");
-    if (!text) throw new Error(`OCR did not return readable text for PDF page ${page.page}.`);
-    return { page: page.page, text, lines: lines.length ? lines : text.split(/\r?\n/).map(cleanText).filter(Boolean), confidence: Number.isFinite(item?.confidence) ? Math.max(0, Math.min(1, item.confidence)) : 0.9 };
-  });
-  return normalized;
+  for (const page of data.source.ocrPages) results.push(await transcribeOcrPage(page, env, model, data.options.language));
+  return results;
 }
 
 function applyOcrToData(data, ocrResults) {
@@ -219,16 +271,24 @@ export const onRequestPost = async ({ request, env }) => {
     if (!(await verifyTurnstile(body.turnstileToken, env, request))) return respond({ error: "Verification failed or expired. Please try again." }, 403);
     const data = normalize(body);
     const model = resolveModel(env);
+    const ocrModel = resolveOcrModel(env);
     let ocrResults = [];
     if (data.source.ocrPages.length) {
       const requiredPages = data.source.verificationIssues.filter((issue) => issue?.type === "ocr-required").map((issue) => Number(issue.page));
       const suppliedPages = new Set(data.source.ocrPages.map((page) => page.page));
       const missingImages = requiredPages.filter((page) => !suppliedPages.has(page));
       if (missingImages.length) return respond({ code: "OCR_IMAGE_MISSING", error: `OCR page image${missingImages.length === 1 ? " is" : "s are"} missing for page${missingImages.length === 1 ? "" : "s"} ${missingImages.join(", ")}.` }, 422);
-      ocrResults = await callOcr(data, env, model);
+      try {
+        ocrResults = await callOcr(data, env, ocrModel);
+      } catch (error) {
+        return respond({ code: "GEMINI_OCR_FAILED", error: `Gemini OCR failed after page-level transcription and audit retries: ${error instanceof Error ? error.message : String(error)}`, model: ocrModel }, 422);
+      }
       applyOcrToData(data, ocrResults);
     }
-    if (data.source.extractionStatus && data.source.extractionStatus !== "verified-native") return respond({ code: "SOURCE_NOT_VERIFIED", error: "The source still contains unsupported visuals or unresolved extraction problems.", verificationIssues: data.source.verificationIssues }, 422);
+    if (data.source.extractionStatus && data.source.extractionStatus !== "verified-native") {
+      const issueTypes = data.source.verificationIssues.map((issue) => issue?.type || issue?.reason).filter(Boolean);
+      return respond({ code: "SOURCE_NOT_VERIFIED", error: `Automatic OCR or visual conversion did not resolve: ${issueTypes.join(", ") || data.source.extractionStatus}.`, verificationIssues: data.source.verificationIssues }, 422);
+    }
     const draftV1 = buildDraftV1(data);
     let draftV2 = null;
     let diff = null;
@@ -243,7 +303,7 @@ export const onRequestPost = async ({ request, env }) => {
     if (!diff.valid) { draftV2 = appendRecoverySection(draftV1, draftV2, diff); diff = verifyDraftCoverage(draftV1, draftV2); recovered = true; }
     if (!diff.valid) return respond({ error: "Structured Draft verification failed.", verification: diff }, 422);
     const plan = draftToPlan(draftV2, data, draftV1);
-    return respond({ plan, draftV1, draftV2, verification: diff, recovered, model, attempts: attempts + 1, batchesProcessed: data.source.batches.length, ocr: { applied: ocrResults.length > 0, pages: ocrResults } });
+    return respond({ plan, draftV1, draftV2, verification: diff, recovered, model, attempts: attempts + 1, batchesProcessed: data.source.batches.length, ocr: { applied: ocrResults.length > 0, pages: ocrResults, model: ocrModel } });
   } catch (error) {
     console.error(JSON.stringify({ event: "redesign_large_error", message: error instanceof Error ? error.message : String(error) }));
     const message = error instanceof Error ? error.message : "Unexpected server error.";
