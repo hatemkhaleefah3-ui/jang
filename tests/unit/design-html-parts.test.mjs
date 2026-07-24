@@ -26,5 +26,5 @@ test("removes private preview bytes from the public manifest", () => {
 
 test("rejects unsupported and oversized previews", () => {
   assert.throws(() => normalizeAssetPreview("data:image/svg+xml;base64,PHN2Zz4="), /PNG, JPEG, or WebP/);
-  assert.throws(() => normalizeAssetPreview(`data:image/png;base64,${"A".repeat(900001)}`), /too large/);
+  assert.throws(() => normalizeAssetPreview(`data:image/png;base64,${"A".repeat(3_800_001)}`), /too large/);
 });
