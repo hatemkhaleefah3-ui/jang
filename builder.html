@@ -1,1 +1,37 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Jang HTML Lecture Builder</title><link rel="stylesheet" href="/builder.css"><script type="module" src="/builder-app.js"></script></head><body><header><a href="/">Jang</a><strong>HTML Lecture Builder</strong></header><main><section class="input-panel"><h1>Paste or import lecture text</h1><p>Imported UTF-8 text files use the exact same parser and transformation as pasted text.</p><div class="actions"><label class="file-button">Import .txt<input id="textFile" type="file" accept=".txt,text/plain"></label><button id="clearText" type="button">Clear</button></div><textarea id="lectureText" spellcheck="false" placeholder="Paste structured lecture text here…"></textarea><div class="metadata"><label>Course code<input id="courseCode"></label><label>Lecture label<input id="lectureLabel"></label><label>Instructor<input id="instructor"></label></div><button id="buildHtml" class="primary" type="button">Build editable HTML</button><p id="status" role="status"></p></section><section class="preview-panel"><div class="preview-bar"><strong id="previewTitle">Preview</strong><button id="openWindow" type="button" disabled>Open editor</button><button id="downloadHtml" type="button" disabled>Download HTML</button></div><iframe id="preview" sandbox="allow-scripts allow-downloads"></iframe></section></main></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Convert pasted or imported lecture text into exact, editable, responsive HTML without AI rewriting.">
+  <title>Jang — Editable HTML Lecture Builder</title>
+  <link rel="stylesheet" href="/builder.css">
+  <script type="module" src="/builder-app.js"></script>
+</head>
+<body>
+  <header><a href="/">Jang</a><strong>Editable HTML Lecture Builder</strong><a class="header-link" href="/">File-to-PowerPoint workflow</a></header>
+  <main>
+    <section class="input-panel">
+      <h1>Paste or import lecture text</h1>
+      <p>Imported text files and pasted text use the same deterministic parser. The lecture is not rewritten, summarized, corrected, merged, split, or reordered.</p>
+      <div class="actions"><label class="file-button">Import text file<input id="textFile" type="file" accept=".txt,.md,text/plain,text/markdown"></label><button id="clearText" type="button">Clear</button></div>
+      <small id="fileMeta"></small>
+      <div class="metadata">
+        <label>Project title<input id="projectTitle" placeholder="Optional"></label>
+        <label>Course code<input id="courseCode" placeholder="BIO 214"></label>
+        <label>Lecture label<input id="lectureLabel" placeholder="Lecture 4"></label>
+        <label>Instructor<input id="instructor" placeholder="Optional"></label>
+        <label>Language<select id="language"><option value="en">English</option><option value="ar">Arabic</option><option value="ku">Kurdish</option></select></label>
+      </div>
+      <textarea id="lectureText" spellcheck="false" placeholder="[DOCUMENT TITLE]&#10;Immunoglobulin&#10;&#10;[SECTION]&#10;Introduction&#10;&#10;[PARAGRAPH]&#10;Exact lecture text…"></textarea>
+      <button id="buildHtml" class="primary" type="button">Build editable HTML</button>
+      <p id="status" role="status">Ready.</p>
+      <section class="projects-panel"><h2>Saved projects</h2><div id="savedProjects"></div></section>
+    </section>
+    <section class="preview-panel">
+      <div class="preview-bar"><strong id="previewTitle">Preview</strong><button id="saveProject" type="button" disabled>Save project</button><button id="openWindow" type="button" disabled>Open editor</button><button id="downloadHtml" type="button" disabled>Download HTML</button></div>
+      <iframe id="preview" title="Editable lecture HTML preview" sandbox="allow-scripts allow-downloads allow-same-origin allow-forms"></iframe>
+    </section>
+  </main>
+</body>
+</html>
