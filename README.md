@@ -17,7 +17,8 @@ The downloaded HTML file:
 
 - begins with a cover slide;
 - creates as many content slides as needed;
-- uses section titles in slide headers instead of creating title-only section slides;
+- uses section titles—not the document title—in ordinary content-slide headers;
+- supports deliberate major-section divider slides for titles wrapped in `=` rows;
 - ends with an end slide;
 - keeps every slide at a 16:9 ratio;
 - uses zero gaps between slides and zero horizontal page margins;
@@ -25,7 +26,17 @@ The downloaded HTML file:
 - includes self-contained image placeholders and image controls;
 - has no external runtime dependencies.
 
-Structured markers such as `[DOCUMENT TITLE]`, `[SECTION]`, `[SUBTITLE]`, `[PARAGRAPH]`, `[BULLETS]`, `[TABLE]`, `[IMAGE]`, and `[END]` remain supported. Ordinary unmarked text is also split into headings, paragraphs, lists, and additional slides automatically.
+Structured markers such as `[DOCUMENT TITLE]`, `[SECTION]`, `[SUBTITLE]`, `[PARAGRAPH]`, `[BULLETS]`, `[TABLE]`, `[IMAGE]`, `[DIAGRAM]`, and `[END]` remain supported. Ordinary unmarked text is also split into headings, paragraphs, lists, and additional slides automatically.
+
+Divider-wrapped headings have explicit meaning in pasted plain text:
+
+```text
+============================================================
+2. REGULATION OF BLOOD GLUCOSE
+============================================================
+```
+
+An equals-wrapped title starts a dedicated major-section slide and becomes the section header for following slides. A title wrapped in hyphen rows remains in the current section and is rendered with a divider line above and below it.
 
 ## Image placeholders
 
@@ -41,7 +52,7 @@ Supported placeholder sizes are `small`, `medium`, `large`, `wide`, `portrait`, 
 
 In the generated HTML:
 
-- an empty placeholder opens the image picker when clicked;
+- clicking an empty placeholder opens a bottom sheet with Close and Import image;
 - a filled placeholder opens a bottom sheet with Change image, Remove image, and Remove placeholder;
 - imported images are resized inside the fixed placeholder dimensions;
 - Save embeds the selected images as data URLs and saves an updated standalone HTML file;
