@@ -1,4 +1,5 @@
 import { createHtmlDesignPrompt, hydrateDesignedHtml, normalizeDesignedHtml, verifyDesignedHtml } from "../../html-design-contract.js";
+import { applyMasterDesignCss } from "../../html-design-finalizer.js";
 import { MASTER_DESIGN_REFERENCE } from "../../master-design-reference.js";
 
 const MAX_BODY_BYTES = 8_000_000;
@@ -170,7 +171,7 @@ export async function generateVerifiedHtml(data, env) {
       previousHtml: attempt ? designedHtml : "",
       verification: attempt ? verification : null,
     });
-    designedHtml = await callGemini(prompt, env, model);
+    designedHtml = applyMasterDesignCss(await callGemini(prompt, env, model));
     verification = verifyDesignedHtml(designedHtml, data.manifest);
     if (verification.valid) {
       return {
