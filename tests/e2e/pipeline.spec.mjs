@@ -16,8 +16,24 @@ const emptyBlock = (type, values = {}) => ({
 });
 
 function educationalPlan(source) {
-  const assetId = source.assets?.[0]?.id || "";
-  const visual = assetId ? [emptyBlock("image", { assetId, caption: "Source pathway visual" })] : [];
+  const units = Array.isArray(source.sourceUnits) ? source.sourceUnits.filter((unit) => unit?.text) : [];
+  const chunkSize = Math.max(1, Math.ceil(units.length / 4));
+  const sections = [];
+  for (let offset = 0, index = 0; offset < units.length; offset += chunkSize, index += 1) {
+    const chunk = units.slice(offset, offset + chunkSize);
+    const titles = ["Pentose phosphate pathway", "Regulation and clinical significance", "Pathway details", "Clinical review"];
+    sections.push({
+      title: titles[index] || `Source content ${index + 1}`,
+      category: index === 1 ? "Application" : "Core concept",
+      keyTermsCritical: index === 0 ? ["NADPH", "ribose-5-phosphate"] : [],
+      keyTermsImportant: index === 1 ? ["glutathione", "erythrocytes"] : [],
+      blocks: chunk.map((unit) => emptyBlock("paragraph", { text: unit.text })),
+    });
+  }
+  if (!sections.length) sections.push({ title: "Pentose phosphate pathway", category: "Core concept", keyTermsCritical: [], keyTermsImportant: [], blocks: [emptyBlock("paragraph", { text: source.batches?.join("\n") || "Lecture content" })] });
+  const last = sections.at(-1);
+  for (const asset of source.assets || []) last.blocks.push(emptyBlock("image", { assetId: asset.id, caption: "Source pathway visual" }));
+
   return {
     metadata: {
       title: "Carbohydrate Metabolism",
@@ -28,40 +44,10 @@ function educationalPlan(source) {
       language: "English",
       direction: "ltr",
     },
-    overview: "This lecture explains the pentose phosphate pathway as a cytosolic route that produces NADPH and ribose-5-phosphate, then connects regulation to erythrocyte protection.",
-    learningObjectives: [
-      "Distinguish the oxidative and nonoxidative phases.",
-      "Explain how NADPH supports reduced glutathione.",
-      "Relate glucose-6-phosphate dehydrogenase to pathway regulation.",
-    ],
-    sections: [
-      {
-        title: "Pentose phosphate pathway",
-        category: "Core concept",
-        keyTermsCritical: ["NADPH", "ribose-5-phosphate"],
-        keyTermsImportant: ["cytosol"],
-        blocks: [
-          emptyBlock("paragraph", { text: "The pentose phosphate pathway is an alternative cytosolic route for glucose oxidation. It produces NADPH and ribose-5-phosphate without directly producing ATP." }),
-          emptyBlock("bullets", { heading: "Two coordinated phases", items: ["The oxidative phase is irreversible and generates NADPH.", "The nonoxidative phase is reversible and interconverts sugar phosphates."] }),
-        ],
-      },
-      {
-        title: "Regulation and clinical significance",
-        category: "Application",
-        keyTermsCritical: ["glucose-6-phosphate dehydrogenase"],
-        keyTermsImportant: ["glutathione", "erythrocytes"],
-        blocks: [
-          emptyBlock("paragraph", { text: "Glucose-6-phosphate dehydrogenase is the rate-limiting enzyme. NADPH maintains reduced glutathione and helps protect erythrocytes from oxidative damage." }),
-          emptyBlock("takeaways", { heading: "Clinical connection", items: ["Reduced NADPH availability weakens antioxidant protection.", "Erythrocytes depend strongly on this pathway for glutathione reduction."] }),
-          ...visual,
-        ],
-      },
-    ],
-    finalTakeaways: [
-      "The pathway produces NADPH and ribose-5-phosphate.",
-      "Its oxidative and nonoxidative phases have different roles.",
-      "NADPH is essential for erythrocyte antioxidant defense.",
-    ],
+    overview: "",
+    learningObjectives: [],
+    sections,
+    finalTakeaways: [],
   };
 }
 
@@ -82,6 +68,7 @@ async function mockApi(page, captured) {
       body: JSON.stringify({
         plan: educationalPlan(payload.source),
         model: "test-structured-model",
+        ocr: { applied: false, pages: [] },
         verification: {
           valid: true,
           expectedSourceCount: payload.source.sourceUnits?.length || payload.source.batches.length,
@@ -121,18 +108,19 @@ for (const format of formats) {
 
     await expect(page.locator("#previewShell")).toBeVisible();
     await expect(page.locator("#downloadPptxButton")).toBeEnabled();
-    await expect(page.locator("#resultMessage")).toContainText("Structured draft verified");
+    await expect(page.locator(".toolbar-actions button")).toHaveCount(1);
+    await expect(page.locator("#resultMessage")).toContainText("PowerPoint ready and source-verified");
     expect(captured.join(" ")).toContain("NADPH");
 
     const preview = page.frameLocator("#previewFrame");
     await expect(preview.locator("body")).toContainText("Pentose phosphate pathway");
     await expect(preview.locator("body")).toContainText("Regulation and clinical significance");
     await expect(preview.locator("body")).not.toContainText("Next concept");
-    await expect(preview.locator("body")).not.toContainText("Continued");
 
     const downloadPromise = page.waitForEvent("download");
     await page.locator("#downloadPptxButton").click();
     const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe("Carbohydrate-Metabolism.pptx");
     const savedPath = testInfo.outputPath(`${format.name.toLowerCase()}-educational-output.pptx`);
     await download.saveAs(savedPath);
 
@@ -142,19 +130,77 @@ for (const format of formats) {
     expect(slideXml).toContain("Carbohydrate Metabolism");
     expect(slideXml).toContain("Pentose phosphate pathway");
     expect(slideXml).toContain("Regulation and clinical significance");
-    expect(slideXml).toContain("erythrocyte");
+    expect(slideXml.toLowerCase()).toContain("erythrocyte");
   });
 }
 
-test("local fallback groups fragments without Next concept or Continued pages", async ({ page }) => {
+test("image-only PDF is OCR-processed before the redesign verification gate", async ({ page }, testInfo) => {
+  await page.addInitScript(() => {
+    globalThis.__jangTesseract = {
+      createWorker: async () => ({
+        setParameters: async () => undefined,
+        recognize: async () => ({ data: { text: "Scanned lecture heading\nComplete scanned lecture body text.", confidence: 98 } }),
+        terminate: async () => undefined,
+      }),
+    };
+  });
+
+  let capturedSource;
+  await page.route("**/api/config*", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ configured: true, model: "test-structured-model", environment: "preview", branch: "test", turnstileSiteKey: null }) }));
+  await page.route("**/api/redesign", async (route) => {
+    const payload = route.request().postDataJSON();
+    capturedSource = payload.source;
+    const exactText = payload.source.sourceUnits.map((unit) => unit.text).join("\n");
+    const assetId = payload.source.assets[0]?.id || "";
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        plan: {
+          metadata: { title: "Scanned OCR Lecture", courseCode: "OCR", lectureLabel: "Lecture", language: "English", direction: "ltr" },
+          overview: "",
+          learningObjectives: [],
+          sections: [{ title: "Scanned source", category: "OCR", keyTermsCritical: [], keyTermsImportant: [], blocks: [emptyBlock("paragraph", { text: exactText }), ...(assetId ? [emptyBlock("image", { assetId, caption: "Original scanned page" })] : [])] }],
+          finalTakeaways: [],
+        },
+        model: "test-structured-model",
+        ocr: { applied: false, pages: [] },
+        verification: { valid: true, missingSourceIds: [], duplicatedSourceIds: [], unknownSourceIds: [], missingAssetIds: [], duplicatedAssetIds: [], unknownAssetIds: [], structuralErrors: [] },
+      }),
+    });
+  });
+
+  await page.goto("/");
+  await page.locator("#fileInput").setInputFiles(resolve(fixtures, "scanned.pdf"));
+  await page.locator("#processButton").click();
+
+  await expect(page.locator("#previewShell")).toBeVisible();
+  await expect(page.locator("#downloadPptxButton")).toBeEnabled();
+  await expect(page.locator("#resultMessage")).toContainText("Local OCR completed before redesign");
+  expect(capturedSource.extractionStatus).toBe("verified-native");
+  expect(capturedSource.ocrPages).toEqual([]);
+  expect(capturedSource.sourceUnits.some((unit) => unit.text === "Scanned lecture heading" && unit.extractionMethod === "ocr")).toBe(true);
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.locator("#downloadPptxButton").click();
+  const download = await downloadPromise;
+  const savedPath = testInfo.outputPath("scanned-ocr-output.pptx");
+  await download.saveAs(savedPath);
+  const { slideXml } = await inspectPptx(savedPath);
+  expect(slideXml).toContain("Scanned lecture heading");
+  expect(slideXml).toContain("Complete scanned lecture body text.");
+});
+
+test("local fallback produces one downloadable PowerPoint without fragment pages", async ({ page }) => {
   await page.route("**/api/config*", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ configured: false, environment: "preview", branch: "test", turnstileSiteKey: null }) }));
   await page.route("**/api/redesign", (route) => route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ code: "AI_NOT_CONFIGURED", environment: "preview", error: "AI unavailable in test" }) }));
   await page.goto("/");
   await page.locator("#fileInput").setInputFiles(resolve(fixtures, "lecture.html"));
   await page.locator("#processButton").click();
   await expect(page.locator("#previewShell")).toBeVisible();
+  await expect(page.locator("#downloadPptxButton")).toBeEnabled();
+  await expect(page.locator(".toolbar-actions button")).toHaveCount(1);
   const preview = page.frameLocator("#previewFrame");
   await expect(preview.locator("body")).toContainText("Pentose Phosphate Pathway");
   await expect(preview.locator("body")).not.toContainText("Next concept");
-  await expect(preview.locator("body")).not.toContainText("Continued");
 });

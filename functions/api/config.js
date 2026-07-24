@@ -1,5 +1,6 @@
-const DEFAULT_MODEL = "gemini-3.5-flash-lite";
-const RETIRED_MODELS = new Set(["gemini-2.5-flash", "models/gemini-2.5-flash"]);
+const DEFAULT_MODEL = "gemini-3.5-flash";
+const DEFAULT_OCR_MODEL = "gemini-3.6-flash";
+const RETIRED_MODELS = new Set(["gemini-2.5-flash", "models/gemini-2.5-flash", "gemini-3.5-flash-lite", "models/gemini-3.5-flash-lite"]);
 
 const headers = {
   "content-type": "application/json; charset=utf-8",
@@ -7,9 +8,9 @@ const headers = {
   "x-content-type-options": "nosniff",
 };
 
-function resolveModel(value) {
+function resolveModel(value, fallback = DEFAULT_MODEL) {
   const configured = String(value || "").trim();
-  return !configured || RETIRED_MODELS.has(configured) ? DEFAULT_MODEL : configured.replace(/^models\//, "");
+  return !configured || RETIRED_MODELS.has(configured) ? fallback : configured.replace(/^models\//, "");
 }
 
 function keySource(env) {
@@ -67,6 +68,8 @@ export const onRequestGet = async ({ request, env }) => {
     proxied: Boolean(proxy),
     proxyOrigin: proxy?.origin || null,
     model: source ? resolveModel(env.GEMINI_MODEL) : resolveModel(proxy?.payload?.model),
+    ocrModel: source ? resolveModel(env.GEMINI_OCR_MODEL, DEFAULT_OCR_MODEL) : resolveModel(proxy?.payload?.ocrModel, DEFAULT_OCR_MODEL),
+    ocrCapabilityVersion: source ? 2 : Number(proxy?.payload?.ocrCapabilityVersion || 0),
     turnstileSiteKey: source ? env.TURNSTILE_SITE_KEY || null : null,
     maxSourceChars: 1_200_000,
     maxFileBytes: 50 * 1024 * 1024,

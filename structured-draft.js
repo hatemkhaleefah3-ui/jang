@@ -9,6 +9,13 @@ function stableId(prefix, parts) {
   return `${prefix}_${safe}`.toLowerCase();
 }
 
+function sourceElementType(kind) {
+  if (kind === "note") return "note";
+  if (kind === "diagram") return "diagram";
+  if (kind === "table") return "table";
+  return "paragraph";
+}
+
 export function createSourceUnit({ page = 0, order = 0, kind = "paragraph", text = "", runs = [], extractionMethod = "native", confidence = 1 }) {
   return {
     id: stableId("src", [page, order, kind]),
@@ -42,6 +49,19 @@ export function createAssetRecord({ id, kind = "image", mimeType = "", sourcePag
   };
 }
 
+function sourceUnitElement(unit, index) {
+  const type = sourceElementType(unit.kind);
+  const base = {
+    id: stableId(type, [index + 1]),
+    type,
+    sourceIds: [unit.id],
+    text: unit.verbatimText,
+  };
+  if (type === "diagram") return { ...base, heading: "Source diagram", items: [unit.verbatimText] };
+  if (type === "table") return { ...base, heading: "Source table", headers: ["Source content"], rows: [[unit.verbatimText]] };
+  return base;
+}
+
 export function createDraftV1({ documentId = "doc_001", metadata = {}, units = [], assets = [] }) {
   const sourceUnits = asArray(units).filter(isObject);
   const sourceAssets = asArray(assets).filter(isObject);
@@ -66,12 +86,7 @@ export function createDraftV1({ documentId = "doc_001", metadata = {}, units = [
         type: "subtitle",
         text: "Source order",
         children: [
-          ...sourceUnits.map((unit, index) => ({
-            id: stableId("paragraph", [index + 1]),
-            type: unit.kind === "note" ? "note" : "paragraph",
-            sourceIds: [unit.id],
-            text: unit.verbatimText,
-          })),
+          ...sourceUnits.map(sourceUnitElement),
           ...sourceAssets.map((asset, index) => ({
             id: stableId("image_ref", [index + 1]),
             type: "image_ref",
@@ -98,9 +113,7 @@ function walkElements(draft, visitor) {
 export function collectSourceReferences(draft) {
   const counts = new Map();
   walkElements(draft, (element) => {
-    for (const id of asArray(element?.sourceIds).map(clean).filter(Boolean)) {
-      counts.set(id, (counts.get(id) || 0) + 1);
-    }
+    for (const id of asArray(element?.sourceIds).map(clean).filter(Boolean)) counts.set(id, (counts.get(id) || 0) + 1);
   });
   return counts;
 }
@@ -150,16 +163,24 @@ export function verifyDraftCoverage(draftV1, draftV2) {
   };
 }
 
+function recoveryElement(unit, id, index) {
+  const type = sourceElementType(unit?.kind);
+  const base = {
+    id: stableId(`recovery_${type}`, [index + 1]),
+    type,
+    sourceIds: [id],
+    text: unit?.verbatimText || "",
+  };
+  if (type === "diagram") return { ...base, heading: "Recovered source diagram", items: [unit?.verbatimText || ""] };
+  if (type === "table") return { ...base, heading: "Recovered source table", headers: ["Source content"], rows: [[unit?.verbatimText || ""]] };
+  return base;
+}
+
 export function appendRecoverySection(draftV1, draftV2, diff) {
   const unitsById = new Map(asArray(draftV1?.sourceManifest?.units).map((unit) => [unit.id, unit]));
   const assetsById = new Map(asArray(draftV1?.sourceManifest?.assets).map((asset) => [asset.id, asset]));
   const recoveryChildren = [
-    ...asArray(diff?.missingSourceIds).map((id, index) => ({
-      id: stableId("recovery_paragraph", [index + 1]),
-      type: "paragraph",
-      sourceIds: [id],
-      text: unitsById.get(id)?.verbatimText || "",
-    })),
+    ...asArray(diff?.missingSourceIds).map((id, index) => recoveryElement(unitsById.get(id), id, index)),
     ...asArray(diff?.missingAssetIds).map((id, index) => ({
       id: stableId("recovery_image", [index + 1]),
       type: "image_ref",

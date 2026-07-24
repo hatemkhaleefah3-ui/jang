@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Turn PPTX, PDF, and HTML lectures into clear redesigned HTML and PowerPoint files." />
+  <meta name="description" content="Turn PPTX, PDF, and HTML lectures into a clear, verified, downloadable PowerPoint file." />
   <meta name="theme-color" content="#f5e642" />
   <title>Jang — Lecture Rebuilder</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,10 +21,7 @@
   <header class="site-header">
     <a class="brand" href="/" aria-label="Jang home">
       <span class="brand-mark" aria-hidden="true">J</span>
-      <span>
-        <strong>Jang</strong>
-        <small>Lecture Rebuilder</small>
-      </span>
+      <span><strong>Jang</strong><small>Lecture Rebuilder</small></span>
     </a>
     <div class="header-status" id="backendStatus" role="status" aria-live="polite">
       <span class="status-dot"></span>
@@ -38,12 +35,12 @@
         <p class="eyebrow"><span>01</span> Import · Reorganize · Download</p>
         <h1 id="heroTitle">Make every lecture<br /><em>worth reading.</em></h1>
         <p class="hero-description">
-          Upload a PPTX, PDF, or HTML lecture. Jang extracts its academic content and useful visuals locally, optionally asks Gemini to reorganize it, then creates a polished HTML preview and downloadable PowerPoint.
+          Upload a PPTX, PDF, or HTML lecture. Jang extracts the text and visuals, applies OCR to sparse PDF pages when Gemini is configured, creates a stable PowerPoint design, verifies the package, and gives you one downloadable .pptx file.
         </p>
         <div class="trust-row" aria-label="Product promises">
-          <span>Browser-first extraction</span>
-          <span>No account required</span>
-          <span>Downloadable PPTX + HTML</span>
+          <span>Source-preserving extraction</span>
+          <span>Verified PowerPoint package</span>
+          <span>One downloadable PPTX</span>
         </div>
       </div>
 
@@ -66,11 +63,8 @@
 
     <section class="workspace" aria-labelledby="workspaceTitle">
       <div class="workspace-heading">
-        <div>
-          <p class="section-label">Workspace</p>
-          <h2 id="workspaceTitle">Rebuild a lecture</h2>
-        </div>
-        <p>The original file stays on your device. Only extracted text and an asset manifest are sent for AI restructuring when Gemini is configured.</p>
+        <div><p class="section-label">Workspace</p><h2 id="workspaceTitle">Rebuild a lecture</h2></div>
+        <p>The source file is parsed in the browser. Extracted text, the visual manifest, and only OCR-required page snapshots are sent to Gemini when configured.</p>
       </div>
 
       <div class="workspace-grid">
@@ -87,7 +81,7 @@
             </span>
             <strong>Drop a PPTX, PDF, or HTML lecture here</strong>
             <span>or click to browse</span>
-            <small>Up to 50 MB desktop / 20 MB mobile · processing stays on this device</small>
+            <small>Up to 50 MB desktop / 20 MB mobile</small>
           </label>
 
           <div class="file-card" id="fileCard" hidden>
@@ -96,24 +90,26 @@
             <button class="icon-button" id="removeFile" type="button" aria-label="Remove selected file">×</button>
           </div>
 
+          <div id="turnstileArea" class="turnstile-area" hidden>
+            <p>Verification protects the Gemini quota from automated abuse.</p>
+            <div id="turnstileWidget"></div>
+          </div>
+
+          <button class="primary-button confirm-button" id="processButton" type="button" disabled>
+            <span>Confirm &amp; Build PowerPoint</span>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <p class="control-note confirm-note">Select a file, then press Confirm &amp; Build PowerPoint. Cover details below are optional.</p>
+
           <div class="step-heading settings-heading">
             <span>2</span>
-            <div><strong>Set the details</strong><small>Optional metadata for the cover</small></div>
+            <div><strong>Optional cover details</strong><small>Edit these before confirming only when needed</small></div>
           </div>
 
           <div class="form-grid">
-            <label>
-              <span>Course code</span>
-              <input id="courseCode" type="text" maxlength="40" placeholder="e.g. BIO 214" />
-            </label>
-            <label>
-              <span>Lecture label</span>
-              <input id="lectureLabel" type="text" maxlength="60" placeholder="e.g. Lecture 08" />
-            </label>
-            <label>
-              <span>Instructor</span>
-              <input id="instructor" type="text" maxlength="80" placeholder="Optional" />
-            </label>
+            <label><span>Course code</span><input id="courseCode" type="text" maxlength="40" placeholder="e.g. BIO 214" /></label>
+            <label><span>Lecture label</span><input id="lectureLabel" type="text" maxlength="60" placeholder="e.g. Lecture 08" /></label>
+            <label><span>Instructor</span><input id="instructor" type="text" maxlength="80" placeholder="Optional" /></label>
             <label>
               <span>Language</span>
               <select id="language">
@@ -126,42 +122,27 @@
           </div>
 
           <div class="option-row">
-            <label class="check-option"><input id="includeToc" type="checkbox" checked /><span><b>Table of contents</b><small>Add an overview page</small></span></label>
-            <label class="check-option"><input id="conciseMode" type="checkbox" /><span><b>Concise mode</b><small>Reduce repetition</small></span></label>
+            <label class="check-option"><input id="includeToc" type="checkbox" checked /><span><b>Table of contents</b><small>Add an overview slide</small></span></label>
+            <label class="check-option"><input id="conciseMode" type="checkbox" /><span><b>Concise layout</b><small>Use tighter slide grouping without deleting source content</small></span></label>
           </div>
-
-          <div id="turnstileArea" class="turnstile-area" hidden>
-            <p>Verification protects the free Gemini quota from automated abuse.</p>
-            <div id="turnstileWidget"></div>
-          </div>
-
-          <button class="primary-button" id="processButton" type="button" disabled>
-            <span>Rebuild lecture</span>
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
           <p class="control-note" id="aiSetupHint">Checking the Cloudflare AI configuration…</p>
         </section>
 
-        <section class="result-panel" aria-label="Generated lecture result">
+        <section class="result-panel" aria-label="Generated PowerPoint result">
           <div class="result-toolbar">
-            <div>
-              <span class="result-kicker">Output</span>
-              <strong id="resultTitle">Waiting for a lecture</strong>
-            </div>
+            <div><span class="result-kicker">PowerPoint output</span><strong id="resultTitle">Waiting for a lecture</strong></div>
             <div class="toolbar-actions">
-              <button class="secondary-button" id="openPreviewButton" type="button" disabled>Open preview</button>
-              <button class="secondary-button" id="downloadPptxButton" type="button" disabled>Download PPTX</button>
-              <button class="download-button" id="downloadButton" type="button" disabled>
+              <button class="download-button" id="downloadPptxButton" type="button" disabled>
                 <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Download HTML
+                Download file (.pptx)
               </button>
             </div>
           </div>
 
           <div class="empty-state" id="emptyState">
             <div class="empty-orbit"><span></span><i></i><b></b></div>
-            <h3>Your redesigned lecture appears here</h3>
-            <p>Jang will show the generated pages in a safe preview before you download them.</p>
+            <h3>Your PowerPoint slide preview appears here</h3>
+            <p>The .pptx file is built and verified before the preview and download button are enabled.</p>
           </div>
 
           <div class="processing-state" id="processingState" hidden>
@@ -171,14 +152,14 @@
             </div>
             <ol class="progress-list">
               <li id="stageRead"><span></span><div><b>Read source</b><small>Validate and parse PPTX, PDF, or HTML</small></div></li>
-              <li id="stageExtract"><span></span><div><b>Extract content</b><small>Text, tables, images and diagrams</small></div></li>
-              <li id="stagePlan"><span></span><div><b>Reorganize with Gemini</b><small>Create a faithful academic structure</small></div></li>
-              <li id="stageRender"><span></span><div><b>Build outputs</b><small>Create the HTML preview and PowerPoint</small></div></li>
+              <li id="stageExtract"><span></span><div><b>Extract and OCR</b><small>Text, tables, images, diagrams, and sparse PDF pages</small></div></li>
+              <li id="stagePlan"><span></span><div><b>Reorganize with Gemini</b><small>Create a source-traceable structure</small></div></li>
+              <li id="stageRender"><span></span><div><b>Build and verify PPTX</b><small>Create the final file and verify text and image occurrences</small></div></li>
             </ol>
           </div>
 
           <div class="preview-shell" id="previewShell" hidden>
-            <iframe id="previewFrame" title="Generated lecture preview" sandbox="allow-scripts"></iframe>
+            <iframe id="previewFrame" title="PowerPoint slide preview" sandbox="allow-scripts"></iframe>
           </div>
 
           <div class="result-message" id="resultMessage" hidden role="alert"></div>
@@ -187,12 +168,12 @@
     </section>
 
     <section class="how-it-works" aria-labelledby="howTitle">
-      <div class="how-heading"><p class="section-label">The pipeline</p><h2 id="howTitle">Four clear steps. One clean file.</h2></div>
+      <div class="how-heading"><p class="section-label">The pipeline</p><h2 id="howTitle">Four clear steps. One verified file.</h2></div>
       <div class="process-cards">
-        <article><span>01</span><h3>Import</h3><p>Select a PPTX, PDF, or HTML lecture. Parsing and media extraction happen locally in the browser.</p></article>
-        <article><span>02</span><h3>Extract</h3><p>Readable text, slide structure, embedded images, SVG, and relevant PDF page snapshots are identified.</p></article>
-        <article><span>03</span><h3>Rebuild</h3><p>Gemini creates a content plan when configured; otherwise Jang creates a source-preserving local layout.</p></article>
-        <article><span>04</span><h3>Download</h3><p>A PowerPoint deck and a self-contained HTML lecture are generated in the browser.</p></article>
+        <article><span>01</span><h3>Import</h3><p>Select a PPTX, PDF, or HTML lecture. Parsing and media extraction begin locally.</p></article>
+        <article><span>02</span><h3>Extract</h3><p>Text, embedded images, page snapshots, and source diagrams are collected. Sparse PDF pages are sent through OCR when available.</p></article>
+        <article><span>03</span><h3>Rebuild</h3><p>Gemini organizes the verified source units without allowing diagrams to replace ordinary text or images.</p></article>
+        <article><span>04</span><h3>Download</h3><p>The final PowerPoint package is built, checked for expected text and image occurrences, previewed, and downloaded as .pptx.</p></article>
       </div>
     </section>
   </main>
@@ -201,10 +182,5 @@
     <div><strong>Jang</strong><span>Designed for clearer lectures.</span></div>
     <p>Open-source · Cloudflare Pages · PDF.js · Gemini API</p>
   </footer>
-
-  <dialog id="previewDialog" class="preview-dialog">
-    <div class="dialog-bar"><strong>Lecture preview</strong><button id="closeDialog" type="button" aria-label="Close preview">×</button></div>
-    <iframe id="dialogFrame" title="Full generated lecture preview" sandbox="allow-scripts"></iframe>
-  </dialog>
 </body>
 </html>
