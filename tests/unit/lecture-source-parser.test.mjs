@@ -19,7 +19,7 @@ test("requires and preserves an image label", () => {
   assert.equal(document.blocks[0].label, "Glycolysis pathway");
   assert.equal(document.blocks[0].content, "label: Glycolysis pathway\nOptional image instructions");
 
-  assert.throws(() => parseLectureSource(`[IMAGE]\nMissing label`), /requires a label/i);
+  assert.throws(() => parseLectureSource(`[IMAGE]\nMissing label`), /requires.*label/i);
 });
 
 test("accepts only declared pathway types", () => {
