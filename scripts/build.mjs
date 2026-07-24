@@ -10,7 +10,7 @@ const tesseractCoreRoot = resolve(root, "node_modules", "tesseract.js-core");
 const tessdataRoot = resolve(vendor, "tessdata");
 const tesseractWorkerRoot = resolve(vendor, "tesseract");
 const tesseractCoreOutput = resolve(vendor, "tesseract-core");
-const staticFiles = ["index.html", "styles.css", "app-v2.js", "source-importer.js", "ocr-engine.js", "fallback-plan.js", "pptx-exporter.js", "pptx-exporter-v2.js", "lecture-template.js", "_headers"];
+const staticFiles = ["index.html", "styles.css", "app-v2.js", "source-importer.js", "source-importer-core.js", "ocr-engine.js", "fallback-plan.js", "pptx-exporter.js", "pptx-exporter-v2.js", "lecture-template.js", "_headers"];
 
 async function copyRequired(source, destination, options) {
   await access(source);
