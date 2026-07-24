@@ -112,7 +112,9 @@ export function hydrateHtmlAssetSources(htmlInput, assets = []) {
 
 async function renderHtml(html) {
   const frame = document.createElement("iframe");
-  frame.setAttribute("sandbox", "");
+  // The converter never permits scripts in model-authored HTML. allow-same-origin is
+  // required only so the parent page can read the rendered DOM and computed styles.
+  frame.setAttribute("sandbox", "allow-same-origin");
   frame.setAttribute("aria-hidden", "true");
   Object.assign(frame.style, {
     position: "fixed",
@@ -210,292 +212,212 @@ function gradientSvg(width, height, style, radius = 0, border = null, borderWidt
   return encodeSvg(`<svg xmlns="http://www.w3.org/2000/svg" width="${Math.max(1, width)}" height="${Math.max(1, height)}" viewBox="0 0 ${Math.max(1, width)} ${Math.max(1, height)}"><defs>${definition}</defs><rect x="${borderWidth / 2}" y="${borderWidth / 2}" width="${Math.max(0, width - borderWidth)}" height="${Math.max(0, height - borderWidth)}" rx="${Math.max(0, radius)}" fill="url(#g)" ${stroke}/></svg>`);
 }
 
+function borderOptions(style) {
+  const width = Math.max(cssNumber(style.borderTopWidth), cssNumber(style.borderRightWidth), cssNumber(style.borderBottomWidth), cssNumber(style.borderLeftWidth));
+  const color = cssColor(style.borderTopColor) || cssColor(style.borderColor);
+  if (!color || width <= 0) return null;
+  return { color: color.color, transparency: color.transparency, width: Math.max(0.5, width * POINTS_PER_PX) };
+}
+
 function addElementBackground(deck, slide, element, pageRect) {
-  if (element.closest("svg, table") || ["IMG", "STYLE", "SCRIPT", "BR"].includes(element.tagName)) return;
+  if (["BODY", "HTML", "MAIN", "SECTION", "ARTICLE", "TABLE", "TBODY", "THEAD", "TR", "SVG", "G", "DEFS", "MARKER"].includes(element.tagName)) return;
+  if (element.closest("svg, table") || element.matches("img, text, tspan, line, rect, circle, ellipse, path, polygon, polyline")) return;
   const style = getComputedStyle(element);
-  const background = cssColor(style.backgroundColor);
-  const borderWidth = Math.max(cssNumber(style.borderTopWidth), cssNumber(style.borderRightWidth), cssNumber(style.borderBottomWidth), cssNumber(style.borderLeftWidth));
-  const border = cssColor(style.borderTopColor || style.borderColor);
-  const hasGradient = firstGradient(style.backgroundImage);
-  if ((!background || background.transparency >= 100) && !hasGradient && (!border || borderWidth <= 0)) return;
   const box = elementBox(element, pageRect);
-  if (box.w <= 0.002 || box.h <= 0.002) return;
-  const radiusPx = Math.max(cssNumber(style.borderTopLeftRadius), cssNumber(style.borderTopRightRadius), cssNumber(style.borderBottomLeftRadius), cssNumber(style.borderBottomRightRadius));
-  if (hasGradient) {
-    const data = gradientSvg(box.width, box.height, style, radiusPx, border, borderWidth);
-    if (data) {
-      slide.addImage({ data, x: box.x, y: box.y, w: box.w, h: box.h });
-      return;
-    }
-  }
-  slide.addShape(shape(deck, radiusPx >= 4 ? "roundRect" : "rect"), {
-    x: box.x,
-    y: box.y,
-    w: box.w,
-    h: box.h,
-    rectRadius: Math.min(0.12, radiusPx * PX_TO_IN),
-    fill: background ? { color: background.color, transparency: background.transparency } : { color: "FFFFFF", transparency: 100 },
-    line: border && borderWidth > 0 ? { color: border.color, transparency: border.transparency, width: Math.max(0.25, borderWidth * POINTS_PER_PX) } : { color: "FFFFFF", transparency: 100 },
-  });
-}
-
-function richRuns(element) {
-  const runs = [];
-  const walk = (node, inherited = {}) => {
-    if (node.nodeType === Node.TEXT_NODE) {
-      const value = String(node.nodeValue || "").replace(/\s+/g, " ");
-      if (value) runs.push({ text: value, options: inherited });
-      return;
-    }
-    if (node.nodeType !== Node.ELEMENT_NODE) return;
-    if (node.tagName === "BR") { runs.push({ text: "\n", options: inherited }); return; }
-    const style = getComputedStyle(node);
-    const options = {
-      ...inherited,
-      bold: Number.parseInt(style.fontWeight, 10) >= 600 || node.tagName === "STRONG",
-      italic: style.fontStyle === "italic" || node.classList.contains("important-word"),
-      underline: style.textDecorationLine?.includes("underline") || false,
-      color: computedColor(style, inherited.color || "111110"),
-      fontFace: fontFace(style),
-    };
-    if (node.classList.contains("critical-highlight")) options.highlight = "F5E642";
-    if (node.classList.contains("important-word")) options.color = "922B21";
-    for (const child of node.childNodes) walk(child, options);
+  if (box.w <= 0 || box.h <= 0) return;
+  const fill = cssColor(style.backgroundColor);
+  const border = borderOptions(style);
+  const radius = cssNumber(style.borderRadius);
+  const gradient = firstGradient(style.backgroundImage);
+  if (!fill && !border && !gradient) return;
+  const shapeOptions = {
+    x: box.x, y: box.y, w: box.w, h: box.h,
+    fill: fill ? { color: fill.color, transparency: fill.transparency } : { color: "FFFFFF", transparency: 100 },
+    line: border ? { color: border.color, transparency: border.transparency, width: border.width } : { color: "FFFFFF", transparency: 100 },
+    radius,
   };
-  for (const child of element.childNodes) walk(child, {});
-  return runs.filter((run) => run.text);
+  const background = gradientSvg(box.width, box.height, style, radius, border, border?.width || 0);
+  if (background) slide.addImage({ data: background, x: box.x, y: box.y, w: box.w, h: box.h });
+  else slide.addShape(shape(deck, radius > 1 ? "roundRect" : "rect"), shapeOptions);
 }
 
-function addTextElement(slide, element, pageRect, sourceIds, decorativeTextCount) {
-  const value = actualText(element);
-  if (!value) return decorativeTextCount;
+function textOptions(element, pageRect) {
   const style = getComputedStyle(element);
   const box = elementBox(element, pageRect);
-  const paddingLeft = cssNumber(style.paddingLeft) * PX_TO_IN;
-  const paddingRight = cssNumber(style.paddingRight) * PX_TO_IN;
-  const paddingTop = cssNumber(style.paddingTop) * PX_TO_IN;
-  const paddingBottom = cssNumber(style.paddingBottom) * PX_TO_IN;
-  const listPrefix = element.tagName === "LI"
-    ? (element.parentElement?.tagName === "OL" ? `${[...element.parentElement.children].indexOf(element) + 1}. ` : "• ")
-    : "";
-  const runs = richRuns(element);
-  if (listPrefix) runs.unshift({ text: listPrefix, options: { bold: true, color: computedColor(style) } });
-  const fontSize = Math.max(1, cssNumber(style.fontSize) * POINTS_PER_PX);
-  const align = ({ center: "center", right: "right", justify: "justify", start: style.direction === "rtl" ? "right" : "left", end: style.direction === "rtl" ? "left" : "right" })[style.textAlign] || style.textAlign || (style.direction === "rtl" ? "right" : "left");
-  slide.addText(runs.length ? runs : value, {
-    x: box.x + paddingLeft,
-    y: box.y + paddingTop,
-    w: Math.max(0.02, box.w - paddingLeft - paddingRight),
-    h: Math.max(0.02, box.h - paddingTop - paddingBottom),
+  const align = style.textAlign === "center" ? "center" : style.textAlign === "right" || style.direction === "rtl" ? "right" : style.textAlign === "justify" ? "justify" : "left";
+  const valign = style.alignItems === "center" || style.justifyContent === "center" ? "mid" : "top";
+  const background = cssColor(style.backgroundColor);
+  const border = borderOptions(style);
+  const padding = Math.max(cssNumber(style.paddingTop), cssNumber(style.paddingRight), cssNumber(style.paddingBottom), cssNumber(style.paddingLeft)) * PX_TO_IN;
+  return {
+    x: box.x, y: box.y, w: Math.max(0.01, box.w), h: Math.max(0.01, box.h),
     fontFace: fontFace(style),
-    fontSize,
+    fontSize: Math.max(1, cssNumber(style.fontSize) * POINTS_PER_PX),
     color: computedColor(style),
-    bold: Number.parseInt(style.fontWeight, 10) >= 600,
-    italic: style.fontStyle === "italic",
-    align,
-    valign: style.alignItems === "center" ? "mid" : "top",
-    margin: 0,
+    bold: Number(style.fontWeight) >= 600 || ["bold", "bolder"].includes(style.fontWeight),
+    italic: style.fontStyle === "italic" || style.fontStyle === "oblique",
+    underline: style.textDecorationLine.includes("underline") ? { style: "sng" } : undefined,
+    strike: style.textDecorationLine.includes("line-through") ? "sngStrike" : undefined,
+    align, valign,
     breakLine: false,
-    rtlMode: style.direction === "rtl",
-    transparency: Math.round((1 - Number(style.opacity || 1)) * 100),
-    charSpacing: cssNumber(style.letterSpacing) * POINTS_PER_PX,
+    fit: "shrink",
+    margin: [padding * 72, padding * 72, padding * 72, padding * 72],
+    paraSpaceAfterPt: Math.max(0, cssNumber(style.marginBottom) * POINTS_PER_PX),
+    lineSpacingMultiple: Math.max(0.7, cssNumber(style.lineHeight) / Math.max(1, cssNumber(style.fontSize))),
     isTextBox: true,
-  });
-  const sourceId = clean(element.getAttribute("data-source-id"));
-  if (sourceId) sourceIds.add(sourceId);
-  return decorativeTextCount + (sourceId ? 0 : 1);
+    rtlMode: style.direction === "rtl",
+    fill: background ? { color: background.color, transparency: background.transparency } : undefined,
+    line: border ? { color: border.color, transparency: border.transparency, width: border.width } : undefined,
+  };
 }
 
-function addTable(slide, table, pageRect, sourceIds) {
-  const rows = [...table.rows];
+function addTextElement(slide, element, pageRect, renderedSourceIds, decorativeCount) {
+  const text = actualText(element);
+  if (!text) return decorativeCount;
+  const id = clean(element.getAttribute("data-source-id"));
+  if (id && renderedSourceIds.has(id)) return decorativeCount;
+  slide.addText(text, textOptions(element, pageRect));
+  if (id) renderedSourceIds.add(id);
+  else decorativeCount += 1;
+  return decorativeCount;
+}
+
+function addTable(slide, table, pageRect, renderedSourceIds) {
+  const rows = [...table.rows].map((row) => [...row.cells].map((cell) => ({ text: actualText(cell), options: { bold: cell.tagName === "TH", color: computedColor(getComputedStyle(cell)) } })));
   if (!rows.length) return 0;
   const box = elementBox(table, pageRect);
-  const tableRows = rows.map((row) => [...row.cells].map((cell) => {
-    const style = getComputedStyle(cell);
-    const fill = cssColor(style.backgroundColor);
-    for (const source of cell.querySelectorAll("[data-source-id]")) sourceIds.add(clean(source.getAttribute("data-source-id")));
-    if (cell.hasAttribute("data-source-id")) sourceIds.add(clean(cell.getAttribute("data-source-id")));
-    return {
-      text: actualText(cell),
-      options: {
-        bold: cell.tagName === "TH" || Number.parseInt(style.fontWeight, 10) >= 600,
-        italic: style.fontStyle === "italic",
-        color: computedColor(style),
-        fill: fill ? { color: fill.color, transparency: fill.transparency } : { color: "FFFFFF" },
-        align: style.textAlign === "center" ? "center" : style.textAlign === "right" ? "right" : "left",
-        valign: "mid",
-        margin: 0.05,
-      },
-    };
-  }));
-  const firstRow = rows[0];
-  const colW = firstRow?.cells?.length
-    ? [...firstRow.cells].map((cell) => cell.getBoundingClientRect().width * PX_TO_IN)
-    : undefined;
   const style = getComputedStyle(table);
-  slide.addTable(tableRows, {
-    x: box.x,
-    y: box.y,
-    w: box.w,
-    h: box.h,
-    colW,
-    rowH: Math.max(0.18, box.h / rows.length),
-    border: { type: "solid", color: cssColor(style.borderColor)?.color || "C8C8C2", pt: Math.max(0.5, cssNumber(style.borderWidth) * POINTS_PER_PX || 0.75) },
-    color: computedColor(style),
+  slide.addTable(rows, {
+    x: box.x, y: box.y, w: box.w, h: box.h,
     fontFace: fontFace(style),
-    fontSize: Math.max(6, cssNumber(style.fontSize) * POINTS_PER_PX),
-    margin: 0.05,
+    fontSize: Math.max(1, cssNumber(style.fontSize) * POINTS_PER_PX),
+    color: computedColor(style),
+    border: { type: "solid", color: "C8C8C2", pt: 0.5 },
+    margin: 0.08,
     autoFit: false,
-    bold: false,
-    breakLine: false,
   });
-  return tableRows.reduce((sum, row) => sum + row.length, 0);
-}
-
-function imageRect(image, box) {
-  const naturalWidth = image.naturalWidth || box.width;
-  const naturalHeight = image.naturalHeight || box.height;
-  if (!naturalWidth || !naturalHeight) return { x: box.x, y: box.y, w: box.w, h: box.h };
-  const scale = Math.min(box.width / naturalWidth, box.height / naturalHeight);
-  const width = naturalWidth * scale;
-  const height = naturalHeight * scale;
-  return {
-    x: box.x + (box.w - width * PX_TO_IN) / 2,
-    y: box.y + (box.h - height * PX_TO_IN) / 2,
-    w: width * PX_TO_IN,
-    h: height * PX_TO_IN,
-  };
+  const id = clean(table.closest("[data-source-id]")?.getAttribute("data-source-id") || table.getAttribute("data-source-id"));
+  if (id) renderedSourceIds.add(id);
+  return rows.reduce((total, row) => total + row.length, 0);
 }
 
 function addImage(slide, image, pageRect, renderedAssets) {
-  const id = clean(image.getAttribute("data-asset-id"));
-  const source = clean(image.currentSrc || image.src);
-  if (!id || !/^data:image\//i.test(source)) return false;
+  const source = image.currentSrc || image.src;
+  if (!/^data:image\//i.test(source)) return false;
   const box = elementBox(image, pageRect);
-  const target = imageRect(image, box);
-  slide.addImage({ data: source, ...target, altText: `JANG_ASSET:${id}`, name: `JANG_ASSET:${id}` });
-  renderedAssets.add(id);
+  slide.addImage({ data: source, x: box.x, y: box.y, w: box.w, h: box.h });
+  const id = clean(image.getAttribute("data-asset-id"));
+  if (id) renderedAssets.add(id);
   return true;
 }
 
 function svgViewBox(svg) {
-  const base = svg.viewBox?.baseVal;
-  if (base?.width && base?.height) return { x: base.x, y: base.y, width: base.width, height: base.height };
-  return { x: 0, y: 0, width: svg.clientWidth || 1, height: svg.clientHeight || 1 };
-}
-
-function addSvgText(slide, element, pageRect, sourceIds) {
-  const value = actualText(element);
-  if (!value) return false;
-  const style = getComputedStyle(element);
-  const box = elementBox(element, pageRect);
-  slide.addText(value, {
-    x: box.x,
-    y: box.y,
-    w: Math.max(0.05, box.w),
-    h: Math.max(0.05, box.h + 0.04),
-    fontFace: fontFace(style),
-    fontSize: Math.max(5, cssNumber(style.fontSize) * POINTS_PER_PX),
-    color: computedColor(style),
-    bold: Number.parseInt(style.fontWeight, 10) >= 600,
-    italic: style.fontStyle === "italic",
-    align: element.getAttribute("text-anchor") === "middle" ? "center" : element.getAttribute("text-anchor") === "end" ? "right" : "left",
-    valign: "mid",
-    margin: 0,
-    breakLine: false,
-    rtlMode: style.direction === "rtl",
-  });
-  const sourceId = clean(element.getAttribute("data-source-id"));
-  if (sourceId) sourceIds.add(sourceId);
-  return true;
-}
-
-function addSvgFallbackPath(slide, svg, path, pageRect) {
-  const box = elementBox(svg, pageRect);
-  const viewBox = svg.getAttribute("viewBox") || `0 0 ${svg.clientWidth || 1} ${svg.clientHeight || 1}`;
-  const defs = svg.querySelector("defs")?.outerHTML || "";
-  const data = encodeSvg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}">${defs}${path.outerHTML}</svg>`);
-  slide.addImage({ data, x: box.x, y: box.y, w: box.w, h: box.h });
-}
-
-function parsePoints(value) {
-  const numbers = String(value || "").trim().split(/[\s,]+/).map(Number).filter(Number.isFinite);
-  const points = [];
-  for (let index = 0; index + 1 < numbers.length; index += 2) points.push([numbers[index], numbers[index + 1]]);
-  return points;
+  const values = String(svg.getAttribute("viewBox") || "").trim().split(/[ ,]+/).map(Number);
+  if (values.length === 4 && values.every(Number.isFinite) && values[2] > 0 && values[3] > 0) return values;
+  return [0, 0, Math.max(1, svg.clientWidth), Math.max(1, svg.clientHeight)];
 }
 
 function mapSvgPoint(svg, pageRect, x, y) {
-  const svgBox = elementBox(svg, pageRect);
-  const view = svgViewBox(svg);
+  const rect = svg.getBoundingClientRect();
+  const [minX, minY, width, height] = svgViewBox(svg);
   return {
-    x: svgBox.x + ((x - view.x) / view.width) * svgBox.w,
-    y: svgBox.y + ((y - view.y) / view.height) * svgBox.h,
+    x: ((rect.left - pageRect.left) + ((x - minX) / width) * rect.width) * PX_TO_IN,
+    y: ((rect.top - pageRect.top) + ((y - minY) / height) * rect.height) * PX_TO_IN,
   };
 }
 
-function addSvg(slide, svg, pageRect, sourceIds) {
+function svgFill(element) {
+  return cssColor(element.getAttribute("fill") || getComputedStyle(element).fill);
+}
+
+function svgStroke(element) {
+  return cssColor(element.getAttribute("stroke") || getComputedStyle(element).stroke);
+}
+
+function addSvgText(slide, element, svg, pageRect, renderedSourceIds) {
+  const text = actualText(element);
+  if (!text) return;
+  const point = mapSvgPoint(svg, pageRect, Number(element.getAttribute("x") || 0), Number(element.getAttribute("y") || 0));
+  const style = getComputedStyle(element);
+  const size = Math.max(1, cssNumber(style.fontSize || element.getAttribute("font-size")) * POINTS_PER_PX);
+  const anchor = element.getAttribute("text-anchor");
+  const width = Math.max(0.6, (text.length * size * 0.0075));
+  slide.addText(text, {
+    x: point.x - (anchor === "middle" ? width / 2 : anchor === "end" ? width : 0),
+    y: point.y - size * 0.014,
+    w: width,
+    h: Math.max(0.15, size * 0.025),
+    fontFace: fontFace(style), fontSize: size, color: computedColor(style),
+    bold: Number(style.fontWeight) >= 600, italic: style.fontStyle === "italic",
+    align: anchor === "middle" ? "center" : anchor === "end" ? "right" : "left",
+    margin: 0, fit: "shrink", rtlMode: style.direction === "rtl",
+  });
+  const id = clean(element.getAttribute("data-source-id"));
+  if (id) renderedSourceIds.add(id);
+}
+
+function addSvg(slide, svg, pageRect, renderedSourceIds) {
   let nativeShapes = 0;
   let fallbackPaths = 0;
+  const [minX, minY, viewWidth, viewHeight] = svgViewBox(svg);
+  const svgRect = svg.getBoundingClientRect();
+  const sx = svgRect.width / viewWidth * PX_TO_IN;
+  const sy = svgRect.height / viewHeight * PX_TO_IN;
   for (const element of svg.querySelectorAll("rect,circle,ellipse,line,polyline,polygon,path,text,tspan")) {
-    if (!visible(element) || element.closest("defs,marker")) continue;
+    if (!visible(element) || element.closest("defs, marker")) continue;
     const tag = element.tagName.toLowerCase();
-    if (tag === "text" && element.querySelector("[data-source-id]")) continue;
-    if (tag === "text" || tag === "tspan") {
-      if (addSvgText(slide, element, pageRect, sourceIds)) nativeShapes += 1;
-      continue;
-    }
-    const style = getComputedStyle(element);
-    const fill = cssColor(style.fill || element.getAttribute("fill"));
-    const stroke = cssColor(style.stroke || element.getAttribute("stroke"));
-    const strokeWidth = Math.max(0.25, cssNumber(style.strokeWidth || element.getAttribute("stroke-width")) * POINTS_PER_PX);
-    if (["rect", "circle", "ellipse"].includes(tag)) {
-      const box = elementBox(element, pageRect);
-      const radius = tag === "rect" ? Math.max(cssNumber(element.getAttribute("rx")), cssNumber(element.getAttribute("ry"))) : 999;
-      slide.addShape(shape(globalThis.PptxGenJS, tag === "rect" ? (radius >= 4 ? "roundRect" : "rect") : "ellipse"), {
-        x: box.x, y: box.y, w: box.w, h: box.h,
-        fill: fill ? { color: fill.color, transparency: fill.transparency } : { color: "FFFFFF", transparency: 100 },
-        line: stroke ? { color: stroke.color, transparency: stroke.transparency, width: strokeWidth } : { color: "FFFFFF", transparency: 100 },
-      });
+    if (tag === "text" || tag === "tspan") { if (tag === "text") addSvgText(slide, element, svg, pageRect, renderedSourceIds); continue; }
+    const fill = svgFill(element);
+    const stroke = svgStroke(element);
+    const strokeWidth = Math.max(0.25, cssNumber(element.getAttribute("stroke-width") || getComputedStyle(element).strokeWidth) * POINTS_PER_PX);
+    const baseLine = { color: stroke?.color || "555550", transparency: stroke?.transparency || 0, width: strokeWidth };
+    const baseFill = fill ? { color: fill.color, transparency: fill.transparency } : { color: "FFFFFF", transparency: 100 };
+    if (tag === "rect") {
+      const x = (svgRect.left - pageRect.left) * PX_TO_IN + (Number(element.getAttribute("x") || 0) - minX) * sx;
+      const y = (svgRect.top - pageRect.top) * PX_TO_IN + (Number(element.getAttribute("y") || 0) - minY) * sy;
+      const w = Number(element.getAttribute("width") || 0) * sx;
+      const h = Number(element.getAttribute("height") || 0) * sy;
+      const radius = Number(element.getAttribute("rx") || 0);
+      slide.addShape(shape(globalThis.PptxGenJS, radius ? "roundRect" : "rect"), { x, y, w, h, fill: baseFill, line: baseLine });
       nativeShapes += 1;
-      continue;
-    }
-    if (tag === "line") {
+    } else if (tag === "circle" || tag === "ellipse") {
+      const cx = Number(element.getAttribute("cx") || 0);
+      const cy = Number(element.getAttribute("cy") || 0);
+      const rx = tag === "circle" ? Number(element.getAttribute("r") || 0) : Number(element.getAttribute("rx") || 0);
+      const ry = tag === "circle" ? rx : Number(element.getAttribute("ry") || 0);
+      const point = mapSvgPoint(svg, pageRect, cx - rx, cy - ry);
+      slide.addShape(shape(globalThis.PptxGenJS, "ellipse"), { x: point.x, y: point.y, w: rx * 2 * sx, h: ry * 2 * sy, fill: baseFill, line: baseLine });
+      nativeShapes += 1;
+    } else if (tag === "line") {
       const start = mapSvgPoint(svg, pageRect, Number(element.getAttribute("x1") || 0), Number(element.getAttribute("y1") || 0));
       const end = mapSvgPoint(svg, pageRect, Number(element.getAttribute("x2") || 0), Number(element.getAttribute("y2") || 0));
-      slide.addShape(shape(globalThis.PptxGenJS, "line"), {
-        x: start.x, y: start.y, w: end.x - start.x, h: end.y - start.y,
-        line: { color: stroke?.color || "555550", transparency: stroke?.transparency || 0, width: strokeWidth, endArrowType: element.hasAttribute("marker-end") ? "triangle" : undefined, beginArrowType: element.hasAttribute("marker-start") ? "triangle" : undefined },
-      });
+      slide.addShape(shape(globalThis.PptxGenJS, "line"), { x: start.x, y: start.y, w: end.x - start.x, h: end.y - start.y, line: { ...baseLine, endArrowType: element.hasAttribute("marker-end") ? "triangle" : undefined } });
       nativeShapes += 1;
-      continue;
-    }
-    if (tag === "polyline" || tag === "polygon") {
-      const points = parsePoints(element.getAttribute("points"));
-      if (tag === "polygon" && points.length) points.push(points[0]);
-      for (let index = 0; index + 1 < points.length; index += 1) {
-        const start = mapSvgPoint(svg, pageRect, points[index][0], points[index][1]);
-        const end = mapSvgPoint(svg, pageRect, points[index + 1][0], points[index + 1][1]);
-        slide.addShape(shape(globalThis.PptxGenJS, "line"), { x: start.x, y: start.y, w: end.x - start.x, h: end.y - start.y, line: { color: stroke?.color || fill?.color || "555550", width: strokeWidth } });
+    } else if (tag === "polyline" || tag === "polygon") {
+      const values = String(element.getAttribute("points") || "").trim().split(/[ ,]+/).map(Number);
+      const points = [];
+      for (let index = 0; index + 1 < values.length; index += 2) points.push(mapSvgPoint(svg, pageRect, values[index], values[index + 1]));
+      for (let index = 1; index < points.length; index += 1) {
+        const a = points[index - 1]; const b = points[index];
+        slide.addShape(shape(globalThis.PptxGenJS, "line"), { x: a.x, y: a.y, w: b.x - a.x, h: b.y - a.y, line: { ...baseLine, endArrowType: index === points.length - 1 && element.hasAttribute("marker-end") ? "triangle" : undefined } });
         nativeShapes += 1;
       }
-      continue;
-    }
-    if (tag === "path") {
-      const d = clean(element.getAttribute("d"));
-      const simple = /^[MLHVZmlhvz\d.,+\-\s]+$/.test(d);
-      if (!simple) {
-        addSvgFallbackPath(slide, svg, element, pageRect);
+      if (tag === "polygon" && points.length > 2) {
+        const a = points.at(-1); const b = points[0];
+        slide.addShape(shape(globalThis.PptxGenJS, "line"), { x: a.x, y: a.y, w: b.x - a.x, h: b.y - a.y, line: baseLine });
+        nativeShapes += 1;
+      }
+    } else if (tag === "path") {
+      const d = String(element.getAttribute("d") || "").trim();
+      const tokens = [...d.matchAll(/[MmLlHhVvZz]|-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?/g)].map((match) => match[0]);
+      if (!tokens.length || tokens.some((token) => /^[CcSsQqTtAa]$/.test(token))) {
         fallbackPaths += 1;
         continue;
       }
-      const values = [...d.matchAll(/([MLHVZmlhvz])|(-?\d*\.?\d+)/g)].map((match) => match[1] || Number(match[2]));
-      let command = "";
-      let cursor = [0, 0];
-      let startPoint = [0, 0];
-      let index = 0;
-      while (index < values.length) {
-        if (typeof values[index] === "string") command = values[index++];
+      let cursor = [0, 0]; let startPoint = [0, 0]; let command = ""; let index = 0;
+      while (index < tokens.length) {
+        if (/^[A-Za-z]$/.test(tokens[index])) command = tokens[index++];
+        const values = tokens.map((token) => Number(token));
         if (/^[Zz]$/.test(command)) {
           const a = mapSvgPoint(svg, pageRect, cursor[0], cursor[1]);
           const b = mapSvgPoint(svg, pageRect, startPoint[0], startPoint[1]);
