@@ -40,10 +40,39 @@ function productionOrigin(request, env) {
   return "";
 }
 
+async function productionCapabilities(origin) {
+  try {
+    const response = await fetch(`${origin}/api/config?source=ocr-proxy`, { headers: { accept: "application/json" } });
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+function requestNeedsOcr(body) {
+  try {
+    const parsed = JSON.parse(new TextDecoder().decode(body));
+    return Array.isArray(parsed?.source?.ocrPages) && parsed.source.ocrPages.length > 0;
+  } catch {
+    return false;
+  }
+}
+
 async function proxyToProduction(request, env) {
   const origin = productionOrigin(request, env);
   if (!origin || origin === new URL(request.url).origin) return null;
   const body = await request.arrayBuffer();
+  if (requestNeedsOcr(body)) {
+    const capabilities = await productionCapabilities(origin);
+    if (Number(capabilities?.ocrCapabilityVersion || 0) < 2) {
+      return new Response(JSON.stringify({
+        code: "GEMINI_OCR_PROXY_OUTDATED",
+        environment: "preview",
+        error: "The configured production Gemini proxy does not yet contain the page-level OCR engine. Local OCR was attempted, but this preview cannot safely send the page to an older endpoint.",
+      }), { status: 503, headers });
+    }
+  }
   const upstream = await fetch(`${origin}/api/redesign-large`, {
     method: "POST",
     headers: {
