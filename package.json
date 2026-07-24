@@ -1,11 +1,11 @@
 {
   "name": "jang-lecture-rebuilder",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "private": true,
   "description": "Browser-first PPTX, PDF, and HTML lecture redesign tool deployed on Cloudflare Pages.",
   "scripts": {
     "dev": "npm run build && wrangler pages dev dist --compatibility-date=2026-07-23",
-    "check": "node --check app-v2.js && node --check extractor-v2.js && node --check source-importer.js && node --check ocr-engine.js && node --check fallback-plan.js && node --check pptx-exporter.js && node --check pptx-exporter-v2.js && node --check lecture-template.js && node --check functions/api/config.js && node --check functions/api/redesign.js && node --check functions/api/redesign-large.js && node --check scripts/build.mjs && node --check tests/create-fixtures.mjs",
+    "check": "node --check app-v2.js && node --check extractor-v2.js && node --check source-importer.js && node --check ocr-engine.js && node --check fallback-plan.js && node --check pptx-exporter.js && node --check pptx-exporter-v2.js && node --check lecture-template.js && node --check html-design-contract.js && node --check master-design-reference.js && node --check functions/api/config.js && node --check functions/api/redesign.js && node --check functions/api/redesign-large.js && node --check functions/api/design-html.js && node --check scripts/build.mjs && node --check tests/create-fixtures.mjs",
     "build": "node scripts/build.mjs",
     "unit": "node --test tests/unit/*.test.mjs",
     "test:unit": "npm run unit",
