@@ -1,4 +1,5 @@
 const clean = (value) => typeof value === "string" ? value.replace(/\u0000/g, "").trim() : "";
+const MAX_PREVIEW_BASE64 = 3_800_000;
 
 export function normalizeAssetPreview(value, label = "Asset preview") {
   const source = clean(value);
@@ -6,7 +7,7 @@ export function normalizeAssetPreview(value, label = "Asset preview") {
   const match = source.match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=\s]+)$/i);
   if (!match) throw new Error(`${label} must be a PNG, JPEG, or WebP data URL.`);
   const data = match[2].replace(/\s+/g, "");
-  if (data.length > 900_000) throw new Error(`${label} is too large.`);
+  if (data.length > MAX_PREVIEW_BASE64) throw new Error(`${label} is too large.`);
   return { mimeType: match[1].toLowerCase(), data };
 }
 
