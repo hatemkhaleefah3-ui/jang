@@ -201,7 +201,9 @@ async function bestPageCandidate(worker, page, onProgress) {
 async function loadTesseract() {
   if (globalThis.__jangTesseract) return globalThis.__jangTesseract;
   try {
-    return await import(OCR_MODULE_PATH);
+    const module = await import(OCR_MODULE_PATH);
+    const api = module?.default && typeof module.default === "object" ? module.default : module;
+    return typeof api?.createWorker === "function" ? api : module;
   } catch (error) {
     throw new Error(`The self-hosted browser OCR module could not load: ${error instanceof Error ? error.message : String(error)}`);
   }
@@ -245,5 +247,5 @@ export async function applyBrowserOcr(extraction, language = "auto", onProgress 
   } finally {
     await worker?.terminate?.();
   }
-  return applyOcrResults(extraction, results, "Browser OCR");
+  return applyOcrResults(extraction, results, "Local OCR");
 }
