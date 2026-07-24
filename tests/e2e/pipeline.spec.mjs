@@ -190,7 +190,7 @@ test("image-only PDF is OCR-processed before the redesign verification gate", as
 
   await expect(page.locator("#previewShell")).toBeVisible();
   await expect(page.locator("#downloadPptxButton")).toBeEnabled();
-  await expect(page.locator("#resultMessage")).toContainText("Browser OCR completed before redesign");
+  await expect(page.locator("#resultMessage")).toContainText("Local OCR completed before redesign");
   expect(capturedSource.extractionStatus).toBe("verified-native");
   expect(capturedSource.ocrPages).toEqual([]);
   expect(capturedSource.sourceUnits.some((unit) => unit.text === "Scanned lecture heading" && unit.extractionMethod === "ocr")).toBe(true);
