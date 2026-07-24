@@ -52,7 +52,7 @@ test("hydrates exact source text and local asset URLs after validation", () => {
 
 test("prompt delegates visual design while preserving PPTX-safe fidelity", () => {
   const prompt = createHtmlDesignPrompt({ manifest, referenceHtml: "<style>.page{width:900px}</style>", metadata: { title: "Biochemistry" } });
-  assert.match(prompt, /Choose the page structure, boxes, diagrams/);
+  assert.match(prompt, /Choose the boxes, diagrams, tables, columns/);
   assert.match(prompt, /Every source unit must appear exactly once/);
   assert.match(prompt, /one <article class="page"> for every output slide/);
   assert.match(prompt, /ATP → ADP/);
