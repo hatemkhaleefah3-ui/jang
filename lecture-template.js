@@ -14,64 +14,105 @@ h1,h2{font-family:var(--display)}h1{font-size:2.1rem;line-height:1.15}h2{font-si
 @media print{body{background:#fff;gap:0;padding:0}.page{width:100%;min-height:100vh;box-shadow:none;break-after:page}.page:last-child{break-after:auto}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}.callout,.figure,.diagram,.table-wrap,.takeaways{break-inside:avoid}}
 `;
 
-const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const text = (value, max = 12000) => String(value ?? "").replace(/\u0000/g, "").trim().slice(0, max);
 const arr = (value, max = 40) => Array.isArray(value) ? value.slice(0, max) : [];
 
-function terms(value, critical = [], important = []) {
+function terms(value, critical = [], important = [], budget = { highlights: 0, red: 0 }, allowStyles = true) {
   let result = esc(text(value));
-  const apply = (list, className) => arr(list, 15).map((x) => text(x, 100)).filter((x) => x.length > 1).sort((a,b)=>b.length-a.length).forEach((term) => {
-    const escaped = esc(term).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    result = result.replace(new RegExp(`(^|[^\\p{L}\\p{N}])(${escaped})(?=$|[^\\p{L}\\p{N}])`, "giu"), `$1<span class="${className}">$2</span>`);
-  });
-  apply(important, "important"); apply(critical, "critical");
+  if (!allowStyles) return result.replace(/\n/g, "<br>");
+  const apply = (values, className, key, limit) => {
+    for (const term of arr(values, 15).map((item) => text(item, 100)).filter((item) => item.length > 1).sort((a, b) => b.length - a.length)) {
+      if (budget[key] >= limit) break;
+      const escaped = esc(term).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(`(^|[^\\p{L}\\p{N}])(${escaped})(?=$|[^\\p{L}\\p{N}])`, "giu");
+      result = result.replace(regex, (match, prefix, found) => {
+        if (budget[key] >= limit) return match;
+        budget[key] += 1;
+        return `${prefix}<span class="${className}">${found}</span>`;
+      });
+    }
+  };
+  apply(critical, "critical", "highlights", 10);
+  apply(important, "important", "red", 5);
   return result.replace(/\n/g, "<br>");
 }
 
-function blankBlock(type = "paragraph") { return {type,heading:"",text:"",label:"",items:[],pairs:[],headers:[],rows:[],assetId:"",caption:"",alt:"",question:"",answer:""}; }
+function blankBlock(type = "paragraph") { return { type, heading: "", text: "", label: "", items: [], pairs: [], headers: [], rows: [], assetId: "", caption: "", alt: "", question: "", answer: "" }; }
 function normalize(raw, options) {
   const p = raw && typeof raw === "object" ? raw : {};
   const m = p.metadata && typeof p.metadata === "object" ? p.metadata : {};
-  const sections = arr(p.sections,60).map((s,i)=>({
-    title:text(s?.title,160)||`Section ${i+1}`, category:text(s?.category,40)||"Concept",
-    keyTermsCritical:arr(s?.keyTermsCritical,12).map((x)=>text(x,100)), keyTermsImportant:arr(s?.keyTermsImportant,12).map((x)=>text(x,100)),
-    blocks:arr(s?.blocks,14).map((b)=>({...blankBlock(text(b?.type,30)||"paragraph"),...b,heading:text(b?.heading,180),text:text(b?.text),label:text(b?.label,80),items:arr(b?.items,20).map((x)=>text(x,2000)),pairs:arr(b?.pairs,16).map((x)=>({term:text(x?.term,200),description:text(x?.description,3000)})),headers:arr(b?.headers,12).map((x)=>text(x,500)),rows:arr(b?.rows,40).map((r)=>arr(r,12).map((x)=>text(x,2000))),assetId:text(b?.assetId,80),caption:text(b?.caption,1000),alt:text(b?.alt,500),question:text(b?.question,2000),answer:text(b?.answer,5000)}))
-  })).filter((s)=>s.blocks.length);
-  return {metadata:{title:text(m.title,300)||text(options.sourceTitle,300)||"Untitled lecture",subtitle:text(m.subtitle,500),courseCode:text(options.courseCode||m.courseCode,50)||"Course",lectureLabel:text(options.lectureLabel||m.lectureLabel,70)||"Lecture",instructor:text(options.instructor||m.instructor,100),language:text(m.language||options.language,40),direction:m.direction==="rtl"||options.language==="Arabic"?"rtl":"ltr"},overview:text(p.overview,5000),learningObjectives:arr(p.learningObjectives,10).map((x)=>text(x,1000)),sections:sections.length?sections:[{title:"Lecture",category:"Content",keyTermsCritical:[],keyTermsImportant:[],blocks:[{...blankBlock(),text:"No structured content was returned."}]}],finalTakeaways:arr(p.finalTakeaways,12).map((x)=>text(x,1200))};
+  const sections = arr(p.sections, 60).map((s, i) => ({
+    title: text(s?.title, 160) || `Section ${i + 1}`,
+    category: text(s?.category, 40) || "Concept",
+    keyTermsCritical: arr(s?.keyTermsCritical, 12).map((x) => text(x, 100)),
+    keyTermsImportant: arr(s?.keyTermsImportant, 12).map((x) => text(x, 100)),
+    blocks: arr(s?.blocks, 60).map((b) => ({ ...blankBlock(text(b?.type, 30) || "paragraph"), ...b, heading: text(b?.heading, 180), text: text(b?.text), label: text(b?.label, 80), items: arr(b?.items, 60).map((x) => text(x, 12000)), pairs: arr(b?.pairs, 60).map((x) => ({ term: text(x?.term, 200), description: text(x?.description, 12000) })), headers: arr(b?.headers, 30).map((x) => text(x, 2000)), rows: arr(b?.rows, 200).map((r) => arr(r, 30).map((x) => text(x, 12000))), assetId: text(b?.assetId, 80), caption: text(b?.caption, 1000), alt: text(b?.alt, 500), question: text(b?.question, 12000), answer: text(b?.answer, 12000) })),
+  })).filter((s) => s.blocks.length);
+  return { metadata: { title: text(m.title, 300) || text(options.sourceTitle, 300) || "Untitled lecture", subtitle: text(m.subtitle, 500), courseCode: text(options.courseCode || m.courseCode, 50) || "Course", lectureLabel: text(options.lectureLabel || m.lectureLabel, 70) || "Lecture", instructor: text(options.instructor || m.instructor, 100), language: text(m.language || options.language, 40), direction: m.direction === "rtl" || options.language === "Arabic" ? "rtl" : "ltr" }, overview: text(p.overview, 12000), learningObjectives: arr(p.learningObjectives, 30).map((x) => text(x, 12000)), sections: sections.length ? sections : [{ title: "Lecture", category: "Content", keyTermsCritical: [], keyTermsImportant: [], blocks: [{ ...blankBlock(), text: "No structured content was returned." }] }], finalTakeaways: arr(p.finalTakeaways, 30).map((x) => text(x, 12000)) };
 }
 
-function assetHTML(block, map, critical, important) {
-  const a = map.get(block.assetId); const caption = block.caption || a?.caption || ""; const alt = block.alt || a?.alt || "Lecture visual";
-  if (!a) return `<div class="placeholder">Visual asset ${esc(block.assetId || "unknown")} was not available.</div>`;
-  if (a.type === "svg" && a.source) return `<figure class="diagram">${a.source}${caption?`<figcaption>${terms(caption,critical,important)}</figcaption>`:""}</figure>`;
-  if (a.type === "mermaid" && a.source) return `<figure class="diagram"><pre class="mermaid">${esc(a.source)}</pre>${caption?`<figcaption>${terms(caption,critical,important)}</figcaption>`:""}</figure>`;
-  if (a.type === "image" && a.source && ["embedded","remote","pdf-page-render"].includes(a.sourceKind)) return `<figure class="figure"><img src="${esc(a.source)}" alt="${esc(alt)}" loading="lazy" referrerpolicy="no-referrer">${caption?`<figcaption>${terms(caption,critical,important)}</figcaption>`:""}</figure>`;
-  const reason=a.sourceKind==="relative"?`Relative image path: ${esc(a.source)}. Embed the image or use an absolute HTTPS URL.`:(a.caption||"The visual required scripts or separate files and could not be reconstructed.");
+function assetHTML(block, map) {
+  const asset = map.get(block.assetId);
+  const caption = block.caption || asset?.caption || "";
+  const alt = block.alt || asset?.alt || "Lecture visual";
+  if (!asset) return `<div class="placeholder">Visual asset ${esc(block.assetId || "unknown")} was not available.</div>`;
+  if (asset.type === "svg" && asset.source) return `<figure class="diagram">${asset.source}${caption ? `<figcaption>${esc(caption)}</figcaption>` : ""}</figure>`;
+  if (asset.type === "mermaid" && asset.source) return `<figure class="diagram"><pre class="mermaid">${esc(asset.source)}</pre>${caption ? `<figcaption>${esc(caption)}</figcaption>` : ""}</figure>`;
+  if (asset.type === "image" && asset.source && ["embedded", "remote", "pdf-page-render", "page-snapshot", "ocr-page"].includes(asset.sourceKind)) return `<figure class="figure"><img src="${esc(asset.source)}" alt="${esc(alt)}" loading="eager" referrerpolicy="no-referrer">${caption ? `<figcaption>${esc(caption)}</figcaption>` : ""}</figure>`;
+  const reason = asset.sourceKind === "relative" ? `Relative image path: ${esc(asset.source)}. Embed the image or use an absolute HTTPS URL.` : (asset.caption || "The visual required scripts or separate files and could not be reconstructed.");
   return `<div class="placeholder"><div><strong>${esc(alt)}</strong><br><br>${reason}</div></div>`;
 }
 
-function blockHTML(b,map,c,i){const h=b.heading?`<h3 class="block-heading">${esc(b.heading)}</h3>`:"";switch(b.type){
-case"bullets":return `<section>${h}<ul class="bullets">${b.items.map(x=>`<li>${terms(x,c,i)}</li>`).join("")}</ul></section>`;
-case"steps":return `<section>${h}<ol class="steps">${b.items.map(x=>`<li><span>${terms(x,c,i)}</span></li>`).join("")}</ol></section>`;
-case"callout":return `<aside class="callout"><span class="note-icon">!</span><div><div class="note-label">${esc(b.label||b.heading||"Important")}</div><p>${terms(b.text,c,i)}</p></div></aside>`;
-case"qa":return `<section>${h}<div class="qa-q">${terms(b.question||b.heading,c,i)}</div><div class="qa-a">${terms(b.answer||b.text,c,i)}</div></section>`;
-case"definitions":return `<section>${h}<div class="definitions">${b.pairs.map(x=>`<div class="def"><div class="term">${terms(x.term,c,i)}</div><div class="desc">${terms(x.description,c,i)}</div></div>`).join("")}</div></section>`;
-case"table":{const width=Math.max(b.headers.length,...b.rows.map(r=>r.length),1),heads=b.headers.length?b.headers:Array.from({length:width},(_,n)=>`Column ${n+1}`);return `<section>${h}<div class="table-wrap"><table><thead><tr>${heads.map(x=>`<th>${terms(x,c,i)}</th>`).join("")}</tr></thead><tbody>${b.rows.map(r=>`<tr>${heads.map((_,n)=>`<td>${terms(r[n]||"",c,i)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></section>`;}
-case"image":case"diagram":return `<section>${h}${assetHTML(b,map,c,i)}</section>`;
-case"takeaways":return `<section class="takeaways"><div class="take-title">${esc(b.heading||b.label||"Key takeaways")}</div><ul>${b.items.map(x=>`<li>${terms(x,c,i)}</li>`).join("")}</ul></section>`;
-default:return `<section>${h}<p>${terms(b.text,c,i)}</p></section>`;}}
-
-function shell(meta,title,category,body,num,total,id){return `<article class="page" id="${esc(id)}"><header class="page-header"><span class="course-label">${esc(meta.courseCode)} · ${esc(meta.lectureLabel)}</span><span class="page-title">${esc(title)}</span><span class="category-tag">${esc(category)}</span></header><main class="page-body">${body}</main><footer class="page-footer"><span>${esc(meta.courseCode)} · ${esc(meta.lectureLabel)}</span><span>${esc(title)}</span><span class="page-number">${num} / ${total}</span></footer></article>`;}
-
-export function buildLectureHTML(rawPlan, assets, options={}) {
-  const plan=normalize(rawPlan,options),map=new Map(arr(assets,300).map(a=>[a.id,a])),toc=options.includeToc!==false,total=1+(toc?1:0)+plan.sections.length+1,meta=plan.metadata,pages=[];let n=1;
-  pages.push(`<article class="page cover"><header class="cover-bar"><span>${esc(meta.courseCode)}</span><span>${esc(meta.lectureLabel)}</span></header><main class="cover-hero"><p class="eyebrow">Lecture notes</p><div class="cover-rule"></div><h1 class="cover-title">${esc(meta.title)}</h1>${meta.subtitle?`<p class="cover-sub">${esc(meta.subtitle)}</p>`:""}<div class="meta">${meta.instructor?`<div><b>Instructor</b><span>${esc(meta.instructor)}</span></div>`:""}${meta.language?`<div><b>Language</b><span>${esc(meta.language)}</span></div>`:""}<div><b>Generated</b><span>${esc(new Date().toLocaleDateString())}</span></div></div></main><div class="cover-visual"></div><footer class="cover-foot"><span>Jang lecture redesign</span><span>${n++} / ${total}</span></footer></article>`);
-  if(toc){const body=`<section class="intro"><h1>${esc(meta.title)}</h1>${plan.overview?`<p>${terms(plan.overview)}</p>`:""}${plan.learningObjectives.length?`<div class="divider"><span>Learning objectives</span></div><ul class="objectives">${plan.learningObjectives.map(x=>`<li>${terms(x)}</li>`).join("")}</ul>`:""}</section><div class="divider"><span>Table of contents</span></div><nav class="toc"><div class="toc-head">Contents</div><ol>${plan.sections.map((s,k)=>`<li><span class="toc-num">${String(k+1).padStart(2,"0")}</span><a href="#section-${k+1}">${esc(s.title)}</a><span class="dots"></span><span class="toc-page">${n+k+1}</span></li>`).join("")}</ol></nav>`;pages.push(shell(meta,"Lecture overview","Reference",body,n++,total,"overview"));}
-  plan.sections.forEach((s,k)=>{const body=s.blocks.map(b=>blockHTML(b,map,s.keyTermsCritical,s.keyTermsImportant)).join("");pages.push(shell(meta,s.title,s.category,body,n++,total,`section-${k+1}`));});
-  const final=plan.finalTakeaways.length?plan.finalTakeaways:plan.sections.flatMap(s=>s.blocks.filter(b=>b.type==="takeaways").flatMap(b=>b.items)).slice(-8);
-  pages.push(`<article class="page"><header class="page-header"><span class="course-label">${esc(meta.courseCode)}</span><span class="page-title">Lecture complete</span><span class="category-tag">Summary</span></header><main class="end-body"><div class="end-icon">✓</div><h2 class="end-title">Review complete.<br>Keep the structure, revisit the concepts.</h2>${plan.overview?`<p class="end-sub">${terms(plan.overview)}</p>`:""}${final.length?`<section class="takeaways"><div class="take-title">Final takeaways</div><ul>${final.map(x=>`<li>${terms(x)}</li>`).join("")}</ul></section>`:""}</main><footer class="page-footer"><span>Jang lecture redesign</span><span>${esc(meta.title)}</span><span class="page-number">${n} / ${total}</span></footer></article>`);
-  const mermaid=[...map.values()].some(a=>a.type==="mermaid")?`<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"><\/script><script>mermaid.initialize({startOnLoad:true,securityLevel:'strict',theme:'neutral'});<\/script>`:"";
-  return `<!doctype html><html lang="${meta.language.toLowerCase().startsWith("arab")?"ar":"en"}" dir="${meta.direction}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Jang Lecture Rebuilder"><title>${esc(meta.title)}</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Libre+Baskerville:ital@0;1&family=Noto+Sans+Arabic:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet"><style>${CSS}</style></head><body>${pages.join("\n")}${mermaid}</body></html>`;
+function blockHTML(block, map, critical, important, budget) {
+  const heading = block.heading ? `<h3 class="block-heading">${esc(block.heading)}</h3>` : "";
+  switch (block.type) {
+    case "bullets": return `<section>${heading}<ul class="bullets">${block.items.map((item) => `<li>${terms(item, critical, important, budget)}</li>`).join("")}</ul></section>`;
+    case "steps": return `<section>${heading}<ol class="steps">${block.items.map((item) => `<li><span>${terms(item, critical, important, budget)}</span></li>`).join("")}</ol></section>`;
+    case "callout": return `<aside class="callout"><span class="note-icon">!</span><div><div class="note-label">${esc(block.label || block.heading || "Important")}</div><p>${terms(block.text, critical, important, budget)}</p></div></aside>`;
+    case "qa": return `<section>${heading}<div class="qa-q">${terms(block.question || block.heading, critical, important, budget)}</div><div class="qa-a">${terms(block.answer || block.text, critical, important, budget)}</div></section>`;
+    case "definitions": return `<section>${heading}<div class="definitions">${block.pairs.map((pair) => `<div class="def"><div class="term">${terms(pair.term, critical, important, budget)}</div><div class="desc">${terms(pair.description, critical, important, budget)}</div></div>`).join("")}</div></section>`;
+    case "table": {
+      const width = Math.max(block.headers.length, ...block.rows.map((row) => row.length), 1);
+      const heads = block.headers.length ? block.headers : Array.from({ length: width }, (_, index) => `Column ${index + 1}`);
+      return `<section>${heading}<div class="table-wrap"><table><thead><tr>${heads.map((item) => `<th>${esc(item)}</th>`).join("")}</tr></thead><tbody>${block.rows.map((row) => `<tr>${heads.map((_, index) => `<td>${terms(row[index] || "", critical, important, budget)}</td>`).join("")}</tr>`).join("")}</tbody></table></div></section>`;
+    }
+    case "image": return `<section>${heading}${assetHTML(block, map)}</section>`;
+    case "diagram": return block.assetId ? `<section>${heading}${assetHTML(block, map)}</section>` : `<section>${heading}<div class="diagram"><ol class="steps">${block.items.map((item) => `<li><span>${terms(item, critical, important, budget)}</span></li>`).join("")}</ol></div></section>`;
+    case "takeaways": return `<section class="takeaways"><div class="take-title">${esc(block.heading || block.label || "Key takeaways")}</div><ul>${block.items.map((item) => `<li>${terms(item, critical, important, budget)}</li>`).join("")}</ul></section>`;
+    default: return `<section>${heading}<p>${terms(block.text, critical, important, budget)}</p></section>`;
+  }
 }
 
-export function safeFilename(title){const clean=String(title||"redesigned-lecture").normalize("NFKD").replace(/[^\p{L}\p{N}]+/gu,"-").replace(/^-+|-+$/g,"").slice(0,80);return `${clean||"redesigned-lecture"}.html`;}
+function shell(meta, title, category, body, number, total, id) {
+  return `<article class="page" id="${esc(id)}"><header class="page-header"><span class="course-label">${esc(meta.courseCode)} · ${esc(meta.lectureLabel)}</span><span class="page-title">${esc(title)}</span><span class="category-tag">${esc(category)}</span></header><main class="page-body">${body}</main><footer class="page-footer"><span>${esc(meta.courseCode)} · ${esc(meta.lectureLabel)}</span><span>${esc(title)}</span><span class="page-number">${number} / ${total}</span></footer></article>`;
+}
+
+export function buildLectureHTML(rawPlan, assets, options = {}) {
+  const plan = normalize(rawPlan, options);
+  const map = new Map(arr(assets, 2000).map((asset) => [asset.id, asset]));
+  const toc = options.includeToc !== false;
+  const total = 1 + (toc ? 1 : 0) + plan.sections.length + 1;
+  const meta = plan.metadata;
+  const pages = [];
+  const budget = { highlights: 0, red: 0 };
+  let number = 1;
+  pages.push(`<article class="page cover"><header class="cover-bar"><span>${esc(meta.courseCode)}</span><span>${esc(meta.lectureLabel)}</span></header><main class="cover-hero"><p class="eyebrow">PowerPoint lecture</p><div class="cover-rule"></div><h1 class="cover-title">${esc(meta.title)}</h1>${meta.subtitle ? `<p class="cover-sub">${esc(meta.subtitle)}</p>` : ""}<div class="meta">${meta.instructor ? `<div><b>Instructor</b><span>${esc(meta.instructor)}</span></div>` : ""}${meta.language ? `<div><b>Language</b><span>${esc(meta.language)}</span></div>` : ""}<div><b>Output</b><span>Verified .pptx</span></div></div></main><div class="cover-visual"></div><footer class="cover-foot"><span>Jang PowerPoint preview</span><span>${number++} / ${total}</span></footer></article>`);
+  if (toc) {
+    const body = `<section class="intro"><h1>${esc(meta.title)}</h1>${plan.overview ? `<p>${terms(plan.overview, [], [], budget, false)}</p>` : ""}${plan.learningObjectives.length ? `<div class="divider"><span>Learning objectives</span></div><ul class="objectives">${plan.learningObjectives.map((item) => `<li>${terms(item, [], [], budget, false)}</li>`).join("")}</ul>` : ""}</section><div class="divider"><span>Table of contents</span></div><nav class="toc"><div class="toc-head">Contents</div><ol>${plan.sections.map((section, index) => `<li><span class="toc-num">${String(index + 1).padStart(2, "0")}</span><a href="#section-${index + 1}">${esc(section.title)}</a><span class="dots"></span><span class="toc-page">${number + index + 1}</span></li>`).join("")}</ol></nav>`;
+    pages.push(shell(meta, "Lecture overview", "Reference", body, number++, total, "overview"));
+  }
+  plan.sections.forEach((section, index) => {
+    const body = section.blocks.map((block) => blockHTML(block, map, section.keyTermsCritical, section.keyTermsImportant, budget)).join("");
+    pages.push(shell(meta, section.title, section.category, body, number++, total, `section-${index + 1}`));
+  });
+  const final = plan.finalTakeaways.length ? plan.finalTakeaways : plan.sections.flatMap((section) => section.blocks.filter((block) => block.type === "takeaways").flatMap((block) => block.items)).slice(-8);
+  pages.push(`<article class="page"><header class="page-header"><span class="course-label">${esc(meta.courseCode)}</span><span class="page-title">Lecture complete</span><span class="category-tag">Summary</span></header><main class="end-body"><div class="end-icon">✓</div><h2 class="end-title">PowerPoint ready.<br>All verified content is downloadable.</h2>${plan.overview ? `<p class="end-sub">${terms(plan.overview, [], [], budget, false)}</p>` : ""}${final.length ? `<section class="takeaways"><div class="take-title">Final takeaways</div><ul>${final.map((item) => `<li>${terms(item, [], [], budget, false)}</li>`).join("")}</ul></section>` : ""}</main><footer class="page-footer"><span>Jang PowerPoint preview</span><span>${esc(meta.title)}</span><span class="page-number">${number} / ${total}</span></footer></article>`);
+  const mermaid = [...map.values()].some((asset) => asset.type === "mermaid") ? `<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"><\/script><script>mermaid.initialize({startOnLoad:true,securityLevel:'strict',theme:'neutral'});<\/script>` : "";
+  return `<!doctype html><html lang="${meta.language.toLowerCase().startsWith("arab") ? "ar" : "en"}" dir="${meta.direction}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Jang Lecture Rebuilder"><title>${esc(meta.title)}</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Libre+Baskerville:ital@0;1&family=Noto+Sans+Arabic:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet"><style>${CSS}</style></head><body>${pages.join("\n")}${mermaid}</body></html>`;
+}
+
+export function safeFilename(title) {
+  const cleanTitle = String(title || "redesigned-lecture").normalize("NFKD").replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "").slice(0, 80);
+  return cleanTitle || "redesigned-lecture";
+}
