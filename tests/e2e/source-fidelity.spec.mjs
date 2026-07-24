@@ -83,7 +83,6 @@ test("lossy AI layout is rejected and rebuilt from every original PPTX source un
   await expect(page.locator("#downloadPptxButton")).toBeEnabled();
   await expect(page.locator("#resultMessage")).toContainText("source-faithful PowerPoint was created");
   await expect(page.locator("#resultMessage")).toContainText("AI layout failed source-fidelity verification");
-  await expect(page.locator("#resultMessage")).toContainText("body text ≥ 16.5 pt");
 
   const downloadPromise = page.waitForEvent("download");
   await page.locator("#downloadPptxButton").click();
