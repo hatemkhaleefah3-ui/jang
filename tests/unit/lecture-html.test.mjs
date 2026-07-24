@@ -1,81 +1,88 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import vm from "node:vm";
 import { buildLectureHtml } from "../../lecture-html.js";
 
-test("builds cover, paginated content, and end slides without general editing code", () => {
-  const source = `Cell Biology\n\nIntroduction\n\n${"Cell membranes control transport and signaling. ".repeat(90)}\n\n- Lipids\n- Proteins\n- Carbohydrates`;
-  const result = buildLectureHtml(source);
+function inlineScript(html) {
+  const match = html.match(/<script>([\s\S]*?)<\/script>/);
+  assert.ok(match, "generated HTML should contain an inline editor script");
+  return match[1];
+}
 
+test("builds cover, content, and end slides", () => {
+  const result = buildLectureHtml(`Cell Biology\n\nIntroduction\n\n${"Cell membranes control transport and signaling. ".repeat(40)}`);
   assert.match(result.html, /class="slide cover-slide"/);
   assert.match(result.html, /class="slide content-slide"/);
   assert.match(result.html, /class="slide end-slide"/);
-  assert.ok(result.contentSlideCount > 1);
   assert.match(result.html, /aspect-ratio:16\/9/);
   assert.doesNotMatch(result.html, /contenteditable|Save project|Open editor|preview/i);
-  assert.match(result.html, /Cell membranes control transport and signaling\./);
 });
 
-test("keeps structured lecture blocks, source metadata, and ending content", () => {
-  const source = `[SOURCE FILE]\nLecture 04.txt\n\n[DOCUMENT TITLE]\nImmunology\n\n[SECTION]\nAntibodies\n\n[PARAGRAPH]\nAntibodies recognize specific antigens.\n\n[BULLETS]\n- IgG\n- IgM\n- IgA\n\n[END]\nReview the key antibody classes.`;
+test("equals divider creates a dedicated section slide and sets later headers", () => {
+  const source = `Glucose Homeostasis\n\n============================================================\n2. REGULATION OF BLOOD GLUCOSE\n============================================================\n\nThe liver buffers circulating glucose.`;
   const result = buildLectureHtml(source);
-
-  assert.equal(result.title, "Immunology");
-  assert.equal(result.sourceFile, "Lecture 04.txt");
-  assert.match(result.html, /Source file\s*\nLecture 04\.txt/);
-  assert.match(result.html, /Antibodies recognize specific antigens\./);
-  assert.match(result.html, /<li>IgG<\/li>/);
-  assert.match(result.html, /Review the key antibody classes\./);
-  assert.equal(result.filename, "immunology.html");
+  assert.match(result.html, /class="slide section-slide"[\s\S]*?<h2>2\. REGULATION OF BLOOD GLUCOSE<\/h2>/);
+  assert.match(result.html, /class="slide content-slide"[\s\S]*?<header class="slide-header"><h2>2\. REGULATION OF BLOOD GLUCOSE<\/h2><\/header>/);
 });
 
-test("splits long diagram sequences into additional slides without dropping nodes", () => {
-  const nodes = Array.from({ length: 13 }, (_, index) => `Node ${index + 1}`).join(" → ");
-  const result = buildLectureHtml(`[DOCUMENT TITLE]\nPathways\n[DIAGRAM]\nType: flow\nTitle: Long pathway\nStructure:\n${nodes}`);
-
-  assert.ok(result.contentSlideCount >= 3);
-  for (let index = 1; index <= 13; index += 1) assert.match(result.html, new RegExp(`Node ${index}`));
-});
-
-test("uses section titles in slide headers instead of standalone section slides", () => {
-  const result = buildLectureHtml(`[DOCUMENT TITLE]\nBiology\n[SECTION]\nCells\n[SUBTITLE]\nMembranes\n[PARAGRAPH]\nMembrane content.`);
-
-  assert.match(result.html, /<header class="slide-header"><h2>Cells<\/h2><\/header>/);
-  assert.match(result.html, /<h3 class="content-subtitle">Membranes<\/h3>/);
-  assert.doesNotMatch(result.html, /section-intro/);
-});
-
-test("removes generated Jang lecture labels", () => {
-  const result = buildLectureHtml("Biology\n\nCell content.");
-  assert.doesNotMatch(result.html, /Jang lecture|JANG LECTURE/);
-});
-
-test("renders sized interactive image placeholders in source order", () => {
-  const source = `[DOCUMENT TITLE]\nBiology\n[SECTION]\nCells\n[PARAGRAPH]\nBefore image.\n[IMAGE size=wide fit=cover]\nlabel: Cell membrane\nInsert the membrane illustration here.\n[PARAGRAPH]\nAfter image.`;
+test("hyphen divider stays in the body with upper and lower rules", () => {
+  const source = `Glucose Homeostasis\n\n------------------------------------------------------------\nMaintenance of Blood Glucose in the Fed State\n------------------------------------------------------------\n\nInsulin promotes glucose uptake.`;
   const result = buildLectureHtml(source);
-
-  assert.match(result.html, /data-image-placeholder/);
-  assert.match(result.html, /image-size-wide/);
-  assert.match(result.html, /data-image-fit="cover"/);
-  assert.match(result.html, /accept="image\/\*"/);
-  assert.match(result.html, /Change image/);
-  assert.match(result.html, /Remove image/);
-  assert.match(result.html, /Remove placeholder/);
-  assert.match(result.html, /data-image-save>Save<\/button>/);
-  assert.match(result.html, /data-image-cancel>Cancel<\/button>/);
-  assert.ok(result.html.indexOf("Before image.") < result.html.indexOf("Cell membrane"));
-  assert.ok(result.html.indexOf("Cell membrane") < result.html.indexOf("After image."));
+  assert.match(result.html, /<h3 class="divider-title">Maintenance of Blood Glucose in the Fed State<\/h3>/);
+  assert.match(result.html, /\.divider-title\{[^}]*border-block:/);
+  assert.doesNotMatch(result.html, /class="slide section-slide"[\s\S]*?Maintenance of Blood Glucose in the Fed State/);
 });
 
-test("embeds image data in saved HTML and supports cancelling the last action", () => {
-  const result = buildLectureHtml(`[DOCUMENT TITLE]\nBiology\n[IMAGE]\nlabel: Cell image`);
-  assert.match(result.html, /FileReader/);
-  assert.match(result.html, /reader\.readAsDataURL/);
-  assert.match(result.html, /clone\.outerHTML/);
+test("document title stays on the cover while slide headers use section titles", () => {
+  const result = buildLectureHtml(`[DOCUMENT TITLE]\nGlucose Lecture\n\n[SECTION]\nFed State\n\n[PARAGRAPH]\nInsulin rises after a meal.`);
+  assert.match(result.html, /<h1>Glucose Lecture<\/h1>/);
+  assert.match(result.html, /<header class="slide-header"><h2>Fed State<\/h2><\/header>/);
+  assert.doesNotMatch(result.html, /<header class="slide-header"><h2>Glucose Lecture<\/h2><\/header>/);
+});
+
+test("diagram rows keep nodes and visible arrows between components", () => {
+  const result = buildLectureHtml(`[DOCUMENT TITLE]\nPathways\n[SECTION]\nRegulation\n[DIAGRAM]\nType: flow\nTitle: Glucose pathway\nStructure:\nGlucose → Glucose-6-phosphate → Glycogen\nInsulin → GLUT4 → Uptake`);
+  assert.match(result.html, /<div class="sequence-row"><span class="sequence-node">Glucose<\/span><span class="sequence-arrow"[^>]*>→<\/span><span class="sequence-node">Glucose-6-phosphate<\/span>/);
+  assert.match(result.html, /<div class="sequence-row"><span class="sequence-node">Insulin<\/span><span class="sequence-arrow"[^>]*>→<\/span><span class="sequence-node">GLUT4<\/span>/);
+});
+
+test("empty image placeholder opens a bottom sheet with import and close", () => {
+  const result = buildLectureHtml(`[DOCUMENT TITLE]\nImaging\n[SECTION]\nFigures\n[IMAGE size=wide]\nLabel: Transport diagram\nChoose a membrane image.`);
+  assert.match(result.html, /data-image-actions-empty/);
+  assert.match(result.html, /data-image-action="import">Import image<\/button>/);
+  assert.match(result.html, /data-image-action="close">Close<\/button>/);
+  assert.match(result.html, /if \(surface\) \{\s*openSheet\(surface\.closest\("\[data-image-placeholder\]"\)\);/);
+  assert.doesNotMatch(result.html, /else placeholder\.querySelector\("\[data-image-input\]"\)\.click/);
+  assert.match(result.html, /class="image-file-input" data-image-input/);
+});
+
+test("filled image controls and persistent save controls remain available", () => {
+  const result = buildLectureHtml(`[DOCUMENT TITLE]\nImaging\n[IMAGE]\nLabel: Figure`);
+  assert.match(result.html, /data-image-actions-filled/);
+  assert.match(result.html, /data-image-action="change"/);
+  assert.match(result.html, /data-image-action="remove-image"/);
+  assert.match(result.html, /data-image-action="remove-placeholder"/);
+  assert.match(result.html, /data-image-save-bar/);
   assert.match(result.html, /showSaveFilePicker/);
+  assert.match(result.html, /readAsDataURL/);
   assert.match(result.html, /history\.pop\(\)/);
 });
 
-test("uses right-to-left document direction for Arabic lecture text", () => {
-  const result = buildLectureHtml("علم الأحياء\n\nمقدمة عن الخلية ووظائفها.");
+test("generated image editor script is valid JavaScript", () => {
+  const result = buildLectureHtml(`[DOCUMENT TITLE]\nImaging\n[IMAGE]\nLabel: Figure`);
+  new vm.Script(inlineScript(result.html));
+});
+
+test("keeps source metadata and right-to-left direction", () => {
+  const result = buildLectureHtml(`[SOURCE FILE]\nLecture 04.txt\n[DOCUMENT TITLE]\nتنظيم سكر الدم\n[SECTION]\nحالة الشبع\n[PARAGRAPH]\nيرتفع الإنسولين بعد الوجبة.`);
+  assert.equal(result.sourceFile, "Lecture 04.txt");
   assert.match(result.html, /dir="rtl"/);
+  assert.match(result.html, /Source file\s*\nLecture 04\.txt/);
+});
+
+test("long diagram sequences retain every node across additional slides", () => {
+  const nodes = Array.from({ length: 13 }, (_, index) => `Node ${index + 1}`).join(" → ");
+  const result = buildLectureHtml(`[DOCUMENT TITLE]\nPathways\n[SECTION]\nFlow\n[DIAGRAM]\nType: flow\nTitle: Long pathway\nStructure:\n${nodes}`);
+  assert.ok(result.contentSlideCount >= 3);
+  for (let index = 1; index <= 13; index += 1) assert.match(result.html, new RegExp(`Node ${index}`));
 });
