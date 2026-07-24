@@ -13,6 +13,7 @@
     "test": "npm run check && npm run test:unit && npm run test:e2e"
   },
   "dependencies": {
+    "emf-converter": "2.0.0",
     "jszip": "3.10.1",
     "pdfjs-dist": "4.10.38",
     "pptxgenjs": "3.12.0"
