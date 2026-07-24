@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Paste lecture text or import a text file, then build and download a responsive HTML lecture.">
+  <meta name="description" content="Import a PDF or PPTX lecture, let Gemini structure it, add the requested images, and download a standalone HTML lecture.">
   <meta name="theme-color" content="#11130f">
   <title>Jang — Build a lecture HTML file</title>
   <link rel="stylesheet" href="/styles.css">
@@ -15,35 +15,54 @@
       <span class="brand-mark" aria-hidden="true">J</span>
       <span>Jang</span>
     </a>
-    <span class="header-note">Text to lecture HTML</span>
+    <span class="header-note">PDF / PPTX to lecture HTML</span>
   </header>
 
   <main class="page-shell">
     <section class="builder" aria-labelledby="page-title">
       <div class="intro">
-        <p class="eyebrow">One input. One file.</p>
-        <h1 id="page-title">Build a complete lecture website.</h1>
-        <p>Paste the lecture content or import a UTF-8 text file. Jang creates a standalone, responsive HTML file with 16:9 slides, a cover slide, every content slide needed, and an end slide.</p>
+        <p class="eyebrow">One lecture. One guided build.</p>
+        <h1 id="page-title">Turn a lecture file into a complete website.</h1>
+        <p>Import a PDF or PowerPoint lecture. Gemini organizes every section, paragraph, list, table, diagram, and image position for the reusable 16:9 HTML design.</p>
       </div>
 
-      <label class="field-label" for="lectureText">Lecture content</label>
-      <textarea id="lectureText" spellcheck="false" placeholder="Paste the full lecture content here…" aria-describedby="textMeta status"></textarea>
-
-      <div class="input-footer">
-        <span id="textMeta">0 characters</span>
-        <label class="file-button" for="textFile">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m0 0 4 4m-4-4L8 8M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>
-          Import file (.txt)
-        </label>
-        <input id="textFile" class="visually-hidden" type="file" accept=".txt,.text,.md,text/plain,text/markdown">
+      <div class="workflow-strip" aria-label="Workflow">
+        <span><b>1</b> Import</span>
+        <span><b>2</b> Extract</span>
+        <span><b>3</b> Add images</span>
+        <span><b>4</b> Download</span>
       </div>
+
+      <label class="upload-zone" for="lectureFile">
+        <span class="upload-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4L8 8M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>
+        </span>
+        <strong id="fileButtonText">Choose PDF or PPTX</strong>
+        <small>PDF up to 18 MB · PPTX up to 50 MB</small>
+      </label>
+      <input id="lectureFile" class="visually-hidden" type="file" accept=".pdf,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation">
+
+      <div id="fileCard" class="file-card" hidden>
+        <span class="file-type-mark" aria-hidden="true">DOC</span>
+        <div><strong id="fileName"></strong><small id="fileMeta"></small></div>
+      </div>
+
+      <section id="imageReview" class="image-review" aria-labelledby="image-review-title" hidden>
+        <div class="review-heading">
+          <p class="eyebrow">Intermediate image step</p>
+          <h2 id="image-review-title">Add the recognized lecture images.</h2>
+          <p id="reviewSummary"></p>
+        </div>
+        <div id="imageSlots" class="image-slots"></div>
+      </section>
 
       <button id="actionButton" class="action-button" type="button" disabled data-state="idle">
+        <span class="button-spinner" aria-hidden="true"></span>
         <span id="actionLabel">Build HTML</span>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>
       </button>
 
-      <p id="status" class="status" role="status" aria-live="polite">Paste text or import a file to begin.</p>
+      <p id="status" class="status" role="status" aria-live="polite">Import a PDF or PPTX lecture to begin.</p>
     </section>
   </main>
 </body>
