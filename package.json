@@ -7,7 +7,7 @@
   "scripts": {
     "check": "node --check builder-app.js && node --check lecture-source-parser.js && node --check lecture-html.js && node --check scripts/build.mjs",
     "build": "node scripts/build.mjs",
-    "unit": "node --test tests/unit/*.test.mjs",
+    "unit": "node --test tests/unit/lecture-source-parser.test.mjs tests/unit/lecture-html.test.mjs",
     "test": "npm run check && npm run unit && npm run build"
   }
 }
