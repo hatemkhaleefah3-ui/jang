@@ -18,7 +18,18 @@ jobs:
           node-version: 22
       - run: npm install
       - name: Run syntax and unit checks
-        run: npm run check && npm run test:unit
+        shell: bash
+        run: |
+          set -o pipefail
+          (npm run check && npm run test:unit) 2>&1 | tee unit-test-output.log
+      - name: Upload unit diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jang-unit-${{ github.sha }}
+          path: unit-test-output.log
+          if-no-files-found: error
+          retention-days: 14
       - name: Build deployable Pages output
         run: npm run build
 
