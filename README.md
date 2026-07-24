@@ -23,11 +23,13 @@ The API key is server-side only. In Cloudflare Pages, add an encrypted secret na
 GEMINI_API_KEY
 ```
 
-An optional plain environment variable can select the model:
+Jang uses the current stable multimodal model by default:
 
 ```text
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.6-flash
 ```
+
+`GEMINI_MODEL` is optional. The server also automatically maps the previous `gemini-2.5-flash` value to `gemini-3.6-flash`, so an old Cloudflare model variable will not block extraction.
 
 In the Cloudflare dashboard, open the Pages project and use **Settings → Variables and Secrets**. Configure the secret for both preview and production environments before deploying.
 
