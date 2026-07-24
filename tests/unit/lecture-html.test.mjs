@@ -1,88 +1,75 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import vm from "node:vm";
-import { buildLectureHtml } from "../../lecture-html.js";
+import { buildLectureHtml, normalizeLectureData } from "../../lecture-html.js";
 
-function inlineScript(html) {
-  const match = html.match(/<script>([\s\S]*?)<\/script>/);
-  assert.ok(match, "generated HTML should contain an inline editor script");
-  return match[1];
-}
+const lecture = {
+  documentTitle: "Glucose Homeostasis",
+  direction: "ltr",
+  endNote: "Review glucose regulation.",
+  slides: [
+    { kind: "section", sectionTitle: "Regulation of Blood Glucose", blocks: [] },
+    {
+      kind: "content",
+      sectionTitle: "Regulation of Blood Glucose",
+      blocks: [
+        { type: "dividerTitle", text: "Maintenance in the Fed State" },
+        { type: "paragraph", text: "Insulin promotes glucose uptake and storage." },
+        { type: "diagram", label: "Fed-state pathway", diagramRows: [["Glucose", "Glucose-6-phosphate", "Glycogen"]] },
+        { type: "image", slotId: "fed-state-image", label: "Fed-state glucose metabolism", size: "wide", fit: "contain", sourceReference: "Page 8" },
+      ],
+    },
+  ],
+};
 
-test("builds cover, content, and end slides", () => {
-  const result = buildLectureHtml(`Cell Biology\n\nIntroduction\n\n${"Cell membranes control transport and signaling. ".repeat(40)}`);
-  assert.match(result.html, /class="slide cover-slide"/);
-  assert.match(result.html, /class="slide content-slide"/);
-  assert.match(result.html, /class="slide end-slide"/);
-  assert.match(result.html, /aspect-ratio:16\/9/);
-  assert.doesNotMatch(result.html, /contenteditable|Save project|Open editor|preview/i);
+test("keeps the document title on the cover and section titles in content headers", () => {
+  const result = buildLectureHtml(lecture);
+  assert.match(result.html, /<h1>Glucose Homeostasis<\/h1>/);
+  assert.match(result.html, /class="slide section-slide"[\s\S]*?<h2>Regulation of Blood Glucose<\/h2>/);
+  assert.match(result.html, /<header class="slide-header"><h2>Regulation of Blood Glucose<\/h2><\/header>/);
+  assert.doesNotMatch(result.html, /<header class="slide-header"><h2>Glucose Homeostasis<\/h2>/);
 });
 
-test("equals divider creates a dedicated section slide and sets later headers", () => {
-  const source = `Glucose Homeostasis\n\n============================================================\n2. REGULATION OF BLOOD GLUCOSE\n============================================================\n\nThe liver buffers circulating glucose.`;
-  const result = buildLectureHtml(source);
-  assert.match(result.html, /class="slide section-slide"[\s\S]*?<h2>2\. REGULATION OF BLOOD GLUCOSE<\/h2>/);
-  assert.match(result.html, /class="slide content-slide"[\s\S]*?<header class="slide-header"><h2>2\. REGULATION OF BLOOD GLUCOSE<\/h2><\/header>/);
+test("renders divider titles and diagram nodes with connectors", () => {
+  const result = buildLectureHtml(lecture);
+  assert.match(result.html, /<h3 class="divider-title">Maintenance in the Fed State<\/h3>/);
+  assert.match(result.html, /<span class="sequence-node">Glucose<\/span><span class="sequence-arrow"[^>]*>→<\/span><span class="sequence-node">Glucose-6-phosphate<\/span>/);
 });
 
-test("hyphen divider stays in the body with upper and lower rules", () => {
-  const source = `Glucose Homeostasis\n\n------------------------------------------------------------\nMaintenance of Blood Glucose in the Fed State\n------------------------------------------------------------\n\nInsulin promotes glucose uptake.`;
-  const result = buildLectureHtml(source);
-  assert.match(result.html, /<h3 class="divider-title">Maintenance of Blood Glucose in the Fed State<\/h3>/);
-  assert.match(result.html, /\.divider-title\{[^}]*border-block:/);
-  assert.doesNotMatch(result.html, /class="slide section-slide"[\s\S]*?Maintenance of Blood Glucose in the Fed State/);
+test("embeds selected intermediate-step images into the standalone HTML", () => {
+  const images = new Map([["fed-state-image", { dataUrl: "data:image/png;base64,AAAA", name: "fed.png" }]]);
+  const result = buildLectureHtml(lecture, images);
+  assert.match(result.html, /src="data:image\/png;base64,AAAA"/);
+  assert.match(result.html, /alt="Fed-state glucose metabolism"/);
+  assert.doesNotMatch(result.html, /data-image-input|Import image|showSaveFilePicker|<script>/);
 });
 
-test("document title stays on the cover while slide headers use section titles", () => {
-  const result = buildLectureHtml(`[DOCUMENT TITLE]\nGlucose Lecture\n\n[SECTION]\nFed State\n\n[PARAGRAPH]\nInsulin rises after a meal.`);
-  assert.match(result.html, /<h1>Glucose Lecture<\/h1>/);
-  assert.match(result.html, /<header class="slide-header"><h2>Fed State<\/h2><\/header>/);
-  assert.doesNotMatch(result.html, /<header class="slide-header"><h2>Glucose Lecture<\/h2><\/header>/);
+test("keeps a labeled static image position when no image was selected", () => {
+  const result = buildLectureHtml(lecture);
+  assert.match(result.html, /Image position/);
+  assert.match(result.html, /Fed-state glucose metabolism/);
+  assert.match(result.html, /Page 8/);
 });
 
-test("diagram rows keep nodes and visible arrows between components", () => {
-  const result = buildLectureHtml(`[DOCUMENT TITLE]\nPathways\n[SECTION]\nRegulation\n[DIAGRAM]\nType: flow\nTitle: Glucose pathway\nStructure:\nGlucose → Glucose-6-phosphate → Glycogen\nInsulin → GLUT4 → Uptake`);
-  assert.match(result.html, /<div class="sequence-row"><span class="sequence-node">Glucose<\/span><span class="sequence-arrow"[^>]*>→<\/span><span class="sequence-node">Glucose-6-phosphate<\/span>/);
-  assert.match(result.html, /<div class="sequence-row"><span class="sequence-node">Insulin<\/span><span class="sequence-arrow"[^>]*>→<\/span><span class="sequence-node">GLUT4<\/span>/);
+test("normalizes duplicate image slot ids without losing image blocks", () => {
+  const normalized = normalizeLectureData({
+    documentTitle: "Images",
+    slides: [{ kind: "content", sectionTitle: "Figures", blocks: [
+      { type: "image", slotId: "figure", label: "First" },
+      { type: "image", slotId: "figure", label: "Second" },
+    ] }],
+  });
+  const slots = normalized.slides[0].blocks.map((block) => block.slotId);
+  assert.deepEqual(slots, ["figure", "figure-2"]);
 });
 
-test("empty image placeholder opens a bottom sheet with import and close", () => {
-  const result = buildLectureHtml(`[DOCUMENT TITLE]\nImaging\n[SECTION]\nFigures\n[IMAGE size=wide]\nLabel: Transport diagram\nChoose a membrane image.`);
-  assert.match(result.html, /data-image-actions-empty/);
-  assert.match(result.html, /data-image-action="import">Import image<\/button>/);
-  assert.match(result.html, /data-image-action="close">Close<\/button>/);
-  assert.match(result.html, /if \(surface\) \{\s*openSheet\(surface\.closest\("\[data-image-placeholder\]"\)\);/);
-  assert.doesNotMatch(result.html, /else placeholder\.querySelector\("\[data-image-input\]"\)\.click/);
-  assert.match(result.html, /class="image-file-input" data-image-input/);
+test("paginates long paragraphs without dropping source content", () => {
+  const text = "Cell membranes regulate transport and signaling. ".repeat(100);
+  const result = buildLectureHtml({ documentTitle: "Cells", slides: [{ kind: "content", sectionTitle: "Membranes", blocks: [{ type: "paragraph", text }] }] });
+  assert.ok(result.contentSlideCount > 1);
+  assert.match(result.html, /Cell membranes regulate transport and signaling\./);
 });
 
-test("filled image controls and persistent save controls remain available", () => {
-  const result = buildLectureHtml(`[DOCUMENT TITLE]\nImaging\n[IMAGE]\nLabel: Figure`);
-  assert.match(result.html, /data-image-actions-filled/);
-  assert.match(result.html, /data-image-action="change"/);
-  assert.match(result.html, /data-image-action="remove-image"/);
-  assert.match(result.html, /data-image-action="remove-placeholder"/);
-  assert.match(result.html, /data-image-save-bar/);
-  assert.match(result.html, /showSaveFilePicker/);
-  assert.match(result.html, /readAsDataURL/);
-  assert.match(result.html, /history\.pop\(\)/);
-});
-
-test("generated image editor script is valid JavaScript", () => {
-  const result = buildLectureHtml(`[DOCUMENT TITLE]\nImaging\n[IMAGE]\nLabel: Figure`);
-  new vm.Script(inlineScript(result.html));
-});
-
-test("keeps source metadata and right-to-left direction", () => {
-  const result = buildLectureHtml(`[SOURCE FILE]\nLecture 04.txt\n[DOCUMENT TITLE]\nتنظيم سكر الدم\n[SECTION]\nحالة الشبع\n[PARAGRAPH]\nيرتفع الإنسولين بعد الوجبة.`);
-  assert.equal(result.sourceFile, "Lecture 04.txt");
+test("uses right-to-left document direction", () => {
+  const result = buildLectureHtml({ documentTitle: "تنظيم سكر الدم", direction: "rtl", slides: [{ kind: "content", sectionTitle: "حالة الشبع", blocks: [{ type: "paragraph", text: "يرتفع الإنسولين بعد الوجبة." }] }] });
   assert.match(result.html, /dir="rtl"/);
-  assert.match(result.html, /Source file\s*\nLecture 04\.txt/);
-});
-
-test("long diagram sequences retain every node across additional slides", () => {
-  const nodes = Array.from({ length: 13 }, (_, index) => `Node ${index + 1}`).join(" → ");
-  const result = buildLectureHtml(`[DOCUMENT TITLE]\nPathways\n[SECTION]\nFlow\n[DIAGRAM]\nType: flow\nTitle: Long pathway\nStructure:\n${nodes}`);
-  assert.ok(result.contentSlideCount >= 3);
-  for (let index = 1; index <= 13; index += 1) assert.match(result.html, new RegExp(`Node ${index}`));
 });

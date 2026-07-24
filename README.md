@@ -1,60 +1,48 @@
-# Jang — Lecture HTML Builder
+# Jang — Gemini Lecture HTML Builder
 
-Jang is a small browser-first tool that turns pasted lecture content or an imported UTF-8 text file into one standalone HTML lecture. Generation is deterministic and local; it does not use AI.
+Jang turns an imported PDF or PPTX lecture into one standalone, responsive HTML lecture.
 
-## Workflow
+## Visitor workflow
 
-1. Paste lecture content or import a `.txt`, `.text`, or `.md` file.
-2. The Build HTML button becomes available when content exists.
-3. Build the lecture. While building, the same button acts as Reload.
-4. When generation finishes, the same button becomes Download HTML.
+1. Import a PDF or PPTX lecture file. There is no paste-text field.
+2. Click **Build HTML**.
+3. A Cloudflare Pages Function sends the lecture to Gemini using a strict structured-output schema.
+   - PDFs are sent with their visual page context.
+   - PPTX files are decoded in the browser into ordered slide text, tables, notes, element positions, and image positions before Gemini structures them.
+4. Jang shows an intermediate list of every recognized image position. Each item displays the image label above a native **Import image** control.
+5. Click **Continue** to embed the selected images and build the final static lecture.
+6. The same button becomes **Download HTML**.
 
-There is no preview, general layout editor, saved-project system, PowerPoint conversion, or PDF pipeline.
+The downloaded HTML contains no image picker, editor, Gemini call, or external runtime dependency. Images chosen during the intermediate step are embedded as data URLs. Unfilled positions remain as labeled static image positions.
 
-## Generated file
+## Gemini configuration
 
-The downloaded HTML file:
-
-- begins with a cover slide;
-- creates as many content slides as needed;
-- uses section titles in slide headers instead of creating title-only section slides;
-- ends with an end slide;
-- keeps every slide at a 16:9 ratio;
-- uses zero gaps between slides and zero horizontal page margins;
-- uses responsive, container-relative sizing for desktop, iPad, and mobile screens;
-- includes self-contained image placeholders and image controls;
-- has no external runtime dependencies.
-
-Structured markers such as `[DOCUMENT TITLE]`, `[SECTION]`, `[SUBTITLE]`, `[PARAGRAPH]`, `[BULLETS]`, `[TABLE]`, `[IMAGE]`, and `[END]` remain supported. Ordinary unmarked text is also split into headings, paragraphs, lists, and additional slides automatically.
-
-## Image placeholders
-
-Use an image block where the image should appear:
+The API key is server-side only. In Cloudflare Pages, add an encrypted secret named:
 
 ```text
-[IMAGE size=wide fit=contain]
-label: Antibody structure
-Insert the labeled antibody illustration here.
+GEMINI_API_KEY
 ```
 
-Supported placeholder sizes are `small`, `medium`, `large`, `wide`, `portrait`, `square`, and `full`. The default is `large`. Image fit may be `contain` (default, no cropping) or `cover`.
+An optional plain environment variable can select the model:
 
-In the generated HTML:
+```text
+GEMINI_MODEL=gemini-2.5-flash
+```
 
-- an empty placeholder opens the image picker when clicked;
-- a filled placeholder opens a bottom sheet with Change image, Remove image, and Remove placeholder;
-- imported images are resized inside the fixed placeholder dimensions;
-- Save embeds the selected images as data URLs and saves an updated standalone HTML file;
-- Cancel reverses the most recent unsaved image action;
-- the Save and Cancel controls remain fixed at the bottom while unsaved image changes exist.
+In the Cloudflare dashboard, open the Pages project and use **Settings → Variables and Secrets**. Configure the secret for both preview and production environments before deploying.
 
-Browsers with the File System Access API show a save-file picker. Other browsers download the updated HTML file.
+## File limits
+
+- PDF: 18 MB maximum. PDFs are visually analyzed by Gemini.
+- PPTX: 50 MB maximum. PPTX content is decoded locally and only the structured slide manifest is uploaded.
+- Intermediate images: 15 MB maximum per image.
 
 ## Development
 
 ```bash
 npm test
-npm run dev
+npm run build
+npx wrangler pages dev dist --binding GEMINI_API_KEY=your-key
 ```
 
-The build output is written to `dist/` and can be deployed as a static site, including on Cloudflare Pages.
+The static output is written to `dist/`. The server endpoint lives at `functions/api/extract.js` and is deployed as `/api/extract` by Cloudflare Pages Functions.
