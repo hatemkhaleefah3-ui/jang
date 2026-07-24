@@ -100,7 +100,12 @@ export function parseLectureSource(input) {
     if (type === "diagram") {
       block.diagramType = property(content, "Type") || "Diagram";
       block.title = property(content, "Title") || "Diagram";
-      block.structure = property(content, "Structure") || content;
+      const structuredContent = content
+        .replace(/^Type:\s*.*(?:\n|$)/im, "")
+        .replace(/^Title:\s*.*(?:\n|$)/im, "")
+        .replace(/^Structure:\s*/im, "")
+        .trim();
+      block.structure = structuredContent || content;
     }
     if (type === "pathway") {
       block.pathwayType = block.attributes.type || property(content, "Type") || "linear";
