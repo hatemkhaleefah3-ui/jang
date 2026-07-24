@@ -263,7 +263,10 @@ function legacyPlan(extraction, options = {}) {
         }
         blocks.push(emptyBlock("paragraph", { text: clean(token.replace(/\n+/g, " ")) }));
       }
-      if (blocks.length) sections.push({ title, category: "Lecture content", sourcePage: index + 1, keyTermsCritical: [], keyTermsImportant: [], blocks });
+      if (!blocks.length) return;
+      const section = { title, category: "Lecture content", sourcePage: index + 1, keyTermsCritical: [], keyTermsImportant: [], blocks };
+      if (genericTitle.test(normalizedTitle(title)) && sections.length) sections.at(-1).blocks.push(...blocks);
+      else sections.push(section);
     });
   }
 
@@ -307,7 +310,7 @@ export function createFallbackPlan(extraction, options = {}) {
 
     let title = usableTitle(page.title)
       ? normalizedTitle(page.title)
-      : sections.length ? continuationTitle(previousTitle, pageNumber, visualOnly) : `Source slide ${pageNumber}`;
+      : continuationTitle(previousTitle, pageNumber, visualOnly);
     const titleUnit = pageUnits.find((unit) => unit.role === "title" || unit.role === "inferred-title")
       || (usableTitle(page.title) ? pageUnits.find((unit) => compact(unit.text) === compact(page.title)) : null);
     if (titleUnit && usableTitle(titleUnit.text)) title = normalizedTitle(titleUnit.text);
