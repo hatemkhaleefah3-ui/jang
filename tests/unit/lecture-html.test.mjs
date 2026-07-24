@@ -16,10 +16,11 @@ test("builds cover, paginated content, and end slides without editing code", () 
 });
 
 test("keeps structured lecture blocks and ending content", () => {
-  const source = `[DOCUMENT TITLE]\nImmunology\n\n[SECTION]\nAntibodies\n\n[PARAGRAPH]\nAntibodies recognize specific antigens.\n\n[BULLETS]\n- IgG\n- IgM\n- IgA\n\n[END]\nReview the key antibody classes.`;
+  const source = `[SOURCE FILE]\nlecture-notes.txt\n\n[DOCUMENT TITLE]\nImmunology\n\n[SECTION]\nAntibodies\n\n[PARAGRAPH]\nAntibodies recognize specific antigens.\n\n[BULLETS]\n- IgG\n- IgM\n- IgA\n\n[END]\nReview the key antibody classes.`;
   const result = buildLectureHtml(source);
 
   assert.equal(result.title, "Immunology");
+  assert.match(result.html, /lecture-notes\.txt/);
   assert.match(result.html, /Antibodies recognize specific antigens\./);
   assert.match(result.html, /<li>IgG<\/li>/);
   assert.match(result.html, /Review the key antibody classes\./);
