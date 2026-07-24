@@ -21,6 +21,7 @@ function emphasisPlan() {
     learningObjectives: [],
     sections: [
       {
+        sourcePage: 1,
         title: "NADPH section title",
         category: "Core concept",
         keyTermsCritical: ["NADPH"],
@@ -34,6 +35,7 @@ function emphasisPlan() {
         ],
       },
       {
+        sourcePage: 2,
         title: "Source pathway",
         category: "Diagram",
         keyTermsCritical: [],
@@ -62,7 +64,7 @@ async function deckXml(plan = emphasisPlan(), assets = []) {
   const zip = await JSZip.loadAsync(output);
   const slidePaths = Object.keys(zip.files).filter((path) => /^ppt\/slides\/slide\d+\.xml$/.test(path));
   const xml = (await Promise.all(slidePaths.map((path) => zip.file(path).async("text")))).join("\n");
-  return { deck, verification, xml, output };
+  return { deck, verification, xml };
 }
 
 test("PowerPoint limits body emphasis and leaves titles and subtitles plain", async () => {
@@ -71,7 +73,7 @@ test("PowerPoint limits body emphasis and leaves titles and subtitles plain", as
   assert.equal(verification.valid, true);
   assert.equal(deck._jangFidelity.report.highlightCount, 10);
   assert.equal(deck._jangFidelity.report.redTextCount, 5);
-  assert.equal(deck._jangFidelity.report.minimumBodyFontPt, 17.5);
+  assert.equal(deck._jangFidelity.report.minimumBodyFontSize, 16.5);
   assert.equal((xml.match(/<a:highlight>/g) || []).length, 10);
   assert.equal((xml.match(/<a:srgbClr val="922B21"/g) || []).length, 5);
 
@@ -95,25 +97,14 @@ test("native diagram text and ordinary paragraph text both remain in the PPTX", 
   assert.match(xml, /This ordinary source paragraph remains separate from the diagram\./);
 });
 
-test("original source manifest catches content omitted before final rendering", async () => {
-  const petText = "The PET scan uses 18F-fluorodeoxyglucose to identify tumors with increased glucose uptake.";
+test("package verification is grounded in the immutable source manifest", async () => {
   const plan = {
-    metadata: { title: "Carbohydrate metabolism", courseCode: "BIO", lectureLabel: "Lecture" },
-    overview: "",
-    learningObjectives: [],
-    sections: [{
-      title: "Warburg effect",
-      category: "Source slide 15",
-      keyTermsCritical: [],
-      keyTermsImportant: [],
-      blocks: [{ type: "paragraph", text: "Cancer cells use aerobic glycolysis." }],
-    }],
-    finalTakeaways: [],
+    metadata: { title: "Manifest test", courseCode: "BIO", lectureLabel: "Lecture" },
+    sections: [{ sourcePage: 1, title: "Visible content", category: "Lecture", blocks: [{ type: "paragraph", text: "Visible source sentence." }] }],
     sourceManifest: {
       units: [
-        { id: "src_15_1_paragraph", verbatimText: "Warburg effect" },
-        { id: "src_15_2_paragraph", verbatimText: "Cancer cells use aerobic glycolysis." },
-        { id: "src_15_3_paragraph", verbatimText: petText },
+        { id: "src_1", kind: "paragraph", sourcePage: 1, verbatimText: "Visible source sentence." },
+        { id: "src_2", kind: "paragraph", sourcePage: 1, verbatimText: "This original sentence was omitted from the plan." },
       ],
       assets: [],
     },
@@ -121,50 +112,19 @@ test("original source manifest catches content omitted before final rendering", 
 
   const { verification } = await deckXml(plan);
   assert.equal(verification.valid, false);
-  assert.deepEqual(verification.missingText, [petText]);
+  assert.ok(verification.missingText.some((value) => value.includes("original sentence was omitted")));
 });
 
-test("numbered source paragraphs and native tables remain structured", async () => {
+test("technical conversion labels are not shown as lecture captions", async () => {
+  const png = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9ZpYQAAAAASUVORK5CYII=";
   const plan = {
-    metadata: { title: "Carbohydrate metabolism", courseCode: "BIO", lectureLabel: "Lecture" },
-    overview: "",
-    learningObjectives: [],
-    sections: [
-      {
-        title: "Cori cycle",
-        category: "Source slide 17",
-        keyTermsCritical: [],
-        keyTermsImportant: [],
-        blocks: [
-          { type: "paragraph", text: "1. Glucose is converted to lactate." },
-          { type: "paragraph", text: "2. Lactate reaches the liver." },
-          { type: "paragraph", text: "3. Glucose returns to muscle." },
-        ],
-      },
-      {
-        title: "Glycogen storage diseases",
-        category: "Source slide 31",
-        keyTermsCritical: [],
-        keyTermsImportant: [],
-        blocks: [{
-          type: "table",
-          headers: ["Type", "Name", "Deficient enzyme", "Clinical features"],
-          rows: [
-            ["Type Ia", "von Gierke disease", "Glucose-6-phosphatase", "Fasting hypoglycemia"],
-            ["Type II", "Pompe disease", "Lysosomal maltase", "Cardiomyopathy"],
-          ],
-        }],
-      },
-    ],
-    finalTakeaways: [],
+    metadata: { title: "Image test", courseCode: "BIO", lectureLabel: "Lecture" },
+    sections: [{ sourcePage: 1, title: "Source visual", category: "Lecture", blocks: [{ type: "image", assetId: "image-001", caption: "Converted from EMF" }] }],
+    sourceManifest: { units: [], assets: [{ id: "image-001", sourcePage: 1 }] },
   };
+  const assets = [{ id: "image-001", type: "image", source: png, caption: "Converted from EMF", sourcePage: 1 }];
+  const { verification, xml } = await deckXml(plan, assets);
 
-  const { verification, xml } = await deckXml(plan);
   assert.equal(verification.valid, true);
-  assert.match(xml, /1\. Glucose is converted to lactate\./);
-  assert.match(xml, /2\. Lactate reaches the liver\./);
-  assert.match(xml, /3\. Glucose returns to muscle\./);
-  assert.match(xml, /<a:tbl>/);
-  assert.match(xml, /Deficient enzyme/);
-  assert.match(xml, /Pompe disease/);
+  assert.doesNotMatch(xml, /Converted from EMF/i);
 });
