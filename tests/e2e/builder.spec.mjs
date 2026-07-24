@@ -27,7 +27,7 @@ test("imports structured text and builds a verified editable HTML project", asyn
     element.value = "35";
     element.dispatchEvent(new Event("input", { bubbles: true }));
   });
-  await expect(frame.locator(".jang-image-block")).toHaveAttribute("style", /--jang-width:35%/);
+  await expect(frame.locator(".jang-image-block")).toHaveAttribute("style", /--jang-width:\s*35%/);
 
   await page.locator("#saveProject").click();
   await expect(page.locator("#savedProjects .saved-project")).toHaveCount(1);
