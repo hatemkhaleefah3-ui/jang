@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { buildLectureHtml } from "../../lecture-html.js";
 
-test("builds cover, paginated content, and end slides without editing code", () => {
+test("builds cover, paginated content, and end slides without general editing code", () => {
   const source = `Cell Biology\n\nIntroduction\n\n${"Cell membranes control transport and signaling. ".repeat(90)}\n\n- Lipids\n- Proteins\n- Carbohydrates`;
   const result = buildLectureHtml(source);
 
@@ -36,10 +36,43 @@ test("splits long diagram sequences into additional slides without dropping node
   for (let index = 1; index <= 13; index += 1) assert.match(result.html, new RegExp(`Node ${index}`));
 });
 
-test("preserves consecutive headings as separate section slides", () => {
+test("uses section titles in slide headers instead of standalone section slides", () => {
   const result = buildLectureHtml(`[DOCUMENT TITLE]\nBiology\n[SECTION]\nCells\n[SUBTITLE]\nMembranes\n[PARAGRAPH]\nMembrane content.`);
-  assert.match(result.html, />Cells<\/strong>/);
-  assert.match(result.html, /<h2>Membranes<\/h2>/);
+
+  assert.match(result.html, /<header class="slide-header"><h2>Cells<\/h2><\/header>/);
+  assert.match(result.html, /<h3 class="content-subtitle">Membranes<\/h3>/);
+  assert.doesNotMatch(result.html, /section-intro/);
+});
+
+test("removes generated Jang lecture labels", () => {
+  const result = buildLectureHtml("Biology\n\nCell content.");
+  assert.doesNotMatch(result.html, /Jang lecture|JANG LECTURE/);
+});
+
+test("renders sized interactive image placeholders in source order", () => {
+  const source = `[DOCUMENT TITLE]\nBiology\n[SECTION]\nCells\n[PARAGRAPH]\nBefore image.\n[IMAGE size=wide fit=cover]\nlabel: Cell membrane\nInsert the membrane illustration here.\n[PARAGRAPH]\nAfter image.`;
+  const result = buildLectureHtml(source);
+
+  assert.match(result.html, /data-image-placeholder/);
+  assert.match(result.html, /image-size-wide/);
+  assert.match(result.html, /data-image-fit="cover"/);
+  assert.match(result.html, /accept="image\/\*"/);
+  assert.match(result.html, /Change image/);
+  assert.match(result.html, /Remove image/);
+  assert.match(result.html, /Remove placeholder/);
+  assert.match(result.html, /data-image-save>Save<\/button>/);
+  assert.match(result.html, /data-image-cancel>Cancel<\/button>/);
+  assert.ok(result.html.indexOf("Before image.") < result.html.indexOf("Cell membrane"));
+  assert.ok(result.html.indexOf("Cell membrane") < result.html.indexOf("After image."));
+});
+
+test("embeds image data in saved HTML and supports cancelling the last action", () => {
+  const result = buildLectureHtml(`[DOCUMENT TITLE]\nBiology\n[IMAGE]\nlabel: Cell image`);
+  assert.match(result.html, /FileReader/);
+  assert.match(result.html, /reader\.readAsDataURL/);
+  assert.match(result.html, /clone\.outerHTML/);
+  assert.match(result.html, /showSaveFilePicker/);
+  assert.match(result.html, /history\.pop\(\)/);
 });
 
 test("uses right-to-left document direction for Arabic lecture text", () => {
