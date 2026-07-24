@@ -76,7 +76,28 @@ async function mockApi(page, captured) {
   await page.route("**/api/redesign", async (route) => {
     const payload = route.request().postDataJSON();
     captured.push(payload.source.batches.join("\n"));
-    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ plan: educationalPlan(payload.source), model: "test-structured-model" }) });
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        plan: educationalPlan(payload.source),
+        model: "test-structured-model",
+        verification: {
+          valid: true,
+          expectedSourceCount: payload.source.sourceUnits?.length || payload.source.batches.length,
+          referencedSourceCount: payload.source.sourceUnits?.length || payload.source.batches.length,
+          expectedAssetCount: payload.source.assets?.length || 0,
+          referencedAssetCount: payload.source.assets?.length || 0,
+          missingSourceIds: [],
+          duplicatedSourceIds: [],
+          unknownSourceIds: [],
+          missingAssetIds: [],
+          duplicatedAssetIds: [],
+          unknownAssetIds: [],
+          structuralErrors: [],
+        },
+      }),
+    });
   });
   await page.route("https://challenges.cloudflare.com/**", (route) => route.abort());
 }
@@ -100,7 +121,7 @@ for (const format of formats) {
 
     await expect(page.locator("#previewShell")).toBeVisible();
     await expect(page.locator("#downloadPptxButton")).toBeEnabled();
-    await expect(page.locator("#resultMessage")).toContainText("Gemini reorganized");
+    await expect(page.locator("#resultMessage")).toContainText("Structured draft verified");
     expect(captured.join(" ")).toContain("NADPH");
 
     const preview = page.frameLocator("#previewFrame");
