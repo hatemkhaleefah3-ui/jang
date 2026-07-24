@@ -1,31 +1,14 @@
 {
-  "name": "jang-lecture-rebuilder",
-  "version": "2.4.0",
+  "name": "jang-lecture-html-builder",
+  "version": "3.0.0",
   "private": true,
-  "description": "Browser-first editable HTML lecture builder with deterministic text and text-file import.",
+  "description": "Paste or import lecture text and download a responsive standalone HTML lecture.",
+  "type": "module",
   "scripts": {
-    "dev": "npm run build && wrangler pages dev dist --compatibility-date=2026-07-23",
-    "check": "node --check app-v2.js && node --check builder-app.js && node --check lecture-source-parser.js && node --check reference-design-system.js && node --check editable-lecture-html.js && node --check semantic-manifest.js && node --check extractor-v2.js && node --check source-importer.js && node --check source-importer-core.js && node --check ocr-engine.js && node --check fallback-plan.js && node --check pptx-exporter.js && node --check pptx-exporter-v2.js && node --check html-pptx-exporter.js && node --check lecture-template.js && node --check html-design-contract.js && node --check html-design-finalizer.js && node --check master-design-reference.js && node --check functions/api/config.js && node --check functions/api/redesign.js && node --check functions/api/redesign-large.js && node --check functions/api/design-html-parts.js && node --check functions/api/design-html.js && node --check scripts/build.mjs && node --check tests/create-fixtures.mjs",
+    "check": "node --check app.js && node --check lecture-html.js && node --check lecture-source-parser.js && node --check scripts/build.mjs && node --check scripts/serve.mjs",
     "build": "node scripts/build.mjs",
-    "unit": "node --test tests/unit/*.test.mjs",
-    "test:unit": "npm run unit",
-    "test:fixtures": "node tests/create-fixtures.mjs",
-    "test:e2e": "npm run build && npm run test:fixtures && playwright test",
-    "test": "npm run check && npm run unit && npm run test:e2e"
-  },
-  "dependencies": {
-    "@tesseract.js-data/ara": "1.0.0",
-    "@tesseract.js-data/eng": "1.0.0",
-    "emf-converter": "2.0.0",
-    "jszip": "3.10.1",
-    "pdfjs-dist": "4.10.38",
-    "pptxgenjs": "3.12.0",
-    "tesseract.js": "7.0.0"
-  },
-  "devDependencies": {
-    "@playwright/test": "1.55.0",
-    "pdf-lib": "1.17.1",
-    "wrangler": "^4.25.0"
-  },
-  "type": "module"
+    "dev": "npm run build && node scripts/serve.mjs",
+    "unit": "node --test tests/unit/lecture-source-parser.test.mjs tests/unit/lecture-html.test.mjs",
+    "test": "npm run check && npm run unit && npm run build"
+  }
 }
