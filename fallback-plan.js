@@ -48,16 +48,16 @@ function mergeParagraphBlocks(blocks) {
       merged.push(block);
       continue;
     }
-    const text = clean(block.text);
-    if (!text) continue;
+    const value = clean(block.text);
+    if (!value) continue;
     const previous = merged.at(-1);
     const canMerge = previous?.type === "paragraph"
       && !previous.heading
       && !block.heading
-      && `${previous.text} ${text}`.length <= 1800
-      && (!/[.!?)]$/.test(previous.text) || previous.text.length < 160 || text.length < 120);
-    if (canMerge) previous.text = clean(`${previous.text} ${text}`);
-    else merged.push({ ...block, text });
+      && `${previous.text} ${value}`.length <= 1800
+      && (!/[.!?)]$/.test(previous.text) || previous.text.length < 160 || value.length < 120);
+    if (canMerge) previous.text = clean(`${previous.text} ${value}`);
+    else merged.push({ ...block, text: value });
   }
   return merged;
 }
@@ -69,15 +69,27 @@ function parseTable(token) {
   return emptyBlock("table", { headers: cells(lines[0]), rows: lines.slice(2).map(cells) });
 }
 
-function parseToken(token, pendingHeading = "") {
+function parseToken(token, pendingHeading = "", diagramMap = new Map()) {
   const value = clean(token);
   if (!value) return { block: null, heading: pendingHeading };
 
   const asset = value.match(/^\[ASSET:([^\]]+)\]$/);
-  if (asset) return { block: emptyBlock("image", { assetId: asset[1] }), heading: pendingHeading };
+  if (asset) return { block: emptyBlock("image", { assetId: asset[1], heading: pendingHeading }), heading: "" };
+
+  const diagram = value.match(/^\[DIAGRAM:([^\]]+)\]$/);
+  if (diagram) {
+    const source = clean(diagramMap.get(diagram[1]));
+    return {
+      block: emptyBlock("diagram", {
+        heading: pendingHeading || "Source diagram",
+        items: source ? source.split(/\n+/).map(clean).filter(Boolean) : [],
+      }),
+      heading: "",
+    };
+  }
 
   const table = parseTable(token);
-  if (table) return { block: table, heading: pendingHeading };
+  if (table) return { block: { ...table, heading: pendingHeading }, heading: "" };
 
   const lines = token.split("\n").map(clean).filter(Boolean);
   if (lines.length && lines.every((line) => /^[-*]\s+/.test(line))) {
@@ -130,20 +142,21 @@ function consolidateSections(sections, fallbackTitle) {
   for (const section of consolidated) {
     const size = 10;
     for (let offset = 0, part = 1; offset < section.blocks.length; offset += size, part += 1) {
-      const blocks = section.blocks.slice(offset, offset + size);
+      const sectionBlocks = section.blocks.slice(offset, offset + size);
       chunked.push({
         ...section,
         title: part === 1 ? section.title : `${section.title} · Part ${part}`,
-        blocks,
+        blocks: sectionBlocks,
       });
     }
   }
-  return chunked.slice(0, 40);
+  return chunked;
 }
 
 export function createFallbackPlan(extraction, options = {}) {
   const sourceTitle = normalizeTitle(extraction?.title, "Untitled lecture");
   const tokens = clean(extraction?.content).split(/\n{2,}/).map((token) => token.trim()).filter(Boolean);
+  const diagramMap = new Map((Array.isArray(extraction?.diagramSources) ? extraction.diagramSources : []).map((item) => [item?.id, item?.text]));
   const sections = [];
   let current = { title: sourceTitle, category: "Lecture", blocks: [] };
   let pendingHeading = "";
@@ -165,12 +178,12 @@ export function createFallbackPlan(extraction, options = {}) {
 
     const plain = clean(token).replace(/\n+/g, " ");
     const next = clean(tokens[index + 1] || "");
-    if (looksLikeSubheading(plain) && next && !/^#{1,6}\s+/.test(next) && !/^\[ASSET:/.test(next)) {
+    if (looksLikeSubheading(plain) && next && !/^#{1,6}\s+/.test(next) && !/^\[(?:ASSET|DIAGRAM):/.test(next)) {
       pendingHeading = plain;
       continue;
     }
 
-    const parsed = parseToken(token, pendingHeading);
+    const parsed = parseToken(token, pendingHeading, diagramMap);
     pendingHeading = parsed.heading;
     if (parsed.block) current.blocks.push(parsed.block);
   }
