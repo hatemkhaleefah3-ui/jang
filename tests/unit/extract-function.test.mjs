@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   DEFAULT_GEMINI_MODEL,
+  extractionPrompt,
   lectureResponseSchema,
   normalizeLectureResult,
   resolveGeminiModel,
@@ -22,7 +23,7 @@ const extracted = {
         slideTitle: "Glycolysis",
         slideSubtitle: "Energy investment phase",
         blocks: [
-          { type: "paragraph", text: "Glucose is phosphorylated." },
+          { type: "paragraph", text: "Glucose is phosphorylated.", sourceReference: "Page 2" },
           { type: "image", slotId: "pathway", label: "Image", description: "Glycolysis biochemical pathway from glucose to pyruvate.", sourceReference: "Page 7" },
         ],
       },
@@ -52,6 +53,12 @@ test("normalizes hierarchy, removes repeated slide titles, and derives unique me
   assert.equal(result.imageSlots[0].sourceReference, "Page 7");
 });
 
+test("preserves source traceability on reconstructed content blocks", () => {
+  const result = normalizeLectureResult(extracted);
+  assert.equal(result.lecture.sections[0].slides[0].blocks[0].sourceReference, "Page 2");
+  assert.match(lectureResponseSchema.properties.sections.items.properties.slides.items.properties.blocks.items.properties.sourceReference.description, /every relevant page or slide/i);
+});
+
 test("adds specific table and diagram labels from slide context", () => {
   const result = normalizeLectureResult(extracted);
   const blocks = result.lecture.sections[0].slides[1].blocks;
@@ -65,6 +72,15 @@ test("structured response schema explicitly models overview, sections, slide tit
   assert.ok(slideProperties.slideTitle);
   assert.ok(slideProperties.slideSubtitle);
   assert.ok(slideProperties.blocks.items.properties.description);
+});
+
+test("Gemini prompt requires complete semantic reconstruction instead of simple element detection", () => {
+  assert.match(extractionPrompt, /not simple element detection/i);
+  assert.match(extractionPrompt, /read and understand the entire source/i);
+  assert.match(extractionPrompt, /reorganize the extracted information/i);
+  assert.match(extractionPrompt, /create image blocks only for important source visuals/i);
+  assert.match(extractionPrompt, /every content block must be traceable/i);
+  assert.match(extractionPrompt, /return the complete reconstructed lecture object/i);
 });
 
 test("uses Gemini 3.6 Flash and migrates the previous model setting", () => {
