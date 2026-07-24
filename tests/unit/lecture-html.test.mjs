@@ -79,3 +79,64 @@ test("uses right-to-left document direction for Arabic lecture text", () => {
   const result = buildLectureHtml("علم الأحياء\n\nمقدمة عن الخلية ووظائفها.");
   assert.match(result.html, /dir="rtl"/);
 });
+
+test("recognizes major and minor divider headings in pasted plain text", () => {
+  const source = `Blood Glucose Lecture
+
+============================================================
+2. REGULATION OF BLOOD GLUCOSE
+============================================================
+Glucose is regulated continuously.
+
+------------------------------------------------------------
+Maintenance of Blood Glucose in the Fed State
+------------------------------------------------------------
+Insulin promotes glucose storage.`;
+  const result = buildLectureHtml(source);
+
+  assert.match(result.html, /major-section-slide/);
+  assert.match(result.html, /<strong>2\. REGULATION OF BLOOD GLUCOSE<\/strong>/);
+  assert.match(result.html, /<header class="slide-header"><h2>2\. REGULATION OF BLOOD GLUCOSE<\/h2><\/header>/);
+  assert.match(result.html, /<h3 class="divider-heading"><span>Maintenance of Blood Glucose in the Fed State<\/span><\/h3>/);
+  assert.doesNotMatch(result.html, />={5,}/);
+  assert.doesNotMatch(result.html, />-{5,}/);
+});
+
+test("uses Overview rather than the document title before the first section", () => {
+  const result = buildLectureHtml(`[DOCUMENT TITLE]\nBiology\n[PARAGRAPH]\nIntroductory material.`);
+  assert.match(result.html, /<header class="slide-header"><h2>Overview<\/h2><\/header>/);
+  assert.doesNotMatch(result.html, /<header class="slide-header"><h2>Biology<\/h2><\/header>/);
+});
+
+test("renders diagram arrows as connectors between nodes and preserves rows", () => {
+  const result = buildLectureHtml(`[DOCUMENT TITLE]\nMetabolism\n[SECTION]\nPathway\n[DIAGRAM]\nType: flow\nTitle: Glucose pathway\nStructure:\nGlucose → Glucose-6-phosphate → Glycogen\nPyruvate → Acetyl-CoA`);
+  assert.match(result.html, /class="sequence-row"/);
+  assert.match(result.html, /class="sequence-node">Glucose<\/span>/);
+  assert.match(result.html, /class="sequence-connector" aria-hidden="true">→<\/span>/);
+  assert.ok((result.html.match(/class="sequence-row"/g) || []).length >= 2);
+});
+
+test("opens an empty image placeholder sheet with close and import actions", () => {
+  const result = buildLectureHtml(`[DOCUMENT TITLE]\nBiology\n[IMAGE]\nlabel: Cell image`);
+  assert.match(result.html, /data-image-empty-actions/);
+  assert.match(result.html, /data-image-action="close">Close<\/button>/);
+  assert.match(result.html, /data-image-action="import">Import image<\/button>/);
+  assert.match(result.html, /openSheet\(surface\.closest/);
+  assert.doesNotMatch(result.html, /else placeholder\.querySelector\("\[data-image-input\]"\)\.click/);
+});
+
+test("uses the redesigned semantic lecture table", () => {
+  const result = buildLectureHtml(`[DOCUMENT TITLE]\nBiology\n[SECTION]\nComparison\n[TABLE]\n| State | Hormone | Effect |\n|---|---|---|\n| Fed | Insulin | Storage |\n| Fasting | Glucagon | Release |`);
+  assert.match(result.html, /class="table-wrap"/);
+  assert.match(result.html, /class="table-accent"/);
+  assert.match(result.html, /class="lecture-table"/);
+  assert.match(result.html, /<th scope="col">State<\/th>/);
+  assert.match(result.html, /class="table-key">Fed<\/td>/);
+});
+
+test("keeps the generated image editor script syntactically valid", () => {
+  const result = buildLectureHtml(`[DOCUMENT TITLE]\nBiology\n[IMAGE]\nlabel: Cell image`);
+  const script = result.html.match(/<script>([\s\S]*)<\/script>/)?.[1];
+  assert.ok(script);
+  assert.doesNotThrow(() => new Function(script));
+});
