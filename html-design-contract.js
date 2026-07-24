@@ -28,10 +28,7 @@ export const APPROVED_COMPONENT_CLASSES = new Set([
 ]);
 
 export function normalizeDesignedHtml(value) {
-  return clean(value)
-    .replace(/^```(?:html)?\s*/i, "")
-    .replace(/\s*```$/i, "")
-    .trim();
+  return clean(value).replace(/^```(?:html)?\s*/i, "").replace(/\s*```$/i, "").trim();
 }
 
 function countAttribute(html, attribute) {
@@ -41,22 +38,41 @@ function countAttribute(html, attribute) {
   return counts;
 }
 
-function unique(values) {
-  return [...new Set(values.filter(Boolean))];
-}
-
-function findTags(html) {
-  return unique([...html.matchAll(/<\/?\s*([a-z][a-z0-9-]*)\b/gi)].map((match) => match[1].toLowerCase()));
-}
-
+function unique(values) { return [...new Set(values.filter(Boolean))]; }
+function findTags(html) { return unique([...html.matchAll(/<\/?\s*([a-z][a-z0-9-]*)\b/gi)].map((match) => match[1].toLowerCase())); }
 function findClasses(html) {
   const values = [];
   for (const match of html.matchAll(/class\s*=\s*["']([^"']*)["']/gi)) values.push(...match[1].split(/\s+/));
   return unique(values);
 }
+function expectedIds(manifest, key) { return asArray(manifest?.[key]).map((item) => clean(typeof item === "string" ? item : item?.id)).filter(Boolean); }
 
-function expectedIds(manifest, key) {
-  return asArray(manifest?.[key]).map((item) => clean(typeof item === "string" ? item : item?.id)).filter(Boolean);
+function sourcePageNumbers(manifest) {
+  return unique([
+    ...asArray(manifest?.pages).map((page) => Number(page?.page)),
+    ...asArray(manifest?.units).map((unit) => Number(unit?.sourcePage || unit?.page)),
+    ...asArray(manifest?.assets).map((asset) => Number(asset?.sourcePage || asset?.page)),
+  ].filter((page) => Number.isInteger(page) && page > 0)).sort((a, b) => a - b);
+}
+
+function inferredSlideBudget(manifest) {
+  if (manifest?.slideBudget?.hardMaximum) return manifest.slideBudget;
+  const count = sourcePageNumbers(manifest).length;
+  if (!count) return { minimum: 1, preferredMinimum: 1, preferredMaximum: Infinity, hardMaximum: Infinity };
+  return {
+    minimum: count,
+    preferredMinimum: count,
+    preferredMaximum: count + Math.max(1, Math.ceil(count * 0.1)),
+    hardMaximum: count + Math.max(2, Math.ceil(count * 0.15)),
+  };
+}
+
+function pageBodies(html) {
+  return [...html.matchAll(/<article\b[^>]*class\s*=\s*["'][^"']*\bpage\b[^"']*["'][^>]*>([\s\S]*?)<\/article>/gi)].map((match) => match[1]);
+}
+
+function visibleText(fragment) {
+  return clean(String(fragment || "").replace(/<style\b[\s\S]*?<\/style>/gi, " ").replace(/<svg\b[\s\S]*?<\/svg>/gi, " ").replace(/<[^>]+>/g, " ").replace(/&nbsp;/gi, " "));
 }
 
 export function verifyDesignedHtml(htmlInput, manifest = {}, options = {}) {
@@ -67,7 +83,6 @@ export function verifyDesignedHtml(htmlInput, manifest = {}, options = {}) {
   const assetCounts = countAttribute(html, "data-asset-id");
   const approvedClasses = new Set([...APPROVED_COMPONENT_CLASSES, ...asArray(options.additionalClasses).map(clean)]);
   const approvedTags = new Set([...APPROVED_HTML_TAGS, ...asArray(options.additionalTags).map((tag) => clean(tag).toLowerCase())]);
-
   const missingSourceIds = sourceIds.filter((id) => !sourceCounts.has(id));
   const duplicatedSourceIds = sourceIds.filter((id) => (sourceCounts.get(id) || 0) > 1);
   const unknownSourceIds = [...sourceCounts.keys()].filter((id) => !sourceIds.includes(id));
@@ -80,13 +95,16 @@ export function verifyDesignedHtml(htmlInput, manifest = {}, options = {}) {
   const eventHandlers = unique([...html.matchAll(/\s(on[a-z]+)\s*=\s*["'][^"']*["']/gi)].map((match) => match[1].toLowerCase()));
   const scripts = [...html.matchAll(/<\s*script\b/gi)].length;
   const externalUrls = unique([...html.matchAll(/(?:src|href)\s*=\s*["'](https?:\/\/[^"']+)["']/gi)].map((match) => match[1]));
-  const externalCssUrls = unique([
-    ...[...html.matchAll(/@import\s+(?:url\()?\s*["']?(https?:\/\/[^"')\s;]+)/gi)].map((match) => match[1]),
-    ...[...html.matchAll(/url\(\s*["']?(https?:\/\/[^"')\s]+)/gi)].map((match) => match[1]),
-  ]);
+  const externalCssUrls = unique([...[...html.matchAll(/@import\s+(?:url\()?\s*["']?(https?:\/\/[^"')\s;]+)/gi)].map((match) => match[1]), ...[...html.matchAll(/url\(\s*["']?(https?:\/\/[^"')\s]+)/gi)].map((match) => match[1])]);
   const unsafeUrls = unique([...html.matchAll(/(?:src|href)\s*=\s*["'](javascript:|data:text\/html)[^"']*["']/gi)].map((match) => match[1]));
   const unsafeAttributes = unique([...html.matchAll(/\s(srcdoc|formaction)\s*=\s*["'][^"']*["']/gi)].map((match) => match[1].toLowerCase()));
-  const pages = [...html.matchAll(/<article\b[^>]*class\s*=\s*["'][^"']*\bpage\b[^"']*["'][^>]*>/gi)].length;
+  const bodies = pageBodies(html);
+  const pages = bodies.length;
+  const slideBudget = inferredSlideBudget(manifest);
+  const emptyPages = bodies.map((body, index) => ({ index: index + 1, text: visibleText(body), hasSource: /data-source-id\s*=/i.test(body), hasAsset: /data-asset-id\s*=/i.test(body) })).filter((page) => page.index > 1 && !page.hasSource && !page.hasAsset && page.text.length < 40).map((page) => page.index);
+  const forbiddenLabels = unique([...html.matchAll(/>\s*(SOURCE(?:\s+\d+)?|VISUAL EXPLANATION|JANG_ASSET:[^<\s]+)\s*</gi)].map((match) => match[1]));
+  const titleValues = [...html.matchAll(/<(?:h1|h2)\b[^>]*class\s*=\s*["'][^"']*\bpage-title\b[^"']*["'][^>]*>([\s\S]*?)<\/(?:h1|h2)>/gi)].map((match) => visibleText(match[1]).replace(/\s+[—-]\s+continued(?:\s+[—-]\s+continued)*/gi, "").toLowerCase()).filter(Boolean);
+  const repeatedTitles = unique(titleValues.filter((title, index) => titleValues.indexOf(title) !== index));
   const structuralErrors = [];
   if (!html.startsWith("<!DOCTYPE html>")) structuralErrors.push("Missing <!DOCTYPE html>.");
   if (!/<html\b/i.test(html) || !/<\/html>\s*$/i.test(html)) structuralErrors.push("HTML root element is incomplete.");
@@ -94,50 +112,31 @@ export function verifyDesignedHtml(htmlInput, manifest = {}, options = {}) {
   if (!/<body\b/i.test(html) || !/<\/body>/i.test(html)) structuralErrors.push("Body element is incomplete.");
   if (!pages) structuralErrors.push("No .page article was generated.");
   if (scripts) structuralErrors.push("Script elements are forbidden.");
+  if (pages < slideBudget.minimum) structuralErrors.push(`Generated ${pages} slides, below the source-page minimum of ${slideBudget.minimum}.`);
+  if (pages > slideBudget.hardMaximum) structuralErrors.push(`Generated ${pages} slides, above the hard maximum of ${slideBudget.hardMaximum}.`);
 
-  const report = {
-    valid: false,
-    pages,
-    missingSourceIds,
-    duplicatedSourceIds,
-    unknownSourceIds,
-    missingAssetIds,
-    duplicatedAssetIds,
-    unknownAssetIds,
-    unknownClasses,
-    unknownTags,
-    inlineStyles,
-    eventHandlers,
-    externalUrls,
-    externalCssUrls,
-    unsafeUrls,
-    unsafeAttributes,
-    structuralErrors,
-  };
-  report.valid = Object.entries(report).every(([key, value]) => key === "valid" || key === "pages" || (Array.isArray(value) && value.length === 0));
+  const report = { valid: false, pages, slideBudget, emptyPages, forbiddenLabels, repeatedTitles, missingSourceIds, duplicatedSourceIds, unknownSourceIds, missingAssetIds, duplicatedAssetIds, unknownAssetIds, unknownClasses, unknownTags, inlineStyles, eventHandlers, externalUrls, externalCssUrls, unsafeUrls, unsafeAttributes, structuralErrors };
+  report.valid = Object.entries(report).every(([key, value]) => ["valid", "pages", "slideBudget"].includes(key) || (Array.isArray(value) && value.length === 0));
   return report;
 }
 
 export function createHtmlDesignPrompt({ manifest, referenceHtml, metadata = {}, previousHtml = "", verification = null }) {
-  const sourceUnits = asArray(manifest?.units).map((unit) => ({
-    id: clean(unit?.id),
-    kind: clean(unit?.kind || "paragraph"),
-    sourcePage: Number(unit?.sourcePage || unit?.page || 0),
-    sourceOrder: Number(unit?.sourceOrder || unit?.order || 0),
-    verbatimText: clean(unit?.verbatimText || unit?.text),
-  })).filter((unit) => unit.id && unit.verbatimText);
-  const assets = asArray(manifest?.assets).map((asset) => ({
-    id: clean(asset?.id),
-    kind: clean(asset?.kind || asset?.type || "image"),
-    sourcePage: Number(asset?.sourcePage || 0),
-    alt: clean(asset?.alt),
-    caption: clean(asset?.caption),
-  })).filter((asset) => asset.id);
+  const sourceUnits = asArray(manifest?.units).map((unit) => ({ id: clean(unit?.id), kind: clean(unit?.kind || "paragraph"), role: clean(unit?.role || "body"), sourcePage: Number(unit?.sourcePage || unit?.page || 0), sourceOrder: Number(unit?.sourceOrder || unit?.order || 0), bbox: unit?.bbox || null, style: unit?.style || null, verbatimText: clean(unit?.verbatimText || unit?.text) })).filter((unit) => unit.id && unit.verbatimText);
+  const assets = asArray(manifest?.assets).map((asset) => ({ id: clean(asset?.id), kind: clean(asset?.kind || asset?.type || "image"), sourcePage: Number(asset?.sourcePage || 0), sourceOrder: Number(asset?.sourceOrder || 0), bbox: asset?.bbox || null, alt: clean(asset?.alt), caption: clean(asset?.caption) })).filter((asset) => asset.id);
+  const pageNumbers = sourcePageNumbers({ units: sourceUnits, assets, pages: manifest?.pages });
+  const pages = pageNumbers.map((page) => ({ page, units: sourceUnits.filter((unit) => unit.sourcePage === page).map((unit) => unit.id), assets: assets.filter((asset) => asset.sourcePage === page).map((asset) => asset.id), relationships: asArray(manifest?.relationships).filter((relation) => Number(relation?.sourcePage) === page) }));
+  const slideBudget = inferredSlideBudget({ ...manifest, units: sourceUnits, assets });
 
   return `Create one complete standalone academic lecture HTML document. Return HTML only, beginning with <!DOCTYPE html>.
 
 DESIGN RESPONSIBILITY
-Choose the page structure, boxes, diagrams, tables, columns, image placement, hierarchy, and spacing. Use only the supplied reference design's existing classes and visual language. Copy the reference CSS into the output document. Do not invent CSS classes, colors, fonts, scripts, or external resources. Do not use inline style attributes.
+Choose the boxes, diagrams, tables, columns, image placement, hierarchy, and spacing inside the supplied source-page structure. Use only the supplied reference design's existing classes and visual language. Copy the reference CSS into the output document. Do not invent CSS classes, colors, fonts, scripts, or external resources. Do not use inline style attributes.
+
+SOURCE-PAGE SEMANTICS — MANDATORY
+The source lecture contains ${pageNumbers.length} semantic pages. Preserve page order and keep each source page's text and visuals together. A visual and its related explanation must remain on the same output slide whenever they fit. Do not create filler pages, isolated image pages, generic SOURCE labels, generic VISUAL EXPLANATION labels, or repeated “continued” pages. Split a source page only when readability makes it unavoidable. Never split a page merely to show an image separately.
+
+SLIDE BUDGET — MANDATORY
+Minimum ${slideBudget.minimum}; preferred ${slideBudget.preferredMinimum}–${slideBudget.preferredMaximum}; hard maximum ${slideBudget.hardMaximum}. Exceeding the hard maximum is a validation failure.
 
 CONTENT FIDELITY
 Every source unit must appear exactly once in an element carrying data-source-id="SOURCE_ID". Copy its verbatimText exactly; never summarize, paraphrase, translate, correct, or omit it. Every asset must appear exactly once as an <img data-asset-id="ASSET_ID" ...> without a remote src. Do not invent IDs. Diagrams may organize source text visually, but every label must remain verbatim and tied to its source ID.
@@ -148,8 +147,8 @@ Use one <article class="page"> for every output slide. Every page is exactly 900
 METADATA
 ${JSON.stringify(metadata)}
 
-SOURCE MANIFEST
-${JSON.stringify({ units: sourceUnits, assets })}
+SEMANTIC PAGE MANIFEST
+${JSON.stringify({ slideBudget, pages, units: sourceUnits, assets, relationships: asArray(manifest?.relationships) })}
 
 MASTER DESIGN REFERENCE
 ${clean(referenceHtml)}
@@ -161,7 +160,6 @@ export function hydrateDesignedHtml(htmlInput, manifest = {}, assetResolver = (i
   let html = normalizeDesignedHtml(htmlInput);
   const unitMap = new Map(asArray(manifest?.units).map((unit) => [clean(unit?.id), clean(unit?.verbatimText || unit?.text)]));
   const assetMap = new Map(asArray(manifest?.assets).map((asset) => [clean(asset?.id), asset]));
-
   html = html.replace(/(<([a-z][a-z0-9-]*)\b[^>]*data-source-id\s*=\s*["']([^"']+)["'][^>]*>)([\s\S]*?)(<\/\2>)/gi, (all, open, tag, id, _body, close) => {
     if (!unitMap.has(id)) return all;
     const exact = esc(unitMap.get(id));
