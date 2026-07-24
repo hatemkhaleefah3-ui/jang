@@ -2,6 +2,7 @@ import { createHtmlDesignPrompt, hydrateDesignedHtml, normalizeDesignedHtml, ver
 import { applyMasterDesignCss } from "../../html-design-finalizer.js";
 import { MASTER_DESIGN_REFERENCE } from "../../master-design-reference.js";
 import { callOcr, resolveOcrModel } from "./redesign-large.js";
+import { createGeminiDesignParts, normalizeAssetPreview, publicDesignManifest } from "./design-html-parts.js";
 
 const MAX_BODY_BYTES = 8_000_000;
 const MAX_DESIGN_RETRIES = 2;
@@ -118,6 +119,7 @@ function normalizeAssets(rawAssets) {
     sourceOrder: Number(asset?.sourceOrder || index + 1),
     alt: bounded(asset?.alt, 1000, `Asset ${index + 1} alt`),
     caption: bounded(asset?.caption, 2000, `Asset ${index + 1} caption`),
+    preview: normalizeAssetPreview(asset?.previewData, `Asset ${index + 1} preview`),
   }));
 }
 
@@ -161,7 +163,7 @@ function modelText(payload) {
   return Array.isArray(parts) ? parts.map((part) => typeof part?.text === "string" ? part.text : "").join("").trim() : "";
 }
 
-async function callGemini(prompt, env, model) {
+async function callGemini(prompt, env, model, assets) {
   const apiKey = env.GEMINI_API_KEY || env.GOOGLE_API_KEY;
   let lastError;
   for (let attempt = 0; attempt <= GEMINI_REQUEST_RETRIES; attempt += 1) {
@@ -173,7 +175,7 @@ async function callGemini(prompt, env, model) {
           system_instruction: {
             parts: [{ text: "You are a senior academic information designer. Return one complete standalone HTML document only. Preserve every supplied source and asset ID exactly once." }],
           },
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          contents: [{ role: "user", parts: createGeminiDesignParts(prompt, assets) }],
           generationConfig: {
             maxOutputTokens: 65536,
             responseMimeType: "text/plain",
@@ -261,7 +263,7 @@ export async function generateVerifiedHtml(data, env) {
       previousHtml: attempt ? designedHtml : "",
       verification: attempt ? verification : null,
     });
-    designedHtml = applyMasterDesignCss(await callGemini(prompt, env, model));
+    designedHtml = applyMasterDesignCss(await callGemini(prompt, env, model, data.manifest.assets));
     verification = verifyDesignedHtml(designedHtml, data.manifest);
     if (verification.valid) {
       return {
@@ -311,7 +313,7 @@ export const onRequestPost = async ({ request, env }) => {
     const result = await generateVerifiedHtml(prepared.data, env);
     return respond({
       ...result,
-      manifest: prepared.data.manifest,
+      manifest: publicDesignManifest(prepared.data.manifest),
       metadata: prepared.data.metadata,
       ocr: prepared.ocr,
       designReference: "master-reference-2026-07",
