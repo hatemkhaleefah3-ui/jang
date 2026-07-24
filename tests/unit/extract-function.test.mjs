@@ -1,6 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { normalizeLectureResult, lectureResponseSchema } from "../../functions/api/extract.js";
+import {
+  DEFAULT_GEMINI_MODEL,
+  lectureResponseSchema,
+  normalizeLectureResult,
+  resolveGeminiModel,
+} from "../../functions/api/extract.js";
 
 test("normalizes Gemini lecture JSON and derives ordered image slots", () => {
   const result = normalizeLectureResult({
@@ -25,6 +30,13 @@ test("normalizes Gemini lecture JSON and derives ordered image slots", () => {
 test("structured response schema requires the lecture essentials", () => {
   assert.deepEqual(lectureResponseSchema.required, ["documentTitle", "direction", "endNote", "slides"]);
   assert.ok(lectureResponseSchema.properties.slides.items.properties.blocks.items.properties.slotId);
+});
+
+test("uses Gemini 3.6 Flash and migrates the previous model setting", () => {
+  assert.equal(DEFAULT_GEMINI_MODEL, "gemini-3.6-flash");
+  assert.equal(resolveGeminiModel(""), "gemini-3.6-flash");
+  assert.equal(resolveGeminiModel("models/gemini-2.5-flash"), "gemini-3.6-flash");
+  assert.equal(resolveGeminiModel("gemini-3.5-flash-lite"), "gemini-3.5-flash-lite");
 });
 
 test("rejects an extraction with no usable slides", () => {
