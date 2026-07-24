@@ -26,8 +26,9 @@ test("accepts a complete reference-class HTML lecture", () => {
 
 test("rejects missing, duplicated, invented, styled, scripted, and remote content", () => {
   const invalid = validHtml
-    .replace("</main>", '<p class="invented" data-source-id="src-1" style="color:red">duplicate</p><img data-asset-id="made-up" src="https://example.com/a.png"><script>alert(1)</script></main>')
-    .replace('data-source-id="src-2"', 'data-source-id="unknown"');
+    .replace("</main>", '<p class="invented" data-source-id="src-1" style="color:red">duplicate</p><script>alert(1)</script></main>')
+    .replace('data-source-id="src-2"', 'data-source-id="unknown"')
+    .replace('data-asset-id="img-1"', 'data-asset-id="made-up" src="https://example.com/a.png"');
   const report = verifyDesignedHtml(invalid, manifest, { additionalTags: ["meta"] });
   assert.equal(report.valid, false);
   assert.deepEqual(report.missingSourceIds, ["src-2"]);
