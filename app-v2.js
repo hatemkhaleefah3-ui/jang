@@ -1,4 +1,5 @@
-import { extractLecture, applyOcrResults, applyBrowserOcr, createFallbackPlan, getUploadPolicy } from "./source-importer.js";
+import { extractLecture, applyOcrResults, createFallbackPlan, getUploadPolicy } from "./source-importer.js";
+import { applyBrowserOcr } from "./ocr-engine.js";
 import { buildLectureHTML, safeFilename } from "./lecture-template.js";
 import { createPptxFile, downloadPreparedPptx } from "./pptx-exporter.js";
 
@@ -12,7 +13,7 @@ const el = {
 };
 const stages = [el.stageRead, el.stageExtract, el.stagePlan, el.stageRender];
 const state = {
-  config: { configured: null, turnstileSiteKey: null, model: "gemini-3.5-flash-lite", keySource: null, environment: "deployment", branch: "" },
+  config: { configured: null, turnstileSiteKey: null, model: "gemini-3.5-flash", keySource: null, environment: "deployment", branch: "" },
   selectedFile: null,
   extraction: null,
   plan: null,
@@ -51,7 +52,7 @@ function compactPlan(plan, extraction, userOptions) {
 }
 
 async function requestPlan(extraction, userOptions) {
-  stage(2, extraction.ocrPages?.length ? "Applying backup OCR and reorganizing" : "Reorganizing with Gemini", extraction.ocrPages?.length ? `The browser OCR path was unavailable; transcribing ${extraction.ocrPages.length} page${extraction.ocrPages.length === 1 ? "" : "s"} with Gemini and verifying the draft…` : "Creating and verifying the structured draft…");
+  stage(2, extraction.ocrPages?.length ? "Applying Gemini OCR and reorganizing" : "Reorganizing with Gemini", extraction.ocrPages?.length ? `The local OCR confidence gate requested a second reading for ${extraction.ocrPages.length} page${extraction.ocrPages.length === 1 ? "" : "s"}; Gemini will transcribe and verify them before redesign…` : "Creating and verifying the structured draft…");
   const response = await fetch("/api/redesign", {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -104,18 +105,18 @@ async function processLecture() {
     const userOptions = options();
 
     if (state.extraction.ocrPages?.length) {
-      stage(1, "Applying browser OCR", `Reading ${state.extraction.ocrPages.length} sparse PDF page${state.extraction.ocrPages.length === 1 ? "" : "s"} locally before redesign…`);
+      stage(1, "Applying local multi-pass OCR", `Reading ${state.extraction.ocrPages.length} sparse PDF page${state.extraction.ocrPages.length === 1 ? "" : "s"} with rotation, contrast, and segmentation retries…`);
       try {
-        state.extraction = await applyBrowserOcr(state.extraction, userOptions.language, (detail) => stage(1, "Applying browser OCR", detail));
+        state.extraction = await applyBrowserOcr(state.extraction, userOptions.language, (detail) => stage(1, "Applying local multi-pass OCR", detail));
         browserOcrApplied = true;
       } catch (error) {
         browserOcrError = error instanceof Error ? error.message : "Browser OCR failed.";
-        stage(1, "Browser OCR unavailable", "Trying the configured Gemini vision OCR path instead…");
+        stage(1, "Local OCR requested a second reading", "Trying Gemini 3.6 vision OCR with page-level verification…");
       }
     }
 
     stats = state.extraction.stats;
-    stage(1, "Content extraction verified", `${stats.extractedChars.toLocaleString()} characters · ${stats.imageCount} images · ${stats.diagramCount || 0} source diagrams${stats.convertedVisualCount ? ` · ${stats.convertedVisualCount} visuals converted` : ""}${browserOcrApplied ? " · browser OCR complete" : ""}`);
+    stage(1, "Content extraction verified", `${stats.extractedChars.toLocaleString()} characters · ${stats.imageCount} images · ${stats.diagramCount || 0} source diagrams${stats.convertedVisualCount ? ` · ${stats.convertedVisualCount} visuals converted` : ""}${browserOcrApplied ? " · local OCR complete" : ""}`);
 
     if (state.extraction.extractionStatus === "incomplete") throw new Error(unresolvedConversionMessage(state.extraction));
 
@@ -127,8 +128,9 @@ async function processLecture() {
     } catch (error) {
       const needsOcr = Boolean(state.extraction?.ocrPages?.length);
       if (needsOcr || error?.code === "SOURCE_NOT_VERIFIED" || error?.code === "OCR_IMAGE_MISSING") {
+        const detail = error instanceof Error ? error.message : "unknown OCR error";
         const prefix = browserOcrError ? `${browserOcrError} Gemini OCR also failed: ` : "Automatic OCR failed: ";
-        throw new Error(`${prefix}${error instanceof Error ? error.message : "unknown OCR error"}`);
+        throw new Error(`${prefix}${detail}`);
       }
       localMode = error?.code === "AI_NOT_CONFIGURED";
       fallbackReason = error instanceof Error ? error.message : "The AI service was unavailable.";
@@ -147,7 +149,7 @@ async function processLecture() {
     stats = state.extraction.stats;
     el.fileMeta.textContent = `${formatBytes(state.selectedFile.size)} · ${stats.extractedChars.toLocaleString()} characters · ${stats.imageCount} images · verified PPTX`;
     const verificationText = `${pptx.packageVerification.slideCount} slides · ${pptx.packageVerification.embeddedMediaCount} image occurrence${pptx.packageVerification.embeddedMediaCount === 1 ? "" : "s"} · ${pptx.report.highlightCount} highlights · ${pptx.report.redTextCount} red terms`;
-    if (state.resultMode === "ai" && state.verification?.valid) message(`PowerPoint ready and verified: ${verificationText}.${browserOcrApplied ? " Browser OCR completed before redesign." : ""}`, "success");
+    if (state.resultMode === "ai" && state.verification?.valid) message(`PowerPoint ready and verified: ${verificationText}.${browserOcrApplied ? " Local OCR completed before redesign." : ""}`, "success");
     else if (state.resultMode === "local") message(`${localMode ? "AI is not configured" : "AI redesign failed"}; a verified local PowerPoint was created. ${fallbackReason}`, "warning");
     else message(`PowerPoint ready and verified: ${verificationText}.`, "success");
     showPreview();
