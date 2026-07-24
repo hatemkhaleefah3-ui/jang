@@ -1,4 +1,4 @@
-import { extractLecture, applyOcrResults, createFallbackPlan, getUploadPolicy } from "./source-importer.js";
+import { extractLecture, applyOcrResults, applyBrowserOcr, createFallbackPlan, getUploadPolicy } from "./source-importer.js";
 import { buildLectureHTML, safeFilename } from "./lecture-template.js";
 import { createPptxFile, downloadPreparedPptx } from "./pptx-exporter.js";
 
@@ -51,7 +51,7 @@ function compactPlan(plan, extraction, userOptions) {
 }
 
 async function requestPlan(extraction, userOptions) {
-  stage(2, extraction.ocrPages?.length ? "Applying OCR and reorganizing" : "Reorganizing with Gemini", extraction.ocrPages?.length ? `Transcribing ${extraction.ocrPages.length} sparse PDF page${extraction.ocrPages.length === 1 ? "" : "s"} and verifying the structured draft…` : "Creating and verifying the structured draft…");
+  stage(2, extraction.ocrPages?.length ? "Applying backup OCR and reorganizing" : "Reorganizing with Gemini", extraction.ocrPages?.length ? `The browser OCR path was unavailable; transcribing ${extraction.ocrPages.length} page${extraction.ocrPages.length === 1 ? "" : "s"} with Gemini and verifying the draft…` : "Creating and verifying the structured draft…");
   const response = await fetch("/api/redesign", {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -61,7 +61,7 @@ async function requestPlan(extraction, userOptions) {
         title: extraction.title,
         batches: extraction.batches,
         sourceUnits: extraction.sourceUnits || [],
-        assets: extraction.assets.map(({ id, type, alt, caption, sourceKind, sourcePage }) => ({ id, type, alt, caption, sourceKind, sourcePage })),
+        assets: extraction.assets.map(({ id, type, alt, caption, sourceKind, sourcePage, originalFormat }) => ({ id, type, alt, caption, sourceKind, sourcePage, originalFormat })),
         ocrPages: extraction.ocrPages || [],
         extractionStatus: extraction.extractionStatus,
         verificationIssues: extraction.verificationIssues || [],
@@ -76,6 +76,14 @@ async function requestPlan(extraction, userOptions) {
   return payload;
 }
 
+function unresolvedConversionMessage(extraction) {
+  const issues = Array.isArray(extraction?.verificationIssues) ? extraction.verificationIssues : [];
+  const visualIssues = issues.filter((issue) => /visual|image|svg|canvas|snapshot/i.test(String(issue?.type || issue?.reason || "")));
+  if (!visualIssues.length) return extraction?.warnings?.join(" ") || "Automatic source conversion did not finish.";
+  const locations = visualIssues.map((issue) => issue?.sourcePage ? `slide ${issue.sourcePage}` : issue?.page ? `page ${issue.page}` : issue?.id || issue?.mediaPath || "an unknown visual");
+  return `Automatic visual conversion failed for ${locations.join(", ")}. No content was omitted; the PowerPoint was not created.`;
+}
+
 function resetTurnstile() { state.turnstileToken = ""; if (state.turnstileId !== null && window.turnstile) { try { window.turnstile.reset(state.turnstileId); } catch {} } updateButton(); }
 function deploymentLabel() { const environment = state.config.environment || "current"; const branch = state.config.branch ? ` (${state.config.branch})` : ""; return `${environment} deployment${branch}`; }
 
@@ -86,39 +94,60 @@ async function processLecture() {
   showProcessing();
   let fallbackReason = "";
   let localMode = false;
+  let browserOcrError = "";
+  let browserOcrApplied = false;
   try {
-    stage(0, "Reading the lecture", "Preparing the source for complete local extraction…");
-    state.extraction = await extractLecture(state.selectedFile, (detail) => stage(0, "Reading the lecture", detail));
+    stage(0, "Reading and converting the lecture", "Extracting text, rendering PDF pages, and converting Office visuals locally…");
+    state.extraction = await extractLecture(state.selectedFile, (detail) => stage(0, "Reading and converting the lecture", detail));
     let stats = state.extraction.stats;
-    el.fileMeta.textContent = `${formatBytes(state.selectedFile.size)} · ${stats.nodeCount.toLocaleString()} units · ${stats.assetCount} visual assets`;
-    stage(1, "Academic content extracted", `${stats.extractedChars.toLocaleString()} characters · ${stats.imageCount} images · ${stats.diagramCount || 0} source diagrams${stats.ocrRequiredPages ? ` · ${stats.ocrRequiredPages} OCR page${stats.ocrRequiredPages === 1 ? "" : "s"}` : ""}`);
+    el.fileMeta.textContent = `${formatBytes(state.selectedFile.size)} · ${stats.nodeCount.toLocaleString()} units · ${stats.assetCount} visual assets${stats.convertedVisualCount ? ` · ${stats.convertedVisualCount} converted` : ""}`;
     const userOptions = options();
+
+    if (state.extraction.ocrPages?.length) {
+      stage(1, "Applying browser OCR", `Reading ${state.extraction.ocrPages.length} sparse PDF page${state.extraction.ocrPages.length === 1 ? "" : "s"} locally before redesign…`);
+      try {
+        state.extraction = await applyBrowserOcr(state.extraction, userOptions.language, (detail) => stage(1, "Applying browser OCR", detail));
+        browserOcrApplied = true;
+      } catch (error) {
+        browserOcrError = error instanceof Error ? error.message : "Browser OCR failed.";
+        stage(1, "Browser OCR unavailable", "Trying the configured Gemini vision OCR path instead…");
+      }
+    }
+
+    stats = state.extraction.stats;
+    stage(1, "Content extraction verified", `${stats.extractedChars.toLocaleString()} characters · ${stats.imageCount} images · ${stats.diagramCount || 0} source diagrams${stats.convertedVisualCount ? ` · ${stats.convertedVisualCount} visuals converted` : ""}${browserOcrApplied ? " · browser OCR complete" : ""}`);
+
+    if (state.extraction.extractionStatus === "incomplete") throw new Error(unresolvedConversionMessage(state.extraction));
+
     try {
       const payload = await requestPlan(state.extraction, userOptions);
-      if (payload.ocr?.applied) state.extraction = applyOcrResults(state.extraction, payload.ocr.pages);
+      if (payload.ocr?.applied) state.extraction = applyOcrResults(state.extraction, payload.ocr.pages, "Gemini OCR");
       state.plan = payload.plan;
       state.resultMode = "ai";
     } catch (error) {
       const needsOcr = Boolean(state.extraction?.ocrPages?.length);
-      if (needsOcr || error?.code === "SOURCE_NOT_VERIFIED" || error?.code === "OCR_IMAGE_MISSING") throw error;
+      if (needsOcr || error?.code === "SOURCE_NOT_VERIFIED" || error?.code === "OCR_IMAGE_MISSING") {
+        const prefix = browserOcrError ? `${browserOcrError} Gemini OCR also failed: ` : "Automatic OCR failed: ";
+        throw new Error(`${prefix}${error instanceof Error ? error.message : "unknown OCR error"}`);
+      }
       localMode = error?.code === "AI_NOT_CONFIGURED";
       fallbackReason = error instanceof Error ? error.message : "The AI service was unavailable.";
       state.plan = createFallbackPlan(state.extraction, userOptions);
       state.resultMode = "local";
     } finally { resetTurnstile(); }
 
-    if (state.extraction.extractionStatus !== "verified-native") throw new Error(state.extraction.warnings.join(" ") || "The lecture still contains unresolved OCR or unsupported visual content.");
+    if (state.extraction.extractionStatus !== "verified-native") throw new Error(unresolvedConversionMessage(state.extraction));
     state.plan = compactPlan(state.plan, state.extraction, userOptions);
     stage(3, "Building and verifying the PowerPoint", "Creating the final .pptx package and checking every expected text block and image occurrence…");
     state.generatedHTML = buildLectureHTML(state.plan, state.extraction.assets, userOptions);
-    state.generatedFilename = safeFilename(state.plan?.metadata?.title || state.extraction.title || "redesigned-lecture");
+    state.generatedFilename = safeFilename(state.plan?.metadata?.title || state.extraction.title || "redesigned-lecture").replace(/\.html$/i, "");
     const pptx = await createPptxFile(state.plan, state.extraction.assets || []);
     state.pptxBlob = pptx.blob;
     state.pptxReport = pptx;
     stats = state.extraction.stats;
     el.fileMeta.textContent = `${formatBytes(state.selectedFile.size)} · ${stats.extractedChars.toLocaleString()} characters · ${stats.imageCount} images · verified PPTX`;
     const verificationText = `${pptx.packageVerification.slideCount} slides · ${pptx.packageVerification.embeddedMediaCount} image occurrence${pptx.packageVerification.embeddedMediaCount === 1 ? "" : "s"} · ${pptx.report.highlightCount} highlights · ${pptx.report.redTextCount} red terms`;
-    if (state.resultMode === "ai" && state.verification?.valid) message(`PowerPoint ready and verified: ${verificationText}.`, "success");
+    if (state.resultMode === "ai" && state.verification?.valid) message(`PowerPoint ready and verified: ${verificationText}.${browserOcrApplied ? " Browser OCR completed before redesign." : ""}`, "success");
     else if (state.resultMode === "local") message(`${localMode ? "AI is not configured" : "AI redesign failed"}; a verified local PowerPoint was created. ${fallbackReason}`, "warning");
     else message(`PowerPoint ready and verified: ${verificationText}.`, "success");
     showPreview();
