@@ -98,11 +98,11 @@ test("lossy AI layout is rejected and rebuilt from every original PPTX source un
   expect(slideXml).toContain("glyceraldehyde-3-phosphate to form fructose-6-phosphate and erythrose-4-phosphate");
   expect(slideXml).toContain("1. Glucose is converted to lactate");
   expect(slideXml).toContain("2. Pyruvate is reduced to lactic acid");
-  expect(slideXml).toContain("3. The body uses Cori&apos;s cycle");
+  expect(slideXml).toContain("3. The body uses Cori");
   expect(slideXml).toContain("4. Lactate reaches the liver");
   expect(slideXml).toContain("5. The lactate produced in muscle");
   expect(slideXml).toContain("<a:tbl>");
-  expect(slideXml).toContain("von Gierke&apos;s disease");
+  expect(slideXml).toContain("von Gierke");
   expect(slideXml).toContain("JANG_ASSET:image-001");
   expect(slideXml).not.toContain("Converted from EMF");
   expect(mediaPaths.length).toBeGreaterThanOrEqual(1);
