@@ -471,7 +471,10 @@ export async function verifyPptxPackage(arrayBuffer, manifest) {
   const fallbackRuns = [...slideXml.matchAll(/<a:t(?:\s[^>]*)?>([\s\S]*?)<\/a:t>/g)].map((match) => decodeXmlText(match[1]));
   const normalizedXml = normalizeText((paragraphText.length ? paragraphText : fallbackRuns).join(" "));
 
-  const missingSourceUnits = (manifest?.sourceUnits || []).filter((unit) => {
+  const sourceUnits = Array.isArray(manifest?.sourceUnits) && manifest.sourceUnits.length
+    ? manifest.sourceUnits
+    : (manifest?.sourceText || []).map((value) => ({ id: "", page: 0, text: value }));
+  const missingSourceUnits = sourceUnits.filter((unit) => {
     const normalized = normalizeText(unit.text);
     if (!normalized) return false;
     if (normalizedXml.includes(normalized)) return false;
@@ -480,8 +483,11 @@ export async function verifyPptxPackage(arrayBuffer, manifest) {
   const mediaPaths = Object.keys(zip.files).filter((path) => /^ppt\/media\/[^/]+$/i.test(path) && !zip.files[path]?.dir);
   const imageShapeCount = (slideXml.match(/<a:blip\b[^>]*\br:embed=/g) || []).length;
   const expectedAssets = manifest?.expectedAssets || [];
-  const missingAssets = expectedAssets.filter((id) => !slideXml.includes(`JANG_ASSET:${id}`));
   const embeddedMediaCount = Math.max(mediaPaths.length, imageShapeCount);
+  const hasOccurrenceMarkers = slideXml.includes("JANG_ASSET:");
+  const missingAssets = hasOccurrenceMarkers
+    ? expectedAssets.filter((id) => !slideXml.includes(`JANG_ASSET:${id}`))
+    : embeddedMediaCount >= expectedAssets.length ? [] : expectedAssets.slice(embeddedMediaCount);
   const valid = missingSourceUnits.length === 0 && missingAssets.length === 0 && embeddedMediaCount >= expectedAssets.length;
   return {
     valid,
