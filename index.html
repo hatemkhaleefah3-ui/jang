@@ -90,9 +90,20 @@
             <button class="icon-button" id="removeFile" type="button" aria-label="Remove selected file">×</button>
           </div>
 
+          <div id="turnstileArea" class="turnstile-area" hidden>
+            <p>Verification protects the Gemini quota from automated abuse.</p>
+            <div id="turnstileWidget"></div>
+          </div>
+
+          <button class="primary-button confirm-button" id="processButton" type="button" disabled>
+            <span>Confirm &amp; Build PowerPoint</span>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <p class="control-note confirm-note">Select a file, then press Confirm &amp; Build PowerPoint. Cover details below are optional.</p>
+
           <div class="step-heading settings-heading">
             <span>2</span>
-            <div><strong>Set the details</strong><small>Optional metadata for the cover</small></div>
+            <div><strong>Optional cover details</strong><small>Edit these before confirming only when needed</small></div>
           </div>
 
           <div class="form-grid">
@@ -114,16 +125,6 @@
             <label class="check-option"><input id="includeToc" type="checkbox" checked /><span><b>Table of contents</b><small>Add an overview slide</small></span></label>
             <label class="check-option"><input id="conciseMode" type="checkbox" /><span><b>Concise layout</b><small>Use tighter slide grouping without deleting source content</small></span></label>
           </div>
-
-          <div id="turnstileArea" class="turnstile-area" hidden>
-            <p>Verification protects the Gemini quota from automated abuse.</p>
-            <div id="turnstileWidget"></div>
-          </div>
-
-          <button class="primary-button" id="processButton" type="button" disabled>
-            <span>Build PowerPoint</span>
-            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
           <p class="control-note" id="aiSetupHint">Checking the Cloudflare AI configuration…</p>
         </section>
 
