@@ -76,7 +76,8 @@ function plainTextUnits(source, title) {
     const groupLines = group.split("\n").map((line) => line.trim()).filter(Boolean);
     const bulletLines = groupLines.filter((line) => /^\s*(?:[-*•]|\d+[.)])\s+/.test(line));
     if (bulletLines.length === groupLines.length && groupLines.length > 1) {
-      units.push({ type: "list", items: groupLines.map((line) => line.replace(/^\s*(?:[-*•]|\d+[.)])\s+/, "")) });
+      const items = groupLines.map((line) => line.replace(/^\s*(?:[-*•]|\d+[.)])\s+/, ""));
+      for (let index = 0; index < items.length; index += 7) units.push({ type: "list", items: items.slice(index, index + 7) });
       continue;
     }
     if (groupLines.length === 1 && looksLikeHeading(groupLines[0])) {
@@ -133,9 +134,12 @@ function markedUnits(document) {
         for (const text of splitLongText(content, 480)) units.push({ type: "callout", label: block.type, text });
         break;
       case "diagram":
-      case "pathway":
-        units.push({ type: "sequence", label: block.title || block.diagramType || block.pathwayType || block.type, items: lines(block.structure || block.pathwayContent || content) });
+      case "pathway": {
+        const sequenceItems = lines(block.structure || block.pathwayContent || content);
+        const label = block.title || block.diagramType || block.pathwayType || block.type;
+        for (let index = 0; index < Math.max(sequenceItems.length, 1); index += 5) units.push({ type: "sequence", label, items: sequenceItems.slice(index, index + 5) });
         break;
+      }
       case "image":
         units.push({ type: "callout", label: block.label || "Image", text: clean(block.instructions || content) || block.label || "Image" });
         break;
@@ -165,18 +169,21 @@ function paginate(units, fallbackTitle) {
   const maxWeight = 1180;
   let current = { title: fallbackTitle, units: [], weight: 0 };
   let activeTitle = fallbackTitle;
+  let pendingHeading = false;
 
-  const flush = () => {
-    if (!current.units.length) return;
+  const flush = (allowEmpty = false) => {
+    if (!current.units.length && !(allowEmpty && pendingHeading)) return;
     slides.push(current);
     current = { title: activeTitle, units: [], weight: 0 };
+    pendingHeading = false;
   };
 
   for (const unit of units) {
     if (unit.type === "heading") {
-      flush();
+      flush(pendingHeading);
       activeTitle = unit.text;
       current = { title: activeTitle, units: [], weight: 0 };
+      pendingHeading = true;
       continue;
     }
 
@@ -184,10 +191,11 @@ function paginate(units, fallbackTitle) {
     if (current.units.length && current.weight + unitWeight > maxWeight) flush();
     current.units.push(unit);
     current.weight += unitWeight;
+    pendingHeading = false;
   }
-  flush();
+  flush(pendingHeading);
 
-  return slides.length ? slides : [{ title: fallbackTitle, units: [{ type: "text", text: "Lecture content" }], weight: 100 }];
+  return slides.length ? slides : [{ title: fallbackTitle, units: [], weight: 0 }];
 }
 
 function renderUnit(unit) {
@@ -223,6 +231,7 @@ export function buildLectureHtml(input) {
   const document = parseLectureSource(source);
   const marked = document.blocks.some((block) => block.marker !== "UNMARKED");
   const markedTitle = document.blocks.find((block) => block.type === "title")?.content;
+  const sourceLabel = clean(document.blocks.find((block) => block.type === "source-file")?.content) || "Lecture";
   const title = clean(markedTitle) || firstMeaningfulLine(source);
   const { units, ending } = marked ? markedUnits(document) : { units: plainTextUnits(source, title), ending: [] };
   const slides = paginate(units, title);
@@ -245,7 +254,7 @@ export function buildLectureHtml(input) {
   <article class="slide cover-slide" aria-label="Cover slide">
     <div class="cover-kicker">Jang lecture</div>
     <div class="cover-main"><h1>${escapeHtml(title)}</h1><p>Responsive lecture slides generated from the complete supplied content.</p></div>
-    <div class="cover-footer"><span>Lecture</span><span>16:9 responsive HTML</span></div>
+    <div class="cover-footer"><span>${escapeHtml(sourceLabel)}</span><span>16:9 responsive HTML</span></div>
   </article>
   ${slides.map((slide, index) => renderSlide(slide, index + 1, total)).join("\n")}
   <article class="slide end-slide" aria-label="End slide"><div><div class="end-mark">✓</div><h2>End of lecture</h2><p>${escapeHtml(endNote)}</p></div></article>
