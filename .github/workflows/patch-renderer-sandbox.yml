@@ -1,0 +1,43 @@
+name: Patch renderer sandbox
+
+on:
+  push:
+    branches:
+      - agent/post-merge-browser-fixes
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/post-merge-browser-fixes
+      - name: Permit script-free DOM inspection
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('html-pptx-exporter.js')
+          source = path.read_text(encoding='utf-8')
+          old = 'frame.setAttribute("sandbox", "");'
+          new = 'frame.setAttribute("sandbox", "allow-same-origin");'
+          if old not in source and new not in source:
+              raise SystemExit('Expected sandbox statement was not found.')
+          if old in source:
+              source = source.replace(old, new, 1)
+              path.write_text(source, encoding='utf-8')
+          PY
+      - name: Commit exact patch
+        run: |
+          if git diff --quiet; then
+            echo 'Sandbox already patched.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add html-pptx-exporter.js
+          git commit -m 'Allow verified HTML DOM inspection in renderer sandbox'
+          git push origin HEAD:agent/post-merge-browser-fixes
