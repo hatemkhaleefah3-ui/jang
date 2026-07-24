@@ -9,11 +9,19 @@ const MAX_ASSETS = 2000;
 const MAX_SVG_CHARS = 10_000_000;
 const BATCH_CHARS = 110_000;
 
-const clean = (value) => String(value || "").replace(/\u00a0/g, " ").replace(/[\t\f\v]+/g, " ").replace(/ +\n/g, "\n").replace(/\n{3,}/g, "\n\n").replace(/ {2,}/g, " ").trim();
+const clean = (value) => String(value || "")
+  .replace(/\u00a0/g, " ")
+  .replace(/[\t\f\v]+/g, " ")
+  .replace(/ +\n/g, "\n")
+  .replace(/\n{3,}/g, "\n\n")
+  .replace(/ {2,}/g, " ")
+  .trim();
 const yieldToBrowser = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 export function getUploadPolicy() {
-  const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (navigator.deviceMemory && navigator.deviceMemory <= 4);
+  const userAgent = typeof navigator === "undefined" ? "" : navigator.userAgent;
+  const memory = typeof navigator === "undefined" ? 0 : Number(navigator.deviceMemory || 0);
+  const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(userAgent) || (memory > 0 && memory <= 4);
   return { mobile, maxBytes: mobile ? MOBILE_LIMIT : DESKTOP_LIMIT, warningBytes: WARNING_BYTES };
 }
 
@@ -70,12 +78,12 @@ async function extractAssets(doc, warnings, verificationIssues) {
     if (source.length > MAX_SVG_CHARS) {
       verificationIssues.push({ type: "oversized-svg", id, size: source.length });
       warnings.push(`SVG diagram ${id} is too large to preserve safely. The PowerPoint is blocked rather than omitting it.`);
-      assets.push({ id, type: "image", source: "", sourceKind: "oversized-svg", alt, caption });
+      assets.push({ id, occurrenceId: id, type: "image", source: "", sourceKind: "oversized-svg", alt, caption });
       marker(node, id);
       continue;
     }
     const dataUrl = await dataUrlFromBlob(new Blob([source], { type: "image/svg+xml;charset=utf-8" }));
-    assets.push({ id, type: "image", source: dataUrl, sourceKind: "embedded", alt, caption });
+    assets.push({ id, occurrenceId: id, type: "image", source: dataUrl, sourceKind: "embedded", alt, caption });
     marker(node, id);
   }
 
@@ -105,7 +113,17 @@ async function extractAssets(doc, warnings, verificationIssues) {
       warnings.push(`Image ${id} uses a ${sourceKind} source that cannot be recovered from a standalone HTML file. The PowerPoint is blocked rather than omitting it.`);
       source = "";
     }
-    assets.push({ id, type: "image", source, sourceKind, alt, caption, width: node.getAttribute("width") || "", height: node.getAttribute("height") || "" });
+    assets.push({
+      id,
+      occurrenceId: id,
+      type: "image",
+      source,
+      sourceKind,
+      alt,
+      caption,
+      width: node.getAttribute("width") || "",
+      height: node.getAttribute("height") || "",
+    });
     marker(node, id);
   }
 
@@ -114,7 +132,7 @@ async function extractAssets(doc, warnings, verificationIssues) {
     const alt = clean(node.getAttribute("aria-label") || "Canvas diagram");
     verificationIssues.push({ type: "canvas-unavailable", id });
     warnings.push(`Canvas diagram ${id} requires the original rendering script. The PowerPoint is blocked rather than replacing or omitting it.`);
-    assets.push({ id, type: "image", source: "", sourceKind: "unavailable-canvas", alt, caption: "" });
+    assets.push({ id, occurrenceId: id, type: "image", source: "", sourceKind: "unavailable-canvas", alt, caption: "" });
     marker(node, id);
   }
 
@@ -126,7 +144,9 @@ function tableMarkdown(table) {
   if (!rows.length) return "";
   const width = Math.max(...rows.map((row) => row.length));
   const normalized = rows.map((row) => [...row, ...Array(Math.max(0, width - row.length)).fill("")]);
-  return [normalized[0], Array(width).fill("---"), ...normalized.slice(1)].map((row) => `| ${row.map((cell) => cell.replace(/\|/g, "\\|")).join(" | ")} |`).join("\n");
+  return [normalized[0], Array(width).fill("---"), ...normalized.slice(1)]
+    .map((row) => `| ${row.map((cell) => cell.replace(/\|/g, "\\|")).join(" | ")} |`)
+    .join("\n");
 }
 
 function serialize(root) {
@@ -178,28 +198,95 @@ function splitBatches(content) {
   return batches;
 }
 
-function sourceUnitsFromContent(content, diagramSources) {
+function markdownTableRows(token) {
+  const lines = String(token || "").split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  return lines
+    .filter((line, index) => index !== 1 || !/^\|?\s*:?-{3,}/.test(line))
+    .map((line) => line.replace(/^\|\s?/, "").replace(/\s?\|$/, "").split(/\s*\|\s*/).map((cell) => clean(cell.replace(/\\\|/g, "|"))))
+    .filter((cells) => cells.some(Boolean));
+}
+
+export function indexSourceStructure(content, diagramSources = [], assets = []) {
   const diagrams = new Map(diagramSources.map((item) => [item.id, item]));
-  const units = [];
+  const assetMap = new Map(assets.map((asset) => [asset.id, asset]));
+  const sourceUnits = [];
+  const sourcePages = [];
   let page = 1;
   let order = 0;
+
+  const pageRecord = () => {
+    let record = sourcePages.find((item) => item.page === page);
+    if (!record) {
+      record = { page, title: `Page ${page}`, assets: [] };
+      sourcePages.push(record);
+    }
+    return record;
+  };
+  const currentHasContent = () => sourceUnits.some((unit) => unit.page === page) || pageRecord().assets.length > 0;
+  const addUnit = (kind, value, extra = {}) => {
+    const text = clean(value);
+    if (!text) return;
+    order += 1;
+    sourceUnits.push({ page, order, kind, text, runs: [{ text }], extractionMethod: "native", confidence: 1, ...extra });
+  };
+
   for (const token of String(content || "").split(/\n{2,}/).map((value) => value.trim()).filter(Boolean)) {
     const heading = token.match(/^(#{1,6})\s+(.+)$/s);
-    if (heading && units.length) { page += 1; order = 0; }
-    const asset = token.match(/^\[ASSET:([^\]]+)\]$/);
-    if (asset) continue;
-    const diagram = token.match(/^\[DIAGRAM:([^\]]+)\]$/);
-    order += 1;
-    if (diagram) {
-      const source = diagrams.get(diagram[1]);
-      if (source?.text) units.push({ page, order, kind: "diagram", text: source.text, runs: [{ text: source.text }], extractionMethod: "native", confidence: 1 });
+    if (heading) {
+      if (currentHasContent()) { page += 1; order = 0; }
+      const title = clean(heading[2]);
+      pageRecord().title = title || `Page ${page}`;
+      addUnit("paragraph", title, { role: "title" });
       continue;
     }
+
+    const assetMarker = token.match(/^\[ASSET:([^\]]+)\]$/);
+    if (assetMarker) {
+      order += 1;
+      const id = assetMarker[1];
+      const record = pageRecord();
+      if (!record.assets.includes(id)) record.assets.push(id);
+      const asset = assetMap.get(id);
+      if (asset) {
+        asset.sourcePage = page;
+        asset.sourceOrder = order;
+        asset.occurrenceId = asset.occurrenceId || asset.id;
+      }
+      continue;
+    }
+
+    const diagramMarker = token.match(/^\[DIAGRAM:([^\]]+)\]$/);
+    if (diagramMarker) {
+      const source = diagrams.get(diagramMarker[1]);
+      if (source?.text) addUnit("diagram", source.text);
+      continue;
+    }
+
     const isTable = /^\|.+\|\n\|\s*:?-{3,}/m.test(token);
-    const value = heading ? clean(heading[2]) : token;
-    if (value) units.push({ page, order, kind: isTable ? "table" : "paragraph", text: value, runs: [{ text: value }], extractionMethod: "native", confidence: 1 });
+    if (isTable) {
+      for (const row of markdownTableRows(token)) addUnit("table", row.join(" | "));
+      continue;
+    }
+    addUnit("paragraph", token);
   }
-  return units;
+
+  if (!sourcePages.length) pageRecord();
+  for (const record of sourcePages) {
+    if (!/^Page \d+$/.test(record.title)) continue;
+    const first = sourceUnits.find((unit) => unit.page === record.page && unit.text);
+    if (first) record.title = first.text;
+  }
+
+  const fallbackPage = sourcePages.at(-1) || pageRecord();
+  for (const asset of assets) {
+    if (Number(asset.sourcePage) > 0) continue;
+    asset.sourcePage = fallbackPage.page;
+    asset.sourceOrder = Number(asset.sourceOrder || fallbackPage.assets.length + 1);
+    asset.occurrenceId = asset.occurrenceId || asset.id;
+    if (!fallbackPage.assets.includes(asset.id)) fallbackPage.assets.push(asset.id);
+  }
+
+  return { sourceUnits, sourcePages, assets };
 }
 
 export async function extractLecture(file, onProgress = () => {}) {
@@ -219,8 +306,8 @@ export async function extractLecture(file, onProgress = () => {}) {
 
   onProgress("Parsing the lecture structure…");
   const doc = new DOMParser().parseFromString(html, "text/html");
-  const nodeCount = doc.getElementsByTagName("*").length;
-  if (nodeCount > MAX_NODES) throw new Error(`The lecture contains ${nodeCount.toLocaleString()} HTML elements, exceeding the safe complexity limit of ${MAX_NODES.toLocaleString()}. No partial output was created.`);
+  const htmlNodeCount = doc.getElementsByTagName("*").length;
+  if (htmlNodeCount > MAX_NODES) throw new Error(`The lecture contains ${htmlNodeCount.toLocaleString()} HTML elements, exceeding the safe complexity limit of ${MAX_NODES.toLocaleString()}. No partial output was created.`);
   await yieldToBrowser();
 
   doc.querySelectorAll(BLOCKED).forEach((node) => node.remove());
@@ -234,39 +321,46 @@ export async function extractLecture(file, onProgress = () => {}) {
   const content = serialize(doc.body);
   if (!content) throw new Error("No readable lecture content was found in the file.");
   const batches = splitBatches(content);
-  const sourceUnits = sourceUnitsFromContent(content, diagramSources);
+  const indexed = indexSourceStructure(content, diagramSources, assets);
   const title = clean(doc.querySelector("h1")?.textContent || doc.querySelector("title")?.textContent || file.name.replace(/\.html?$/i, "") || "Untitled lecture").slice(0, 300);
   return {
     title,
     content,
     batches,
-    assets,
+    assets: indexed.assets,
     diagramSources,
-    sourceUnits,
+    sourceUnits: indexed.sourceUnits,
+    sourcePages: indexed.sourcePages,
     warnings,
     extractionStatus: verificationIssues.length ? "incomplete" : "verified-native",
     verificationIssues,
     stats: {
       originalBytes: file.size,
-      nodeCount,
+      nodeCount: indexed.sourcePages.length,
+      htmlNodeCount,
       originalExtractedChars: content.length,
       extractedChars: content.length,
       batchCount: batches.length,
-      assetCount: assets.length,
-      imageCount: assets.filter((asset) => asset.type === "image").length,
-      diagramCount: diagramSources.length + assets.filter((asset) => /diagram/i.test(asset.alt || "")).length,
+      assetCount: indexed.assets.length,
+      imageCount: indexed.assets.filter((asset) => asset.type === "image").length,
+      diagramCount: diagramSources.length + indexed.assets.filter((asset) => /diagram/i.test(asset.alt || "")).length,
+      convertedVisualCount: 0,
       truncated: false,
     },
   };
 }
 
 const emptyBlock = (type, values = {}) => ({ type, heading: "", text: "", label: "", items: [], pairs: [], headers: [], rows: [], assetId: "", caption: "", alt: "", question: "", answer: "", ...values });
+
 export function createFallbackPlan(extraction, options = {}) {
   const diagramMap = new Map((extraction?.diagramSources || []).map((item) => [item.id, item.text]));
   const sections = [];
   let current = { title: extraction.title, category: "Lecture", keyTermsCritical: [], keyTermsImportant: [], blocks: [] };
-  const flush = () => { if (current.blocks.length) sections.push(current); current = { title: "Continued", category: "Concept", keyTermsCritical: [], keyTermsImportant: [], blocks: [] }; };
-  for (const line of extraction.content.split("\n").map((value) => value.trim()).filter(Boolean)) {
+  const flush = () => {
+    if (current.blocks.length) sections.push(current);
+    current = { title: "Continued", category: "Concept", keyTermsCritical: [], keyTermsImportant: [], blocks: [] };
+  };
+  for (const line of String(extraction?.content || "").split("\n").map((value) => value.trim()).filter(Boolean)) {
     const heading = line.match(/^(#{1,6})\s+(.+)/);
     if (heading) { if (current.blocks.length) flush(); current.title = heading[2].slice(0, 140); continue; }
     const asset = line.match(/^\[ASSET:([^\]]+)\]$/);
@@ -285,5 +379,19 @@ export function createFallbackPlan(extraction, options = {}) {
     if (current.blocks.length >= 8) flush();
   }
   flush();
-  return { metadata: { title: extraction.title, subtitle: "Reformatted lecture notes", courseCode: options.courseCode || "Course", lectureLabel: options.lectureLabel || "Lecture", instructor: options.instructor || "", language: options.language === "auto" ? "" : options.language, direction: options.language === "Arabic" ? "rtl" : "ltr" }, overview: "This local fallback preserves all extracted lecture content without AI reorganization.", learningObjectives: [], sections, finalTakeaways: [] };
+  return {
+    metadata: {
+      title: extraction.title,
+      subtitle: "Reformatted lecture notes",
+      courseCode: options.courseCode || "Course",
+      lectureLabel: options.lectureLabel || "Lecture",
+      instructor: options.instructor || "",
+      language: options.language === "auto" ? "" : options.language,
+      direction: options.language === "Arabic" ? "rtl" : "ltr",
+    },
+    overview: "This local fallback preserves all extracted lecture content without AI reorganization.",
+    learningObjectives: [],
+    sections,
+    finalTakeaways: [],
+  };
 }
