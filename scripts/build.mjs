@@ -1,4 +1,4 @@
-import { access, cp, mkdir, rm } from "node:fs/promises";
+import { access, cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
@@ -10,8 +10,17 @@ await mkdir(output, { recursive: true });
 
 for (const file of staticFiles) {
   const source = resolve(root, file);
+  const target = resolve(output, file);
   await access(source);
-  await cp(source, resolve(output, file));
+
+  if (file === "lecture-html.js") {
+    const content = await readFile(source, "utf8");
+    const leftAligned = content.replaceAll("text-align:right", "text-align:left");
+    if (leftAligned === content) throw new Error("Expected lecture text alignment rules were not found.");
+    await writeFile(target, leftAligned, "utf8");
+  } else {
+    await cp(source, target);
+  }
 }
 
-console.log(`Prepared ${staticFiles.length} static files in dist/.`);
+console.log(`Prepared ${staticFiles.length} static files in dist with upper-left lecture text alignment.`);
