@@ -5,6 +5,8 @@ const MAX_REQUEST_BYTES = 25_000_000;
 const MAX_PDF_BYTES = 18_000_000;
 const MAX_MANIFEST_CHARS = 7_500_000;
 
+export const DEFAULT_GEMINI_MODEL = "gemini-3.6-flash";
+
 export const lectureResponseSchema = {
   type: "object",
   properties: {
@@ -84,6 +86,11 @@ function stringArray(value) {
 
 function rowsArray(value) {
   return Array.isArray(value) ? value.map((row) => stringArray(row)).filter((row) => row.length) : [];
+}
+
+export function resolveGeminiModel(value) {
+  const configured = clean(value).replace(/^models\//i, "");
+  return !configured || configured === "gemini-2.5-flash" ? DEFAULT_GEMINI_MODEL : configured;
 }
 
 export function normalizeLectureResult(input) {
@@ -179,7 +186,7 @@ function parseGeminiText(payload) {
 async function callGemini({ env, parts }) {
   const apiKey = clean(env.GEMINI_API_KEY);
   if (!apiKey) throw new Error("GEMINI_API_KEY is not configured on the server.");
-  const model = clean(env.GEMINI_MODEL) || "gemini-2.5-flash";
+  const model = resolveGeminiModel(env.GEMINI_MODEL);
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
     method: "POST",
     headers: {
@@ -189,7 +196,6 @@ async function callGemini({ env, parts }) {
     body: JSON.stringify({
       contents: [{ role: "user", parts: [...parts, { text: extractionPrompt }] }],
       generationConfig: {
-        temperature: 0.1,
         responseMimeType: "application/json",
         responseSchema: lectureResponseSchema,
       },
