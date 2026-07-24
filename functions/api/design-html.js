@@ -1,10 +1,12 @@
 import { createHtmlDesignPrompt, hydrateDesignedHtml, normalizeDesignedHtml, verifyDesignedHtml } from "../../html-design-contract.js";
 import { applyMasterDesignCss } from "../../html-design-finalizer.js";
 import { MASTER_DESIGN_REFERENCE } from "../../master-design-reference.js";
+import { callOcr, resolveOcrModel } from "./redesign-large.js";
 
 const MAX_BODY_BYTES = 8_000_000;
 const MAX_DESIGN_RETRIES = 2;
 const GEMINI_REQUEST_RETRIES = 2;
+const MAX_OCR_PAGES = 40;
 const DEFAULT_MODEL = "gemini-3.5-flash";
 const headers = {
   "content-type": "application/json; charset=utf-8",
@@ -81,16 +83,35 @@ function stableId(value, fallback) {
   return id;
 }
 
-export function normalizeDesignRequest(body) {
-  const manifest = body?.manifest && typeof body.manifest === "object" ? body.manifest : {};
-  const units = asArray(manifest.units).map((unit, index) => ({
-    id: stableId(unit?.id, `src_${index + 1}`),
+function sourceId(unit, index) {
+  return stableId(unit?.id, `src_${Number(unit?.sourcePage || unit?.page || 0)}_${Number(unit?.sourceOrder || unit?.order || index + 1)}_${clean(unit?.kind || "paragraph").replace(/[^a-z0-9_-]+/gi, "_")}`.toLowerCase());
+}
+
+function normalizeOcrPage(page) {
+  const pageNumber = Number(page?.page || 0);
+  const assetId = bounded(page?.assetId, 100, "OCR asset id");
+  const imageData = clean(page?.imageData);
+  const match = imageData.match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=\s]+)$/i);
+  if (!Number.isInteger(pageNumber) || pageNumber < 1 || !assetId || !match) return null;
+  const data = match[2].replace(/\s+/g, "");
+  if (data.length > 2_400_000) throw new Error(`OCR image for page ${pageNumber} is too large.`);
+  return { page: pageNumber, assetId, mimeType: match[1].toLowerCase(), data };
+}
+
+function normalizeUnits(rawUnits) {
+  return asArray(rawUnits).map((unit, index) => ({
+    id: sourceId(unit, index),
     kind: bounded(unit?.kind || "paragraph", 40, `Source unit ${index + 1} kind`),
     sourcePage: Number(unit?.sourcePage || unit?.page || 0),
     sourceOrder: Number(unit?.sourceOrder || unit?.order || index + 1),
     verbatimText: bounded(unit?.verbatimText || unit?.text, 200_000, `Source unit ${index + 1}`),
+    extractionMethod: bounded(unit?.extractionMethod || "native", 30, `Source unit ${index + 1} extraction method`),
+    confidence: Number.isFinite(unit?.confidence) ? Math.max(0, Math.min(1, unit.confidence)) : 1,
   })).filter((unit) => unit.verbatimText);
-  const assets = asArray(manifest.assets).map((asset, index) => ({
+}
+
+function normalizeAssets(rawAssets) {
+  return asArray(rawAssets).map((asset, index) => ({
     id: stableId(asset?.id, `asset_${index + 1}`),
     kind: bounded(asset?.kind || asset?.type || "image", 40, `Asset ${index + 1} kind`),
     sourcePage: Number(asset?.sourcePage || 0),
@@ -98,20 +119,39 @@ export function normalizeDesignRequest(body) {
     alt: bounded(asset?.alt, 1000, `Asset ${index + 1} alt`),
     caption: bounded(asset?.caption, 2000, `Asset ${index + 1} caption`),
   }));
-  if (!units.length) throw new Error("No verified lecture source units were provided.");
-  const sourceIds = new Set(units.map((unit) => unit.id));
-  const assetIds = new Set(assets.map((asset) => asset.id));
-  if (sourceIds.size !== units.length) throw new Error("Source IDs must be unique before HTML design.");
-  if (assetIds.size !== assets.length) throw new Error("Asset IDs must be unique before HTML design.");
+}
+
+function assertUniqueManifest(manifest) {
+  const sourceIds = new Set(manifest.units.map((unit) => unit.id));
+  const assetIds = new Set(manifest.assets.map((asset) => asset.id));
+  if (sourceIds.size !== manifest.units.length) throw new Error("Source IDs must be unique before HTML design.");
+  if (assetIds.size !== manifest.assets.length) throw new Error("Asset IDs must be unique before HTML design.");
+}
+
+export function normalizeDesignRequest(body) {
+  const suppliedManifest = body?.manifest && typeof body.manifest === "object" ? body.manifest : null;
+  const source = body?.source && typeof body.source === "object" ? body.source : {};
+  const options = body?.options && typeof body.options === "object" ? body.options : {};
+  const metadataInput = body?.metadata && typeof body.metadata === "object" ? body.metadata : {};
+  const units = normalizeUnits(suppliedManifest ? suppliedManifest.units : source.sourceUnits);
+  const assets = normalizeAssets(suppliedManifest ? suppliedManifest.assets : source.assets);
+  const ocrPages = asArray(source.ocrPages).map(normalizeOcrPage).filter(Boolean);
+  if (ocrPages.length > MAX_OCR_PAGES) throw new Error(`OCR supports up to ${MAX_OCR_PAGES} pages in one lecture.`);
+  if (!units.length && !ocrPages.length) throw new Error("No verified lecture source units were provided.");
+  const manifest = { units, assets };
+  assertUniqueManifest(manifest);
   return {
-    manifest: { units, assets },
+    manifest,
+    ocrPages,
+    extractionStatus: bounded(source.extractionStatus, 40, "Extraction status"),
+    verificationIssues: asArray(source.verificationIssues),
     metadata: {
-      title: bounded(body?.metadata?.title, 500, "Lecture title"),
-      courseCode: bounded(body?.metadata?.courseCode, 80, "Course code"),
-      lectureLabel: bounded(body?.metadata?.lectureLabel, 100, "Lecture label"),
-      instructor: bounded(body?.metadata?.instructor, 160, "Instructor"),
-      language: bounded(body?.metadata?.language, 40, "Language") || "auto",
-      direction: body?.metadata?.direction === "rtl" ? "rtl" : "ltr",
+      title: bounded(metadataInput.title || source.title, 500, "Lecture title"),
+      courseCode: bounded(metadataInput.courseCode || options.courseCode, 80, "Course code"),
+      lectureLabel: bounded(metadataInput.lectureLabel || options.lectureLabel, 100, "Lecture label"),
+      instructor: bounded(metadataInput.instructor || options.instructor, 160, "Instructor"),
+      language: bounded(metadataInput.language || options.language, 40, "Language") || "auto",
+      direction: metadataInput.direction === "rtl" || options.language === "Arabic" ? "rtl" : "ltr",
     },
   };
 }
@@ -157,6 +197,56 @@ async function callGemini(prompt, env, model) {
     }
   }
   throw lastError || new Error("Gemini HTML generation failed.");
+}
+
+function applyOcrResults(data, ocrResults) {
+  if (!ocrResults.length) return data;
+  const pages = new Set(ocrResults.map((result) => Number(result.page)));
+  const retained = data.manifest.units.filter((unit) => !pages.has(Number(unit.sourcePage)));
+  for (const result of ocrResults) {
+    asArray(result.lines).map(clean).filter(Boolean).forEach((line, index) => retained.push({
+      id: stableId(`src_${result.page}_${index + 1}_ocr`, `src_${result.page}_${index + 1}_ocr`),
+      kind: "paragraph",
+      sourcePage: Number(result.page),
+      sourceOrder: index + 1,
+      verbatimText: line,
+      extractionMethod: "ocr",
+      confidence: Number.isFinite(result.confidence) ? result.confidence : 0,
+    }));
+  }
+  retained.sort((left, right) => Number(left.sourcePage) - Number(right.sourcePage) || Number(left.sourceOrder) - Number(right.sourceOrder));
+  const unresolvedIssues = data.verificationIssues.filter((issue) => {
+    const type = clean(issue?.type || issue?.reason);
+    const page = Number(issue?.page || issue?.sourcePage || 0);
+    return !(type === "ocr-required" && pages.has(page));
+  });
+  const next = {
+    ...data,
+    manifest: { ...data.manifest, units: retained },
+    verificationIssues: unresolvedIssues,
+    extractionStatus: unresolvedIssues.length ? "incomplete" : "verified-native",
+  };
+  assertUniqueManifest(next.manifest);
+  return next;
+}
+
+async function prepareVerifiedSource(data, env) {
+  let prepared = data;
+  let ocrResults = [];
+  let ocrModel = null;
+  if (data.ocrPages.length) {
+    ocrModel = resolveOcrModel(env);
+    ocrResults = await callOcr({ source: { ocrPages: data.ocrPages }, options: { language: data.metadata.language } }, env, ocrModel);
+    prepared = applyOcrResults(data, ocrResults);
+  }
+  if (prepared.extractionStatus && prepared.extractionStatus !== "verified-native") {
+    const issueTypes = prepared.verificationIssues.map((issue) => clean(issue?.type || issue?.reason)).filter(Boolean);
+    const error = new Error(`Source conversion is incomplete: ${issueTypes.join(", ") || prepared.extractionStatus}.`);
+    error.code = "SOURCE_NOT_VERIFIED";
+    throw error;
+  }
+  if (!prepared.manifest.units.length) throw new Error("No verified lecture source units were available after OCR.");
+  return { data: prepared, ocr: { applied: ocrResults.length > 0, pages: ocrResults, model: ocrModel } };
 }
 
 export async function generateVerifiedHtml(data, env) {
@@ -207,19 +297,30 @@ export const onRequestPost = async ({ request, env }) => {
       return respond({ error: "Invalid JSON request." }, 400);
     }
     if (!(await verifyTurnstile(body.turnstileToken, env, request))) return respond({ error: "Verification failed or expired. Please try again." }, 403);
-    const data = normalizeDesignRequest(body);
-    const result = await generateVerifiedHtml(data, env);
+    const normalized = normalizeDesignRequest(body);
+    let prepared;
+    try {
+      prepared = await prepareVerifiedSource(normalized, env);
+    } catch (error) {
+      if (normalized.ocrPages.length) {
+        const message = error instanceof Error ? error.message : String(error);
+        return respond({ code: error?.code || "GEMINI_OCR_FAILED", error: `Gemini OCR failed before HTML design: ${message}` }, 422);
+      }
+      throw error;
+    }
+    const result = await generateVerifiedHtml(prepared.data, env);
     return respond({
       ...result,
-      manifest: data.manifest,
-      metadata: data.metadata,
+      manifest: prepared.data.manifest,
+      metadata: prepared.data.metadata,
+      ocr: prepared.ocr,
       designReference: "master-reference-2026-07",
     });
   } catch (error) {
     console.error(JSON.stringify({ event: "design_html_error", message: error instanceof Error ? error.message : String(error) }));
     const message = error instanceof Error ? error.message : "Unexpected server error.";
-    const status = /exceeds the supported size|too large/i.test(message) ? 413 : /No verified|must be unique|invalid/i.test(message) ? 422 : 500;
-    return respond({ error: message, verification: error?.verification || null }, status);
+    const status = /exceeds the supported size|too large/i.test(message) ? 413 : /No verified|must be unique|invalid|incomplete/i.test(message) ? 422 : 500;
+    return respond({ code: error?.code || "HTML_DESIGN_FAILED", error: message, verification: error?.verification || null }, status);
   }
 };
 
