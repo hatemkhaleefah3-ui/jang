@@ -100,15 +100,20 @@ function createImageSlotCard(slot, index) {
 
   const reference = document.createElement("p");
   reference.className = "image-slot-reference";
-  reference.textContent = slot.sourceReference || slot.sectionTitle || `Image position ${index + 1}`;
+  reference.textContent = slot.sourceReference || slot.slideTitle || slot.sectionTitle || `Image position ${index + 1}`;
 
   const heading = document.createElement("h3");
   heading.textContent = slot.label;
 
+  const description = document.createElement("p");
+  description.className = "image-slot-description";
+  description.textContent = slot.description || `Choose the image that matches ${slot.label}.`;
+
   const details = document.createElement("p");
+  details.className = "image-slot-meta";
   details.textContent = `${slot.size} · ${slot.fit}`;
 
-  copy.append(reference, heading, details);
+  copy.append(reference, heading, description, details);
 
   const preview = document.createElement("div");
   preview.className = `image-slot-preview image-slot-preview-${slot.size}`;
@@ -181,7 +186,7 @@ function showIntermediateStep(result) {
   const slots = Array.isArray(result.imageSlots) ? result.imageSlots : [];
   review.hidden = false;
   reviewSummary.textContent = slots.length
-    ? `Gemini found ${slots.length} image position${slots.length === 1 ? "" : "s"}. Import the matching images now, then continue.`
+    ? `Gemini found ${slots.length} important image position${slots.length === 1 ? "" : "s"}. Each label describes the exact visual to import.`
     : "Gemini did not find any image positions. Continue to create the lecture HTML.";
 
   if (slots.length) {
@@ -195,7 +200,8 @@ function showIntermediateStep(result) {
 
   review.scrollIntoView({ behavior: "smooth", block: "start" });
   setState("review");
-  setStatus(`Extraction complete: ${result.lecture.slides.length} structured slide plan${result.lecture.slides.length === 1 ? "" : "s"}.`, "success");
+  const contentPlans = (result.lecture?.sections || []).reduce((sum, section) => sum + (section.slides?.length || 0), 0);
+  setStatus(`Extraction complete: ${result.lecture.sections.length} sections and ${contentPlans} structured content plans.`, "success");
 }
 
 async function extractLecture() {
