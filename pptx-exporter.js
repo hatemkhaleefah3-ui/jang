@@ -64,11 +64,12 @@ export async function verifyPptxPackage(arrayBuffer, manifest = {}) {
   const expectedAssets = Array.isArray(manifest.expectedAssets) ? manifest.expectedAssets.filter(Boolean) : [];
   const markerIds = [...slideXml.matchAll(/JANG_ASSET:([^"<&]+)/g)].map((match) => decodeXmlText(match[1]));
   const markerMode = markerIds.length > 0;
-  const missingAssets = markerMode ? expectedAssets.filter((id) => !markerIds.includes(id)) : [];
-  const assetsValid = markerMode ? missingAssets.length === 0 : embeddedMediaCount >= expectedAssets.length;
+  const missingAssets = markerMode
+    ? expectedAssets.filter((id) => !markerIds.includes(id))
+    : embeddedMediaCount >= expectedAssets.length ? [] : expectedAssets.slice(embeddedMediaCount);
 
   return {
-    valid: missingSourceUnits.length === 0 && assetsValid,
+    valid: missingSourceUnits.length === 0 && missingAssets.length === 0,
     missingText: missingSourceUnits.map((unit) => unit?.text ?? unit?.verbatimText),
     missingSourceUnits,
     missingAssets,
