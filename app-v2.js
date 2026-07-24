@@ -2,6 +2,7 @@ import { extractLecture, applyOcrResults, createFallbackPlan, getUploadPolicy } 
 import { applyBrowserOcr } from "./ocr-engine.js";
 import { buildLectureHTML, safeFilename } from "./lecture-template.js";
 import { createPptxFile, downloadPreparedPptx } from "./pptx-exporter.js";
+import { createPptxFileFromHtml, hydrateHtmlAssetSources } from "./html-pptx-exporter.js";
 
 const $ = (selector) => document.querySelector(selector);
 const el = {
@@ -17,6 +18,7 @@ const state = {
   selectedFile: null,
   extraction: null,
   plan: null,
+  manifest: null,
   generatedHTML: "",
   generatedFilename: "",
   resultMode: "none",
@@ -24,6 +26,7 @@ const state = {
   turnstileId: null,
   busy: false,
   verification: null,
+  designReport: null,
   pptxBlob: null,
   pptxReport: null,
 };
@@ -35,7 +38,7 @@ function message(value, tone = "error") { el.resultMessage.hidden = !value; el.r
 function stage(index, title, detail) { stages.forEach((item, i) => { item?.classList.toggle("done", i < index); item?.classList.toggle("active", i === index); }); if (title) el.processingTitle.textContent = title; if (detail) el.processingDetail.textContent = detail; }
 function showProcessing() { el.emptyState.hidden = true; el.previewShell.hidden = true; el.processingState.hidden = false; message(""); el.downloadPptxButton.disabled = true; }
 function showPreview() { el.processingState.hidden = true; el.emptyState.hidden = true; el.previewShell.hidden = false; el.previewFrame.srcdoc = state.generatedHTML; el.resultTitle.textContent = `PowerPoint preview · ${state.generatedFilename}.pptx`; el.downloadPptxButton.disabled = !(state.pptxBlob instanceof Blob); }
-function clearResult() { state.extraction = null; state.plan = null; state.verification = null; state.generatedHTML = ""; state.generatedFilename = ""; state.resultMode = "none"; state.pptxBlob = null; state.pptxReport = null; el.previewFrame.removeAttribute("srcdoc"); el.processingState.hidden = true; el.previewShell.hidden = true; el.emptyState.hidden = false; el.resultTitle.textContent = "Waiting for a lecture"; el.downloadPptxButton.disabled = true; message(""); stages.forEach((item) => item?.classList.remove("done", "active")); }
+function clearResult() { state.extraction = null; state.plan = null; state.manifest = null; state.verification = null; state.designReport = null; state.generatedHTML = ""; state.generatedFilename = ""; state.resultMode = "none"; state.pptxBlob = null; state.pptxReport = null; el.previewFrame.removeAttribute("srcdoc"); el.processingState.hidden = true; el.previewShell.hidden = true; el.emptyState.hidden = false; el.resultTitle.textContent = "Waiting for a lecture"; el.downloadPptxButton.disabled = true; message(""); stages.forEach((item) => item?.classList.remove("done", "active")); }
 function selectFile(file) { if (!file) return; state.selectedFile = file; clearResult(); el.dropZone.hidden = true; el.fileCard.hidden = false; el.fileName.textContent = file.name; if (el.fileType) el.fileType.textContent = (file.name.split(".").pop() || "FILE").toUpperCase().slice(0, 5); const policy = getUploadPolicy(); const warning = file.size > policy.warningBytes ? " · large file; adaptive mode" : " · ready to import"; el.fileMeta.textContent = `${formatBytes(file.size)}${warning}`; if (file.size > policy.maxBytes) message(`This device's safe upload limit is ${policy.mobile ? "20" : "50"} MB.`, "warning"); updateButton(); }
 function removeFile() { state.selectedFile = null; el.fileInput.value = ""; el.fileCard.hidden = true; el.dropZone.hidden = false; clearResult(); updateButton(); }
 function options() { return { sourceTitle: state.extraction?.title || "", courseCode: el.courseCode.value.trim(), lectureLabel: el.lectureLabel.value.trim(), instructor: el.instructor.value.trim(), language: el.language.value, includeToc: el.includeToc.checked, concise: el.conciseMode.checked }; }
@@ -51,7 +54,7 @@ function extractionManifest(extraction) {
       kind: unit?.kind || "paragraph",
       sourcePage: Number(unit?.page || unit?.sourcePage || 0),
       sourceOrder: Number(unit?.order || unit?.sourceOrder || index + 1),
-      verbatimText: String(unit?.text || "").replace(/\u0000/g, "").trim(),
+      verbatimText: String(unit?.text || unit?.verbatimText || "").replace(/\u0000/g, "").trim(),
       role: unit?.role || "body",
       extractionMethod: unit?.extractionMethod || "native",
       confidence: Number.isFinite(unit?.confidence) ? unit.confidence : 1,
@@ -62,9 +65,24 @@ function extractionManifest(extraction) {
       sourcePage: Number(asset?.sourcePage || 0),
       sourceOrder: Number(asset?.sourceOrder || index + 1),
       kind: asset?.type || "image",
+      alt: String(asset?.alt || "").trim(),
+      caption: String(asset?.caption || "").trim(),
       status: "available",
     })),
   };
+}
+
+function assetPreviews(assets, byteBudget = 3_800_000, limit = 16) {
+  const previews = new Map();
+  let used = 0;
+  for (const asset of Array.isArray(assets) ? assets : []) {
+    const source = String(asset?.source || "");
+    if (!asset?.id || !/^data:image\/(?:png|jpe?g|webp);base64,/i.test(source) || previews.size >= limit) continue;
+    if (used + source.length > byteBudget) continue;
+    previews.set(asset.id, source);
+    used += source.length;
+  }
+  return previews;
 }
 
 function compactPlan(plan, extraction, userOptions) {
@@ -79,29 +97,36 @@ function compactPlan(plan, extraction, userOptions) {
   };
 }
 
-async function requestPlan(extraction, userOptions) {
-  stage(2, extraction.ocrPages?.length ? "Applying Gemini OCR and reorganizing" : "Reorganizing with Gemini", extraction.ocrPages?.length ? `The local OCR confidence gate requested a second reading for ${extraction.ocrPages.length} page${extraction.ocrPages.length === 1 ? "" : "s"}; Gemini will transcribe and verify them before redesign…` : "Creating and verifying the structured draft…");
-  const response = await fetch("/api/redesign", {
+async function requestDesignedHtml(extraction, userOptions) {
+  stage(2, extraction.ocrPages?.length ? "Reading sparse pages and designing with Gemini" : "Designing the lecture with Gemini", extraction.ocrPages?.length ? `Gemini will verify ${extraction.ocrPages.length} OCR page${extraction.ocrPages.length === 1 ? "" : "s"}, then create the complete lecture HTML using the master design system…` : "Creating the complete page structure, boxes, diagrams, tables, and image composition in HTML…");
+  const previews = assetPreviews(extraction.assets);
+  const response = await fetch("/api/design-html", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
       turnstileToken: state.turnstileToken || undefined,
       source: {
         title: extraction.title,
-        batches: extraction.batches,
         sourceUnits: extraction.sourceUnits || [],
-        assets: extraction.assets.map(({ id, occurrenceId, type, alt, caption, sourceKind, sourcePage, sourceOrder, originalFormat }) => ({ id, occurrenceId, type, alt, caption, sourceKind, sourcePage, sourceOrder, originalFormat })),
+        assets: (extraction.assets || []).map(({ id, occurrenceId, type, alt, caption, sourceKind, sourcePage, sourceOrder, originalFormat }) => ({ id, occurrenceId, type, alt, caption, sourceKind, sourcePage, sourceOrder, originalFormat, previewData: previews.get(id) || "" })),
         ocrPages: extraction.ocrPages || [],
         extractionStatus: extraction.extractionStatus,
         verificationIssues: extraction.verificationIssues || [],
+      },
+      metadata: {
+        title: extraction.title,
+        courseCode: userOptions.courseCode,
+        lectureLabel: userOptions.lectureLabel,
+        instructor: userOptions.instructor,
+        language: userOptions.language,
+        direction: userOptions.language === "Arabic" ? "rtl" : "ltr",
       },
       options: userOptions,
     }),
   });
   const payload = await response.json().catch(() => ({}));
-  if (!response.ok) { const error = new Error(payload.error || `The AI service returned HTTP ${response.status}.`); error.code = payload.code || "AI_REQUEST_FAILED"; error.environment = payload.environment || state.config.environment; throw error; }
-  if (!payload.plan) throw new Error("The AI service did not return a verified lecture plan.");
-  state.verification = payload.verification || null;
+  if (!response.ok) { const error = new Error(payload.error || `The HTML design service returned HTTP ${response.status}.`); error.code = payload.code || "HTML_DESIGN_FAILED"; error.environment = payload.environment || state.config.environment; error.verification = payload.verification || null; throw error; }
+  if (!payload.html || !payload.verification?.valid || !payload.manifest) throw new Error("Gemini did not return a verified complete lecture HTML document.");
   return payload;
 }
 
@@ -113,18 +138,33 @@ function unresolvedConversionMessage(extraction) {
   return `Automatic visual conversion failed for ${locations.join(", ")}. No content was omitted; the PowerPoint was not created.`;
 }
 
+function hasNonOcrIssues(extraction) {
+  return (Array.isArray(extraction?.verificationIssues) ? extraction.verificationIssues : []).some((issue) => String(issue?.type || issue?.reason || "") !== "ocr-required");
+}
+
 function resetTurnstile() { state.turnstileToken = ""; if (state.turnstileId !== null && window.turnstile) { try { window.turnstile.reset(state.turnstileId); } catch {} } updateButton(); }
 function deploymentLabel() { const environment = state.config.environment || "current"; const branch = state.config.branch ? ` (${state.config.branch})` : ""; return `${environment} deployment${branch}`; }
+
+async function createLocalFallback(userOptions, reason) {
+  if (state.extraction?.ocrPages?.length || state.extraction?.extractionStatus !== "verified-native") throw new Error(reason || unresolvedConversionMessage(state.extraction));
+  state.plan = compactPlan(createFallbackPlan(state.extraction, userOptions), state.extraction, userOptions);
+  state.manifest = state.plan.sourceManifest;
+  state.resultMode = "local";
+  stage(3, "Building the source-faithful fallback PowerPoint", "Gemini is unavailable. Creating and verifying the deterministic recovery layout…");
+  const pptx = await createPptxFile(state.plan, state.extraction.assets || []);
+  state.generatedHTML = buildLectureHTML(state.plan, state.extraction.assets, userOptions);
+  state.pptxBlob = pptx.blob;
+  state.pptxReport = pptx;
+  return pptx;
+}
 
 async function processLecture() {
   if (!state.selectedFile || state.busy) return;
   state.busy = true;
   updateButton();
   showProcessing();
-  let fallbackReason = "";
-  let localMode = false;
-  let browserOcrError = "";
   let browserOcrApplied = false;
+  let browserOcrError = "";
   try {
     stage(0, "Reading and converting the lecture", "Extracting text, preserving source order, rendering PDF pages, and converting Office visuals locally…");
     state.extraction = await extractLecture(state.selectedFile, (detail) => stage(0, "Reading and converting the lecture", detail));
@@ -139,60 +179,50 @@ async function processLecture() {
         browserOcrApplied = true;
       } catch (error) {
         browserOcrError = error instanceof Error ? error.message : "Browser OCR failed.";
-        stage(1, "Local OCR requested a second reading", "Trying Gemini vision OCR with page-level verification…");
+        stage(1, "Local OCR requested a second reading", "The page images will be sent to Gemini together with the lecture design request…");
       }
     }
 
     stats = state.extraction.stats;
     stage(1, "Content extraction verified", `${stats.extractedChars.toLocaleString()} characters · ${stats.imageCount} images · ${stats.diagramCount || 0} source diagrams${stats.convertedVisualCount ? ` · ${stats.convertedVisualCount} visuals converted` : ""}${browserOcrApplied ? " · local OCR complete" : ""}`);
-    if (state.extraction.extractionStatus === "incomplete") throw new Error(unresolvedConversionMessage(state.extraction));
+    if (state.extraction.extractionStatus === "incomplete" && hasNonOcrIssues(state.extraction)) throw new Error(unresolvedConversionMessage(state.extraction));
 
+    let payload;
     try {
-      const payload = await requestPlan(state.extraction, userOptions);
-      if (payload.ocr?.applied) state.extraction = applyOcrResults(state.extraction, payload.ocr.pages, "Gemini OCR");
-      state.plan = payload.plan;
-      state.resultMode = "ai";
+      payload = await requestDesignedHtml(state.extraction, userOptions);
     } catch (error) {
-      const needsOcr = Boolean(state.extraction?.ocrPages?.length);
-      if (needsOcr || error?.code === "SOURCE_NOT_VERIFIED" || error?.code === "OCR_IMAGE_MISSING") {
-        const detail = error instanceof Error ? error.message : "unknown OCR error";
-        const prefix = browserOcrError ? `${browserOcrError} Gemini OCR also failed: ` : "Automatic OCR failed: ";
-        throw new Error(`${prefix}${detail}`);
+      resetTurnstile();
+      if (error?.code !== "AI_NOT_CONFIGURED") {
+        const prefix = browserOcrError && state.extraction?.ocrPages?.length ? `${browserOcrError} ` : "";
+        throw new Error(`${prefix}${error instanceof Error ? error.message : "Gemini HTML design failed."}`);
       }
-      localMode = error?.code === "AI_NOT_CONFIGURED";
-      fallbackReason = error instanceof Error ? error.message : "The AI service was unavailable.";
-      state.plan = createFallbackPlan(state.extraction, userOptions);
-      state.resultMode = "local";
-    } finally { resetTurnstile(); }
-
-    if (state.extraction.extractionStatus !== "verified-native") throw new Error(unresolvedConversionMessage(state.extraction));
-    state.plan = compactPlan(state.plan, state.extraction, userOptions);
-    stage(3, "Building and verifying the PowerPoint", "Creating readable slides and checking every original source unit and image occurrence against the final .pptx package…");
-    let pptx;
-    try {
-      pptx = await createPptxFile(state.plan, state.extraction.assets || []);
-    } catch (error) {
-      const detail = error instanceof Error ? error.message : String(error);
-      const fidelityFailure = /PowerPoint (?:export stopped|verification failed)/i.test(detail);
-      if (state.resultMode !== "ai" || !fidelityFailure) throw error;
-      fallbackReason = `The AI layout failed source-fidelity verification: ${detail}`;
-      stage(3, "Rebuilding from the original source", "The AI layout lost or misplaced source content. Creating a deterministic, page-preserving PowerPoint and verifying it again…");
-      state.plan = compactPlan(createFallbackPlan(state.extraction, userOptions), state.extraction, userOptions);
-      state.resultMode = "local";
-      localMode = false;
-      state.verification = { ...(state.verification || {}), valid: false, rejectedByFinalPackageVerification: true };
-      pptx = await createPptxFile(state.plan, state.extraction.assets || []);
+      const fallback = await createLocalFallback(userOptions, error instanceof Error ? error.message : "Gemini is not configured.");
+      state.generatedFilename = safeFilename(state.plan?.metadata?.title || state.extraction.title || "redesigned-lecture").replace(/\.html$/i, "");
+      const verificationText = `${fallback.packageVerification.slideCount} slides · ${fallback.report.expectedTextCount} original text units · ${fallback.packageVerification.embeddedMediaCount} image occurrence${fallback.packageVerification.embeddedMediaCount === 1 ? "" : "s"}`;
+      message(`Gemini is not configured; a source-faithful fallback PowerPoint was created and verified: ${verificationText}.`, "warning");
+      showPreview();
+      return;
+    } finally {
+      resetTurnstile();
     }
-    state.generatedHTML = buildLectureHTML(state.plan, state.extraction.assets, userOptions);
-    state.generatedFilename = safeFilename(state.plan?.metadata?.title || state.extraction.title || "redesigned-lecture").replace(/\.html$/i, "");
+
+    if (payload.ocr?.applied) state.extraction = applyOcrResults(state.extraction, payload.ocr.pages, "Gemini OCR");
+    state.manifest = payload.manifest;
+    state.verification = payload.verification;
+    state.designReport = payload;
+    state.resultMode = "html-ai";
+    state.generatedHTML = hydrateHtmlAssetSources(payload.html, state.extraction.assets || []);
+    state.generatedFilename = safeFilename(payload.metadata?.title || state.extraction.title || "redesigned-lecture").replace(/\.html$/i, "");
+
+    stage(3, "Converting the verified HTML to PowerPoint", "Recreating text, tables, boxes, images, SVG shapes, connectors, and page geometry as editable PowerPoint objects, then verifying the package…");
+    const pptx = await createPptxFileFromHtml(state.generatedHTML, state.extraction.assets || [], state.manifest, payload.metadata || userOptions);
+    state.generatedHTML = pptx.verifiedHtml;
     state.pptxBlob = pptx.blob;
     state.pptxReport = pptx;
     stats = state.extraction.stats;
-    el.fileMeta.textContent = `${formatBytes(state.selectedFile.size)} · ${stats.extractedChars.toLocaleString()} characters · ${stats.imageCount} images · source-verified PPTX`;
-    const verificationText = `${pptx.packageVerification.slideCount} slides · ${pptx.report.expectedTextCount} original text units · ${pptx.packageVerification.embeddedMediaCount} image occurrence${pptx.packageVerification.embeddedMediaCount === 1 ? "" : "s"} · body text ≥ ${pptx.report.minimumBodyFontSize} pt`;
-    if (state.resultMode === "ai" && state.verification?.valid) message(`PowerPoint ready and source-verified: ${verificationText}.${browserOcrApplied ? " Local OCR completed before redesign." : ""}`, "success");
-    else if (state.resultMode === "local") message(`${localMode ? "AI is not configured" : "AI redesign failed"}; a source-faithful PowerPoint was created and verified against the original extraction. ${fallbackReason}`, "warning");
-    else message(`PowerPoint ready and source-verified: ${verificationText}.`, "success");
+    el.fileMeta.textContent = `${formatBytes(state.selectedFile.size)} · ${stats.extractedChars.toLocaleString()} characters · ${stats.imageCount} images · verified HTML-derived PPTX`;
+    const verificationText = `${pptx.packageVerification.slideCount} slides · ${pptx.report.expectedTextCount} exact source units · ${pptx.report.images} original images · ${pptx.report.nativeSvgShapes} editable diagram objects${pptx.report.fallbackSvgPaths ? ` · ${pptx.report.fallbackSvgPaths} decorative SVG path fallback${pptx.report.fallbackSvgPaths === 1 ? "" : "s"}` : ""}`;
+    message(`PowerPoint ready from verified Gemini HTML: ${verificationText}.${browserOcrApplied ? " Local OCR completed before design." : payload.ocr?.applied ? " Gemini OCR completed before design." : ""}`, "success");
     showPreview();
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "The lecture could not be processed.";
