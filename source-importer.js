@@ -64,19 +64,7 @@ function ensureFallbackSourceCoverage(plan, extraction) {
       sections.push(section);
     }
     section.blocks.push({
-      type: "paragraph",
-      heading: "",
-      text: value,
-      label: "",
-      items: [],
-      pairs: [],
-      headers: [],
-      rows: [],
-      assetId: "",
-      caption: "",
-      alt: "",
-      question: "",
-      answer: "",
+      type: "paragraph", heading: "", text: value, label: "", items: [], pairs: [], headers: [], rows: [], assetId: "", caption: "", alt: "", question: "", answer: "",
       sourceIds: [id],
       presentation: /^\s*(?:\d+|[ivxlcdm]+|[a-z])[.)\-:]\s+/i.test(value) ? "numbered" : "paragraphs",
     });
@@ -87,8 +75,8 @@ function ensureFallbackSourceCoverage(plan, extraction) {
   return { ...plan, sections };
 }
 
-export function createFallbackPlan(extraction, options = {}) {
-  return ensureFallbackSourceCoverage(core.createFallbackPlan(extraction, options), extraction);
+export function createFallbackPlan() {
+  throw new Error("Gemini lecture design is unavailable. Jang will not generate or offer a low-quality fallback PowerPoint. Please retry when the AI design service is available.");
 }
 
 function repairExtractionStructure(extraction) {
@@ -117,7 +105,6 @@ function repairExtractionStructure(extraction) {
       order += 1;
       continue;
     }
-
     const assetMatch = token.match(/^\[ASSET:([^\]]+)\]$/);
     if (assetMatch) {
       const asset = assets.find((item) => item?.id === assetMatch[1]);
@@ -129,7 +116,6 @@ function repairExtractionStructure(extraction) {
       }
       continue;
     }
-
     seenContent += 1;
     order += 1;
   }
