@@ -1,6 +1,7 @@
 import * as core from "./source-importer-core.js";
 
 export const applyOcrResults = core.applyOcrResults;
+export const applyBrowserOcr = core.applyBrowserOcr;
 export const createFallbackPlan = core.createFallbackPlan;
 export const getUploadPolicy = core.getUploadPolicy;
 export const convertOfficeVisual = core.convertOfficeVisual;
