@@ -40,6 +40,33 @@ function selectFile(file) { if (!file) return; state.selectedFile = file; clearR
 function removeFile() { state.selectedFile = null; el.fileInput.value = ""; el.fileCard.hidden = true; el.dropZone.hidden = false; clearResult(); updateButton(); }
 function options() { return { sourceTitle: state.extraction?.title || "", courseCode: el.courseCode.value.trim(), lectureLabel: el.lectureLabel.value.trim(), instructor: el.instructor.value.trim(), language: el.language.value, includeToc: el.includeToc.checked, concise: el.conciseMode.checked }; }
 
+function stableSourceId(unit, index) {
+  return unit?.id || `src_${Number(unit?.page || unit?.sourcePage || 0)}_${Number(unit?.order || unit?.sourceOrder || index + 1)}_${String(unit?.kind || "paragraph").replace(/[^a-z0-9_-]+/gi, "_")}`.toLowerCase();
+}
+
+function extractionManifest(extraction) {
+  return {
+    units: (Array.isArray(extraction?.sourceUnits) ? extraction.sourceUnits : []).map((unit, index) => ({
+      id: stableSourceId(unit, index),
+      kind: unit?.kind || "paragraph",
+      sourcePage: Number(unit?.page || unit?.sourcePage || 0),
+      sourceOrder: Number(unit?.order || unit?.sourceOrder || index + 1),
+      verbatimText: String(unit?.text || "").replace(/\u0000/g, "").trim(),
+      role: unit?.role || "body",
+      extractionMethod: unit?.extractionMethod || "native",
+      confidence: Number.isFinite(unit?.confidence) ? unit.confidence : 1,
+    })).filter((unit) => unit.verbatimText),
+    assets: (Array.isArray(extraction?.assets) ? extraction.assets : []).map((asset, index) => ({
+      id: asset?.id || `asset_${index + 1}`,
+      occurrenceId: asset?.occurrenceId || asset?.id || `asset_${index + 1}`,
+      sourcePage: Number(asset?.sourcePage || 0),
+      sourceOrder: Number(asset?.sourceOrder || index + 1),
+      kind: asset?.type || "image",
+      status: "available",
+    })),
+  };
+}
+
 function compactPlan(plan, extraction, userOptions) {
   const source = plan && typeof plan === "object" ? plan : {};
   return {
@@ -48,6 +75,7 @@ function compactPlan(plan, extraction, userOptions) {
     learningObjectives: [...new Set(Array.isArray(source.learningObjectives) ? source.learningObjectives : [])],
     sections: Array.isArray(source.sections) ? source.sections.filter((section) => Array.isArray(section?.blocks) && section.blocks.length) : [],
     finalTakeaways: [...new Set(Array.isArray(source.finalTakeaways) ? source.finalTakeaways : [])],
+    sourceManifest: extractionManifest(extraction),
   };
 }
 
@@ -62,7 +90,7 @@ async function requestPlan(extraction, userOptions) {
         title: extraction.title,
         batches: extraction.batches,
         sourceUnits: extraction.sourceUnits || [],
-        assets: extraction.assets.map(({ id, type, alt, caption, sourceKind, sourcePage, originalFormat }) => ({ id, type, alt, caption, sourceKind, sourcePage, originalFormat })),
+        assets: extraction.assets.map(({ id, occurrenceId, type, alt, caption, sourceKind, sourcePage, sourceOrder, originalFormat }) => ({ id, occurrenceId, type, alt, caption, sourceKind, sourcePage, sourceOrder, originalFormat })),
         ocrPages: extraction.ocrPages || [],
         extractionStatus: extraction.extractionStatus,
         verificationIssues: extraction.verificationIssues || [],
@@ -98,10 +126,10 @@ async function processLecture() {
   let browserOcrError = "";
   let browserOcrApplied = false;
   try {
-    stage(0, "Reading and converting the lecture", "Extracting text, rendering PDF pages, and converting Office visuals locally…");
+    stage(0, "Reading and converting the lecture", "Extracting text, preserving source order, rendering PDF pages, and converting Office visuals locally…");
     state.extraction = await extractLecture(state.selectedFile, (detail) => stage(0, "Reading and converting the lecture", detail));
     let stats = state.extraction.stats;
-    el.fileMeta.textContent = `${formatBytes(state.selectedFile.size)} · ${stats.nodeCount.toLocaleString()} units · ${stats.assetCount} visual assets${stats.convertedVisualCount ? ` · ${stats.convertedVisualCount} converted` : ""}`;
+    el.fileMeta.textContent = `${formatBytes(state.selectedFile.size)} · ${stats.nodeCount.toLocaleString()} source pages · ${stats.assetCount} visual assets${stats.convertedVisualCount ? ` · ${stats.convertedVisualCount} converted` : ""}`;
     const userOptions = options();
 
     if (state.extraction.ocrPages?.length) {
@@ -111,13 +139,12 @@ async function processLecture() {
         browserOcrApplied = true;
       } catch (error) {
         browserOcrError = error instanceof Error ? error.message : "Browser OCR failed.";
-        stage(1, "Local OCR requested a second reading", "Trying Gemini 3.6 vision OCR with page-level verification…");
+        stage(1, "Local OCR requested a second reading", "Trying Gemini vision OCR with page-level verification…");
       }
     }
 
     stats = state.extraction.stats;
     stage(1, "Content extraction verified", `${stats.extractedChars.toLocaleString()} characters · ${stats.imageCount} images · ${stats.diagramCount || 0} source diagrams${stats.convertedVisualCount ? ` · ${stats.convertedVisualCount} visuals converted` : ""}${browserOcrApplied ? " · local OCR complete" : ""}`);
-
     if (state.extraction.extractionStatus === "incomplete") throw new Error(unresolvedConversionMessage(state.extraction));
 
     try {
@@ -140,18 +167,32 @@ async function processLecture() {
 
     if (state.extraction.extractionStatus !== "verified-native") throw new Error(unresolvedConversionMessage(state.extraction));
     state.plan = compactPlan(state.plan, state.extraction, userOptions);
-    stage(3, "Building and verifying the PowerPoint", "Creating the final .pptx package and checking every expected text block and image occurrence…");
+    stage(3, "Building and verifying the PowerPoint", "Creating readable slides and checking every original source unit and image occurrence against the final .pptx package…");
+    let pptx;
+    try {
+      pptx = await createPptxFile(state.plan, state.extraction.assets || []);
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      const fidelityFailure = /PowerPoint (?:export stopped|verification failed)/i.test(detail);
+      if (state.resultMode !== "ai" || !fidelityFailure) throw error;
+      fallbackReason = `The AI layout failed source-fidelity verification: ${detail}`;
+      stage(3, "Rebuilding from the original source", "The AI layout lost or misplaced source content. Creating a deterministic, page-preserving PowerPoint and verifying it again…");
+      state.plan = compactPlan(createFallbackPlan(state.extraction, userOptions), state.extraction, userOptions);
+      state.resultMode = "local";
+      localMode = false;
+      state.verification = { ...(state.verification || {}), valid: false, rejectedByFinalPackageVerification: true };
+      pptx = await createPptxFile(state.plan, state.extraction.assets || []);
+    }
     state.generatedHTML = buildLectureHTML(state.plan, state.extraction.assets, userOptions);
     state.generatedFilename = safeFilename(state.plan?.metadata?.title || state.extraction.title || "redesigned-lecture").replace(/\.html$/i, "");
-    const pptx = await createPptxFile(state.plan, state.extraction.assets || []);
     state.pptxBlob = pptx.blob;
     state.pptxReport = pptx;
     stats = state.extraction.stats;
-    el.fileMeta.textContent = `${formatBytes(state.selectedFile.size)} · ${stats.extractedChars.toLocaleString()} characters · ${stats.imageCount} images · verified PPTX`;
-    const verificationText = `${pptx.packageVerification.slideCount} slides · ${pptx.packageVerification.embeddedMediaCount} image occurrence${pptx.packageVerification.embeddedMediaCount === 1 ? "" : "s"} · ${pptx.report.highlightCount} highlights · ${pptx.report.redTextCount} red terms`;
-    if (state.resultMode === "ai" && state.verification?.valid) message(`PowerPoint ready and verified: ${verificationText}.${browserOcrApplied ? " Local OCR completed before redesign." : ""}`, "success");
-    else if (state.resultMode === "local") message(`${localMode ? "AI is not configured" : "AI redesign failed"}; a verified local PowerPoint was created. ${fallbackReason}`, "warning");
-    else message(`PowerPoint ready and verified: ${verificationText}.`, "success");
+    el.fileMeta.textContent = `${formatBytes(state.selectedFile.size)} · ${stats.extractedChars.toLocaleString()} characters · ${stats.imageCount} images · source-verified PPTX`;
+    const verificationText = `${pptx.packageVerification.slideCount} slides · ${pptx.report.expectedTextCount} original text units · ${pptx.packageVerification.embeddedMediaCount} image occurrence${pptx.packageVerification.embeddedMediaCount === 1 ? "" : "s"} · body text ≥ ${pptx.report.minimumBodyFontSize} pt`;
+    if (state.resultMode === "ai" && state.verification?.valid) message(`PowerPoint ready and source-verified: ${verificationText}.${browserOcrApplied ? " Local OCR completed before redesign." : ""}`, "success");
+    else if (state.resultMode === "local") message(`${localMode ? "AI is not configured" : "AI redesign failed"}; a source-faithful PowerPoint was created and verified against the original extraction. ${fallbackReason}`, "warning");
+    else message(`PowerPoint ready and source-verified: ${verificationText}.`, "success");
     showPreview();
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "The lecture could not be processed.";
