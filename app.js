@@ -1,4 +1,4 @@
-import { buildLectureHtml } from "./lecture-html.js";
+import { buildLecturePptxFile } from "./pptx-output.js";
 import { extractPptxManifest } from "./pptx-reader.js";
 
 const fileInput = document.querySelector("#lectureFile");
@@ -11,6 +11,7 @@ const actionLabel = document.querySelector("#actionLabel");
 const status = document.querySelector("#status");
 const review = document.querySelector("#imageReview");
 const reviewSummary = document.querySelector("#reviewSummary");
+const coverageAudit = document.querySelector("#coverageAudit");
 const imageSlots = document.querySelector("#imageSlots");
 
 let selectedFile = null;
@@ -33,16 +34,17 @@ function setStatus(message, tone = "") {
 function setState(nextState) {
   state = nextState;
   action.dataset.state = nextState;
-  action.disabled = nextState === "idle" || nextState === "extracting";
+  action.disabled = nextState === "idle" || nextState === "extracting" || nextState === "building";
   const labels = {
-    idle: "Build HTML",
-    ready: "Build HTML",
+    idle: "Build PPTX",
+    ready: "Build PPTX",
     extracting: "Loading…",
+    building: "Building PPTX…",
     review: "Continue",
-    complete: "Download HTML",
+    complete: "Download PPTX",
   };
   actionLabel.textContent = labels[nextState];
-  action.setAttribute("aria-busy", nextState === "extracting" ? "true" : "false");
+  action.setAttribute("aria-busy", ["extracting", "building"].includes(nextState) ? "true" : "false");
 }
 
 function resetResult() {
@@ -51,6 +53,8 @@ function resetResult() {
   selectedImages.clear();
   imageSlots.replaceChildren();
   review.hidden = true;
+  coverageAudit.hidden = true;
+  coverageAudit.replaceChildren();
 }
 
 function validateLectureFile(file) {
@@ -111,12 +115,12 @@ function createImageSlotCard(slot, index) {
 
   const details = document.createElement("p");
   details.className = "image-slot-meta";
-  details.textContent = `${slot.size} · ${slot.fit}`;
+  details.textContent = `${slot.orientation || "automatic"} · ${slot.preferredAspect || "automatic"} · ${slot.fit}`;
 
   copy.append(reference, heading, description, details);
 
   const preview = document.createElement("div");
-  preview.className = `image-slot-preview image-slot-preview-${slot.size}`;
+  preview.className = `image-slot-preview image-slot-preview-${slot.preferredAspect || "automatic"}`;
   preview.dataset.fit = slot.fit;
   const empty = document.createElement("span");
   empty.textContent = "No image selected";
@@ -187,7 +191,32 @@ function showIntermediateStep(result) {
   review.hidden = false;
   reviewSummary.textContent = slots.length
     ? `Gemini found ${slots.length} important image position${slots.length === 1 ? "" : "s"}. Each label describes the exact visual to import.`
-    : "Gemini did not find any image positions. Continue to create the lecture HTML.";
+    : "Gemini did not find any image positions. Continue to create the PowerPoint presentation.";
+
+  const audit = result.lecture?.extractionAudit;
+  if (audit) {
+    const covered = Array.isArray(audit.coveredSourceReferences) ? audit.coveredSourceReferences.length : 0;
+    const unmapped = Array.isArray(audit.unmappedSourceReferences) ? audit.unmappedSourceReferences : [];
+    const warnings = Array.isArray(audit.warnings) ? audit.warnings : [];
+    const total = Number(audit.sourcePageOrSlideCount) || 0;
+    coverageAudit.hidden = false;
+    coverageAudit.dataset.tone = unmapped.length ? "warning" : "success";
+    const coverageLine = document.createElement("strong");
+    coverageLine.textContent = total
+      ? `Source audit: ${Math.max(0, total - unmapped.length)} of ${total} source ${audit.sourceType === "pptx" ? "slides" : "pages"} mapped.`
+      : `Source audit: ${covered} source references recorded.`;
+    coverageAudit.append(coverageLine);
+    if (unmapped.length) {
+      const detail = document.createElement("p");
+      detail.textContent = `Unmapped: ${unmapped.join(", ")}`;
+      coverageAudit.append(detail);
+    }
+    if (warnings.length) {
+      const detail = document.createElement("p");
+      detail.textContent = warnings.join(" ");
+      coverageAudit.append(detail);
+    }
+  }
 
   if (slots.length) {
     slots.forEach((slot, index) => imageSlots.append(createImageSlotCard(slot, index)));
@@ -207,7 +236,7 @@ function showIntermediateStep(result) {
 async function extractLecture() {
   if (!selectedFile) return;
   setState("extracting");
-  setStatus("Gemini is reading the lecture and preparing the reusable slide structure…");
+  setStatus("Gemini is reading the lecture and preparing the reusable PowerPoint structure…");
 
   try {
     const extension = validateLectureFile(selectedFile);
@@ -221,7 +250,7 @@ async function extractLecture() {
       form.append("sourceType", "pptx");
       form.append("fileName", selectedFile.name);
       form.append("manifest", JSON.stringify(manifest));
-      setStatus("Gemini is connecting the PowerPoint content to the lecture HTML structure…");
+      setStatus("Gemini is connecting the source content to the reusable PowerPoint structure…");
     }
 
     const response = await fetch("/api/extract", { method: "POST", body: form });
@@ -234,21 +263,34 @@ async function extractLecture() {
   }
 }
 
-function continueToHtml() {
+function importedImagesRecord() {
+  const images = {};
+  for (const [slotId, image] of selectedImages) {
+    const mimeType = image.dataUrl.match(/^data:([^;,]+)/)?.[1] || "application/octet-stream";
+    images[slotId] = { dataUrl: image.dataUrl, fileName: image.name, mimeType };
+  }
+  return images;
+}
+
+async function continueToPptx() {
   if (!extraction?.lecture) return;
+  setState("building");
+  setStatus("Building the editable PowerPoint presentation with the approved design…");
   try {
-    generated = buildLectureHtml(extraction.lecture, selectedImages);
+    const result = await buildLecturePptxFile(extraction.lecture, importedImagesRecord());
+    generated = result;
     setState("complete");
-    setStatus(`Built ${generated.slideCount} slides. The standalone HTML file is ready to download.`, "success");
+    const warningText = result.warnings.length ? ` ${result.warnings.length} validation warning${result.warnings.length === 1 ? "" : "s"} were recorded.` : "";
+    setStatus(`Built ${result.slideCount} editable slides.${warningText} The PPTX file is ready to download.`, result.warnings.length ? "" : "success");
   } catch (error) {
-    setStatus(error?.message || "The HTML file could not be generated.", "error");
+    setState("review");
+    setStatus(error?.message || "The PowerPoint file could not be generated.", "error");
   }
 }
 
 function downloadGeneratedFile() {
-  if (!generated) return;
-  const blob = new Blob([generated.html], { type: "text/html;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
+  if (!generated?.blob) return;
+  const url = URL.createObjectURL(generated.blob);
   const link = document.createElement("a");
   link.href = url;
   link.download = generated.filename;
@@ -275,7 +317,7 @@ fileInput.addEventListener("change", () => {
 
 action.addEventListener("click", () => {
   if (state === "ready") extractLecture();
-  else if (state === "review") continueToHtml();
+  else if (state === "review") continueToPptx();
   else if (state === "complete") downloadGeneratedFile();
 });
 

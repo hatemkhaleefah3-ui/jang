@@ -1,0 +1,730 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LectureDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "documentTitle",
+    "direction",
+    "overview",
+    "sections",
+    "endNote"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "enum": [
+        "1.0",
+        "1.1"
+      ]
+    },
+    "documentTitle": {
+      "type": "string",
+      "minLength": 1
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "ltr",
+        "rtl"
+      ]
+    },
+    "overview": {
+      "$ref": "#/definitions/LectureOverview"
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/LectureSection"
+      }
+    },
+    "endNote": {
+      "$ref": "#/definitions/RichText"
+    },
+    "extractionAudit": {
+      "$ref": "#/definitions/ExtractionAudit"
+    }
+  },
+  "definitions": {
+    "RichTextRun": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "text"
+      ],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "emphasis": {
+          "type": "string",
+          "enum": [
+            "none",
+            "bold",
+            "italic",
+            "accent",
+            "highlight"
+          ]
+        }
+      }
+    },
+    "RichText": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/RichTextRun"
+          }
+        }
+      ]
+    },
+    "ListItem": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "text"
+          ],
+          "properties": {
+            "text": {
+              "$ref": "#/definitions/RichText"
+            },
+            "level": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      ]
+    },
+    "LectureOverview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "introduction",
+        "keyPoints"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "introduction": {
+          "$ref": "#/definitions/RichText"
+        },
+        "keyPoints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RichText"
+          }
+        }
+      }
+    },
+    "LectureSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sectionId",
+        "sectionTitle",
+        "slides"
+      ],
+      "properties": {
+        "sectionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sectionTitle": {
+          "type": "string",
+          "minLength": 1
+        },
+        "slides": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/LectureSlide"
+          }
+        }
+      }
+    },
+    "LectureSlide": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slideId",
+        "slideTitle",
+        "slideSubtitle",
+        "sourceReferences",
+        "blocks"
+      ],
+      "properties": {
+        "slideId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "slideTitle": {
+          "type": "string"
+        },
+        "slideSubtitle": {
+          "$ref": "#/definitions/RichText"
+        },
+        "sourceReferences": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "blocks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/definitions/LectureBlock"
+          }
+        }
+      }
+    },
+    "LectureBlock": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/SubtitleBlock"
+        },
+        {
+          "$ref": "#/definitions/ParagraphBlock"
+        },
+        {
+          "$ref": "#/definitions/BulletsBlock"
+        },
+        {
+          "$ref": "#/definitions/NumberedBlock"
+        },
+        {
+          "$ref": "#/definitions/CalloutBlock"
+        },
+        {
+          "$ref": "#/definitions/TableBlock"
+        },
+        {
+          "$ref": "#/definitions/DiagramBlock"
+        },
+        {
+          "$ref": "#/definitions/ImageBlock"
+        }
+      ]
+    },
+    "BaseBlock": {
+      "type": "object",
+      "required": [
+        "blockId",
+        "sourceReferences"
+      ],
+      "properties": {
+        "blockId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceReferences": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SubtitleBlock": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseBlock"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "text"
+          ],
+          "properties": {
+            "blockId": {
+              "type": "string"
+            },
+            "sourceReferences": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "type": {
+              "const": "subtitle"
+            },
+            "text": {
+              "$ref": "#/definitions/RichText"
+            }
+          }
+        }
+      ]
+    },
+    "ParagraphBlock": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseBlock"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "text"
+          ],
+          "properties": {
+            "blockId": {
+              "type": "string"
+            },
+            "sourceReferences": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "type": {
+              "const": "paragraph"
+            },
+            "text": {
+              "$ref": "#/definitions/RichText"
+            }
+          }
+        }
+      ]
+    },
+    "BulletsBlock": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseBlock"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "items"
+          ],
+          "properties": {
+            "blockId": {
+              "type": "string"
+            },
+            "sourceReferences": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "type": {
+              "const": "bullets"
+            },
+            "items": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/definitions/ListItem"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "NumberedBlock": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseBlock"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "items"
+          ],
+          "properties": {
+            "blockId": {
+              "type": "string"
+            },
+            "sourceReferences": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "type": {
+              "const": "numbered"
+            },
+            "items": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/definitions/ListItem"
+              }
+            },
+            "startAt": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      ]
+    },
+    "CalloutBlock": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseBlock"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "label",
+            "text",
+            "tone"
+          ],
+          "properties": {
+            "blockId": {
+              "type": "string"
+            },
+            "sourceReferences": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "type": {
+              "const": "callout"
+            },
+            "label": {
+              "$ref": "#/definitions/RichText"
+            },
+            "text": {
+              "$ref": "#/definitions/RichText"
+            },
+            "tone": {
+              "type": "string",
+              "enum": [
+                "note",
+                "warning",
+                "info"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "TableBlock": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseBlock"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "label",
+            "headers",
+            "rows"
+          ],
+          "properties": {
+            "blockId": {
+              "type": "string"
+            },
+            "sourceReferences": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "type": {
+              "const": "table"
+            },
+            "label": {
+              "$ref": "#/definitions/RichText"
+            },
+            "tableType": {
+              "type": "string",
+              "enum": [
+                "standard",
+                "comparison",
+                "highlight",
+                "heatmap"
+              ]
+            },
+            "headers": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/definitions/RichText"
+              }
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/RichText"
+                }
+              }
+            },
+            "heatmap": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "min",
+                "max",
+                "values"
+              ],
+              "properties": {
+                "min": {
+                  "type": "number"
+                },
+                "max": {
+                  "type": "number"
+                },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "DiagramBlock": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseBlock"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "label",
+            "diagramRows"
+          ],
+          "properties": {
+            "blockId": {
+              "type": "string"
+            },
+            "sourceReferences": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "type": {
+              "const": "diagram"
+            },
+            "label": {
+              "$ref": "#/definitions/RichText"
+            },
+            "diagramType": {
+              "type": "string",
+              "enum": [
+                "generic",
+                "metabolic",
+                "signal-transduction",
+                "gene-regulatory",
+                "disease-pharmacology"
+              ]
+            },
+            "diagramRows": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "$ref": "#/definitions/RichTextRun"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "pathways": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "pathwayId",
+                  "label",
+                  "nodeIds"
+                ],
+                "properties": {
+                  "pathwayId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "label": {
+                    "$ref": "#/definitions/RichText"
+                  },
+                  "nodeIds": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ImageBlock": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseBlock"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "slotId",
+            "label",
+            "description",
+            "important",
+            "sourceReference",
+            "fit",
+            "preferredAspect"
+          ],
+          "properties": {
+            "blockId": {
+              "type": "string"
+            },
+            "sourceReferences": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "type": {
+              "const": "image"
+            },
+            "slotId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "label": {
+              "$ref": "#/definitions/RichText"
+            },
+            "description": {
+              "$ref": "#/definitions/RichText"
+            },
+            "important": {
+              "type": "boolean"
+            },
+            "sourceReference": {
+              "type": "string"
+            },
+            "fit": {
+              "type": "string",
+              "enum": [
+                "contain",
+                "cover"
+              ]
+            },
+            "preferredAspect": {
+              "type": "string",
+              "enum": [
+                "wide",
+                "portrait",
+                "square",
+                "full",
+                "automatic"
+              ]
+            },
+            "orientation": {
+              "type": "string",
+              "enum": [
+                "automatic",
+                "transverse",
+                "longitudinal",
+                "portrait",
+                "landscape"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "ExtractionAudit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceType",
+        "sourcePageOrSlideCount",
+        "coveredSourceReferences",
+        "unmappedSourceReferences",
+        "warnings"
+      ],
+      "properties": {
+        "sourceType": {
+          "type": "string",
+          "enum": [
+            "pdf",
+            "pptx"
+          ]
+        },
+        "sourcePageOrSlideCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "coveredSourceReferences": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unmappedSourceReferences": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

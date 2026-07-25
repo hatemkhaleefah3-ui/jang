@@ -22,68 +22,124 @@ const extracted = {
       {
         slideTitle: "Glycolysis",
         slideSubtitle: "Energy investment phase",
+        sourceReferences: ["Slide 2", "Slide 3"],
         blocks: [
-          { type: "paragraph", text: "Glucose is phosphorylated.", sourceReference: "Page 2" },
-          { type: "image", slotId: "pathway", label: "Image", description: "Glycolysis biochemical pathway from glucose to pyruvate.", sourceReference: "Page 7" },
+          { type: "paragraph", text: "Glucose is phosphorylated.", sourceReferences: ["Slide 2"] },
+          {
+            type: "bullets",
+            items: [
+              { text: "Investment phase", level: 0 },
+              { text: "Consumes two ATP", level: 1 },
+            ],
+            sourceReferences: ["Slide 3"],
+          },
+          {
+            type: "image",
+            slotId: "pathway",
+            label: "Image",
+            description: "Glycolysis biochemical pathway from glucose to pyruvate.",
+            important: true,
+            fit: "contain",
+            preferredAspect: "wide",
+            orientation: "landscape",
+            sourceReference: "Slide 3",
+            sourceReferences: ["Slide 3"],
+          },
         ],
       },
       {
         slideTitle: "Glycolysis",
         slideSubtitle: "Energy payoff phase",
+        sourceReferences: ["Slide 4", "Slide 5"],
         blocks: [
-          { type: "image", slotId: "pathway", label: "Image", description: "ATP and NADH production during the payoff phase." },
-          { type: "table", rows: [["ATP", "2"]] },
-          { type: "diagram", diagramRows: [["Glucose", "Pyruvate"]] },
+          {
+            type: "table",
+            tableType: "heatmap",
+            label: "Energy yield heat map",
+            headers: ["Stage", "ATP"],
+            rows: [["Investment", "-2"], ["Payoff", "4"]],
+            heatmap: { min: -2, max: 4, values: [[-2, -2], [4, 4]] },
+            sourceReferences: ["Slide 4"],
+          },
+          {
+            type: "diagram",
+            diagramType: "metabolic",
+            label: "Energy payoff pathway",
+            diagramRows: [["G3P", "Pyruvate"]],
+            sourceReferences: ["Slide 5"],
+          },
         ],
       },
     ],
   }],
   endNote: "Review the pathways.",
+  sourcePageOrSlideCount: 6,
+  coveredSourceReferences: ["Slide 1", "Slide 2", "Slide 3", "Slide 4", "Slide 5"],
+  unmappedSourceReferences: ["Slide 6"],
+  warnings: [],
 };
 
-test("normalizes hierarchy, removes repeated slide titles, and derives unique meaningful image labels", () => {
-  const result = normalizeLectureResult(extracted);
-  assert.equal(result.lecture.sections[0].slides[0].slideTitle, "Glycolysis");
-  assert.equal(result.lecture.sections[0].slides[1].slideTitle, "");
-  assert.equal(result.lecture.sections[0].slides[1].slideSubtitle, "Energy payoff phase");
-  assert.deepEqual(result.imageSlots.map((slot) => slot.slotId), ["pathway", "pathway-2"]);
+test("normalizes directly into the shared PPTX engine contract", () => {
+  const result = normalizeLectureResult(extracted, { sourceType: "pptx", sourceCount: 6 });
+  const lecture = result.lecture;
+  assert.equal(lecture.schemaVersion, "1.1");
+  assert.match(lecture.sections[0].sectionId, /carbohydrate-metabolism/);
+  assert.equal(lecture.sections[0].slides[0].slideTitle, "Glycolysis");
+  assert.equal(lecture.sections[0].slides[1].slideTitle, "");
+  assert.ok(lecture.sections[0].slides[0].slideId);
+  assert.ok(lecture.sections[0].slides[0].blocks[0].blockId);
+  assert.deepEqual(lecture.sections[0].slides[0].blocks[1].items, [
+    { text: "Investment phase", level: 0 },
+    { text: "Consumes two ATP", level: 1 },
+  ]);
+  assert.equal(lecture.sections[0].slides[1].blocks[0].tableType, "heatmap");
+  assert.equal(lecture.sections[0].slides[1].blocks[1].diagramType, "metabolic");
+  assert.equal(lecture.extractionAudit.sourceType, "pptx");
+  assert.equal(lecture.extractionAudit.sourcePageOrSlideCount, 6);
+  assert.ok(lecture.extractionAudit.unmappedSourceReferences.includes("Slide 6"));
+});
+
+test("derives unique labelled image imports with aspect and orientation", () => {
+  const result = normalizeLectureResult(extracted, { sourceType: "pptx", sourceCount: 6 });
+  assert.equal(result.imageSlots.length, 1);
   assert.match(result.imageSlots[0].label, /Glycolysis biochemical pathway/i);
-  assert.match(result.imageSlots[1].label, /ATP and NADH production/i);
-  assert.notEqual(result.imageSlots[0].label, result.imageSlots[1].label);
-  assert.equal(result.imageSlots[0].sourceReference, "Page 7");
+  assert.equal(result.imageSlots[0].preferredAspect, "wide");
+  assert.equal(result.imageSlots[0].orientation, "landscape");
+  assert.equal(result.imageSlots[0].sourceReference, "Slide 3");
 });
 
-test("preserves source traceability on reconstructed content blocks", () => {
-  const result = normalizeLectureResult(extracted);
-  assert.equal(result.lecture.sections[0].slides[0].blocks[0].sourceReference, "Page 2");
-  assert.match(lectureResponseSchema.properties.sections.items.properties.slides.items.properties.blocks.items.properties.sourceReference.description, /every relevant page or slide/i);
+test("downgrades malformed heat maps instead of producing invalid engine input", () => {
+  const malformed = structuredClone(extracted);
+  malformed.sections[0].slides[1].blocks[0].heatmap.values = [[1]];
+  const result = normalizeLectureResult(malformed, { sourceType: "pptx", sourceCount: 6 });
+  const table = result.lecture.sections[0].slides[1].blocks[0];
+  assert.equal(table.tableType, "highlight");
+  assert.equal(table.heatmap, undefined);
+  assert.match(result.lecture.extractionAudit.warnings.join(" "), /downgraded/i);
 });
 
-test("adds specific table and diagram labels from slide context", () => {
-  const result = normalizeLectureResult(extracted);
-  const blocks = result.lecture.sections[0].slides[1].blocks;
-  assert.equal(blocks.find((block) => block.type === "table").label, "Energy payoff phase comparison table");
-  assert.equal(blocks.find((block) => block.type === "diagram").label, "Energy payoff phase process diagram");
+test("structured response schema models all requested reusable template inputs", () => {
+  const blockProperties = lectureResponseSchema.properties.sections.items.properties.slides.items.properties.blocks.items.properties;
+  assert.ok(blockProperties.items.items.properties.level);
+  assert.deepEqual(blockProperties.tableType.enum, ["standard", "comparison", "highlight", "heatmap"]);
+  assert.deepEqual(blockProperties.diagramType.enum, ["generic", "metabolic", "signal-transduction", "gene-regulatory", "disease-pharmacology"]);
+  assert.ok(blockProperties.preferredAspect);
+  assert.ok(blockProperties.orientation.enum.includes("transverse"));
+  assert.ok(blockProperties.orientation.enum.includes("longitudinal"));
+  assert.ok(lectureResponseSchema.properties.unmappedSourceReferences);
 });
 
-test("structured response schema explicitly models overview, sections, slide title, subtitle, and visual descriptions", () => {
-  assert.deepEqual(lectureResponseSchema.required, ["documentTitle", "direction", "overview", "sections", "endNote"]);
-  const slideProperties = lectureResponseSchema.properties.sections.items.properties.slides.items.properties;
-  assert.ok(slideProperties.slideTitle);
-  assert.ok(slideProperties.slideSubtitle);
-  assert.ok(slideProperties.blocks.items.properties.description);
+test("Gemini prompt requires complete traceable reconstruction and exact block classification", () => {
+  assert.match(extractionPrompt, /exact structured input contract/i);
+  assert.match(extractionPrompt, /every unique meaningful instructional item/i);
+  assert.match(extractionPrompt, /nested hierarchical items/i);
+  assert.match(extractionPrompt, /tableType heatmap/i);
+  assert.match(extractionPrompt, /diagramType metabolic/i);
+  assert.match(extractionPrompt, /orientation transverse/i);
+  assert.match(extractionPrompt, /unmappedSourceReferences/i);
 });
 
-test("Gemini prompt requires complete semantic reconstruction instead of simple element detection", () => {
-  assert.match(extractionPrompt, /not simple element detection/i);
-  assert.match(extractionPrompt, /read and understand the entire source/i);
-  assert.match(extractionPrompt, /reorganize the extracted information/i);
-  assert.match(extractionPrompt, /create image blocks only for important source visuals/i);
-  assert.match(extractionPrompt, /every content block must be traceable/i);
-  assert.match(extractionPrompt, /return the complete reconstructed lecture object/i);
-});
-
-test("uses Gemini 3.6 Flash and migrates the previous model setting", () => {
+test("uses the configured Gemini model migration behavior", () => {
   assert.equal(DEFAULT_GEMINI_MODEL, "gemini-3.6-flash");
   assert.equal(resolveGeminiModel(""), "gemini-3.6-flash");
   assert.equal(resolveGeminiModel("models/gemini-2.5-flash"), "gemini-3.6-flash");

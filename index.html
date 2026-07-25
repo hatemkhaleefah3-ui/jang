@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Import a PDF or PPTX lecture, let Gemini structure it, add the requested images, and download a standalone HTML lecture.">
+  <meta name="description" content="Import a PDF or PPTX lecture, let Gemini structure it, add the requested images, and download an editable PowerPoint presentation.">
   <meta name="theme-color" content="#11130f">
-  <title>Jang — Build a lecture HTML file</title>
+  <title>Jang — Build an editable lecture PowerPoint</title>
   <link rel="stylesheet" href="/styles.css">
   <script type="module" src="/app.js"></script>
 </head>
@@ -15,15 +15,15 @@
       <span class="brand-mark" aria-hidden="true">J</span>
       <span>Jang</span>
     </a>
-    <span class="header-note">PDF / PPTX to lecture HTML</span>
+    <span class="header-note">PDF / PPTX to editable PowerPoint</span>
   </header>
 
   <main class="page-shell">
     <section class="builder" aria-labelledby="page-title">
       <div class="intro">
         <p class="eyebrow">One lecture. One guided build.</p>
-        <h1 id="page-title">Turn a lecture file into a complete website.</h1>
-        <p>Import a PDF or PowerPoint lecture. Gemini organizes every section, paragraph, list, table, diagram, and image position for the reusable 16:9 HTML design.</p>
+        <h1 id="page-title">Turn a lecture file into a complete PowerPoint.</h1>
+        <p>Import a PDF or PowerPoint lecture. Gemini organizes every section, paragraph, nested list, typed table, pathway diagram, and important image position for the reusable editable PowerPoint design.</p>
       </div>
 
       <div class="workflow-strip" aria-label="Workflow">
@@ -52,13 +52,14 @@
           <p class="eyebrow">Intermediate image step</p>
           <h2 id="image-review-title">Add the recognized lecture images.</h2>
           <p id="reviewSummary"></p>
+          <div id="coverageAudit" class="coverage-audit" hidden></div>
         </div>
         <div id="imageSlots" class="image-slots"></div>
       </section>
 
       <button id="actionButton" class="action-button" type="button" disabled data-state="idle">
         <span class="button-spinner" aria-hidden="true"></span>
-        <span id="actionLabel">Build HTML</span>
+        <span id="actionLabel">Build PPTX</span>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>
       </button>
 
