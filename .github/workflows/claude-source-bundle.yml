@@ -1,0 +1,76 @@
+name: Claude PPTX source bundle
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out Jang application
+        uses: actions/checkout@v4
+        with:
+          path: jang
+
+      - name: Check out maintainable PPTX engine source
+        uses: actions/checkout@v4
+        with:
+          repository: hatemkhaleefah3-ui/janjooo
+          path: janjooo
+
+      - name: Assemble Claude source bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p bundle/jang-current/tests/unit
+          mkdir -p bundle/jang-current/scripts
+          mkdir -p bundle/jang-current/functions/api
+          mkdir -p bundle/pptx-engine-source
+
+          cp jang/pptx-engine.js bundle/jang-current/
+          cp jang/pptx-output.js bundle/jang-current/
+          cp jang/lecture-schema.json bundle/jang-current/
+          cp jang/package.json bundle/jang-current/
+          cp jang/scripts/build.mjs bundle/jang-current/scripts/
+          cp jang/functions/api/extract.js bundle/jang-current/functions/api/
+          cp jang/tests/unit/pptx-workflow.test.mjs bundle/jang-current/tests/unit/
+          cp jang/tests/unit/csp-scan.test.mjs bundle/jang-current/tests/unit/
+          cp jang/tests/unit/extract-function.test.mjs bundle/jang-current/tests/unit/
+
+          cp -R janjooo/artifacts/jang-pptx/. bundle/pptx-engine-source/
+
+          cat > bundle/README-FOR-CLAUDE.md <<'EOF'
+          # Jang PPTX layout-quality repair bundle
+
+          Repository: https://github.com/hatemkhaleefah3-ui/jang
+          Issue: https://github.com/hatemkhaleefah3-ui/jang/issues/22
+
+          `jang-current/` contains the application files currently deployed by Jang.
+          `pptx-engine-source/` contains the maintainable TypeScript source used to build the bundled `pptx-engine.js`.
+
+          Work from the maintainable source whenever possible. The key layout files are under:
+          - `pptx-engine-source/src/renderer/compose-slides.ts`
+          - `pptx-engine-source/src/renderer/paginate-content.ts`
+          - `pptx-engine-source/src/renderer/render-content-slide.ts`
+          - `pptx-engine-source/src/renderer/render-image.ts`
+          - `pptx-engine-source/src/template/`
+
+          Requirements are in GitHub issue #22. Intentional reuse of the same user-selected image across different slots must remain supported.
+
+          The user will separately upload the failing `amino-acids-metabolism 2.pptx` file for visual inspection.
+
+          Return either complete replacement files or one unified Git patch. Do not claim GitHub was changed unless you actually have write access and made commits.
+          EOF
+
+      - name: Upload source bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: claude-pptx-fix-source-bundle
+          path: bundle
+          if-no-files-found: error
+          retention-days: 1
