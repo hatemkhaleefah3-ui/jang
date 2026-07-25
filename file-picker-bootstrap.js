@@ -9,6 +9,7 @@
   var applicationState = window.__jangApplicationModuleLoaded ? "ready" : "loading";
   var selectedInput = null;
   var selectedStatus = null;
+  var selectedAction = null;
 
   function hasOwn(object, key) {
     return Object.prototype.hasOwnProperty.call(object, key);
@@ -95,11 +96,13 @@
     var fileName = document.getElementById("fileName");
     var fileMeta = document.getElementById("fileMeta");
     var status = document.getElementById("status");
+    var action = document.getElementById("actionButton");
 
     if (!input || !buttonText || !card || !fileName || !fileMeta || !status) return;
 
     selectedInput = input;
     selectedStatus = status;
+    selectedAction = action;
 
     function handleSelection() {
       var file = input.files && input.files.length ? input.files[0] : null;
@@ -122,8 +125,10 @@
           setStatus("The file remains selected, but the application module failed to load. Redeploy the latest commit and check the browser console.", "error");
         } else if (applicationState === "missing") {
           setStatus("The file remains selected, but the application loader is missing from this deployment.", "error");
-        } else if (applicationState === "ready") {
+        } else if (applicationState === "ready" && selectedAction && !selectedAction.disabled) {
           setStatus(file.name + " is selected and ready for processing.", "success");
+        } else if (applicationState === "ready") {
+          setStatus(file.name + " is selected. Activating the Build button…", "success");
         } else {
           setStatus(file.name + " is selected. Finishing application loading…", "success");
           window.setTimeout(function () {
