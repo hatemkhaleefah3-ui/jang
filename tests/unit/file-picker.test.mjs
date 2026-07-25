@@ -11,9 +11,15 @@ test("reads the selected file from browser FileList implementations", () => {
   const pdf = { name: "lecture.PDF", size: 1024, lastModified: 123 };
   const itemFileList = { length: 1, item: (index) => index === 0 ? pdf : null };
   const indexedFileList = { 0: pdf, length: 1 };
+  const embeddedBrowserFileList = { 0: pdf, length: 1, item: () => null };
 
   assert.equal(selectedFileFromInput({ files: itemFileList }), pdf);
   assert.equal(selectedFileFromInput({ files: indexedFileList }), pdf);
+  assert.equal(
+    selectedFileFromInput({ files: embeddedBrowserFileList }),
+    pdf,
+    "Indexed FileList access must win when a broken item() shim returns null.",
+  );
   assert.equal(selectedFileFromInput({ files: { length: 0, item: () => null } }), null);
   assert.equal(selectedFileFromInput(null), null);
 });
@@ -35,10 +41,12 @@ test("uses a stable signature to deduplicate input and change events", () => {
   assert.equal(lectureFileSignature(first), lectureFileSignature(duplicateEventFile));
 });
 
-test("the deployed markup and script keep the picker contract in sync", async () => {
-  const [html, app, build, headers] = await Promise.all([
+test("the deployed markup and scripts keep the picker contract in sync", async () => {
+  const [html, app, recovery, styles, build, headers] = await Promise.all([
     readFile(new URL("../../index.html", import.meta.url), "utf8"),
     readFile(new URL("../../app.js", import.meta.url), "utf8"),
+    readFile(new URL("../../file-picker-recovery.js", import.meta.url), "utf8"),
+    readFile(new URL("../../styles.css", import.meta.url), "utf8"),
     readFile(new URL("../../scripts/build.mjs", import.meta.url), "utf8"),
     readFile(new URL("../../_headers", import.meta.url), "utf8"),
   ]);
@@ -59,14 +67,19 @@ test("the deployed markup and script keep the picker contract in sync", async ()
     assert.match(html, new RegExp(`id=["']${id}["']`), `Missing #${id} from index.html`);
   }
 
-  const uploadStart = html.indexOf('<label class="upload-zone"');
-  const uploadEnd = html.indexOf("</label>", uploadStart);
-  const inputPosition = html.indexOf('id="lectureFile"', uploadStart);
-  assert.ok(uploadStart >= 0 && inputPosition > uploadStart && inputPosition < uploadEnd, "The native file input must be inside the upload zone.");
+  assert.doesNotMatch(html, /<label class="upload-zone"/, "The native input must not be wrapped in a second activating label.");
+  assert.match(html, /<div class="upload-zone">[\s\S]*id="lectureFile"[\s\S]*<\/div>/);
+  assert.match(html, /file-picker-recovery\.js/);
+  assert.match(styles, /\.upload-file-input::file-selector-button/);
+  assert.doesNotMatch(styles, /\.upload-file-input\s*\{[^}]*opacity:\s*0/s, "The browser's own selected filename must remain visible.");
 
   assert.match(app, /addEventListener\("input", handleLectureFileSelection\)/);
   assert.match(app, /addEventListener\("change", handleLectureFileSelection\)/);
   assert.match(app, /if \(coverageAudit\)/, "Optional new DOM nodes must not break older cached markup.");
+  assert.match(recovery, /window\.addEventListener\("focus", scheduleRecovery\)/);
+  assert.match(recovery, /visibilitychange/);
+  assert.match(recovery, /dispatchEvent\(new Event\("change"/);
   assert.match(build, /"lecture-file\.js"/);
+  assert.match(build, /"file-picker-recovery\.js"/);
   assert.match(headers, /Cache-Control: no-store, max-age=0/);
 });

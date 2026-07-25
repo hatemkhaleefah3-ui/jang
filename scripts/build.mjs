@@ -8,6 +8,7 @@ const staticFiles = [
   "styles.css",
   "app.js",
   "lecture-file.js",
+  "file-picker-recovery.js",
   "pptx-engine.js",
   "pptx-output.js",
   "__vite-browser-external.js",

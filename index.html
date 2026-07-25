@@ -6,8 +6,9 @@
   <meta name="description" content="Import a PDF or PPTX lecture, let Gemini structure it, add the requested images, and download an editable PowerPoint presentation.">
   <meta name="theme-color" content="#11130f">
   <title>Jang — Build an editable lecture PowerPoint</title>
-  <link rel="stylesheet" href="/styles.css?v=20260725-file-picker">
-  <script type="module" src="/app.js?v=20260725-file-picker"></script>
+  <link rel="stylesheet" href="/styles.css?v=20260725-browser-recovery">
+  <script defer src="/file-picker-recovery.js?v=20260725-browser-recovery"></script>
+  <script type="module" src="/app.js?v=20260725-browser-recovery"></script>
 </head>
 <body>
   <header class="site-header">
@@ -33,14 +34,14 @@
         <span><b>4</b> Download</span>
       </div>
 
-      <label class="upload-zone" for="lectureFile">
+      <div class="upload-zone">
         <span class="upload-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4L8 8M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>
         </span>
         <strong id="fileButtonText">Choose PDF or PPTX</strong>
         <small>PDF up to 18 MB · PPTX up to 50 MB</small>
         <input id="lectureFile" class="upload-file-input" type="file" accept=".pdf,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation" aria-label="Choose a PDF or PPTX lecture file">
-      </label>
+      </div>
 
       <div id="fileCard" class="file-card" hidden>
         <span id="fileTypeMark" class="file-type-mark" aria-hidden="true">DOC</span>
