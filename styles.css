@@ -52,8 +52,10 @@ h1 { max-width: 14ch; margin: 0; font-size: clamp(2.3rem, 7vw, 5.4rem); line-hei
 .workflow-strip b { width: 1.45rem; height: 1.45rem; display: grid; place-items: center; flex: none; color: #171914; background: #f5e240; border-radius: 50%; font-size: .7rem; }
 
 .upload-zone {
+  position: relative;
   min-height: 210px;
   padding: 2rem;
+  overflow: hidden;
   display: grid;
   place-items: center;
   align-content: center;
@@ -67,6 +69,8 @@ h1 { max-width: 14ch; margin: 0; font-size: clamp(2.3rem, 7vw, 5.4rem); line-hei
   transition: transform .18s, border-color .18s, box-shadow .18s;
 }
 .upload-zone:hover, .upload-zone:focus-within { transform: translateY(-2px); border-color: #7e8477; box-shadow: 0 18px 38px rgba(38,42,32,.1); }
+.upload-zone > :not(.upload-file-input) { pointer-events: none; }
+.upload-file-input { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
 .upload-icon { width: 4.2rem; height: 4.2rem; display: grid; place-items: center; color: #171914; background: #f5e240; border-radius: 1.25rem; }
 .upload-icon svg { width: 2rem; height: 2rem; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .upload-zone strong { font-size: 1.05rem; }
