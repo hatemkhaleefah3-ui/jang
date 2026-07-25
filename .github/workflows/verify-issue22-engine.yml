@@ -1,0 +1,74 @@
+name: Verify issue 22 PPTX engine
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-issue22-engine.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out verification repository
+        uses: actions/checkout@v4
+      - name: Check out patched PPTX engine source
+        uses: actions/checkout@v4
+        with:
+          repository: hatemkhaleefah3-ui/janjooo
+          ref: claude/fix-pptx-layout-quality
+          path: engine
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: engine/pnpm-lock.yaml
+      - name: Install dependencies
+        working-directory: engine
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck PPTX engine
+        working-directory: engine
+        run: pnpm --dir artifacts/jang-pptx typecheck
+      - name: Test PPTX engine
+        working-directory: engine
+        run: pnpm --dir artifacts/jang-pptx test
+      - name: Build PPTX engine
+        working-directory: engine
+        run: pnpm --dir artifacts/jang-pptx build
+      - name: Generate sample PPTX
+        working-directory: engine
+        run: pnpm --dir artifacts/jang-pptx sample
+      - name: Build standalone browser engine
+        working-directory: engine/artifacts/jang-pptx
+        run: |
+          cat > vite.standalone.config.ts <<'CONFIG'
+          import path from 'node:path';
+          import { fileURLToPath } from 'node:url';
+          import { defineConfig } from 'vite';
+          const root = path.dirname(fileURLToPath(import.meta.url));
+          export default defineConfig({
+            publicDir: false,
+            build: {
+              lib: { entry: path.resolve(root, 'src/index.ts'), formats: ['es'], fileName: () => 'pptx-engine.js' },
+              outDir: path.resolve(root, 'standalone-dist'),
+              emptyOutDir: true,
+              sourcemap: false,
+              minify: 'esbuild',
+            },
+          });
+          CONFIG
+          pnpm exec vite build --config vite.standalone.config.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue-22-pptx-engine-and-sample
+          path: |
+            engine/artifacts/jang-pptx/standalone-dist/**
+            engine/artifacts/jang-pptx/generated/*.pptx
+          if-no-files-found: error
