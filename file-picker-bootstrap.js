@@ -6,6 +6,9 @@
     pptx: 50000000,
   };
   var lastSignature = "";
+  var applicationState = window.__jangApplicationModuleLoaded ? "ready" : "loading";
+  var selectedInput = null;
+  var selectedStatus = null;
 
   function hasOwn(object, key) {
     return Object.prototype.hasOwnProperty.call(object, key);
@@ -47,6 +50,43 @@
     return extension;
   }
 
+  function setStatus(message, tone) {
+    if (!selectedStatus) return;
+    selectedStatus.textContent = message;
+    selectedStatus.dataset.tone = tone || "";
+  }
+
+  function markApplicationReady() {
+    applicationState = "ready";
+    window.__jangApplicationModuleLoaded = true;
+  }
+
+  function markApplicationFailed() {
+    applicationState = "failed";
+    window.__jangApplicationModuleFailed = true;
+    if (selectedInput && selectedInput.files && selectedInput.files.length) {
+      setStatus("The file remains selected, but the application module failed to load. Redeploy the latest commit and check the browser console.", "error");
+    }
+  }
+
+  function watchApplicationModule() {
+    if (window.addEventListener) {
+      window.addEventListener("jang:application-ready", markApplicationReady, { once: true });
+    }
+
+    var moduleScript = document.querySelector
+      ? document.querySelector("script[data-jang-application]")
+      : null;
+
+    if (!moduleScript) {
+      applicationState = "missing";
+      return;
+    }
+
+    moduleScript.addEventListener("load", markApplicationReady, { once: true });
+    moduleScript.addEventListener("error", markApplicationFailed, { once: true });
+  }
+
   function initialize() {
     var input = document.getElementById("lectureFile");
     var buttonText = document.getElementById("fileButtonText");
@@ -55,14 +95,11 @@
     var fileName = document.getElementById("fileName");
     var fileMeta = document.getElementById("fileMeta");
     var status = document.getElementById("status");
-    var action = document.getElementById("actionButton");
 
     if (!input || !buttonText || !card || !fileName || !fileMeta || !status) return;
 
-    function setStatus(message, tone) {
-      status.textContent = message;
-      status.dataset.tone = tone || "";
-    }
+    selectedInput = input;
+    selectedStatus = status;
 
     function handleSelection() {
       var file = input.files && input.files.length ? input.files[0] : null;
@@ -80,13 +117,21 @@
         fileName.textContent = file.name;
         fileMeta.textContent = extension.toUpperCase() + " · " + formatBytes(file.size);
         buttonText.textContent = "Choose another file";
-        setStatus(file.name + " is selected. Preparing the application…", "success");
 
-        window.setTimeout(function () {
-          if (input.files && input.files.length && action && action.disabled) {
-            setStatus("The file is selected, but the application did not finish loading. Reload this preview and try again.", "error");
-          }
-        }, 2000);
+        if (applicationState === "failed") {
+          setStatus("The file remains selected, but the application module failed to load. Redeploy the latest commit and check the browser console.", "error");
+        } else if (applicationState === "missing") {
+          setStatus("The file remains selected, but the application loader is missing from this deployment.", "error");
+        } else if (applicationState === "ready") {
+          setStatus(file.name + " is selected and ready for processing.", "success");
+        } else {
+          setStatus(file.name + " is selected. Finishing application loading…", "success");
+          window.setTimeout(function () {
+            if (applicationState === "loading" && input.files && input.files.length) {
+              setStatus("The file is still selected. The application is taking longer than expected to load…", "");
+            }
+          }, 15000);
+        }
       } catch (error) {
         lastSignature = "";
         window.__jangPendingLectureFile = null;
@@ -102,6 +147,8 @@
     input.addEventListener("change", handleSelection);
     window.__jangPickerBootstrapReady = true;
   }
+
+  watchApplicationModule();
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initialize, { once: true });
