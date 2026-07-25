@@ -21,7 +21,7 @@ export function validateLectureFile(file) {
   }
 
   const extension = file.name.trim().split(".").pop()?.toLowerCase();
-  if (!extension || !Object.hasOwn(LECTURE_FILE_LIMITS, extension)) {
+  if (!extension || !Object.prototype.hasOwnProperty.call(LECTURE_FILE_LIMITS, extension)) {
     throw new Error("Choose a PDF or PPTX lecture file.");
   }
 
