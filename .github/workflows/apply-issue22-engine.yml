@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: hatemkhaleefah3-ui/janjooo
-          ref: eac664589e71fe3bd99b67f0994c1d8e5ed706c2
+          ref: 0a172a8aea33944a762c7faa4147dadef6f2505a
           path: engine-source
       - uses: pnpm/action-setup@v4
         with:
@@ -73,14 +73,6 @@ jobs:
           const source = fs.readFileSync(path, 'utf8');
           if (!source.includes(shim)) throw new Error(`Generated engine does not import ${shim}`);
           fs.writeFileSync(path, source.replaceAll(shim, '__vite-browser-external.js'));
-          NODE
-          node <<'NODE'
-          const fs = require('node:fs');
-          const path = 'scripts/build.mjs';
-          const source = fs.readFileSync(path, 'utf8');
-          const next = source.replace('const assetVersion = "20260725-csp-safe";', 'const assetVersion = "20260726-layout-quality";');
-          if (next === source) throw new Error('Previous asset version was not found.');
-          fs.writeFileSync(path, next);
           NODE
       - uses: actions/setup-node@v4
         with:
