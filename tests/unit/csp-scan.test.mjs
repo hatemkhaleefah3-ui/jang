@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 
 const FILES = [
   "browser-compat.js",
@@ -44,6 +44,13 @@ test("deployed JavaScript avoids CSP-blocked string execution", async () => {
       }
     }
   }
+
+  await mkdir(new URL("../../generated/", import.meta.url), { recursive: true });
+  await writeFile(
+    new URL("../../generated/csp-scan.json", import.meta.url),
+    `${JSON.stringify({ findings }, null, 2)}\n`,
+    "utf8",
+  );
 
   assert.deepEqual(findings, [], `CSP-blocked string execution found:\n${JSON.stringify(findings, null, 2)}`);
 });
