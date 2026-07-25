@@ -1,0 +1,109 @@
+name: Apply verified issue 22 PPTX engine
+
+on:
+  push:
+    branches: [fix/pptx-layout-quality]
+    paths:
+      - '.integration/issue22-trigger'
+      - '.github/workflows/apply-issue22-engine.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Check out verified maintainable engine source
+        uses: actions/checkout@v4
+        with:
+          repository: hatemkhaleefah3-ui/janjooo
+          ref: eac664589e71fe3bd99b67f0994c1d8e5ed706c2
+          path: engine-source
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: engine-source/pnpm-lock.yaml
+      - name: Install and verify source engine
+        working-directory: engine-source
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm --dir artifacts/jang-pptx typecheck
+          pnpm --dir artifacts/jang-pptx test
+      - name: Build standalone browser engine
+        working-directory: engine-source/artifacts/jang-pptx
+        run: |
+          cat > vite.standalone.config.ts <<'CONFIG'
+          import path from 'node:path';
+          import { fileURLToPath } from 'node:url';
+          import { defineConfig } from 'vite';
+          const root = path.dirname(fileURLToPath(import.meta.url));
+          export default defineConfig({
+            publicDir: false,
+            build: {
+              lib: { entry: path.resolve(root, 'src/index.ts'), formats: ['es'], fileName: () => 'pptx-engine.js' },
+              outDir: path.resolve(root, 'standalone-dist'),
+              emptyOutDir: true,
+              sourcemap: false,
+              minify: 'esbuild',
+            },
+          });
+          CONFIG
+          pnpm exec vite build --config vite.standalone.config.ts
+      - name: Install browser engine in Jang
+        run: |
+          cp engine-source/artifacts/jang-pptx/standalone-dist/pptx-engine.js ./pptx-engine.js
+          shim_path=$(find engine-source/artifacts/jang-pptx/standalone-dist -maxdepth 1 -name '__vite-browser-external-*.js' -print -quit)
+          test -n "$shim_path"
+          shim_name=$(basename "$shim_path")
+          cp "$shim_path" ./__vite-browser-external.js
+          node - "$shim_name" <<'NODE'
+          const fs = require('node:fs');
+          const shim = process.argv[2];
+          const path = 'pptx-engine.js';
+          const source = fs.readFileSync(path, 'utf8');
+          if (!source.includes(shim)) throw new Error(`Generated engine does not import ${shim}`);
+          fs.writeFileSync(path, source.replaceAll(shim, '__vite-browser-external.js'));
+          NODE
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = 'scripts/build.mjs';
+          const source = fs.readFileSync(path, 'utf8');
+          const next = source.replace('const assetVersion = "20260725-csp-safe";', 'const assetVersion = "20260726-layout-quality";');
+          if (next === source) throw new Error('Previous asset version was not found.');
+          fs.writeFileSync(path, next);
+          NODE
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Verify application and CSP-safe production build
+        run: |
+          npm ci
+          npm test
+          npm run sample
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue-22-jang-production-and-sample
+          path: |
+            dist/**
+            generated/*.pptx
+          if-no-files-found: error
+      - name: Commit verified integration
+        run: |
+          rm -rf .integration engine-source
+          rm -f .github/workflows/apply-issue22-engine.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "fix: improve PPTX pagination and mixed image layouts"
+          git push origin HEAD:fix/pptx-layout-quality
