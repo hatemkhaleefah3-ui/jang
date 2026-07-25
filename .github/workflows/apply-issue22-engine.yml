@@ -1,3 +1,4 @@
+# Re-run after CSP patterns were made independent of minified variable names.
 name: Apply verified issue 22 PPTX engine
 
 on:
