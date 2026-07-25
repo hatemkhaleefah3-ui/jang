@@ -6,8 +6,14 @@ export const LECTURE_FILE_LIMITS = Object.freeze({
 export function selectedFileFromInput(input) {
   const files = input?.files;
   if (!files || files.length === 0) return null;
-  if (typeof files.item === "function") return files.item(0);
-  return files[0] || null;
+
+  // Prefer indexed access. Some embedded/in-app browser FileList shims expose
+  // item() but incorrectly return null even though files[0] is populated.
+  const indexedFile = files[0];
+  if (indexedFile) return indexedFile;
+
+  if (typeof files.item === "function") return files.item(0) || null;
+  return null;
 }
 
 export function lectureFileSignature(file) {
@@ -21,7 +27,7 @@ export function validateLectureFile(file) {
   }
 
   const extension = file.name.trim().split(".").pop()?.toLowerCase();
-  if (!extension || !Object.hasOwn(LECTURE_FILE_LIMITS, extension)) {
+  if (!extension || !Object.prototype.hasOwnProperty.call(LECTURE_FILE_LIMITS, extension)) {
     throw new Error("Choose a PDF or PPTX lecture file.");
   }
 
