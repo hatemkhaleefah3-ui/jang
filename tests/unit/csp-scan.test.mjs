@@ -2,13 +2,14 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { join } from "node:path";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const reportPath = join(root, "generated", "csp-scan.json");
+const assetVersion = "20260725-csp-safe";
 const FILES = [
   "browser-compat.js",
   "file-picker-bootstrap.js",
@@ -43,7 +44,37 @@ async function writeReport(report) {
   await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
 }
 
-test("production JavaScript avoids CSP-blocked string execution", async () => {
+function minimalLecture() {
+  return {
+    schemaVersion: "1.1",
+    documentTitle: "Carbohydrate metabolism",
+    direction: "ltr",
+    overview: {
+      title: "Overview",
+      introduction: "Core pathways and regulation.",
+      keyPoints: ["Glycolysis"],
+    },
+    sections: [{
+      sectionId: "section-1",
+      sectionTitle: "Glycolysis",
+      slides: [{
+        slideId: "slide-1",
+        slideTitle: "Pathway",
+        slideSubtitle: "",
+        sourceReferences: ["Page 1"],
+        blocks: [{
+          blockId: "block-1",
+          sourceReferences: ["Page 1"],
+          type: "paragraph",
+          text: "Glucose is converted to pyruvate.",
+        }],
+      }],
+    }],
+    endNote: "Questions",
+  };
+}
+
+test("production JavaScript is CSP-safe, versioned, and importable", async () => {
   try {
     await execFileAsync(process.execPath, ["scripts/build.mjs"], { cwd: root });
   } catch (error) {
@@ -71,4 +102,18 @@ test("production JavaScript avoids CSP-blocked string execution", async () => {
 
   await writeReport({ buildError: null, findings });
   assert.deepEqual(findings, [], `CSP-blocked string execution found:\n${JSON.stringify(findings, null, 2)}`);
+
+  const indexHtml = await readFile(join(root, "dist", "index.html"), "utf8");
+  const loader = await readFile(join(root, "dist", "app-loader.js"), "utf8");
+  const app = await readFile(join(root, "dist", "app.js"), "utf8");
+  const output = await readFile(join(root, "dist", "pptx-output.js"), "utf8");
+  assert.match(indexHtml, new RegExp(`v=${assetVersion}`, "g"));
+  assert.match(loader, new RegExp(`app\\.js\\?v=${assetVersion}`));
+  assert.match(app, new RegExp(`pptx-output\\.js\\?v=${assetVersion}`));
+  assert.match(output, new RegExp(`pptx-engine\\.js\\?v=${assetVersion}`));
+
+  const engineUrl = `${pathToFileURL(join(root, "dist", "pptx-engine.js")).href}?test=${Date.now()}`;
+  const productionEngine = await import(engineUrl);
+  const validation = productionEngine.validateLecture(minimalLecture());
+  assert.equal(validation.valid, true, validation.errors.join("\n"));
 });
