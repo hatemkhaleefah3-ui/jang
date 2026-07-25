@@ -21,8 +21,8 @@ jobs:
 
       - name: Apply reviewed website changes
         run: |
-          cat .integration/part-* | base64 --decode > /tmp/jang-remaining.patch
-          git apply --whitespace=nowarn /tmp/jang-remaining.patch
+          cat .integration/source-* | base64 --decode > /tmp/jang-remaining-files.tar.gz
+          tar -xzf /tmp/jang-remaining-files.tar.gz -C "$GITHUB_WORKSPACE"
           rm -f lecture-html.js tests/unit/lecture-html.test.mjs
 
       - name: Build approved browser PPTX engine
