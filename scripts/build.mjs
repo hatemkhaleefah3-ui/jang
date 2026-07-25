@@ -84,31 +84,29 @@ let engine = await readFile(enginePath, "utf8");
 const validatorImport = `import { createStaticSchemaValidator as __createStaticSchemaValidator } from "./lecture-validator.js?v=${assetVersion}";\n`;
 if (!engine.startsWith(validatorImport)) engine = `${validatorImport}${engine}`;
 
-const constructorName = ["Func", "tion"].join("");
-const stringCallbackSource = `typeof E != "function" && (E = new ${constructorName}("" + E));`;
-const safeCallbackSource = 'if (typeof E != "function") throw new TypeError("setImmediate callback must be a function");';
-if (engine.includes(stringCallbackSource)) {
-  engine = engine.replace(stringCallbackSource, safeCallbackSource);
-}
+const stringCallbackPattern = /typeof ([A-Za-z_$][\w$]*) != "function" && \(\1 = new Function\("" \+ \1\)\);/;
+engine = engine.replace(
+  stringCallbackPattern,
+  (_match, callbackName) => `if (typeof ${callbackName} != "function") throw new TypeError("setImmediate callback must be a function");`,
+);
 
-const runtimeCompilerSource = [
-  "const M = new ",
-  constructorName,
-  '(`${t.default.self}`, `${t.default.scope}`, k)(this, this.scope.get());',
-].join("");
-const disabledRuntimeCompiler = 'const M = (() => { throw new Error("Runtime schema compilation is disabled in the CSP-safe browser build."); })();';
-if (!engine.includes(runtimeCompilerSource)) {
+const runtimeCompilerPattern = /const ([A-Za-z_$][\w$]*) = new Function\(`\$\{t\.default\.self\}`, `\$\{t\.default\.scope\}`, ([A-Za-z_$][\w$]*)\)\(this, this\.scope\.get\(\)\);/;
+if (!runtimeCompilerPattern.test(engine)) {
   throw new Error("Could not find the bundled runtime function constructor.");
 }
-engine = engine.replace(runtimeCompilerSource, disabledRuntimeCompiler);
+engine = engine.replace(
+  runtimeCompilerPattern,
+  (_match, validatorName) => `const ${validatorName} = (() => { throw new Error("Runtime schema compilation is disabled in the CSP-safe browser build."); })();`,
+);
 
-const schemaCompilerPattern = /}, Ac = Ui, Gi = new Wl\(\{ allErrors: !0, strict: !1 \}\);\s*jl\(Gi\);\s*const fa = Gi\.compile\(Ui\), ac = \[/;
+const schemaCompilerPattern = /}, ([A-Za-z_$][\w$]*) = ([A-Za-z_$][\w$]*), ([A-Za-z_$][\w$]*) = new ([A-Za-z_$][\w$]*)\(\{ allErrors: !0, strict: !1 \}\);\s*([A-Za-z_$][\w$]*)\(\3\);\s*const ([A-Za-z_$][\w$]*) = \3\.compile\(\2\), ([A-Za-z_$][\w$]*) = \[/;
 if (!schemaCompilerPattern.test(engine)) {
   throw new Error("Could not find the bundled runtime schema compiler.");
 }
 engine = engine.replace(
   schemaCompilerPattern,
-  "}, Ac = Ui;\nconst fa = __createStaticSchemaValidator(Ui), ac = [",
+  (_match, schemaAlias, schemaName, _ajvName, _ajvConstructor, _formatInstaller, validatorName, labelsName) =>
+    `}, ${schemaAlias} = ${schemaName};\nconst ${validatorName} = __createStaticSchemaValidator(${schemaName}), ${labelsName} = [`,
 );
 
 const blockedTokens = [
