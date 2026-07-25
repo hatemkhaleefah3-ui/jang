@@ -1,4 +1,4 @@
-name: Lecture HTML builder
+name: Lecture PPTX builder
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -19,3 +19,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - run: npm run sample
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jang-pptx-workflow-sample
+          path: generated/jang-website-pptx-workflow-sample.pptx
+          if-no-files-found: error
