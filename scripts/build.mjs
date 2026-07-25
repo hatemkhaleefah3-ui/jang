@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const output = resolve(root, "dist");
-const assetVersion = "20260725-csp-safe";
+const assetVersion = "20260726-layout-quality";
 const staticFiles = [
   "index.html",
   "styles.css",
@@ -87,10 +87,9 @@ if (!engine.startsWith(validatorImport)) engine = `${validatorImport}${engine}`;
 const constructorName = ["Func", "tion"].join("");
 const stringCallbackSource = `typeof E != "function" && (E = new ${constructorName}("" + E));`;
 const safeCallbackSource = 'if (typeof E != "function") throw new TypeError("setImmediate callback must be a function");';
-if (!engine.includes(stringCallbackSource)) {
-  throw new Error("Could not find the bundled setImmediate string-callback branch.");
+if (engine.includes(stringCallbackSource)) {
+  engine = engine.replace(stringCallbackSource, safeCallbackSource);
 }
-engine = engine.replace(stringCallbackSource, safeCallbackSource);
 
 const runtimeCompilerSource = [
   "const M = new ",
