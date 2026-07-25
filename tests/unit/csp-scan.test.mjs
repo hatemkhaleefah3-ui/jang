@@ -8,6 +8,7 @@ import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
 const root = fileURLToPath(new URL("../../", import.meta.url));
+const reportPath = join(root, "generated", "csp-scan.json");
 const FILES = [
   "browser-compat.js",
   "file-picker-bootstrap.js",
@@ -37,10 +38,25 @@ function lineAndContext(source, offset) {
   return { line, context: source.slice(start, end).trim().slice(0, 500) };
 }
 
-test("production JavaScript avoids CSP-blocked string execution", async () => {
-  await execFileAsync(process.execPath, ["scripts/build.mjs"], { cwd: root });
-  const findings = [];
+async function writeReport(report) {
+  await mkdir(join(root, "generated"), { recursive: true });
+  await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+}
 
+test("production JavaScript avoids CSP-blocked string execution", async () => {
+  try {
+    await execFileAsync(process.execPath, ["scripts/build.mjs"], { cwd: root });
+  } catch (error) {
+    const buildError = {
+      message: error instanceof Error ? error.message : String(error),
+      stdout: typeof error?.stdout === "string" ? error.stdout : "",
+      stderr: typeof error?.stderr === "string" ? error.stderr : "",
+    };
+    await writeReport({ buildError, findings: [] });
+    assert.fail(`Production build failed during CSP transformation: ${buildError.stderr || buildError.message}`);
+  }
+
+  const findings = [];
   for (const file of FILES) {
     const source = await readFile(join(root, "dist", file), "utf8");
     for (const token of TOKENS) {
@@ -53,12 +69,6 @@ test("production JavaScript avoids CSP-blocked string execution", async () => {
     }
   }
 
-  await mkdir(join(root, "generated"), { recursive: true });
-  await writeFile(
-    join(root, "generated", "csp-scan.json"),
-    `${JSON.stringify({ findings }, null, 2)}\n`,
-    "utf8",
-  );
-
+  await writeReport({ buildError: null, findings });
   assert.deepEqual(findings, [], `CSP-blocked string execution found:\n${JSON.stringify(findings, null, 2)}`);
 });
