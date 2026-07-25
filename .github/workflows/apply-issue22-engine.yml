@@ -87,22 +87,32 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: package-lock.json
+      - name: Install application dependencies
+        run: npm ci
       - name: Verify application and CSP-safe production build
+        id: app_verify
+        continue-on-error: true
         run: |
-          npm ci
-          npm test
-          npm run sample
+          set -o pipefail
+          npm test 2>&1 | tee issue22-app-test-output.txt
+          npm run sample 2>&1 | tee -a issue22-app-test-output.txt
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: issue-22-jang-production-and-sample
           path: |
+            issue22-app-test-output.txt
             dist/**
             generated/*.pptx
-          if-no-files-found: error
+          if-no-files-found: warn
+      - name: Fail when application verification failed
+        if: steps.app_verify.outcome == 'failure'
+        run: exit 1
       - name: Commit verified integration
         run: |
           rm -rf .integration engine-source
           rm -f .github/workflows/apply-issue22-engine.yml
+          rm -f issue22-app-test-output.txt
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add -A
