@@ -6,6 +6,7 @@ const output = resolve(root, "dist");
 const staticFiles = [
   "index.html",
   "styles.css",
+  "file-picker-bootstrap.js",
   "app.js",
   "lecture-file.js",
   "pptx-engine.js",
@@ -26,4 +27,4 @@ for (const file of staticFiles) {
   await cp(source, target);
 }
 
-console.log(`Prepared ${staticFiles.length} static files, including the bundled editable PPTX engine, in dist.`);
+console.log(`Prepared ${staticFiles.length} static files, including the base-path-safe picker and bundled editable PPTX engine, in dist.`);
