@@ -1,12 +1,19 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { join } from "node:path";
+import { promisify } from "node:util";
 
+const execFileAsync = promisify(execFile);
+const root = fileURLToPath(new URL("../../", import.meta.url));
 const FILES = [
   "browser-compat.js",
   "file-picker-bootstrap.js",
   "app-loader.js",
   "app.js",
+  "lecture-validator.js",
   "pptx-output.js",
   "pptx-engine.js",
   "pptx-reader.js",
@@ -30,11 +37,12 @@ function lineAndContext(source, offset) {
   return { line, context: source.slice(start, end).trim().slice(0, 500) };
 }
 
-test("deployed JavaScript avoids CSP-blocked string execution", async () => {
+test("production JavaScript avoids CSP-blocked string execution", async () => {
+  await execFileAsync(process.execPath, ["scripts/build.mjs"], { cwd: root });
   const findings = [];
 
   for (const file of FILES) {
-    const source = await readFile(new URL(`../../${file}`, import.meta.url), "utf8");
+    const source = await readFile(join(root, "dist", file), "utf8");
     for (const token of TOKENS) {
       let offset = source.indexOf(token);
       while (offset !== -1) {
@@ -45,9 +53,9 @@ test("deployed JavaScript avoids CSP-blocked string execution", async () => {
     }
   }
 
-  await mkdir(new URL("../../generated/", import.meta.url), { recursive: true });
+  await mkdir(join(root, "generated"), { recursive: true });
   await writeFile(
-    new URL("../../generated/csp-scan.json", import.meta.url),
+    join(root, "generated", "csp-scan.json"),
     `${JSON.stringify({ findings }, null, 2)}\n`,
     "utf8",
   );
