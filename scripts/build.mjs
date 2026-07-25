@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const output = resolve(root, "dist");
+const assetVersion = "20260725-csp-safe";
 const staticFiles = [
   "index.html",
   "styles.css",
@@ -30,9 +31,57 @@ for (const file of staticFiles) {
   await cp(source, target);
 }
 
+async function replaceRequired(relativePath, search, replacement, description) {
+  const target = resolve(output, relativePath);
+  const source = await readFile(target, "utf8");
+  if (!source.includes(search)) {
+    throw new Error(`Could not find ${description} in ${relativePath}.`);
+  }
+  await writeFile(target, source.replace(search, replacement), "utf8");
+}
+
+const indexPath = resolve(output, "index.html");
+let indexHtml = await readFile(indexPath, "utf8");
+if (!indexHtml.includes("20260725-file-ready-ack")) {
+  throw new Error("Could not find the previous asset version in index.html.");
+}
+indexHtml = indexHtml.replaceAll("20260725-file-ready-ack", assetVersion);
+await writeFile(indexPath, indexHtml, "utf8");
+
+await replaceRequired(
+  "app-loader.js",
+  './app.js?v=20260725-file-ready-ack',
+  `./app.js?v=${assetVersion}`,
+  "the application import",
+);
+await replaceRequired(
+  "app.js",
+  'from "./pptx-output.js"',
+  `from "./pptx-output.js?v=${assetVersion}"`,
+  "the PPTX output import",
+);
+await replaceRequired(
+  "app.js",
+  'from "./pptx-reader.js"',
+  `from "./pptx-reader.js?v=${assetVersion}"`,
+  "the PPTX reader import",
+);
+await replaceRequired(
+  "app.js",
+  'from "./lecture-file.js"',
+  `from "./lecture-file.js?v=${assetVersion}"`,
+  "the lecture file helper import",
+);
+await replaceRequired(
+  "pptx-output.js",
+  'from "./pptx-engine.js"',
+  `from "./pptx-engine.js?v=${assetVersion}"`,
+  "the PPTX engine import",
+);
+
 const enginePath = resolve(output, "pptx-engine.js");
 let engine = await readFile(enginePath, "utf8");
-const validatorImport = 'import { createStaticSchemaValidator as __createStaticSchemaValidator } from "./lecture-validator.js";\n';
+const validatorImport = `import { createStaticSchemaValidator as __createStaticSchemaValidator } from "./lecture-validator.js?v=${assetVersion}";\n`;
 if (!engine.startsWith(validatorImport)) engine = `${validatorImport}${engine}`;
 
 const constructorName = ["Func", "tion"].join("");
@@ -77,4 +126,4 @@ if (remainingToken) {
 }
 
 await writeFile(enginePath, engine, "utf8");
-console.log(`Prepared ${staticFiles.length} static files with a CSP-safe static lecture validator in dist.`);
+console.log(`Prepared ${staticFiles.length} static files with a CSP-safe static lecture validator and versioned module graph in dist.`);
