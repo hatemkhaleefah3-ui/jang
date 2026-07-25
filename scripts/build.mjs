@@ -43,6 +43,17 @@ if (!engine.includes(stringCallbackSource)) {
 }
 engine = engine.replace(stringCallbackSource, safeCallbackSource);
 
+const runtimeCompilerSource = [
+  "const M = new ",
+  constructorName,
+  '(`${t.default.self}`, `${t.default.scope}`, k)(this, this.scope.get());',
+].join("");
+const disabledRuntimeCompiler = 'const M = (() => { throw new Error("Runtime schema compilation is disabled in the CSP-safe browser build."); })();';
+if (!engine.includes(runtimeCompilerSource)) {
+  throw new Error("Could not find the bundled runtime function constructor.");
+}
+engine = engine.replace(runtimeCompilerSource, disabledRuntimeCompiler);
+
 const schemaCompilerPattern = /}, Ac = Ui, Gi = new Wl\(\{ allErrors: !0, strict: !1 \}\);\s*jl\(Gi\);\s*const fa = Gi\.compile\(Ui\), ac = \[/;
 if (!schemaCompilerPattern.test(engine)) {
   throw new Error("Could not find the bundled runtime schema compiler.");
