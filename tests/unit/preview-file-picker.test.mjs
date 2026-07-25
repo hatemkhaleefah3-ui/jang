@@ -64,12 +64,14 @@ test("preview assets and application loader resolve relative to a repository sub
   const loader = await readFile(new URL("../../app-loader.js", import.meta.url), "utf8");
 
   assert.match(html, /href="\.\/styles\.css\?v=/);
+  assert.match(html, /src="\.\/browser-compat\.js\?v=/);
   assert.match(html, /src="\.\/file-picker-bootstrap\.js\?v=/);
   assert.match(html, /data-jang-application src="\.\/app-loader\.js\?v=/);
   assert.doesNotMatch(html, /(?:href|src)="\/(?:styles\.css|app(?:-loader)?\.js)/);
+  assert.match(build, /"browser-compat\.js"/);
   assert.match(build, /"file-picker-bootstrap\.js"/);
   assert.match(build, /"app-loader\.js"/);
-  assert.match(loader, /^import "\.\/app\.js";/m);
+  assert.match(loader, /^import "\.\/app\.js\?v=20260725-file-ready-ack";/m);
   assert.match(loader, /__jangApplicationModuleLoaded = true/);
   assert.match(loader, /dispatchEvent\(new Event\("input"/);
 });

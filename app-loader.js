@@ -1,4 +1,4 @@
-import "./app.js";
+import "./app.js?v=20260725-file-ready-ack";
 
 window.__jangApplicationModuleLoaded = true;
 
@@ -6,7 +6,7 @@ const pendingFile = window.__jangPendingLectureFile;
 const lectureInput = document.querySelector("#lectureFile");
 
 if (pendingFile && lectureInput?.files?.length) {
-  queueMicrotask(() => {
+  window.queueMicrotask(() => {
     lectureInput.dispatchEvent(new Event("input", { bubbles: true }));
   });
 }
