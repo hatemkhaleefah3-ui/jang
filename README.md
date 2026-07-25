@@ -69,6 +69,8 @@ The browser ships a standalone bundled copy of the approved Jang PPTX engine in 
 - RTL/LTR support;
 - schema and semantic validation.
 
+The renderer compacts adjacent low-density topics within a section before pagination. Non-full images share a balanced text/image layout with their related content when space permits, while unfilled image slots remain compact labelled placeholders rather than blank dedicated slides. A post-layout quality audit checks slide density and content preservation.
+
 `pptx-output.js` wraps the engine result with the correct PowerPoint MIME type and a safe `.pptx` filename.
 
 ## Gemini configuration
