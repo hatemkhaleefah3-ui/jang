@@ -6,6 +6,8 @@ on:
     paths:
       - '.snapshot/**'
       - '.github/workflows/source-snapshot.yml'
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: read
