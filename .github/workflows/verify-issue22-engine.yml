@@ -37,8 +37,12 @@ jobs:
         working-directory: engine
         run: pnpm --dir artifacts/jang-pptx typecheck
       - name: Test PPTX engine
+        id: tests
+        continue-on-error: true
         working-directory: engine
-        run: pnpm --dir artifacts/jang-pptx test
+        run: |
+          set -o pipefail
+          pnpm --dir artifacts/jang-pptx test 2>&1 | tee issue22-test-output.txt
       - name: Build PPTX engine
         working-directory: engine
         run: pnpm --dir artifacts/jang-pptx build
@@ -66,9 +70,14 @@ jobs:
           CONFIG
           pnpm exec vite build --config vite.standalone.config.ts
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: issue-22-pptx-engine-and-sample
           path: |
+            engine/issue22-test-output.txt
             engine/artifacts/jang-pptx/standalone-dist/**
             engine/artifacts/jang-pptx/generated/*.pptx
-          if-no-files-found: error
+          if-no-files-found: warn
+      - name: Fail when tests failed
+        if: steps.tests.outcome == 'failure'
+        run: exit 1
