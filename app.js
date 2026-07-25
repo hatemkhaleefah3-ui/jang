@@ -1,9 +1,11 @@
 import { buildLecturePptxFile } from "./pptx-output.js";
 import { extractPptxManifest } from "./pptx-reader.js";
+import { lectureFileSignature, selectedFileFromInput, validateLectureFile } from "./lecture-file.js";
 
 const fileInput = document.querySelector("#lectureFile");
 const fileButtonText = document.querySelector("#fileButtonText");
 const fileCard = document.querySelector("#fileCard");
+const fileTypeMark = document.querySelector("#fileTypeMark");
 const fileName = document.querySelector("#fileName");
 const fileMeta = document.querySelector("#fileMeta");
 const action = document.querySelector("#actionButton");
@@ -15,6 +17,7 @@ const coverageAudit = document.querySelector("#coverageAudit");
 const imageSlots = document.querySelector("#imageSlots");
 
 let selectedFile = null;
+let selectedFileSignature = "";
 let extraction = null;
 let generated = null;
 let state = "idle";
@@ -53,29 +56,59 @@ function resetResult() {
   selectedImages.clear();
   imageSlots.replaceChildren();
   review.hidden = true;
-  coverageAudit.hidden = true;
-  coverageAudit.replaceChildren();
-}
-
-function validateLectureFile(file) {
-  const extension = file.name.split(".").pop()?.toLowerCase();
-  if (!extension || !["pdf", "pptx"].includes(extension)) throw new Error("Choose a PDF or PPTX lecture file.");
-  if (extension === "pdf" && file.size > 18_000_000) throw new Error("PDF files must be 18 MB or smaller.");
-  if (extension === "pptx" && file.size > 50_000_000) throw new Error("PPTX files must be 50 MB or smaller.");
-  return extension;
+  if (coverageAudit) {
+    coverageAudit.hidden = true;
+    coverageAudit.replaceChildren();
+  }
 }
 
 function selectLectureFile(file) {
-  if (!file) return;
+  if (!file) return false;
   const extension = validateLectureFile(file);
   selectedFile = file;
+  selectedFileSignature = lectureFileSignature(file);
   resetResult();
   fileCard.hidden = false;
+  if (fileTypeMark) fileTypeMark.textContent = extension.toUpperCase();
   fileName.textContent = file.name;
   fileMeta.textContent = `${extension.toUpperCase()} · ${formatBytes(file.size)}`;
   fileButtonText.textContent = "Choose another file";
   setState("ready");
-  setStatus(`${file.name} is ready for Gemini extraction.`, "success");
+  setStatus(`${file.name} is selected and ready for Gemini extraction.`, "success");
+  return true;
+}
+
+function clearLectureSelection(message, tone = "error") {
+  selectedFile = null;
+  selectedFileSignature = "";
+  resetResult();
+  fileInput.value = "";
+  fileCard.hidden = true;
+  if (fileTypeMark) fileTypeMark.textContent = "DOC";
+  fileButtonText.textContent = "Choose PDF or PPTX";
+  setState("idle");
+  setStatus(message, tone);
+}
+
+function handleLectureFileSelection(event) {
+  const input = event.currentTarget;
+  const file = selectedFileFromInput(input);
+
+  // Some browsers can emit an empty input/change event while the native picker
+  // is closing. Never erase a valid selection because of that transient event.
+  if (!file) {
+    if (!selectedFile) setStatus("No file was selected. Choose a PDF or PPTX lecture.", "error");
+    return;
+  }
+
+  const signature = lectureFileSignature(file);
+  if (selectedFile && signature === selectedFileSignature) return;
+
+  try {
+    selectLectureFile(file);
+  } catch (error) {
+    clearLectureSelection(error instanceof Error ? error.message : "The selected file could not be imported.");
+  }
 }
 
 function readImage(file) {
@@ -163,7 +196,7 @@ function createImageSlotCard(slot, index) {
       remove.hidden = false;
       setStatus(`${imageFile.name} added for “${slot.label}”.`, "success");
     } catch (error) {
-      setStatus(error.message, "error");
+      setStatus(error instanceof Error ? error.message : "The image could not be imported.", "error");
     }
   });
 
@@ -194,7 +227,7 @@ function showIntermediateStep(result) {
     : "Gemini did not find any image positions. Continue to create the PowerPoint presentation.";
 
   const audit = result.lecture?.extractionAudit;
-  if (audit) {
+  if (audit && coverageAudit) {
     const covered = Array.isArray(audit.coveredSourceReferences) ? audit.coveredSourceReferences.length : 0;
     const unmapped = Array.isArray(audit.unmappedSourceReferences) ? audit.unmappedSourceReferences : [];
     const warnings = Array.isArray(audit.warnings) ? audit.warnings : [];
@@ -259,7 +292,7 @@ async function extractLecture() {
     showIntermediateStep(payload);
   } catch (error) {
     setState(selectedFile ? "ready" : "idle");
-    setStatus(error?.message || "The lecture could not be extracted.", "error");
+    setStatus(error instanceof Error ? error.message : "The lecture could not be extracted.", "error");
   }
 }
 
@@ -284,7 +317,7 @@ async function continueToPptx() {
     setStatus(`Built ${result.slideCount} editable slides.${warningText} The PPTX file is ready to download.`, result.warnings.length ? "" : "success");
   } catch (error) {
     setState("review");
-    setStatus(error?.message || "The PowerPoint file could not be generated.", "error");
+    setStatus(error instanceof Error ? error.message : "The PowerPoint file could not be generated.", "error");
   }
 }
 
@@ -301,19 +334,8 @@ function downloadGeneratedFile() {
   setStatus(`Downloaded ${generated.filename}.`, "success");
 }
 
-fileInput.addEventListener("change", () => {
-  try {
-    selectLectureFile(fileInput.files?.[0]);
-  } catch (error) {
-    selectedFile = null;
-    resetResult();
-    fileInput.value = "";
-    fileCard.hidden = true;
-    fileButtonText.textContent = "Choose PDF or PPTX";
-    setState("idle");
-    setStatus(error.message, "error");
-  }
-});
+fileInput.addEventListener("input", handleLectureFileSelection);
+fileInput.addEventListener("change", handleLectureFileSelection);
 
 action.addEventListener("click", () => {
   if (state === "ready") extractLecture();
