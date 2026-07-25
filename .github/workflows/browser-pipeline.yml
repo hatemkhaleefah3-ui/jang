@@ -1,3 +1,4 @@
+# Production verification for the editable lecture-to-PPTX workflow.
 name: Lecture PPTX builder
 
 on:
