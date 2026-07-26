@@ -1,4 +1,5 @@
 import { createStaticSchemaValidator } from "./lecture-validator.js";
+import { validateLecture } from "./pptx-engine.js";
 
 export const MAX_CLAUDE_JSON_BYTES = 20_000_000;
 
@@ -17,8 +18,147 @@ function plainText(value) {
   return value.map((run) => String(run?.text || "")).join("");
 }
 
-function formatValidationErrors(errors, limit = 6) {
+function cleanText(value) {
+  return plainText(value).replace(/\r\n?/g, "\n").replace(/[ \t]+/g, " ").trim();
+}
+
+function textKey(value) {
+  return cleanText(value).toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+}
+
+function conciseDefinition(value, maximumWords = 30) {
+  const normalized = cleanText(value);
+  if (!normalized) return "";
+  const firstSentence = normalized.match(/^.*?(?:[.!?]|$)/u)?.[0] || normalized;
+  const words = firstSentence.split(/\s+/).filter(Boolean);
+  const result = words.slice(0, maximumWords).join(" ");
+  return /[.!?]$/u.test(result) ? result : `${result}.`;
+}
+
+function listItemText(item) {
+  return typeof item === "string" ? item : item?.text;
+}
+
+function blockSummary(block) {
+  if (!block || typeof block !== "object") return "";
+  if (["title", "subtitle", "paragraph"].includes(block.type)) return cleanText(block.text);
+  if (["bullets", "numbered"].includes(block.type)) return cleanText(listItemText(block.items?.[0]));
+  if (block.type === "callout") return cleanText(block.text || block.label);
+  if (["table", "diagram"].includes(block.type)) return cleanText(block.label);
+  if (block.type === "image") return cleanText(block.description || block.label);
+  return "";
+}
+
+function deriveDefinition(candidates, heading, role) {
+  for (const candidate of candidates) {
+    const definition = conciseDefinition(candidate);
+    if (definition && textKey(definition) !== textKey(heading)) return definition;
+  }
+  return `This ${role} organizes the lecture content about ${cleanText(heading)}.`;
+}
+
+function firstParagraphText(slides) {
+  for (const slide of slides || []) {
+    const paragraph = (slide.blocks || []).find((block) => block?.type === "paragraph");
+    const text = blockSummary(paragraph);
+    if (text) return text;
+  }
+  return "";
+}
+
+/**
+ * Claude output is allowed to omit schema-optional hierarchy definitions, but
+ * the schema 1.2 engine requires them semantically. Fill only missing values,
+ * using the same adjacent-source derivation strategy as Gemini normalization.
+ */
+export function normalizeClaudeLectureHierarchy(lecture) {
+  let generatedDefinitions = 0;
+
+  const sections = (lecture.sections || []).map((section) => {
+    const slides = (section.slides || []).map((slide) => {
+      const sourceBlocks = Array.isArray(slide.blocks) ? slide.blocks : [];
+      const blocks = sourceBlocks.map((block, blockIndex) => {
+        if (!["title", "subtitle"].includes(block?.type) || cleanText(block.definition)) return block;
+        generatedDefinitions += 1;
+        return {
+          ...block,
+          definition: deriveDefinition(
+            [blockSummary(sourceBlocks[blockIndex + 1])],
+            block.text,
+            block.type === "title" ? "title" : "sub-title",
+          ),
+        };
+      });
+
+      const firstSupportingText = blocks.map(blockSummary).find(Boolean) || "";
+      const slideTitle = cleanText(slide.slideTitle);
+      const slideSubtitle = cleanText(slide.slideSubtitle);
+      let titleDefinition = slide.titleDefinition;
+      let subtitleDefinition = slide.subtitleDefinition;
+
+      if (slideTitle && !cleanText(titleDefinition)) {
+        generatedDefinitions += 1;
+        titleDefinition = deriveDefinition(
+          [slideSubtitle, firstSupportingText],
+          slideTitle,
+          "title",
+        );
+      }
+      if (slideSubtitle && !cleanText(subtitleDefinition)) {
+        generatedDefinitions += 1;
+        subtitleDefinition = deriveDefinition(
+          [firstSupportingText, titleDefinition],
+          slideSubtitle,
+          "sub-title",
+        );
+      }
+
+      return {
+        ...slide,
+        ...(slideTitle ? { titleDefinition } : {}),
+        ...(slideSubtitle ? { subtitleDefinition } : {}),
+        blocks,
+      };
+    });
+
+    let sectionDefinition = section.sectionDefinition;
+    if (cleanText(section.sectionTitle) && !cleanText(sectionDefinition)) {
+      generatedDefinitions += 1;
+      sectionDefinition = deriveDefinition(
+        [
+          slides[0]?.titleDefinition,
+          slides[0]?.subtitleDefinition,
+          firstParagraphText(slides),
+        ],
+        section.sectionTitle,
+        "section",
+      );
+    }
+
+    return { ...section, sectionDefinition, slides };
+  });
+
+  const expectedKeyPoints = sections.map((section) => section.sectionTitle);
+  const originalKeyPoints = Array.isArray(lecture.overview?.keyPoints) ? lecture.overview.keyPoints : [];
+  const keyPointsChanged = JSON.stringify(originalKeyPoints.map(cleanText)) !== JSON.stringify(expectedKeyPoints.map(cleanText));
+
+  return {
+    lecture: {
+      ...lecture,
+      overview: {
+        ...lecture.overview,
+        keyPoints: expectedKeyPoints,
+      },
+      sections,
+    },
+    generatedDefinitions,
+    keyPointsChanged,
+  };
+}
+
+function formatValidationErrors(errors, limit = 12) {
   const details = (Array.isArray(errors) ? errors : []).slice(0, limit).map((error) => {
+    if (typeof error === "string") return error;
     const path = error.instancePath || "/";
     return `${path} ${error.message || "is invalid"}`;
   });
@@ -87,20 +227,32 @@ export function collectLectureImageSlots(lecture) {
 export function parseClaudeOutputText(text, schema) {
   let payload;
   try {
-    payload = JSON.parse(String(text || ""));
+    payload = JSON.parse(String(text || "").replace(/^\uFEFF/, ""));
   } catch {
     throw new Error("The Claude JSON file is not valid JSON.");
   }
 
-  const lecture = isObject(payload?.lecture) ? payload.lecture : payload;
-  if (!isObject(lecture)) throw new Error("The Claude JSON must contain a lecture object.");
+  const sourceLecture = isObject(payload?.lecture) ? payload.lecture : payload;
+  if (!isObject(sourceLecture)) throw new Error("The Claude JSON must contain a lecture object.");
 
-  const validate = createStaticSchemaValidator(schema);
-  if (!validate(lecture)) {
-    throw new Error(`The Claude JSON does not match the Jang lecture schema: ${formatValidationErrors(validate.errors)}`);
+  const validateSchema = createStaticSchemaValidator(schema);
+  if (!validateSchema(sourceLecture)) {
+    throw new Error(`The Claude JSON does not match the Jang lecture schema: ${formatValidationErrors(validateSchema.errors)}`);
   }
 
-  assertUniqueIdentifiers(lecture);
+  assertUniqueIdentifiers(sourceLecture);
+  const normalized = normalizeClaudeLectureHierarchy(sourceLecture);
+  const lecture = normalized.lecture;
+
+  if (!validateSchema(lecture)) {
+    throw new Error(`The normalized Claude JSON does not match the Jang lecture schema: ${formatValidationErrors(validateSchema.errors)}`);
+  }
+
+  const semanticValidation = validateLecture(lecture);
+  if (!semanticValidation.valid) {
+    throw new Error(`The Claude JSON does not satisfy the complete Jang lecture contract: ${formatValidationErrors(semanticValidation.errors)}`);
+  }
+
   const derivedSlots = collectLectureImageSlots(lecture);
   const declaredSlots = Array.isArray(payload?.imageSlots) ? payload.imageSlots : [];
   const declaredById = new Map();
@@ -127,11 +279,15 @@ export function parseClaudeOutputText(text, schema) {
 
   const derivedIds = new Set(derivedSlots.map((slot) => slot.slotId));
   const unusedDeclaredSlots = [...declaredById.keys()].filter((slotId) => !derivedIds.has(slotId));
-  return {
-    lecture,
-    imageSlots,
-    importWarnings: unusedDeclaredSlots.map((slotId) => `Top-level image slot “${slotId}” has no matching image block and was ignored.`),
-  };
+  const importWarnings = unusedDeclaredSlots.map((slotId) => `Top-level image slot “${slotId}” has no matching image block and was ignored.`);
+  if (normalized.generatedDefinitions) {
+    importWarnings.push(`Jang completed ${normalized.generatedDefinitions} missing hierarchy definition${normalized.generatedDefinitions === 1 ? "" : "s"} from adjacent lecture content.`);
+  }
+  if (normalized.keyPointsChanged) {
+    importWarnings.push("Overview key points were aligned to the ordered section titles required by schema 1.2.");
+  }
+
+  return { lecture, imageSlots, importWarnings };
 }
 
 let schemaPromise;
