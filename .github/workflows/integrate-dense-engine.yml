@@ -3,8 +3,6 @@ name: Integrate dense PPTX engine
 on:
   push:
     branches: [agent/claude-output-import]
-  pull_request:
-    branches: [main]
 
 permissions:
   contents: write
@@ -35,18 +33,46 @@ jobs:
           test -s .engine-source/artifacts/jang-pptx/standalone/pptx-engine.js
 
       - name: Apply dense Gemini and Claude contract
-        run: node scripts/apply-dense-prompt-contract.mjs
+        id: migrate
+        shell: bash
+        run: |
+          set +e
+          mkdir -p generated
+          node scripts/apply-dense-prompt-contract.mjs > generated/dense-migration.log 2>&1
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Commit migration diagnostics on failure
+        if: steps.migrate.outputs.code != '0'
+        run: |
+          rm -rf .engine-source
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add generated/dense-migration.log
+          git commit -m "Record dense integration migration failure"
+          git push origin HEAD:agent/claude-output-import
+
+      - name: Stop after migration failure
+        if: steps.migrate.outputs.code != '0'
+        run: |
+          cat generated/dense-migration.log
+          exit 1
 
       - name: Install tested browser engine
+        if: steps.migrate.outputs.code == '0'
         run: cp .engine-source/artifacts/jang-pptx/standalone/pptx-engine.js pptx-engine.js
 
       - name: Remove source checkout
+        if: steps.migrate.outputs.code == '0'
         run: rm -rf .engine-source
 
       - name: Install application dependencies
+        if: steps.migrate.outputs.code == '0'
         run: npm ci
 
       - name: Validate application and generate samples
+        if: steps.migrate.outputs.code == '0'
         id: validation
         shell: bash
         run: |
@@ -82,9 +108,11 @@ jobs:
           echo "overall=$overall" >> "$GITHUB_OUTPUT"
 
       - name: Commit integrated engine and contract
+        if: steps.migrate.outputs.code == '0'
         run: |
           rm -f scripts/apply-dense-prompt-contract.mjs
           rm -f .github/workflows/integrate-dense-engine.yml
+          rm -f generated/dense-migration.log
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add -A
@@ -92,7 +120,7 @@ jobs:
           git push origin HEAD:agent/claude-output-import
 
       - name: Enforce validation result
-        if: steps.validation.outputs.overall != 'success'
+        if: steps.migrate.outputs.code == '0' && steps.validation.outputs.overall != 'success'
         run: |
           cat generated/dense-integration.log
           exit 1
