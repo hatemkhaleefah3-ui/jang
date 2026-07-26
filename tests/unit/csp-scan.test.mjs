@@ -9,7 +9,7 @@ import { promisify } from "node:util";
 const execFileAsync = promisify(execFile);
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const reportPath = join(root, "generated", "csp-scan.json");
-const assetVersion = "20260726-claude-output-import";
+const assetVersion = "20260726-claude-hierarchy-normalization";
 const FILES = [
   "browser-compat.js",
   "file-picker-bootstrap.js",
@@ -26,9 +26,9 @@ const FILES = [
 const TOKENS = [
   ["e", "val", "("].join(""),
   ["new ", "Func", "tion("].join(""),
-  ["Func", "tion(\""] .join(""),
+  ["Func", "tion(\""].join(""),
   ["Func", "tion('"] .join(""),
-  [".constructor(\""] .join(""),
+  [".constructor(\""].join(""),
   [".constructor('"] .join(""),
 ];
 
@@ -116,6 +116,7 @@ test("production JavaScript is CSP-safe, versioned, and importable", async () =>
   assert.match(app, new RegExp(`pptx-output\\.js\\?v=${assetVersion}`));
   assert.match(app, new RegExp(`claude-import\\.js\\?v=${assetVersion}`));
   assert.match(claudeImport, new RegExp(`lecture-validator\\.js\\?v=${assetVersion}`));
+  assert.match(claudeImport, new RegExp(`pptx-engine\\.js\\?v=${assetVersion}`));
   assert.match(claudeImport, new RegExp(`lecture-schema\\.json\\?v=${assetVersion}`));
   assert.match(output, new RegExp(`pptx-engine\\.js\\?v=${assetVersion}`));
 
