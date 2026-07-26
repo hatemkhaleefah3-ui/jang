@@ -3,6 +3,8 @@ name: Integrate dense PPTX engine
 on:
   push:
     branches: [agent/claude-output-import]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: write
