@@ -40,6 +40,7 @@ jobs:
         run: |
           set +e
           mkdir -p generated
+          sed -i 's/20260726-claude-output-import/20260726-claude-hierarchy-normalization/g' scripts/apply-dense-prompt-contract.mjs
           node scripts/apply-dense-prompt-contract.mjs > generated/dense-migration.log 2>&1
           code=$?
           echo "code=$code" >> "$GITHUB_OUTPUT"
