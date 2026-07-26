@@ -9,7 +9,7 @@ import { promisify } from "node:util";
 const execFileAsync = promisify(execFile);
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const reportPath = join(root, "generated", "csp-scan.json");
-const assetVersion = "20260726-pathway-picker-title-polish";
+const assetVersion = "20260726-hierarchical-lecture-layout";
 const FILES = [
   "browser-compat.js",
   "file-picker-bootstrap.js",
@@ -46,7 +46,7 @@ async function writeReport(report) {
 
 function minimalLecture() {
   return {
-    schemaVersion: "1.1",
+    schemaVersion: "1.2",
     documentTitle: "Carbohydrate metabolism",
     direction: "ltr",
     overview: {
@@ -57,9 +57,11 @@ function minimalLecture() {
     sections: [{
       sectionId: "section-1",
       sectionTitle: "Glycolysis",
+      sectionDefinition: "Glycolysis converts glucose to pyruvate while conserving energy.",
       slides: [{
         slideId: "slide-1",
         slideTitle: "Pathway",
+        titleDefinition: "The pathway summarizes the ordered reactions of glycolysis.",
         slideSubtitle: "",
         sourceReferences: ["Page 1"],
         blocks: [{

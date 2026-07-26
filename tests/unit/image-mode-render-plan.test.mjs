@@ -50,6 +50,9 @@ async function inspectResult(name, importedImages) {
     assert.match(xml, /Evidence glycine-slot/);
     assert.match(xml, /Evidence aromatic-slot/);
     assert.match(xml, /Evidence full-slot/);
+    assert.match(xml, /Glycine metabolism connects biosynthesis/);
+    assert.match(xml, /Tyrosine supplies catecholamines/);
+    assert.match(xml, /These functions explain the broad physiological importance/);
     return result;
   } finally {
     await rm(directory, { recursive: true, force: true });
