@@ -2,13 +2,13 @@
   "name": "jang-lecture-pptx-builder",
   "version": "5.0.0",
   "private": true,
-  "description": "Import a PDF or PPTX lecture, structure it with Gemini, add recognized images, and download an editable PowerPoint presentation.",
+  "description": "Import a PDF/PPTX lecture or Claude lecture JSON, add recognized images, and download an editable PowerPoint presentation.",
   "type": "module",
   "scripts": {
-    "check": "node --check browser-compat.js && node --check file-picker-bootstrap.js && node --check app-loader.js && node --check app.js && node --check lecture-file.js && node --check lecture-validator.js && node --check pptx-output.js && node --check pptx-engine.js && node --check pptx-reader.js && node --check functions/api/extract.js && node --check scripts/build.mjs && node --check scripts/serve.mjs && node --check scripts/generate-render-plan-regression.mjs && node --check tests/fixtures/render-plan-lecture.mjs",
+    "check": "node --check browser-compat.js && node --check file-picker-bootstrap.js && node --check app-loader.js && node --check app.js && node --check claude-import.js && node --check lecture-file.js && node --check lecture-validator.js && node --check pptx-output.js && node --check pptx-engine.js && node --check pptx-reader.js && node --check functions/api/extract.js && node --check scripts/build.mjs && node --check scripts/serve.mjs && node --check scripts/generate-render-plan-regression.mjs && node --check tests/fixtures/render-plan-lecture.mjs",
     "build": "node scripts/build.mjs",
     "dev": "npm run build && node scripts/serve.mjs",
-    "unit": "node --test tests/unit/image-mode-render-plan.test.mjs tests/unit/geometry-overflow.test.mjs tests/unit/csp-scan.test.mjs tests/unit/lecture-validator.test.mjs tests/unit/browser-compat.test.mjs tests/unit/preview-file-picker.test.mjs tests/unit/file-picker.test.mjs tests/unit/extract-function.test.mjs tests/unit/pptx-workflow.test.mjs",
+    "unit": "node --test tests/unit/claude-import.test.mjs tests/unit/image-mode-render-plan.test.mjs tests/unit/geometry-overflow.test.mjs tests/unit/csp-scan.test.mjs tests/unit/lecture-validator.test.mjs tests/unit/browser-compat.test.mjs tests/unit/preview-file-picker.test.mjs tests/unit/file-picker.test.mjs tests/unit/extract-function.test.mjs tests/unit/pptx-workflow.test.mjs",
     "test": "npm run check && npm run unit && npm run build",
     "sample": "node scripts/generate-sample.mjs && node scripts/generate-render-plan-regression.mjs"
   }

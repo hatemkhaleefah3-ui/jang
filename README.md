@@ -1,10 +1,12 @@
-# Jang — Gemini Lecture PPTX Builder
+# Jang — Gemini and Claude Lecture PPTX Builder
 
-Jang turns an imported PDF or PPTX lecture into one editable, designed PowerPoint presentation.
+Jang turns an imported PDF/PPTX lecture or validated Claude lecture JSON into one editable, designed PowerPoint presentation.
 
 ## Visitor workflow
 
-The same primary button controls the complete workflow:
+The same primary button controls the complete workflow.
+
+### Option 1 — import a lecture
 
 1. Import a PDF or PPTX lecture file.
 2. Click **Build PPTX**.
@@ -14,11 +16,25 @@ The same primary button controls the complete workflow:
 6. Jang builds the editable PowerPoint in the browser using the approved premium academic design.
 7. The same button becomes **Download PPTX**.
 
-The generated PPTX contains editable text, native bullets and numbering, native tables, native shapes and connectors, and imported image objects. Gemini does not return source image bytes.
+### Option 2 — import Claude JSON
+
+1. Ask Claude to produce only `lecture-output.json` using the Jang schema and extraction prompt.
+2. Select **Import Claude JSON** on the website.
+3. Choose the single `.json` file.
+4. Click **Build PPTX**.
+5. Jang validates the JSON locally against `lecture-schema.json`.
+6. Jang shows the image slots declared by image blocks in the validated JSON.
+7. Import the matching images and click **Continue**.
+8. Jang builds the final editable PowerPoint with its approved engine.
+9. Click **Download PPTX**.
+
+Claude does not need to generate a PPTX. Its JSON is the authoritative lecture structure and image-slot description. Jang owns template selection, physical layout, pagination, rendering, and final PPTX creation.
+
+The generated PPTX contains editable text, native bullets and numbering, native tables, native shapes and connectors, and imported image objects. Gemini and Claude output do not need to contain source image bytes. Content plans target 60%–100% utilization and prefer approximately 90%, but density is created only by grouping real content and producing complete descriptions and review lists. The renderer never stretches gaps or text boxes to imitate density. Lists and notes remain in the left reading flow, the overview key-terms box uses every ordered title, and each simplified pathway diagram is preceded by a detailed review list.
 
 ## One shared lecture contract
 
-Gemini output, the image-import interface, and the PPTX renderer use the same schema. The normalized document contains:
+Gemini output, Claude JSON import, the image-import interface, and the PPTX renderer use the same schema. The normalized document contains:
 
 - lecture title, overview, section titles, slide titles, and subtitles;
 - paragraphs and callouts;
@@ -29,7 +45,7 @@ Gemini output, the image-import interface, and the PPTX renderer use the same sc
 - stable section, slide, block, and image-slot identifiers;
 - source references and a completeness audit listing covered, unmapped, and uncertain source locations.
 
-The contract is represented by `lecture-schema.json`. `functions/api/extract.js` asks Gemini for a simpler structured response and normalizes it into that exact engine contract before returning it to the browser.
+The contract is represented by `lecture-schema.json`. `functions/api/extract.js` asks Gemini for a simpler structured response and normalizes it into that exact engine contract before returning it to the browser. `claude-import.js` validates Claude JSON directly against the final contract and derives its image-review list from canonical image blocks.
 
 ## Completeness safeguards
 
@@ -46,7 +62,7 @@ AI extraction cannot honestly guarantee perfection for every file, so the audit 
 
 ## Important images
 
-Gemini creates image blocks only for visuals that materially support understanding. Each block includes:
+Gemini or Claude creates image blocks only for visuals that materially support understanding. Each block includes:
 
 - a unique `slotId`;
 - a short content-specific label;
@@ -69,7 +85,7 @@ The browser ships a standalone bundled copy of the approved Jang PPTX engine in 
 - RTL/LTR support;
 - schema and semantic validation.
 
-The renderer compacts adjacent low-density topics within a section before pagination. Non-full images share a balanced text/image layout with their related content when space permits, while unfilled image slots remain compact labelled placeholders rather than blank dedicated slides. A post-layout quality audit checks slide density and content preservation.
+The renderer compacts adjacent compatible topics within a section before pagination, targeting naturally dense content without changing the exact two-pixel vertical rhythm. Non-full images share a balanced text/image layout with their related content when space permits, while unfilled image slots remain compact labelled placeholders rather than blank dedicated slides. A post-layout quality audit reports genuinely sparse slides instead of visually padding them.
 
 `pptx-output.js` wraps the engine result with the correct PowerPoint MIME type and a safe `.pptx` filename.
 
@@ -89,10 +105,13 @@ GEMINI_MODEL=gemini-3.6-flash
 
 `GEMINI_MODEL` is optional. The server maps the previous `gemini-2.5-flash` value to the configured default.
 
+Claude JSON import is entirely local and does not require a Gemini API call.
+
 ## File limits
 
 - PDF: 18 MB maximum. Gemini receives the PDF with visual page context.
-- PPTX: 50 MB maximum. Jang decodes ordered slide text, tables, notes, element positions, image positions, and nearby image context in the browser before extraction.
+- PPTX lecture: 50 MB maximum. Jang decodes ordered slide text, tables, notes, element positions, image positions, and nearby image context in the browser before extraction.
+- Claude JSON: 20 MB maximum.
 - Imported image: 15 MB maximum per image.
 
 ## Development
@@ -107,6 +126,7 @@ npm run dev
 - Static deployment output: `dist/`
 - Cloudflare extraction endpoint: `functions/api/extract.js`
 - Engine schema: `lecture-schema.json`
+- Claude import helper: `claude-import.js`
 - Example output: `generated/jang-website-pptx-workflow-sample.pptx`
 
 For local Cloudflare testing:

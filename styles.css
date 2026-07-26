@@ -123,6 +123,22 @@ h1 { max-width: 14ch; margin: 0; font-size: clamp(2.3rem, 7vw, 5.4rem); line-hei
 .status[data-tone="success"] { color: #2f693c; }
 .visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
 
+.import-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; margin-bottom: 1rem; }
+.import-option { min-height: 76px; padding: .85rem 1rem; display: flex; align-items: center; gap: .8rem; text-align: left; color: #4f554b; background: #f4f5ef; border: 1px solid #d6dacd; border-radius: .9rem; cursor: pointer; transition: transform .16s, border-color .16s, box-shadow .16s, background .16s; }
+.import-option:hover { transform: translateY(-1px); border-color: #aeb5a5; box-shadow: 0 10px 24px rgba(38,42,32,.08); }
+.import-option[data-active="true"] { color: #171914; background: #fffbea; border-color: #d4c322; box-shadow: inset 0 0 0 1px rgba(212,195,34,.28); }
+.import-option-number { width: 2rem; height: 2rem; display: grid; place-items: center; flex: none; color: #171914; background: #f5e240; border-radius: 50%; font-size: .75rem; font-weight: 900; }
+.import-option > span:last-child { min-width: 0; display: grid; gap: .22rem; }
+.import-option strong { font-size: .9rem; }
+.import-option small { color: #73796d; font-size: .72rem; line-height: 1.35; }
+.import-panel { min-width: 0; }
+.claude-upload-zone { min-height: 190px; }
+.claude-pair-card { margin-top: .8rem; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; }
+.claude-pair-card .file-card { margin-top: 0; }
+.claude-pair-card .file-type-mark { width: 3.2rem; }
+.import-note { margin: .75rem 0 0; padding: .8rem .9rem; color: #62675d; background: #f4f5ef; border: 1px solid #d9ddd2; border-radius: .75rem; font-size: .76rem; line-height: 1.5; }
+.import-note strong { color: #3e433b; }
+
 @media (max-width: 760px) {
   .workflow-strip { grid-template-columns: repeat(2, 1fr); }
   .image-slot { grid-template-columns: 1fr; }
@@ -136,4 +152,6 @@ h1 { max-width: 14ch; margin: 0; font-size: clamp(2.3rem, 7vw, 5.4rem); line-hei
   .builder { padding: 1.1rem; border-radius: 1rem; }
   h1 { font-size: clamp(2.35rem, 15vw, 4rem); }
   .upload-zone { min-height: 180px; padding: 1.2rem; }
+  .import-options, .claude-pair-card { grid-template-columns: 1fr; }
+  .import-option { min-height: 68px; }
 }

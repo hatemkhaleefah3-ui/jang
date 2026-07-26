@@ -89,7 +89,7 @@ test("normalizes directly into the shared PPTX engine contract", () => {
   assert.ok(lecture.sections[0].slides[0].titleDefinition);
   assert.ok(lecture.sections[0].slides[0].subtitleDefinition);
   assert.equal(lecture.sections[0].slides[1].slideTitle, "");
-  assert.deepEqual(lecture.overview.keyPoints, ["Carbohydrate Metabolism"]);
+  assert.deepEqual(lecture.overview.keyPoints, ["Glycolysis"]);
   assert.ok(lecture.sections[0].slides[0].slideId);
   assert.ok(lecture.sections[0].slides[0].blocks[0].blockId);
   assert.deepEqual(lecture.sections[0].slides[0].blocks[1].items, [
@@ -97,7 +97,9 @@ test("normalizes directly into the shared PPTX engine contract", () => {
     { text: "Consumes two ATP", level: 1 },
   ]);
   assert.equal(lecture.sections[0].slides[1].blocks[0].tableType, "heatmap");
-  assert.equal(lecture.sections[0].slides[1].blocks[1].diagramType, "metabolic");
+  assert.equal(lecture.sections[0].slides[1].blocks[1].type, "numbered");
+  assert.ok(lecture.sections[0].slides[1].blocks[1].items.length >= 2);
+  assert.equal(lecture.sections[0].slides[1].blocks[2].diagramType, "metabolic");
   assert.equal(lecture.extractionAudit.sourceType, "pptx");
   assert.equal(lecture.extractionAudit.sourcePageOrSlideCount, 6);
   assert.ok(lecture.extractionAudit.unmappedSourceReferences.includes("Slide 6"));
@@ -156,11 +158,16 @@ test("Gemini prompt requires complete traceable reconstruction and exact block c
   assert.match(extractionPrompt, /heatmap only for a valid numeric scale/i);
   assert.match(extractionPrompt, /metabolic.*diagramType/is);
   assert.match(extractionPrompt, /at least three entities/i);
-  assert.match(extractionPrompt, /in addition to complete explanatory text/i);
+  assert.match(extractionPrompt, /diagram is only a simplified review/i);
   assert.match(extractionPrompt, /ordered conversions/i);
   assert.match(extractionPrompt, /Audit every explicit linked mechanism/i);
   assert.match(extractionPrompt, /visualType/i);
   assert.match(extractionPrompt, /unmappedSourceReferences/i);
+  assert.match(extractionPrompt, /35–65 word/i);
+  assert.match(extractionPrompt, /20–42 word/i);
+  assert.match(extractionPrompt, /every ordered non-empty title/i);
+  assert.match(extractionPrompt, /detailed bullets or numbered block immediately before the diagram/i);
+  assert.match(extractionPrompt, /about 90% of a slide/i);
 });
 
 test("normalizes title and sub-title definitions and safe image crop policy", () => {
@@ -183,10 +190,13 @@ test("normalizes title and sub-title definitions and safe image crop policy", ()
 
   const result = normalizeLectureResult(hierarchical, { sourceType: "pptx", sourceCount: 6 });
   const lecture = result.lecture;
-  assert.equal(lecture.sections[0].sectionDefinition, hierarchical.sections[0].sectionDefinition);
+  assert.ok(lecture.sections[0].sectionDefinition.startsWith(hierarchical.sections[0].sectionDefinition));
+  assert.ok(lecture.sections[0].sectionDefinition.split(/\s+/).length >= 35);
   assert.equal(lecture.sections[0].slides[0].slideTitle, "Glycolysis sequence");
-  assert.equal(lecture.sections[0].slides[0].titleDefinition, hierarchical.sections[0].slides[0].titleDefinition);
-  assert.equal(lecture.sections[0].slides[0].subtitleDefinition, hierarchical.sections[0].slides[0].subtitleDefinition);
+  assert.ok(lecture.sections[0].slides[0].titleDefinition.startsWith(hierarchical.sections[0].slides[0].titleDefinition));
+  assert.ok(lecture.sections[0].slides[0].titleDefinition.split(/\s+/).length >= 20);
+  assert.ok(lecture.sections[0].slides[0].subtitleDefinition.startsWith(hierarchical.sections[0].slides[0].subtitleDefinition));
+  assert.ok(lecture.sections[0].slides[0].subtitleDefinition.split(/\s+/).length >= 12);
   assert.equal(lecture.sections[0].slides[0].blocks[0].type, "title");
   assert.ok(lecture.sections[0].slides[0].blocks[0].definition);
   assert.equal(lecture.sections[0].slides[0].blocks[1].type, "subtitle");

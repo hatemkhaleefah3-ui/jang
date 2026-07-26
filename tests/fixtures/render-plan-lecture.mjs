@@ -25,18 +25,23 @@ export function renderPlanLecture() {
     overview: {
       title: "Lecture Overview: Amino Acid Metabolism",
       introduction: "This lecture provides a comprehensive study of metabolic pathways, biosynthetic functions, and associated clinical disorders for glycine, phenylalanine, and tyrosine.",
-      keyPoints: ["Glycine metabolism", "Phenylalanine and Tyrosine Metabolism"],
+      keyPoints: [
+        "Metabolic functions of glycine",
+        "Glycine pathway comparison",
+        "Biosynthesis of Specialized Products from Tyrosine",
+        "Clinical image evidence",
+      ],
     },
     sections: [
       {
         sectionId: "glycine",
         sectionTitle: "Glycine metabolism",
-        sectionDefinition: "Glycine metabolism connects biosynthesis, neurotransmission, antioxidant defense, and one-carbon transfer.",
+        sectionDefinition: "Glycine metabolism connects biosynthesis, neurotransmission, antioxidant defense, and one-carbon transfer while explaining how synthesis, utilization, and degradation support protein, heme, purine, glutathione, and nervous-system functions and how pathway defects produce clinically important disease.",
         slides: [
           {
             slideId: "glycine-functions",
             slideTitle: "Metabolic functions of glycine",
-            titleDefinition: "Glycine contributes to biosynthesis, antioxidant defense, and nervous-system signaling.",
+            titleDefinition: "Glycine contributes to biosynthesis, antioxidant defense, nervous-system signaling, and one-carbon transfer through several source-supported pathways that explain its broad physiological and clinical importance.",
             slideSubtitle: "Biosynthesis, neurotransmission, and one-carbon metabolism",
             subtitleDefinition: "These functions explain the broad physiological importance of glycine.",
             sourceReferences: ["p1", "p2"],
@@ -64,7 +69,7 @@ export function renderPlanLecture() {
           {
             slideId: "glycine-table",
             slideTitle: "Glycine pathway comparison",
-            titleDefinition: "A structured comparison links glycine pathways with their roles and clinical relevance.",
+            titleDefinition: "A structured comparison links glycine pathways with their metabolic roles, measurable consequences, source references, and clinically relevant effects while retaining all native table content for editing.",
             slideSubtitle: "Editable native data",
             subtitleDefinition: "The table remains editable and preserves every source row.",
             sourceReferences: ["p3"],
@@ -92,12 +97,12 @@ export function renderPlanLecture() {
       {
         sectionId: "aromatic",
         sectionTitle: "Phenylalanine and Tyrosine Metabolism",
-        sectionDefinition: "Aromatic amino-acid metabolism links precursor conversion with specialized products and inherited disease.",
+        sectionDefinition: "Aromatic amino-acid metabolism links phenylalanine conversion with tyrosine-dependent catecholamine, thyroid-hormone, and melanin production while preserving the enzymes, precursor relationships, regulatory points, and inherited disorders that explain normal physiology and clinically important pathway defects.",
         slides: [
           {
             slideId: "aromatic-pathway",
             slideTitle: "Biosynthesis of Specialized Products from Tyrosine",
-            titleDefinition: "Tyrosine supplies catecholamines, thyroid hormones, and melanin through distinct biosynthetic routes.",
+            titleDefinition: "Tyrosine supplies catecholamines, thyroid hormones, and melanin through distinct source-supported biosynthetic routes whose enzymes, precursor flow, tissue roles, regulation, and disease consequences remain fully explained in editable content.",
             slideSubtitle: "Precursor flow and clinical consequences",
             subtitleDefinition: "Ordered reactions connect precursor availability with physiological products and disease.",
             sourceReferences: ["p10", "p11"],
@@ -109,6 +114,17 @@ export function renderPlanLecture() {
                 sourceReferences: ["p10"],
               },
               image("aromatic-image", "aromatic-slot", "wide", "photo"),
+              {
+                blockId: "aromatic-diagram-review",
+                type: "numbered",
+                startAt: 1,
+                items: [
+                  "Phenylalanine is converted to tyrosine before tyrosine enters specialized biosynthetic pathways.",
+                  "Tyrosine proceeds through DOPA to dopamine, norepinephrine, and epinephrine in the catecholamine sequence.",
+                  "Separate tyrosine-dependent routes produce thyroid hormones and melanin, while enzyme defects create clinically important disorders.",
+                ],
+                sourceReferences: ["p10", "p11"],
+              },
               {
                 blockId: "aromatic-diagram",
                 type: "diagram",
@@ -125,7 +141,7 @@ export function renderPlanLecture() {
           {
             slideId: "full-evidence",
             slideTitle: "Clinical image evidence",
-            titleDefinition: "Clinical photography can fill its reserved evidence area without changing pagination.",
+            titleDefinition: "Clinical photography can fill its reserved evidence area without changing pagination, geometry, title hierarchy, supporting text, or the editable physical presentation plan used across all image-import modes.",
             slideSubtitle: "Full evidence layout remains stable",
             subtitleDefinition: "The imported image changes painting only and not the planned slide structure.",
             sourceReferences: ["p12"],

@@ -9,12 +9,13 @@ import { promisify } from "node:util";
 const execFileAsync = promisify(execFile);
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const reportPath = join(root, "generated", "csp-scan.json");
-const assetVersion = "20260726-hierarchical-lecture-layout";
+const assetVersion = "20260726-dense-content-spacing";
 const FILES = [
   "browser-compat.js",
   "file-picker-bootstrap.js",
   "app-loader.js",
   "app.js",
+  "claude-import.js",
   "lecture-validator.js",
   "pptx-output.js",
   "pptx-engine.js",
@@ -52,7 +53,7 @@ function minimalLecture() {
     overview: {
       title: "Overview",
       introduction: "Core pathways and regulation.",
-      keyPoints: ["Glycolysis"],
+      keyPoints: ["Pathway"],
     },
     sections: [{
       sectionId: "section-1",
@@ -108,10 +109,15 @@ test("production JavaScript is CSP-safe, versioned, and importable", async () =>
   const indexHtml = await readFile(join(root, "dist", "index.html"), "utf8");
   const loader = await readFile(join(root, "dist", "app-loader.js"), "utf8");
   const app = await readFile(join(root, "dist", "app.js"), "utf8");
+  const claudeImport = await readFile(join(root, "dist", "claude-import.js"), "utf8");
   const output = await readFile(join(root, "dist", "pptx-output.js"), "utf8");
   assert.match(indexHtml, new RegExp(`v=${assetVersion}`, "g"));
   assert.match(loader, new RegExp(`app\\.js\\?v=${assetVersion}`));
   assert.match(app, new RegExp(`pptx-output\\.js\\?v=${assetVersion}`));
+  assert.match(app, new RegExp(`claude-import\\.js\\?v=${assetVersion}`));
+  assert.match(claudeImport, new RegExp(`lecture-validator\\.js\\?v=${assetVersion}`));
+  assert.match(claudeImport, new RegExp(`pptx-engine\\.js\\?v=${assetVersion}`));
+  assert.match(claudeImport, new RegExp(`lecture-schema\\.json\\?v=${assetVersion}`));
   assert.match(output, new RegExp(`pptx-engine\\.js\\?v=${assetVersion}`));
 
   const engineUrl = `${pathToFileURL(join(root, "dist", "pptx-engine.js")).href}?test=${Date.now()}`;

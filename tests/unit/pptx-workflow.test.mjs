@@ -27,13 +27,20 @@ const extracted = {
       sourceReferences: ["Slide 1", "Slide 2"],
       blocks: [
         {
+          type: "paragraph",
+          text: "G protein-coupled receptors translate extracellular ligand binding into intracellular signaling by coupling receptor conformational change to nucleotide exchange on a heterotrimeric G protein. The activated alpha subunit and beta-gamma complex regulate downstream effectors, amplify second-messenger production, and coordinate protein-kinase activity until intrinsic GTP hydrolysis and regulatory proteins terminate the response.",
+          sourceReferences: ["Slide 1", "Slide 2"],
+        },
+        {
           type: "numbered",
           items: [
-            { text: "Ligand binds the receptor", level: 0 },
-            { text: "The receptor changes conformation", level: 1 },
-            { text: "G protein exchanges GDP for GTP", level: 0 },
+            { text: "Ligand binds the extracellular receptor domain and stabilizes the active receptor conformation.", level: 0 },
+            { text: "The activated receptor promotes GDP release and GTP binding on the G-protein alpha subunit.", level: 0 },
+            { text: "The alpha subunit and beta-gamma complex regulate effectors such as adenylyl cyclase and ion channels.", level: 0 },
+            { text: "Second messengers activate protein kinases that phosphorylate targets and generate the cellular response.", level: 0 },
+            { text: "GTP hydrolysis and receptor desensitization return the pathway toward its resting state.", level: 0 },
           ],
-          sourceReferences: ["Slide 1"],
+          sourceReferences: ["Slide 1", "Slide 2"],
         },
         {
           type: "diagram",
@@ -48,11 +55,20 @@ const extracted = {
       slideSubtitle: "Editable native data",
       sourceReferences: ["Slide 3"],
       blocks: [{
+        type: "paragraph",
+        text: "The comparison summarizes how receptor stimulation changes second-messenger concentration, kinase activity, target phosphorylation, and the final cellular state. Each row preserves the relationship between experimental condition, measured signal, mechanistic interpretation, and expected response so the data remain useful as editable teaching evidence rather than an isolated sparse table.",
+        sourceReferences: ["Slide 3"],
+      }, {
         type: "table",
         label: "Signal intensity table",
         tableType: "highlight",
         headers: ["Condition", "Signal", "Response"],
-        rows: [["Baseline", "Low", "Resting"], ["Stimulated", "High", "Active"]],
+        rows: [
+          ["Baseline", "Low cAMP and basal kinase activity", "Resting cellular state"],
+          ["Ligand stimulation", "Rapid cAMP increase", "Active phosphorylation response"],
+          ["Receptor desensitization", "Falling second messenger", "Attenuated downstream signaling"],
+          ["Phosphodiesterase activation", "Accelerated cAMP removal", "Signal termination and recovery"],
+        ],
         sourceReferences: ["Slide 3"],
       }],
     }, {

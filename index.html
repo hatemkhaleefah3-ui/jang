@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Import a PDF or PPTX lecture, let Gemini structure it, add the requested images, and download an editable PowerPoint presentation.">
+  <meta name="description" content="Import a lecture for Gemini extraction or import Claude JSON output, add the requested images, and download an editable PowerPoint presentation.">
   <meta name="theme-color" content="#11130f">
   <title>Jang — Build an editable lecture PowerPoint</title>
   <link rel="stylesheet" href="./styles.css?v=20260725-file-ready-ack">
@@ -17,37 +17,67 @@
       <span class="brand-mark" aria-hidden="true">J</span>
       <span>Jang</span>
     </a>
-    <span class="header-note">PDF / PPTX to editable PowerPoint</span>
+    <span class="header-note">PDF / PPTX / Claude JSON to editable PowerPoint</span>
   </header>
 
   <main class="page-shell">
     <section class="builder" aria-labelledby="page-title">
       <div class="intro">
         <p class="eyebrow">One lecture. One guided build.</p>
-        <h1 id="page-title">Turn a lecture file into a complete PowerPoint.</h1>
-        <p>Import a PDF or PowerPoint lecture. Gemini organizes every section, paragraph, nested list, typed table, pathway diagram, and important image position for the reusable editable PowerPoint design.</p>
+        <h1 id="page-title">Turn lecture content into a complete PowerPoint.</h1>
+        <p>Use Gemini to structure a PDF or PowerPoint lecture, or import Claude’s validated lecture JSON. Then add the requested images and build the final editable presentation with Jang’s approved design.</p>
       </div>
 
       <div class="workflow-strip" aria-label="Workflow">
         <span><b>1</b> Import</span>
-        <span><b>2</b> Extract</span>
+        <span><b>2</b> Validate</span>
         <span><b>3</b> Add images</span>
         <span><b>4</b> Download</span>
       </div>
 
-      <label class="upload-zone" for="lectureFile">
-        <span class="upload-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4L8 8M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>
-        </span>
-        <strong id="fileButtonText">Choose PDF or PPTX</strong>
-        <small>PDF up to 18 MB · PPTX up to 50 MB</small>
-        <input id="lectureFile" class="upload-file-input" type="file" accept=".pdf,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation" aria-label="Choose a PDF or PPTX lecture file">
-      </label>
-
-      <div id="fileCard" class="file-card" hidden>
-        <span id="fileTypeMark" class="file-type-mark" aria-hidden="true">DOC</span>
-        <div><strong id="fileName"></strong><small id="fileMeta"></small></div>
+      <div class="import-options" role="tablist" aria-label="Choose an import method">
+        <button id="lectureImportOption" class="import-option" type="button" role="tab" aria-controls="lectureImportPanel" aria-selected="true" data-active="true">
+          <span class="import-option-number">1</span>
+          <span><strong>Import lecture</strong><small>PDF or PPTX processed by Gemini</small></span>
+        </button>
+        <button id="claudeImportOption" class="import-option" type="button" role="tab" aria-controls="claudeImportPanel" aria-selected="false" data-active="false">
+          <span class="import-option-number">2</span>
+          <span><strong>Import Claude JSON</strong><small>One validated lecture-output.json file</small></span>
+        </button>
       </div>
+
+      <section id="lectureImportPanel" class="import-panel" role="tabpanel" aria-labelledby="lectureImportOption">
+        <label class="upload-zone" for="lectureFile">
+          <span class="upload-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 16V4m0 0 4 4m-4-4L8 8M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg>
+          </span>
+          <strong id="fileButtonText">Choose PDF or PPTX</strong>
+          <small>PDF up to 18 MB · PPTX up to 50 MB</small>
+          <input id="lectureFile" class="upload-file-input" type="file" accept=".pdf,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation" aria-label="Choose a PDF or PPTX lecture file">
+        </label>
+
+        <div id="fileCard" class="file-card" hidden>
+          <span id="fileTypeMark" class="file-type-mark" aria-hidden="true">DOC</span>
+          <div><strong id="fileName"></strong><small id="fileMeta"></small></div>
+        </div>
+      </section>
+
+      <section id="claudeImportPanel" class="import-panel" role="tabpanel" aria-labelledby="claudeImportOption" hidden>
+        <label class="upload-zone claude-upload-zone" for="claudeFile">
+          <span class="upload-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v5h5M10 13h6m-6 4h4"/></svg>
+          </span>
+          <strong id="claudeFileButtonText">Choose Claude JSON</strong>
+          <small>Select one .json file · up to 20 MB</small>
+          <input id="claudeFile" class="upload-file-input" type="file" accept=".json,application/json" aria-label="Choose Claude lecture JSON file">
+        </label>
+
+        <div id="claudeFileCard" class="file-card" hidden>
+          <span class="file-type-mark" aria-hidden="true">JSON</span>
+          <div><strong id="claudeJsonName"></strong><small id="claudeJsonMeta"></small></div>
+        </div>
+        <p class="import-note"><strong>How this works:</strong> the JSON controls lecture structure and image slots. Jang validates it locally, then builds the final PPTX with its approved editable template.</p>
+      </section>
 
       <section id="imageReview" class="image-review" aria-labelledby="image-review-title" hidden>
         <div class="review-heading">

@@ -1,6 +1,7 @@
 import { buildLecturePptxFile } from "./pptx-output.js";
 import { extractPptxManifest } from "./pptx-reader.js";
 import { lectureFileSignature, selectedFileFromInput, validateLectureFile } from "./lecture-file.js";
+import { loadLectureSchema, parseClaudeOutputText, selectClaudeOutputFile } from "./claude-import.js";
 
 const fileInput = document.querySelector("#lectureFile");
 const fileButtonText = document.querySelector("#fileButtonText");
@@ -8,6 +9,15 @@ const fileCard = document.querySelector("#fileCard");
 const fileTypeMark = document.querySelector("#fileTypeMark");
 const fileName = document.querySelector("#fileName");
 const fileMeta = document.querySelector("#fileMeta");
+const lectureOption = document.querySelector("#lectureImportOption");
+const claudeOption = document.querySelector("#claudeImportOption");
+const lecturePanel = document.querySelector("#lectureImportPanel");
+const claudePanel = document.querySelector("#claudeImportPanel");
+const claudeFileInput = document.querySelector("#claudeFile");
+const claudeFileButtonText = document.querySelector("#claudeFileButtonText");
+const claudeFileCard = document.querySelector("#claudeFileCard");
+const claudeJsonName = document.querySelector("#claudeJsonName");
+const claudeJsonMeta = document.querySelector("#claudeJsonMeta");
 const action = document.querySelector("#actionButton");
 const actionLabel = document.querySelector("#actionLabel");
 const status = document.querySelector("#status");
@@ -16,8 +26,10 @@ const reviewSummary = document.querySelector("#reviewSummary");
 const coverageAudit = document.querySelector("#coverageAudit");
 const imageSlots = document.querySelector("#imageSlots");
 
+let importMode = "lecture";
 let selectedFile = null;
 let selectedFileSignature = "";
+let selectedClaudeJson = null;
 let extraction = null;
 let generated = null;
 let state = "idle";
@@ -62,6 +74,33 @@ function resetResult() {
   }
 }
 
+function setImportMode(nextMode, announce = true) {
+  importMode = nextMode === "claude" ? "claude" : "lecture";
+  const isLecture = importMode === "lecture";
+  lecturePanel.hidden = !isLecture;
+  claudePanel.hidden = isLecture;
+  lectureOption.dataset.active = isLecture ? "true" : "false";
+  claudeOption.dataset.active = isLecture ? "false" : "true";
+  lectureOption.setAttribute("aria-selected", isLecture ? "true" : "false");
+  claudeOption.setAttribute("aria-selected", isLecture ? "false" : "true");
+  resetResult();
+
+  if (isLecture && selectedFile) {
+    setState("ready");
+    if (announce) setStatus(`${selectedFile.name} is selected and ready for Gemini extraction.`, "success");
+  } else if (!isLecture && selectedClaudeJson) {
+    setState("ready");
+    if (announce) setStatus(`${selectedClaudeJson.name} is selected and ready for validation.`, "success");
+  } else {
+    setState("idle");
+    if (announce) {
+      setStatus(isLecture
+        ? "Import a PDF or PPTX lecture to begin."
+        : "Choose the Claude lecture JSON file to begin.");
+    }
+  }
+}
+
 function selectLectureFile(file) {
   if (!file) return false;
   const extension = validateLectureFile(file);
@@ -90,6 +129,27 @@ function clearLectureSelection(message, tone = "error") {
   setStatus(message, tone);
 }
 
+function selectClaudeJson(file) {
+  selectedClaudeJson = file;
+  resetResult();
+  claudeFileCard.hidden = false;
+  claudeJsonName.textContent = file.name;
+  claudeJsonMeta.textContent = `JSON · ${formatBytes(file.size)}`;
+  claudeFileButtonText.textContent = "Choose another JSON";
+  setState("ready");
+  setStatus(`${file.name} is selected and ready for validation.`, "success");
+}
+
+function clearClaudeSelection(message, tone = "error") {
+  selectedClaudeJson = null;
+  resetResult();
+  claudeFileInput.value = "";
+  claudeFileCard.hidden = true;
+  claudeFileButtonText.textContent = "Choose Claude JSON";
+  setState("idle");
+  setStatus(message, tone);
+}
+
 function scheduleAfterPickerClose(callback) {
   if (typeof window.requestAnimationFrame === "function") window.requestAnimationFrame(callback);
   else window.setTimeout(callback, 0);
@@ -111,6 +171,21 @@ function handleLectureFileSelection(event) {
       selectLectureFile(currentFile);
     } catch (error) {
       clearLectureSelection(error instanceof Error ? error.message : "The selected file could not be imported.");
+    }
+  });
+}
+
+function handleClaudeFileSelection(event) {
+  const input = event.currentTarget;
+  if (!input.files?.length) {
+    if (!selectedClaudeJson) setStatus("Choose the Claude lecture JSON file.", "error");
+    return;
+  }
+  scheduleAfterPickerClose(() => {
+    try {
+      selectClaudeJson(selectClaudeOutputFile(input.files));
+    } catch (error) {
+      clearClaudeSelection(error instanceof Error ? error.message : "The Claude JSON file could not be imported.");
     }
   });
 }
@@ -220,41 +295,59 @@ function createImageSlotCard(slot, index) {
   return card;
 }
 
-function showIntermediateStep(result) {
-  extraction = result;
-  selectedImages.clear();
-  imageSlots.replaceChildren();
-  const slots = Array.isArray(result.imageSlots) ? result.imageSlots : [];
-  review.hidden = false;
-  reviewSummary.textContent = slots.length
-    ? `Gemini found ${slots.length} important image position${slots.length === 1 ? "" : "s"}. Each label describes the exact visual to import.`
-    : "Gemini did not find any image positions. Continue to create the PowerPoint presentation.";
-
+function showCoverage(result, extraWarnings = []) {
+  if (!coverageAudit) return;
   const audit = result.lecture?.extractionAudit;
-  if (audit && coverageAudit) {
-    const covered = Array.isArray(audit.coveredSourceReferences) ? audit.coveredSourceReferences.length : 0;
-    const unmapped = Array.isArray(audit.unmappedSourceReferences) ? audit.unmappedSourceReferences : [];
-    const warnings = Array.isArray(audit.warnings) ? audit.warnings : [];
-    const total = Number(audit.sourcePageOrSlideCount) || 0;
-    coverageAudit.hidden = false;
-    coverageAudit.dataset.tone = unmapped.length ? "warning" : "success";
+  const warnings = [
+    ...(Array.isArray(audit?.warnings) ? audit.warnings : []),
+    ...(Array.isArray(extraWarnings) ? extraWarnings : []),
+  ];
+  if (!audit && !warnings.length) return;
+
+  const covered = Array.isArray(audit?.coveredSourceReferences) ? audit.coveredSourceReferences.length : 0;
+  const unmapped = Array.isArray(audit?.unmappedSourceReferences) ? audit.unmappedSourceReferences : [];
+  const total = Number(audit?.sourcePageOrSlideCount) || 0;
+  coverageAudit.hidden = false;
+  coverageAudit.dataset.tone = unmapped.length || warnings.length ? "warning" : "success";
+
+  if (audit) {
     const coverageLine = document.createElement("strong");
     coverageLine.textContent = total
       ? `Source audit: ${Math.max(0, total - unmapped.length)} of ${total} source ${audit.sourceType === "pptx" ? "slides" : "pages"} mapped.`
       : `Source audit: ${covered} source references recorded.`;
     coverageAudit.append(coverageLine);
-    if (unmapped.length) {
-      const detail = document.createElement("p");
-      detail.textContent = `Unmapped: ${unmapped.join(", ")}`;
-      coverageAudit.append(detail);
-    }
-    if (warnings.length) {
-      const detail = document.createElement("p");
-      detail.textContent = warnings.join(" ");
-      coverageAudit.append(detail);
-    }
+  }
+  if (unmapped.length) {
+    const detail = document.createElement("p");
+    detail.textContent = `Unmapped: ${unmapped.join(", ")}`;
+    coverageAudit.append(detail);
+  }
+  if (warnings.length) {
+    const detail = document.createElement("p");
+    detail.textContent = warnings.join(" ");
+    coverageAudit.append(detail);
+  }
+}
+
+function showIntermediateStep(result, context = {}) {
+  extraction = result;
+  selectedImages.clear();
+  imageSlots.replaceChildren();
+  coverageAudit?.replaceChildren();
+  const slots = Array.isArray(result.imageSlots) ? result.imageSlots : [];
+  const isClaude = context.origin === "claude";
+  review.hidden = false;
+  if (isClaude) {
+    reviewSummary.textContent = slots.length
+      ? `Claude JSON contains ${slots.length} important image position${slots.length === 1 ? "" : "s"}. Import the matching images before continuing.`
+      : "Claude JSON contains no image positions. Continue to build the editable PowerPoint.";
+  } else {
+    reviewSummary.textContent = slots.length
+      ? `Gemini found ${slots.length} important image position${slots.length === 1 ? "" : "s"}. Each label describes the exact visual to import.`
+      : "Gemini did not find any image positions. Continue to create the PowerPoint presentation.";
   }
 
+  showCoverage(result, result.importWarnings);
   if (slots.length) {
     slots.forEach((slot, index) => imageSlots.append(createImageSlotCard(slot, index)));
   } else {
@@ -266,8 +359,11 @@ function showIntermediateStep(result) {
 
   review.scrollIntoView({ behavior: "smooth", block: "start" });
   setState("review");
-  const contentPlans = (result.lecture?.sections || []).reduce((sum, section) => sum + (section.slides?.length || 0), 0);
-  setStatus(`Extraction complete: ${result.lecture.sections.length} sections and ${contentPlans} structured content plans.`, "success");
+  const sections = result.lecture?.sections || [];
+  const contentPlans = sections.reduce((sum, section) => sum + (section.slides?.length || 0), 0);
+  setStatus(isClaude
+    ? `Claude JSON validated: ${sections.length} sections and ${contentPlans} structured content plans.`
+    : `Extraction complete: ${sections.length} sections and ${contentPlans} structured content plans.`, "success");
 }
 
 async function extractLecture() {
@@ -293,10 +389,27 @@ async function extractLecture() {
     const response = await fetch("/api/extract", { method: "POST", body: form });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(payload.error || "The lecture could not be extracted.");
-    showIntermediateStep(payload);
+    showIntermediateStep(payload, { origin: "gemini" });
   } catch (error) {
     setState(selectedFile ? "ready" : "idle");
     setStatus(error instanceof Error ? error.message : "The lecture could not be extracted.", "error");
+  }
+}
+
+async function importClaudeOutput() {
+  if (!selectedClaudeJson) return;
+  setState("extracting");
+  setStatus("Validating the Claude lecture JSON…");
+  try {
+    const [jsonText, schema] = await Promise.all([
+      selectedClaudeJson.text(),
+      loadLectureSchema(),
+    ]);
+    const result = parseClaudeOutputText(jsonText, schema);
+    showIntermediateStep(result, { origin: "claude" });
+  } catch (error) {
+    setState(selectedClaudeJson ? "ready" : "idle");
+    setStatus(error instanceof Error ? error.message : "The Claude JSON file could not be validated.", "error");
   }
 }
 
@@ -338,12 +451,16 @@ function downloadGeneratedFile() {
   setStatus(`Downloaded ${generated.filename}.`, "success");
 }
 
+lectureOption.addEventListener("click", () => setImportMode("lecture"));
+claudeOption.addEventListener("click", () => setImportMode("claude"));
 fileInput.addEventListener("change", handleLectureFileSelection);
+claudeFileInput.addEventListener("change", handleClaudeFileSelection);
 
 action.addEventListener("click", () => {
-  if (state === "ready") extractLecture();
+  if (state === "ready" && importMode === "lecture") extractLecture();
+  else if (state === "ready" && importMode === "claude") importClaudeOutput();
   else if (state === "review") continueToPptx();
   else if (state === "complete") downloadGeneratedFile();
 });
 
-setState("idle");
+setImportMode("lecture", false);
