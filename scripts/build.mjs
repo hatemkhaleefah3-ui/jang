@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const output = resolve(root, "dist");
-const assetVersion = "20260726-claude-output-import";
+const assetVersion = "20260726-claude-hierarchy-normalization";
 const staticFiles = [
   "index.html",
   "styles.css",
@@ -87,6 +87,12 @@ await replaceRequired(
 );
 await replaceRequired(
   "claude-import.js",
+  'from "./pptx-engine.js"',
+  `from "./pptx-engine.js?v=${assetVersion}"`,
+  "the semantic engine validator import",
+);
+await replaceRequired(
+  "claude-import.js",
   'schemaUrl = "./lecture-schema.json"',
   `schemaUrl = "./lecture-schema.json?v=${assetVersion}"`,
   "the lecture schema URL",
@@ -131,9 +137,9 @@ engine = engine.replace(
 const blockedTokens = [
   ["e", "val", "("].join(""),
   ["new ", "Func", "tion("].join(""),
-  ["Func", "tion(\""] .join(""),
+  ["Func", "tion(\""].join(""),
   ["Func", "tion('"] .join(""),
-  [".constructor(\""] .join(""),
+  [".constructor(\""].join(""),
   [".constructor('"] .join(""),
 ];
 const remainingToken = blockedTokens.find((token) => engine.includes(token));
@@ -142,4 +148,4 @@ if (remainingToken) {
 }
 
 await writeFile(enginePath, engine, "utf8");
-console.log(`Prepared ${staticFiles.length} static files with Claude-output import, a CSP-safe static lecture validator, and a versioned module graph in dist.`);
+console.log(`Prepared ${staticFiles.length} static files with Claude hierarchy normalization, early semantic validation, a CSP-safe static validator, and a versioned module graph in dist.`);
