@@ -112,12 +112,12 @@ test("production JavaScript is CSP-safe, versioned, and importable", async () =>
   const claudeImport = await readFile(join(root, "dist", "claude-import.js"), "utf8");
   const output = await readFile(join(root, "dist", "pptx-output.js"), "utf8");
   assert.match(indexHtml, new RegExp(`v=${assetVersion}`, "g"));
-  assert.match(loader, new RegExp(`app\.js\?v=${assetVersion}`));
-  assert.match(app, new RegExp(`pptx-output\.js\?v=${assetVersion}`));
-  assert.match(app, new RegExp(`claude-import\.js\?v=${assetVersion}`));
-  assert.match(claudeImport, new RegExp(`lecture-validator\.js\?v=${assetVersion}`));
-  assert.match(claudeImport, new RegExp(`lecture-schema\.json\?v=${assetVersion}`));
-  assert.match(output, new RegExp(`pptx-engine\.js\?v=${assetVersion}`));
+  assert.match(loader, new RegExp(`app\\.js\\?v=${assetVersion}`));
+  assert.match(app, new RegExp(`pptx-output\\.js\\?v=${assetVersion}`));
+  assert.match(app, new RegExp(`claude-import\\.js\\?v=${assetVersion}`));
+  assert.match(claudeImport, new RegExp(`lecture-validator\\.js\\?v=${assetVersion}`));
+  assert.match(claudeImport, new RegExp(`lecture-schema\\.json\\?v=${assetVersion}`));
+  assert.match(output, new RegExp(`pptx-engine\\.js\\?v=${assetVersion}`));
 
   const engineUrl = `${pathToFileURL(join(root, "dist", "pptx-engine.js")).href}?test=${Date.now()}`;
   const productionEngine = await import(engineUrl);
