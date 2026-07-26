@@ -34,6 +34,7 @@ for (const [name, importedImages] of modes) {
     slideCount: result.slideCount,
     estimatedSlideCount: result.quality.estimatedSlideCount,
     warningCount: result.warnings.length,
+    warnings: result.warnings,
     file: path,
   });
 }
@@ -44,6 +45,11 @@ if (slideCounts.size !== 1) {
 }
 if (report.some((entry) => entry.estimatedSlideCount !== entry.slideCount)) {
   throw new Error(`Quality slide count disagrees with generated output: ${JSON.stringify(report, null, 2)}`);
+}
+
+const complete = report.find((entry) => entry.mode === "all-images");
+if (!complete || complete.warnings.length > 0) {
+  throw new Error(`The complete-image deck must be warning-free: ${JSON.stringify(complete, null, 2)}`);
 }
 
 const reportPath = resolve(outputDirectory, "amino-acids-render-plan-report.json");
