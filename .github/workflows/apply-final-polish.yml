@@ -92,8 +92,14 @@ jobs:
       - name: Install application dependencies
         run: npm ci
 
-      - name: Run application syntax unit and CSP tests
-        run: npm test
+      - name: Run application syntax checks
+        run: npm run check
+
+      - name: Run application unit tests
+        run: npm run unit
+
+      - name: Build strict CSP production application
+        run: npm run build
 
       - name: Generate standard application sample
         run: npm run sample
