@@ -81,6 +81,37 @@ jobs:
           if (!source.includes(shim)) throw new Error(`Generated engine does not import ${shim}`);
           fs.writeFileSync(path, source.replaceAll(shim, '__vite-browser-external.js'));
           NODE
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = 'scripts/apply-final-polish.mjs';
+          let source = fs.readFileSync(path, 'utf8');
+          const oldHelper = `async function replaceRequired(path, search, replacement, description) {
+            const source = await readFile(path, "utf8");
+            if (!source.includes(search)) throw new Error(\`Could not find \${description} in \${path}\`);
+            await writeFile(path, source.replace(search, replacement), "utf8");
+          }`;
+          const newHelper = `function escapeRegex(value) {
+            return value.replace(/[.*+?^\${}()|[\\]\\\\]/g, "\\\\$&");
+          }
+
+          function whitespacePattern(value) {
+            return new RegExp(value.trim().split(/\\s+/).map(escapeRegex).join("\\\\s+"));
+          }
+
+          async function replaceRequired(path, search, replacement, description) {
+            const source = await readFile(path, "utf8");
+            if (source.includes(search)) {
+              await writeFile(path, source.replace(search, replacement), "utf8");
+              return;
+            }
+            const pattern = whitespacePattern(search);
+            if (!pattern.test(source)) throw new Error(\`Could not find \${description} in \${path}\`);
+            await writeFile(path, source.replace(pattern, replacement), "utf8");
+          }`;
+          if (!source.includes(oldHelper)) throw new Error('Could not find patch helper');
+          source = source.replace(oldHelper, newHelper);
+          fs.writeFileSync(path, source);
+          NODE
           node scripts/apply-final-polish.mjs
 
       - uses: actions/setup-node@v4
