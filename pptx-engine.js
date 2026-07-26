@@ -1,14 +1,14 @@
-var Vt = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {};
+var Qt = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {};
 function Ia(e) {
   return e && e.__esModule && Object.prototype.hasOwnProperty.call(e, "default") ? e.default : e;
 }
-function Qt(e) {
+function jt(e) {
   throw new Error('Could not dynamically require "' + e + '". Please configure the dynamicRequireTargets or/and ignoreDynamicRequires option of @rollup/plugin-commonjs appropriately for this require call to work.');
 }
-var ea = { exports: {} };
-var Qa;
-function hi() {
-  return Qa || (Qa = 1, (function(e, r) {
+var ta = { exports: {} };
+var Ya;
+function ui() {
+  return Ya || (Ya = 1, (function(e, r) {
     (function(t) {
       e.exports = t();
     })(function() {
@@ -16,7 +16,7 @@ function hi() {
         function l(a, o) {
           if (!n[a]) {
             if (!i[a]) {
-              var f = typeof Qt == "function" && Qt;
+              var f = typeof jt == "function" && jt;
               if (!o && f) return f(a, !0);
               if (c) return c(a, !0);
               var g = new Error("Cannot find module '" + a + "'");
@@ -30,12 +30,12 @@ function hi() {
           }
           return n[a].exports;
         }
-        for (var c = typeof Qt == "function" && Qt, A = 0; A < s.length; A++) l(s[A]);
+        for (var c = typeof jt == "function" && jt, A = 0; A < s.length; A++) l(s[A]);
         return l;
       })({ 1: [function(t, i, n) {
         var s = t("./utils"), l = t("./support"), c = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
         n.encode = function(A) {
-          for (var a, o, f, g, d, m, u, y = [], p = 0, h = A.length, _ = h, E = s.getTypeOf(A) !== "string"; p < A.length; ) _ = h - p, f = E ? (a = A[p++], o = p < h ? A[p++] : 0, p < h ? A[p++] : 0) : (a = A.charCodeAt(p++), o = p < h ? A.charCodeAt(p++) : 0, p < h ? A.charCodeAt(p++) : 0), g = a >> 2, d = (3 & a) << 4 | o >> 4, m = 1 < _ ? (15 & o) << 2 | f >> 6 : 64, u = 2 < _ ? 63 & f : 64, y.push(c.charAt(g) + c.charAt(d) + c.charAt(m) + c.charAt(u));
+          for (var a, o, f, g, d, m, u, y = [], p = 0, h = A.length, _ = h, T = s.getTypeOf(A) !== "string"; p < A.length; ) _ = h - p, f = T ? (a = A[p++], o = p < h ? A[p++] : 0, p < h ? A[p++] : 0) : (a = A.charCodeAt(p++), o = p < h ? A.charCodeAt(p++) : 0, p < h ? A.charCodeAt(p++) : 0), g = a >> 2, d = (3 & a) << 4 | o >> 4, m = 1 < _ ? (15 & o) << 2 | f >> 6 : 64, u = 2 < _ ? 63 & f : 64, y.push(c.charAt(g) + c.charAt(d) + c.charAt(m) + c.charAt(u));
           return y.join("");
         }, n.decode = function(A) {
           var a, o, f, g, d, m, u = 0, y = 0, p = "data:";
@@ -123,20 +123,20 @@ function hi() {
           return y;
         }
         function l(d, m, u, y, p, h) {
-          var _, E, v = d.file, C = d.compression, x = h !== a.utf8encode, B = c.transformTo("string", h(v.name)), R = c.transformTo("string", a.utf8encode(v.name)), I = v.comment, O = c.transformTo("string", h(I)), T = c.transformTo("string", a.utf8encode(I)), M = R.length !== v.name.length, w = T.length !== I.length, G = "", ee = "", K = "", ne = v.dir, Z = v.date, Q = { crc32: 0, compressedSize: 0, uncompressedSize: 0 };
+          var _, T, v = d.file, C = d.compression, x = h !== a.utf8encode, B = c.transformTo("string", h(v.name)), R = c.transformTo("string", a.utf8encode(v.name)), I = v.comment, O = c.transformTo("string", h(I)), E = c.transformTo("string", a.utf8encode(I)), M = R.length !== v.name.length, w = E.length !== I.length, G = "", ee = "", Y = "", ne = v.dir, Z = v.date, Q = { crc32: 0, compressedSize: 0, uncompressedSize: 0 };
           m && !u || (Q.crc32 = d.crc32, Q.compressedSize = d.compressedSize, Q.uncompressedSize = d.uncompressedSize);
-          var D = 0;
-          m && (D |= 8), x || !M && !w || (D |= 2048);
+          var P = 0;
+          m && (P |= 8), x || !M && !w || (P |= 2048);
           var F = 0, $ = 0;
           ne && (F |= 16), p === "UNIX" ? ($ = 798, F |= (function(N, H) {
             var ie = N;
             return N || (ie = H ? 16893 : 33204), (65535 & ie) << 16;
           })(v.unixPermissions, ne)) : ($ = 20, F |= (function(N) {
             return 63 & (N || 0);
-          })(v.dosPermissions)), _ = Z.getUTCHours(), _ <<= 6, _ |= Z.getUTCMinutes(), _ <<= 5, _ |= Z.getUTCSeconds() / 2, E = Z.getUTCFullYear() - 1980, E <<= 4, E |= Z.getUTCMonth() + 1, E <<= 5, E |= Z.getUTCDate(), M && (ee = s(1, 1) + s(o(B), 4) + R, G += "up" + s(ee.length, 2) + ee), w && (K = s(1, 1) + s(o(O), 4) + T, G += "uc" + s(K.length, 2) + K);
+          })(v.dosPermissions)), _ = Z.getUTCHours(), _ <<= 6, _ |= Z.getUTCMinutes(), _ <<= 5, _ |= Z.getUTCSeconds() / 2, T = Z.getUTCFullYear() - 1980, T <<= 4, T |= Z.getUTCMonth() + 1, T <<= 5, T |= Z.getUTCDate(), M && (ee = s(1, 1) + s(o(B), 4) + R, G += "up" + s(ee.length, 2) + ee), w && (Y = s(1, 1) + s(o(O), 4) + E, G += "uc" + s(Y.length, 2) + Y);
           var L = "";
           return L += `
-\0`, L += s(D, 2), L += C.magic, L += s(_, 2), L += s(E, 2), L += s(Q.crc32, 4), L += s(Q.compressedSize, 4), L += s(Q.uncompressedSize, 4), L += s(B.length, 2), L += s(G.length, 2), { fileRecord: f.LOCAL_FILE_HEADER + L + B + G, dirRecord: f.CENTRAL_FILE_HEADER + s($, 2) + L + s(O.length, 2) + "\0\0\0\0" + s(F, 4) + s(y, 4) + B + G + O };
+\0`, L += s(P, 2), L += C.magic, L += s(_, 2), L += s(T, 2), L += s(Q.crc32, 4), L += s(Q.compressedSize, 4), L += s(Q.uncompressedSize, 4), L += s(B.length, 2), L += s(G.length, 2), { fileRecord: f.LOCAL_FILE_HEADER + L + B + G, dirRecord: f.CENTRAL_FILE_HEADER + s($, 2) + L + s(O.length, 2) + "\0\0\0\0" + s(F, 4) + s(y, 4) + B + G + O };
         }
         var c = t("../utils"), A = t("../stream/GenericWorker"), a = t("../utf8"), o = t("../crc32"), f = t("../signature");
         function g(d, m, u, y) {
@@ -162,8 +162,8 @@ function hi() {
           this.currentFile = null;
         }, g.prototype.flush = function() {
           for (var d = this.bytesWritten, m = 0; m < this.dirRecords.length; m++) this.push({ data: this.dirRecords[m], meta: { percent: 100 } });
-          var u = this.bytesWritten - d, y = (function(p, h, _, E, v) {
-            var C = c.transformTo("string", v(E));
+          var u = this.bytesWritten - d, y = (function(p, h, _, T, v) {
+            var C = c.transformTo("string", v(T));
             return f.CENTRAL_DIRECTORY_END + "\0\0\0\0" + s(p, 2) + s(p, 2) + s(h, 4) + s(_, 4) + s(C.length, 2) + C;
           })(this.dirRecords.length, u, d, this.zipComment, this.encodeFileName);
           this.push({ data: y, meta: { percent: 100 } });
@@ -201,8 +201,8 @@ function hi() {
             c.forEach(function(g, d) {
               f++;
               var m = (function(h, _) {
-                var E = h || _, v = s[E];
-                if (!v) throw new Error(E + " is not a valid compression method !");
+                var T = h || _, v = s[T];
+                if (!v) throw new Error(T + " is not a valid compression method !");
                 return v;
               })(d.options.compression, A.compression), u = d.options.compressionOptions || A.compressionOptions || {}, y = d.dir, p = d.date;
               d._compressWorker(m, u).withStreamInfo("file", { name: g, dir: y, date: p, comment: d.comment || "", unixPermissions: d.unixPermissions, dosPermissions: d.dosPermissions }).pipe(o);
@@ -248,8 +248,8 @@ function hi() {
             return l.Promise.all(y);
           }).then(function(u) {
             for (var y = u.shift(), p = y.files, h = 0; h < p.length; h++) {
-              var _ = p[h], E = _.fileNameStr, v = s.resolve(_.fileNameStr);
-              m.file(v, _.decompressed, { binary: !0, optimizedBinaryString: !0, date: _.date, dir: _.dir, comment: _.fileCommentStr.length ? _.fileCommentStr : null, unixPermissions: _.unixPermissions, dosPermissions: _.dosPermissions, createFolders: d.createFolders }), _.dir || (m.file(v).unsafeOriginalName = E);
+              var _ = p[h], T = _.fileNameStr, v = s.resolve(_.fileNameStr);
+              m.file(v, _.decompressed, { binary: !0, optimizedBinaryString: !0, date: _.date, dir: _.dir, comment: _.fileCommentStr.length ? _.fileCommentStr : null, unixPermissions: _.unixPermissions, dosPermissions: _.dosPermissions, createFolders: d.createFolders }), _.dir || (m.file(v).unsafeOriginalName = T);
             }
             return y.zipComment.length && (m.comment = y.zipComment), m;
           });
@@ -309,9 +309,9 @@ function hi() {
           I.date = I.date || /* @__PURE__ */ new Date(), I.compression !== null && (I.compression = I.compression.toUpperCase()), typeof I.unixPermissions == "string" && (I.unixPermissions = parseInt(I.unixPermissions, 8)), I.unixPermissions && 16384 & I.unixPermissions && (I.dir = !0), I.dosPermissions && 16 & I.dosPermissions && (I.dir = !0), I.dir && (v = p(v)), I.createFolders && (B = y(v)) && h.call(this, B, !0);
           var O = R === "string" && I.binary === !1 && I.base64 === !1;
           x && x.binary !== void 0 || (I.binary = !O), (C instanceof f && C.uncompressedSize === 0 || I.dir || !C || C.length === 0) && (I.base64 = !1, I.binary = !0, C = "", I.compression = "STORE", R = "string");
-          var T = null;
-          T = C instanceof f || C instanceof A ? C : m.isNode && m.isStream(C) ? new u(v, C) : c.prepareContent(v, C, I.binary, I.optimizedBinaryString, I.base64);
-          var M = new g(v, T, I);
+          var E = null;
+          E = C instanceof f || C instanceof A ? C : m.isNode && m.isStream(C) ? new u(v, C) : c.prepareContent(v, C, I.binary, I.optimizedBinaryString, I.base64);
+          var M = new g(v, E, I);
           this.files[v] = M;
         }
         var l = t("./utf8"), c = t("./utils"), A = t("./stream/GenericWorker"), a = t("./stream/StreamHelper"), o = t("./defaults"), f = t("./compressedObject"), g = t("./zipObject"), d = t("./generate"), m = t("./nodejsUtils"), u = t("./nodejs/NodejsStreamInputAdapter"), y = function(v) {
@@ -326,7 +326,7 @@ function hi() {
         function _(v) {
           return Object.prototype.toString.call(v) === "[object RegExp]";
         }
-        var E = { load: function() {
+        var T = { load: function() {
           throw new Error("This method has been removed in JSZip 3.0, please check the upgrade guide.");
         }, forEach: function(v) {
           var C, x, B;
@@ -379,7 +379,7 @@ function hi() {
         }, generateNodeStream: function(v, C) {
           return (v = v || {}).type || (v.type = "nodebuffer"), this.generateInternalStream(v).toNodejsStream(C);
         } };
-        i.exports = E;
+        i.exports = T;
       }, { "./compressedObject": 2, "./defaults": 5, "./generate": 9, "./nodejs/NodejsStreamInputAdapter": 12, "./nodejsUtils": 14, "./stream/GenericWorker": 28, "./stream/StreamHelper": 29, "./utf8": 31, "./utils": 32, "./zipObject": 35 }], 16: [function(t, i, n) {
         i.exports = t("stream");
       }, { stream: void 0 }], 17: [function(t, i, n) {
@@ -598,7 +598,7 @@ function hi() {
         }
         function g(m, u) {
           return new o.Promise(function(y, p) {
-            var h = [], _ = m._internalType, E = m._outputType, v = m._mimeType;
+            var h = [], _ = m._internalType, T = m._outputType, v = m._mimeType;
             m.on("data", function(C, x) {
               h.push(C), u && u(x);
             }).on("error", function(C) {
@@ -614,16 +614,16 @@ function hi() {
                     default:
                       return s.transformTo(x, B);
                   }
-                })(E, (function(x, B) {
-                  var R, I = 0, O = null, T = 0;
-                  for (R = 0; R < B.length; R++) T += B[R].length;
+                })(T, (function(x, B) {
+                  var R, I = 0, O = null, E = 0;
+                  for (R = 0; R < B.length; R++) E += B[R].length;
                   switch (x) {
                     case "string":
                       return B.join("");
                     case "array":
                       return Array.prototype.concat.apply([], B);
                     case "uint8array":
-                      for (O = new Uint8Array(T), R = 0; R < B.length; R++) O.set(B[R], I), I += B[R].length;
+                      for (O = new Uint8Array(E), R = 0; R < B.length; R++) O.set(B[R], I), I += B[R].length;
                       return O;
                     case "nodebuffer":
                       return Buffer.concat(B);
@@ -703,21 +703,21 @@ function hi() {
         }
         n.utf8encode = function(d) {
           return l.nodebuffer ? c.newBufferFrom(d, "utf-8") : (function(m) {
-            var u, y, p, h, _, E = m.length, v = 0;
-            for (h = 0; h < E; h++) (64512 & (y = m.charCodeAt(h))) == 55296 && h + 1 < E && (64512 & (p = m.charCodeAt(h + 1))) == 56320 && (y = 65536 + (y - 55296 << 10) + (p - 56320), h++), v += y < 128 ? 1 : y < 2048 ? 2 : y < 65536 ? 3 : 4;
-            for (u = l.uint8array ? new Uint8Array(v) : new Array(v), h = _ = 0; _ < v; h++) (64512 & (y = m.charCodeAt(h))) == 55296 && h + 1 < E && (64512 & (p = m.charCodeAt(h + 1))) == 56320 && (y = 65536 + (y - 55296 << 10) + (p - 56320), h++), y < 128 ? u[_++] = y : (y < 2048 ? u[_++] = 192 | y >>> 6 : (y < 65536 ? u[_++] = 224 | y >>> 12 : (u[_++] = 240 | y >>> 18, u[_++] = 128 | y >>> 12 & 63), u[_++] = 128 | y >>> 6 & 63), u[_++] = 128 | 63 & y);
+            var u, y, p, h, _, T = m.length, v = 0;
+            for (h = 0; h < T; h++) (64512 & (y = m.charCodeAt(h))) == 55296 && h + 1 < T && (64512 & (p = m.charCodeAt(h + 1))) == 56320 && (y = 65536 + (y - 55296 << 10) + (p - 56320), h++), v += y < 128 ? 1 : y < 2048 ? 2 : y < 65536 ? 3 : 4;
+            for (u = l.uint8array ? new Uint8Array(v) : new Array(v), h = _ = 0; _ < v; h++) (64512 & (y = m.charCodeAt(h))) == 55296 && h + 1 < T && (64512 & (p = m.charCodeAt(h + 1))) == 56320 && (y = 65536 + (y - 55296 << 10) + (p - 56320), h++), y < 128 ? u[_++] = y : (y < 2048 ? u[_++] = 192 | y >>> 6 : (y < 65536 ? u[_++] = 224 | y >>> 12 : (u[_++] = 240 | y >>> 18, u[_++] = 128 | y >>> 12 & 63), u[_++] = 128 | y >>> 6 & 63), u[_++] = 128 | 63 & y);
             return u;
           })(d);
         }, n.utf8decode = function(d) {
           return l.nodebuffer ? s.transformTo("nodebuffer", d).toString("utf-8") : (function(m) {
-            var u, y, p, h, _ = m.length, E = new Array(2 * _);
-            for (u = y = 0; u < _; ) if ((p = m[u++]) < 128) E[y++] = p;
-            else if (4 < (h = a[p])) E[y++] = 65533, u += h - 1;
+            var u, y, p, h, _ = m.length, T = new Array(2 * _);
+            for (u = y = 0; u < _; ) if ((p = m[u++]) < 128) T[y++] = p;
+            else if (4 < (h = a[p])) T[y++] = 65533, u += h - 1;
             else {
               for (p &= h === 2 ? 31 : h === 3 ? 15 : 7; 1 < h && u < _; ) p = p << 6 | 63 & m[u++], h--;
-              1 < h ? E[y++] = 65533 : p < 65536 ? E[y++] = p : (p -= 65536, E[y++] = 55296 | p >> 10 & 1023, E[y++] = 56320 | 1023 & p);
+              1 < h ? T[y++] = 65533 : p < 65536 ? T[y++] = p : (p -= 65536, T[y++] = 55296 | p >> 10 & 1023, T[y++] = 56320 | 1023 & p);
             }
-            return E.length !== y && (E.subarray ? E = E.subarray(0, y) : E.length = y), s.applyFromCharCode(E);
+            return T.length !== y && (T.subarray ? T = T.subarray(0, y) : T.length = y), s.applyFromCharCode(T);
           })(d = s.transformTo(l.uint8array ? "uint8array" : "array", d));
         }, s.inherits(f, A), f.prototype.processChunk = function(d) {
           var m = s.transformTo(l.uint8array ? "uint8array" : "array", d.data);
@@ -729,9 +729,9 @@ function hi() {
             this.leftOver = null;
           }
           var y = (function(h, _) {
-            var E;
-            for ((_ = _ || h.length) > h.length && (_ = h.length), E = _ - 1; 0 <= E && (192 & h[E]) == 128; ) E--;
-            return E < 0 || E === 0 ? _ : E + a[h[E]] > _ ? E : _;
+            var T;
+            for ((_ = _ || h.length) > h.length && (_ = h.length), T = _ - 1; 0 <= T && (192 & h[T]) == 128; ) T--;
+            return T < 0 || T === 0 ? _ : T + a[h[T]] > _ ? T : _;
           })(m), p = m;
           y !== m.length && (l.uint8array ? (p = m.subarray(0, y), this.leftOver = m.subarray(y, m.length)) : (p = m.slice(0, y), this.leftOver = m.slice(y, m.length))), this.push({ data: n.utf8decode(p), meta: d.meta });
         }, f.prototype.flush = function() {
@@ -762,9 +762,9 @@ function hi() {
           }
         };
         var f = { stringifyByChunk: function(u, y, p) {
-          var h = [], _ = 0, E = u.length;
-          if (E <= p) return String.fromCharCode.apply(null, u);
-          for (; _ < E; ) y === "array" || y === "nodebuffer" ? h.push(String.fromCharCode.apply(null, u.slice(_, Math.min(_ + p, E)))) : h.push(String.fromCharCode.apply(null, u.subarray(_, Math.min(_ + p, E)))), _ += p;
+          var h = [], _ = 0, T = u.length;
+          if (T <= p) return String.fromCharCode.apply(null, u);
+          for (; _ < T; ) y === "array" || y === "nodebuffer" ? h.push(String.fromCharCode.apply(null, u.slice(_, Math.min(_ + p, T)))) : h.push(String.fromCharCode.apply(null, u.subarray(_, Math.min(_ + p, T)))), _ += p;
           return h.join("");
         }, stringifyByChar: function(u) {
           for (var y = "", p = 0; p < u.length; p++) y += String.fromCharCode(u[p]);
@@ -863,20 +863,20 @@ function hi() {
           for (u = 0; u < arguments.length; u++) for (y in arguments[u]) Object.prototype.hasOwnProperty.call(arguments[u], y) && p[y] === void 0 && (p[y] = arguments[u][y]);
           return p;
         }, n.prepareContent = function(u, y, p, h, _) {
-          return A.Promise.resolve(y).then(function(E) {
-            return s.blob && (E instanceof Blob || ["[object File]", "[object Blob]"].indexOf(Object.prototype.toString.call(E)) !== -1) && typeof FileReader < "u" ? new A.Promise(function(v, C) {
+          return A.Promise.resolve(y).then(function(T) {
+            return s.blob && (T instanceof Blob || ["[object File]", "[object Blob]"].indexOf(Object.prototype.toString.call(T)) !== -1) && typeof FileReader < "u" ? new A.Promise(function(v, C) {
               var x = new FileReader();
               x.onload = function(B) {
                 v(B.target.result);
               }, x.onerror = function(B) {
                 C(B.target.error);
-              }, x.readAsArrayBuffer(E);
-            }) : E;
-          }).then(function(E) {
-            var v = n.getTypeOf(E);
-            return v ? (v === "arraybuffer" ? E = n.transformTo("uint8array", E) : v === "string" && (_ ? E = l.decode(E) : p && h !== !0 && (E = (function(C) {
+              }, x.readAsArrayBuffer(T);
+            }) : T;
+          }).then(function(T) {
+            var v = n.getTypeOf(T);
+            return v ? (v === "arraybuffer" ? T = n.transformTo("uint8array", T) : v === "string" && (_ ? T = l.decode(T) : p && h !== !0 && (T = (function(C) {
               return o(C, s.uint8array ? new Uint8Array(C.length) : new Array(C.length));
-            })(E))), E) : A.Promise.reject(new Error("Can't read the data of '" + u + "'. Is it in a supported JavaScript type (String, Blob, ArrayBuffer, etc) ?"));
+            })(T))), T) : A.Promise.reject(new Error("Can't read the data of '" + u + "'. Is it in a supported JavaScript type (String, Blob, ArrayBuffer, etc) ?"));
           });
         };
       }, { "./base64": 1, "./external": 6, "./nodejsUtils": 14, "./support": 30, setimmediate: 54 }], 33: [function(t, i, n) {
@@ -1065,7 +1065,7 @@ function hi() {
           i.exports = function(u) {
             d.push(u) !== 1 || c || l();
           };
-        }).call(this, typeof Vt < "u" ? Vt : typeof self < "u" ? self : typeof window < "u" ? window : {});
+        }).call(this, typeof Qt < "u" ? Qt : typeof self < "u" ? self : typeof window < "u" ? window : {});
       }, {}], 37: [function(t, i, n) {
         var s = t("immediate");
         function l() {
@@ -1080,13 +1080,13 @@ function hi() {
         }
         function d(p, h, _) {
           s(function() {
-            var E;
+            var T;
             try {
-              E = h(_);
+              T = h(_);
             } catch (v) {
               return c.reject(p, v);
             }
-            E === p ? c.reject(p, new TypeError("Cannot resolve promise with itself")) : c.resolve(p, E);
+            T === p ? c.reject(p, new TypeError("Cannot resolve promise with itself")) : c.resolve(p, T);
           });
         }
         function m(p) {
@@ -1097,23 +1097,23 @@ function hi() {
         }
         function u(p, h) {
           var _ = !1;
-          function E(x) {
+          function T(x) {
             _ || (_ = !0, c.reject(p, x));
           }
           function v(x) {
             _ || (_ = !0, c.resolve(p, x));
           }
           var C = y(function() {
-            h(v, E);
+            h(v, T);
           });
-          C.status === "error" && E(C.value);
+          C.status === "error" && T(C.value);
         }
         function y(p, h) {
           var _ = {};
           try {
             _.value = p(h), _.status = "success";
-          } catch (E) {
-            _.status = "error", _.value = E;
+          } catch (T) {
+            _.status = "error", _.value = T;
           }
           return _;
         }
@@ -1146,8 +1146,8 @@ function hi() {
         }, c.resolve = function(p, h) {
           var _ = y(m, h);
           if (_.status === "error") return c.reject(p, _.value);
-          var E = _.value;
-          if (E) u(p, E);
+          var T = _.value;
+          if (T) u(p, T);
           else {
             p.state = a, p.outcome = h;
             for (var v = -1, C = p.queue.length; ++v < C; ) p.queue[v].callFulfilled(h);
@@ -1155,7 +1155,7 @@ function hi() {
           return p;
         }, c.reject = function(p, h) {
           p.state = A, p.outcome = h;
-          for (var _ = -1, E = p.queue.length; ++_ < E; ) p.queue[_].callRejected(h);
+          for (var _ = -1, T = p.queue.length; ++_ < T; ) p.queue[_].callRejected(h);
           return p;
         }, f.resolve = function(p) {
           return p instanceof this ? p : c.resolve(new this(l), p);
@@ -1165,26 +1165,26 @@ function hi() {
         }, f.all = function(p) {
           var h = this;
           if (Object.prototype.toString.call(p) !== "[object Array]") return this.reject(new TypeError("must be an array"));
-          var _ = p.length, E = !1;
+          var _ = p.length, T = !1;
           if (!_) return this.resolve([]);
           for (var v = new Array(_), C = 0, x = -1, B = new this(l); ++x < _; ) R(p[x], x);
           return B;
           function R(I, O) {
-            h.resolve(I).then(function(T) {
-              v[O] = T, ++C !== _ || E || (E = !0, c.resolve(B, v));
-            }, function(T) {
-              E || (E = !0, c.reject(B, T));
+            h.resolve(I).then(function(E) {
+              v[O] = E, ++C !== _ || T || (T = !0, c.resolve(B, v));
+            }, function(E) {
+              T || (T = !0, c.reject(B, E));
             });
           }
         }, f.race = function(p) {
           var h = this;
           if (Object.prototype.toString.call(p) !== "[object Array]") return this.reject(new TypeError("must be an array"));
-          var _ = p.length, E = !1;
+          var _ = p.length, T = !1;
           if (!_) return this.resolve([]);
           for (var v = -1, C = new this(l); ++v < _; ) x = p[v], h.resolve(x).then(function(B) {
-            E || (E = !0, c.resolve(C, B));
+            T || (T = !0, c.resolve(C, B));
           }, function(B) {
-            E || (E = !0, c.reject(C, B));
+            T || (T = !0, c.reject(C, B));
           });
           var x;
           return C;
@@ -1202,8 +1202,8 @@ function hi() {
           var _ = s.deflateInit2(this.strm, h.level, h.method, h.windowBits, h.memLevel, h.strategy);
           if (_ !== f) throw new Error(A[_]);
           if (h.header && s.deflateSetHeader(this.strm, h.header), h.dictionary) {
-            var E;
-            if (E = typeof h.dictionary == "string" ? c.string2buf(h.dictionary) : o.call(h.dictionary) === "[object ArrayBuffer]" ? new Uint8Array(h.dictionary) : h.dictionary, (_ = s.deflateSetDictionary(this.strm, E)) !== f) throw new Error(A[_]);
+            var T;
+            if (T = typeof h.dictionary == "string" ? c.string2buf(h.dictionary) : o.call(h.dictionary) === "[object ArrayBuffer]" ? new Uint8Array(h.dictionary) : h.dictionary, (_ = s.deflateSetDictionary(this.strm, T)) !== f) throw new Error(A[_]);
             this._dict_set = !0;
           }
         }
@@ -1213,14 +1213,14 @@ function hi() {
           return _.result;
         }
         u.prototype.push = function(p, h) {
-          var _, E, v = this.strm, C = this.options.chunkSize;
+          var _, T, v = this.strm, C = this.options.chunkSize;
           if (this.ended) return !1;
-          E = h === ~~h ? h : h === !0 ? 4 : 0, typeof p == "string" ? v.input = c.string2buf(p) : o.call(p) === "[object ArrayBuffer]" ? v.input = new Uint8Array(p) : v.input = p, v.next_in = 0, v.avail_in = v.input.length;
+          T = h === ~~h ? h : h === !0 ? 4 : 0, typeof p == "string" ? v.input = c.string2buf(p) : o.call(p) === "[object ArrayBuffer]" ? v.input = new Uint8Array(p) : v.input = p, v.next_in = 0, v.avail_in = v.input.length;
           do {
-            if (v.avail_out === 0 && (v.output = new l.Buf8(C), v.next_out = 0, v.avail_out = C), (_ = s.deflate(v, E)) !== 1 && _ !== f) return this.onEnd(_), !(this.ended = !0);
-            v.avail_out !== 0 && (v.avail_in !== 0 || E !== 4 && E !== 2) || (this.options.to === "string" ? this.onData(c.buf2binstring(l.shrinkBuf(v.output, v.next_out))) : this.onData(l.shrinkBuf(v.output, v.next_out)));
+            if (v.avail_out === 0 && (v.output = new l.Buf8(C), v.next_out = 0, v.avail_out = C), (_ = s.deflate(v, T)) !== 1 && _ !== f) return this.onEnd(_), !(this.ended = !0);
+            v.avail_out !== 0 && (v.avail_in !== 0 || T !== 4 && T !== 2) || (this.options.to === "string" ? this.onData(c.buf2binstring(l.shrinkBuf(v.output, v.next_out))) : this.onData(l.shrinkBuf(v.output, v.next_out)));
           } while ((0 < v.avail_in || v.avail_out === 0) && _ !== 1);
-          return E === 4 ? (_ = s.deflateEnd(this.strm), this.onEnd(_), this.ended = !0, _ === f) : E !== 2 || (this.onEnd(f), !(v.avail_out = 0));
+          return T === 4 ? (_ = s.deflateEnd(this.strm), this.onEnd(_), this.ended = !0, _ === f) : T !== 2 || (this.onEnd(f), !(v.avail_out = 0));
         }, u.prototype.onData = function(p) {
           this.chunks.push(p);
         }, u.prototype.onEnd = function(p) {
@@ -1247,12 +1247,12 @@ function hi() {
           return p.result;
         }
         d.prototype.push = function(u, y) {
-          var p, h, _, E, v, C, x = this.strm, B = this.options.chunkSize, R = this.options.dictionary, I = !1;
+          var p, h, _, T, v, C, x = this.strm, B = this.options.chunkSize, R = this.options.dictionary, I = !1;
           if (this.ended) return !1;
           h = y === ~~y ? y : y === !0 ? A.Z_FINISH : A.Z_NO_FLUSH, typeof u == "string" ? x.input = c.binstring2buf(u) : g.call(u) === "[object ArrayBuffer]" ? x.input = new Uint8Array(u) : x.input = u, x.next_in = 0, x.avail_in = x.input.length;
           do {
             if (x.avail_out === 0 && (x.output = new l.Buf8(B), x.next_out = 0, x.avail_out = B), (p = s.inflate(x, A.Z_NO_FLUSH)) === A.Z_NEED_DICT && R && (C = typeof R == "string" ? c.string2buf(R) : g.call(R) === "[object ArrayBuffer]" ? new Uint8Array(R) : R, p = s.inflateSetDictionary(this.strm, C)), p === A.Z_BUF_ERROR && I === !0 && (p = A.Z_OK, I = !1), p !== A.Z_STREAM_END && p !== A.Z_OK) return this.onEnd(p), !(this.ended = !0);
-            x.next_out && (x.avail_out !== 0 && p !== A.Z_STREAM_END && (x.avail_in !== 0 || h !== A.Z_FINISH && h !== A.Z_SYNC_FLUSH) || (this.options.to === "string" ? (_ = c.utf8border(x.output, x.next_out), E = x.next_out - _, v = c.buf2string(x.output, _), x.next_out = E, x.avail_out = B - E, E && l.arraySet(x.output, x.output, _, E, 0), this.onData(v)) : this.onData(l.shrinkBuf(x.output, x.next_out)))), x.avail_in === 0 && x.avail_out === 0 && (I = !0);
+            x.next_out && (x.avail_out !== 0 && p !== A.Z_STREAM_END && (x.avail_in !== 0 || h !== A.Z_FINISH && h !== A.Z_SYNC_FLUSH) || (this.options.to === "string" ? (_ = c.utf8border(x.output, x.next_out), T = x.next_out - _, v = c.buf2string(x.output, _), x.next_out = T, x.avail_out = B - T, T && l.arraySet(x.output, x.output, _, T, 0), this.onData(v)) : this.onData(l.shrinkBuf(x.output, x.next_out)))), x.avail_in === 0 && x.avail_out === 0 && (I = !0);
           } while ((0 < x.avail_in || x.avail_out === 0) && p !== A.Z_STREAM_END);
           return p === A.Z_STREAM_END && (h = A.Z_FINISH), h === A.Z_FINISH ? (p = s.inflateEnd(this.strm), this.onEnd(p), this.ended = !0, p === A.Z_OK) : h !== A.Z_SYNC_FLUSH || (this.onEnd(A.Z_OK), !(x.avail_out = 0));
         }, d.prototype.onData = function(u) {
@@ -1360,7 +1360,7 @@ function hi() {
           return -1 ^ l;
         };
       }, {}], 46: [function(t, i, n) {
-        var s, l = t("../utils/common"), c = t("./trees"), A = t("./adler32"), a = t("./crc32"), o = t("./messages"), f = 0, g = 4, d = 0, m = -2, u = -1, y = 4, p = 2, h = 8, _ = 9, E = 286, v = 30, C = 19, x = 2 * E + 1, B = 15, R = 3, I = 258, O = I + R + 1, T = 42, M = 113, w = 1, G = 2, ee = 3, K = 4;
+        var s, l = t("../utils/common"), c = t("./trees"), A = t("./adler32"), a = t("./crc32"), o = t("./messages"), f = 0, g = 4, d = 0, m = -2, u = -1, y = 4, p = 2, h = 8, _ = 9, T = 286, v = 30, C = 19, x = 2 * T + 1, B = 15, R = 3, I = 258, O = I + R + 1, E = 42, M = 113, w = 1, G = 2, ee = 3, Y = 4;
         function ne(b, X) {
           return b.msg = o[X], X;
         }
@@ -1370,12 +1370,12 @@ function hi() {
         function Q(b) {
           for (var X = b.length; 0 <= --X; ) b[X] = 0;
         }
-        function D(b) {
+        function P(b) {
           var X = b.state, W = X.pending;
           W > b.avail_out && (W = b.avail_out), W !== 0 && (l.arraySet(b.output, X.pending_buf, X.pending_out, W, b.next_out), b.next_out += W, X.pending_out += W, b.total_out += W, b.avail_out -= W, X.pending -= W, X.pending === 0 && (X.pending_out = 0));
         }
         function F(b, X) {
-          c._tr_flush_block(b, 0 <= b.block_start ? b.block_start : -1, b.strstart - b.block_start, X), b.block_start = b.strstart, D(b.strm);
+          c._tr_flush_block(b, 0 <= b.block_start ? b.block_start : -1, b.strstart - b.block_start, X), b.block_start = b.strstart, P(b.strm);
         }
         function $(b, X) {
           b.pending_buf[b.pending++] = X;
@@ -1384,24 +1384,24 @@ function hi() {
           b.pending_buf[b.pending++] = X >>> 8 & 255, b.pending_buf[b.pending++] = 255 & X;
         }
         function N(b, X) {
-          var W, k, S = b.max_chain_length, U = b.strstart, Y = b.prev_length, J = b.nice_match, V = b.strstart > b.w_size - O ? b.strstart - (b.w_size - O) : 0, te = b.window, se = b.w_mask, oe = b.prev, ce = b.strstart + I, xe = te[U + Y - 1], ye = te[U + Y];
+          var W, k, S = b.max_chain_length, U = b.strstart, K = b.prev_length, J = b.nice_match, V = b.strstart > b.w_size - O ? b.strstart - (b.w_size - O) : 0, te = b.window, se = b.w_mask, oe = b.prev, ce = b.strstart + I, xe = te[U + K - 1], ye = te[U + K];
           b.prev_length >= b.good_match && (S >>= 2), J > b.lookahead && (J = b.lookahead);
           do
-            if (te[(W = X) + Y] === ye && te[W + Y - 1] === xe && te[W] === te[U] && te[++W] === te[U + 1]) {
+            if (te[(W = X) + K] === ye && te[W + K - 1] === xe && te[W] === te[U] && te[++W] === te[U + 1]) {
               U += 2, W++;
               do
                 ;
               while (te[++U] === te[++W] && te[++U] === te[++W] && te[++U] === te[++W] && te[++U] === te[++W] && te[++U] === te[++W] && te[++U] === te[++W] && te[++U] === te[++W] && te[++U] === te[++W] && U < ce);
-              if (k = I - (ce - U), U = ce - I, Y < k) {
-                if (b.match_start = X, J <= (Y = k)) break;
-                xe = te[U + Y - 1], ye = te[U + Y];
+              if (k = I - (ce - U), U = ce - I, K < k) {
+                if (b.match_start = X, J <= (K = k)) break;
+                xe = te[U + K - 1], ye = te[U + K];
               }
             }
           while ((X = oe[X & se]) > V && --S != 0);
-          return Y <= b.lookahead ? Y : b.lookahead;
+          return K <= b.lookahead ? K : b.lookahead;
         }
         function H(b) {
-          var X, W, k, S, U, Y, J, V, te, se, oe = b.w_size;
+          var X, W, k, S, U, K, J, V, te, se, oe = b.w_size;
           do {
             if (S = b.window_size - b.lookahead - b.strstart, b.strstart >= oe + (oe - O)) {
               for (l.arraySet(b.window, b.window, oe, oe, 0), b.match_start -= oe, b.strstart -= oe, b.block_start -= oe, X = W = b.hash_size; k = b.head[--X], b.head[X] = oe <= k ? k - oe : 0, --W; ) ;
@@ -1409,7 +1409,7 @@ function hi() {
               S += oe;
             }
             if (b.strm.avail_in === 0) break;
-            if (Y = b.strm, J = b.window, V = b.strstart + b.lookahead, te = S, se = void 0, se = Y.avail_in, te < se && (se = te), W = se === 0 ? 0 : (Y.avail_in -= se, l.arraySet(J, Y.input, Y.next_in, se, V), Y.state.wrap === 1 ? Y.adler = A(Y.adler, J, se, V) : Y.state.wrap === 2 && (Y.adler = a(Y.adler, J, se, V)), Y.next_in += se, Y.total_in += se, se), b.lookahead += W, b.lookahead + b.insert >= R) for (U = b.strstart - b.insert, b.ins_h = b.window[U], b.ins_h = (b.ins_h << b.hash_shift ^ b.window[U + 1]) & b.hash_mask; b.insert && (b.ins_h = (b.ins_h << b.hash_shift ^ b.window[U + R - 1]) & b.hash_mask, b.prev[U & b.w_mask] = b.head[b.ins_h], b.head[b.ins_h] = U, U++, b.insert--, !(b.lookahead + b.insert < R)); ) ;
+            if (K = b.strm, J = b.window, V = b.strstart + b.lookahead, te = S, se = void 0, se = K.avail_in, te < se && (se = te), W = se === 0 ? 0 : (K.avail_in -= se, l.arraySet(J, K.input, K.next_in, se, V), K.state.wrap === 1 ? K.adler = A(K.adler, J, se, V) : K.state.wrap === 2 && (K.adler = a(K.adler, J, se, V)), K.next_in += se, K.total_in += se, se), b.lookahead += W, b.lookahead + b.insert >= R) for (U = b.strstart - b.insert, b.ins_h = b.window[U], b.ins_h = (b.ins_h << b.hash_shift ^ b.window[U + 1]) & b.hash_mask; b.insert && (b.ins_h = (b.ins_h << b.hash_shift ^ b.window[U + R - 1]) & b.hash_mask, b.prev[U & b.w_mask] = b.head[b.ins_h], b.head[b.ins_h] = U, U++, b.insert--, !(b.lookahead + b.insert < R)); ) ;
           } while (b.lookahead < O && b.strm.avail_in !== 0);
         }
         function ie(b, X) {
@@ -1425,7 +1425,7 @@ function hi() {
             else k = c._tr_tally(b, 0, b.window[b.strstart]), b.lookahead--, b.strstart++;
             if (k && (F(b, !1), b.strm.avail_out === 0)) return w;
           }
-          return b.insert = b.strstart < R - 1 ? b.strstart : R - 1, X === g ? (F(b, !0), b.strm.avail_out === 0 ? ee : K) : b.last_lit && (F(b, !1), b.strm.avail_out === 0) ? w : G;
+          return b.insert = b.strstart < R - 1 ? b.strstart : R - 1, X === g ? (F(b, !0), b.strm.avail_out === 0 ? ee : Y) : b.last_lit && (F(b, !1), b.strm.avail_out === 0) ? w : G;
         }
         function ae(b, X) {
           for (var W, k, S; ; ) {
@@ -1440,17 +1440,17 @@ function hi() {
               if ((k = c._tr_tally(b, 0, b.window[b.strstart - 1])) && F(b, !1), b.strstart++, b.lookahead--, b.strm.avail_out === 0) return w;
             } else b.match_available = 1, b.strstart++, b.lookahead--;
           }
-          return b.match_available && (k = c._tr_tally(b, 0, b.window[b.strstart - 1]), b.match_available = 0), b.insert = b.strstart < R - 1 ? b.strstart : R - 1, X === g ? (F(b, !0), b.strm.avail_out === 0 ? ee : K) : b.last_lit && (F(b, !1), b.strm.avail_out === 0) ? w : G;
+          return b.match_available && (k = c._tr_tally(b, 0, b.window[b.strstart - 1]), b.match_available = 0), b.insert = b.strstart < R - 1 ? b.strstart : R - 1, X === g ? (F(b, !0), b.strm.avail_out === 0 ? ee : Y) : b.last_lit && (F(b, !1), b.strm.avail_out === 0) ? w : G;
         }
         function le(b, X, W, k, S) {
           this.good_length = b, this.max_lazy = X, this.nice_length = W, this.max_chain = k, this.func = S;
         }
         function Ae() {
-          this.strm = null, this.status = 0, this.pending_buf = null, this.pending_buf_size = 0, this.pending_out = 0, this.pending = 0, this.wrap = 0, this.gzhead = null, this.gzindex = 0, this.method = h, this.last_flush = -1, this.w_size = 0, this.w_bits = 0, this.w_mask = 0, this.window = null, this.window_size = 0, this.prev = null, this.head = null, this.ins_h = 0, this.hash_size = 0, this.hash_bits = 0, this.hash_mask = 0, this.hash_shift = 0, this.block_start = 0, this.match_length = 0, this.prev_match = 0, this.match_available = 0, this.strstart = 0, this.match_start = 0, this.lookahead = 0, this.prev_length = 0, this.max_chain_length = 0, this.max_lazy_match = 0, this.level = 0, this.strategy = 0, this.good_match = 0, this.nice_match = 0, this.dyn_ltree = new l.Buf16(2 * x), this.dyn_dtree = new l.Buf16(2 * (2 * v + 1)), this.bl_tree = new l.Buf16(2 * (2 * C + 1)), Q(this.dyn_ltree), Q(this.dyn_dtree), Q(this.bl_tree), this.l_desc = null, this.d_desc = null, this.bl_desc = null, this.bl_count = new l.Buf16(B + 1), this.heap = new l.Buf16(2 * E + 1), Q(this.heap), this.heap_len = 0, this.heap_max = 0, this.depth = new l.Buf16(2 * E + 1), Q(this.depth), this.l_buf = 0, this.lit_bufsize = 0, this.last_lit = 0, this.d_buf = 0, this.opt_len = 0, this.static_len = 0, this.matches = 0, this.insert = 0, this.bi_buf = 0, this.bi_valid = 0;
+          this.strm = null, this.status = 0, this.pending_buf = null, this.pending_buf_size = 0, this.pending_out = 0, this.pending = 0, this.wrap = 0, this.gzhead = null, this.gzindex = 0, this.method = h, this.last_flush = -1, this.w_size = 0, this.w_bits = 0, this.w_mask = 0, this.window = null, this.window_size = 0, this.prev = null, this.head = null, this.ins_h = 0, this.hash_size = 0, this.hash_bits = 0, this.hash_mask = 0, this.hash_shift = 0, this.block_start = 0, this.match_length = 0, this.prev_match = 0, this.match_available = 0, this.strstart = 0, this.match_start = 0, this.lookahead = 0, this.prev_length = 0, this.max_chain_length = 0, this.max_lazy_match = 0, this.level = 0, this.strategy = 0, this.good_match = 0, this.nice_match = 0, this.dyn_ltree = new l.Buf16(2 * x), this.dyn_dtree = new l.Buf16(2 * (2 * v + 1)), this.bl_tree = new l.Buf16(2 * (2 * C + 1)), Q(this.dyn_ltree), Q(this.dyn_dtree), Q(this.bl_tree), this.l_desc = null, this.d_desc = null, this.bl_desc = null, this.bl_count = new l.Buf16(B + 1), this.heap = new l.Buf16(2 * T + 1), Q(this.heap), this.heap_len = 0, this.heap_max = 0, this.depth = new l.Buf16(2 * T + 1), Q(this.depth), this.l_buf = 0, this.lit_bufsize = 0, this.last_lit = 0, this.d_buf = 0, this.opt_len = 0, this.static_len = 0, this.matches = 0, this.insert = 0, this.bi_buf = 0, this.bi_valid = 0;
         }
         function z(b) {
           var X;
-          return b && b.state ? (b.total_in = b.total_out = 0, b.data_type = p, (X = b.state).pending = 0, X.pending_out = 0, X.wrap < 0 && (X.wrap = -X.wrap), X.status = X.wrap ? T : M, b.adler = X.wrap === 2 ? 0 : 1, X.last_flush = f, c._tr_init(X), d) : ne(b, m);
+          return b && b.state ? (b.total_in = b.total_out = 0, b.data_type = p, (X = b.state).pending = 0, X.pending_out = 0, X.wrap < 0 && (X.wrap = -X.wrap), X.status = X.wrap ? E : M, b.adler = X.wrap === 2 ? 0 : 1, X.last_flush = f, c._tr_init(X), d) : ne(b, m);
         }
         function q(b) {
           var X = z(b);
@@ -1460,11 +1460,11 @@ function hi() {
         }
         function j(b, X, W, k, S, U) {
           if (!b) return m;
-          var Y = 1;
-          if (X === u && (X = 6), k < 0 ? (Y = 0, k = -k) : 15 < k && (Y = 2, k -= 16), S < 1 || _ < S || W !== h || k < 8 || 15 < k || X < 0 || 9 < X || U < 0 || y < U) return ne(b, m);
+          var K = 1;
+          if (X === u && (X = 6), k < 0 ? (K = 0, k = -k) : 15 < k && (K = 2, k -= 16), S < 1 || _ < S || W !== h || k < 8 || 15 < k || X < 0 || 9 < X || U < 0 || y < U) return ne(b, m);
           k === 8 && (k = 9);
           var J = new Ae();
-          return (b.state = J).strm = b, J.wrap = Y, J.gzhead = null, J.w_bits = k, J.w_size = 1 << J.w_bits, J.w_mask = J.w_size - 1, J.hash_bits = S + 7, J.hash_size = 1 << J.hash_bits, J.hash_mask = J.hash_size - 1, J.hash_shift = ~~((J.hash_bits + R - 1) / R), J.window = new l.Buf8(2 * J.w_size), J.head = new l.Buf16(J.hash_size), J.prev = new l.Buf16(J.w_size), J.lit_bufsize = 1 << S + 6, J.pending_buf_size = 4 * J.lit_bufsize, J.pending_buf = new l.Buf8(J.pending_buf_size), J.d_buf = 1 * J.lit_bufsize, J.l_buf = 3 * J.lit_bufsize, J.level = X, J.strategy = U, J.method = W, q(b);
+          return (b.state = J).strm = b, J.wrap = K, J.gzhead = null, J.w_bits = k, J.w_size = 1 << J.w_bits, J.w_mask = J.w_size - 1, J.hash_bits = S + 7, J.hash_size = 1 << J.hash_bits, J.hash_mask = J.hash_size - 1, J.hash_shift = ~~((J.hash_bits + R - 1) / R), J.window = new l.Buf8(2 * J.w_size), J.head = new l.Buf16(J.hash_size), J.prev = new l.Buf16(J.w_size), J.lit_bufsize = 1 << S + 6, J.pending_buf_size = 4 * J.lit_bufsize, J.pending_buf = new l.Buf8(J.pending_buf_size), J.d_buf = 1 * J.lit_bufsize, J.l_buf = 3 * J.lit_bufsize, J.level = X, J.strategy = U, J.method = W, q(b);
         }
         s = [new le(0, 0, 0, 0, function(b, X) {
           var W = 65535;
@@ -1477,7 +1477,7 @@ function hi() {
             var k = b.block_start + W;
             if ((b.strstart === 0 || b.strstart >= k) && (b.lookahead = b.strstart - k, b.strstart = k, F(b, !1), b.strm.avail_out === 0) || b.strstart - b.block_start >= b.w_size - O && (F(b, !1), b.strm.avail_out === 0)) return w;
           }
-          return b.insert = 0, X === g ? (F(b, !0), b.strm.avail_out === 0 ? ee : K) : (b.strstart > b.block_start && (F(b, !1), b.strm.avail_out), w);
+          return b.insert = 0, X === g ? (F(b, !0), b.strm.avail_out === 0 ? ee : Y) : (b.strstart > b.block_start && (F(b, !1), b.strm.avail_out), w);
         }), new le(4, 4, 8, 4, ie), new le(4, 5, 16, 8, ie), new le(4, 6, 32, 32, ie), new le(4, 4, 16, 16, ae), new le(8, 16, 32, 32, ae), new le(8, 16, 128, 128, ae), new le(8, 32, 128, 256, ae), new le(32, 128, 258, 1024, ae), new le(32, 258, 258, 4096, ae)], n.deflateInit = function(b, X) {
           return j(b, X, h, 15, 8, 0);
         }, n.deflateInit2 = j, n.deflateReset = q, n.deflateResetKeep = z, n.deflateSetHeader = function(b, X) {
@@ -1486,19 +1486,19 @@ function hi() {
           var W, k, S, U;
           if (!b || !b.state || 5 < X || X < 0) return b ? ne(b, m) : m;
           if (k = b.state, !b.output || !b.input && b.avail_in !== 0 || k.status === 666 && X !== g) return ne(b, b.avail_out === 0 ? -5 : m);
-          if (k.strm = b, W = k.last_flush, k.last_flush = X, k.status === T) if (k.wrap === 2) b.adler = 0, $(k, 31), $(k, 139), $(k, 8), k.gzhead ? ($(k, (k.gzhead.text ? 1 : 0) + (k.gzhead.hcrc ? 2 : 0) + (k.gzhead.extra ? 4 : 0) + (k.gzhead.name ? 8 : 0) + (k.gzhead.comment ? 16 : 0)), $(k, 255 & k.gzhead.time), $(k, k.gzhead.time >> 8 & 255), $(k, k.gzhead.time >> 16 & 255), $(k, k.gzhead.time >> 24 & 255), $(k, k.level === 9 ? 2 : 2 <= k.strategy || k.level < 2 ? 4 : 0), $(k, 255 & k.gzhead.os), k.gzhead.extra && k.gzhead.extra.length && ($(k, 255 & k.gzhead.extra.length), $(k, k.gzhead.extra.length >> 8 & 255)), k.gzhead.hcrc && (b.adler = a(b.adler, k.pending_buf, k.pending, 0)), k.gzindex = 0, k.status = 69) : ($(k, 0), $(k, 0), $(k, 0), $(k, 0), $(k, 0), $(k, k.level === 9 ? 2 : 2 <= k.strategy || k.level < 2 ? 4 : 0), $(k, 3), k.status = M);
+          if (k.strm = b, W = k.last_flush, k.last_flush = X, k.status === E) if (k.wrap === 2) b.adler = 0, $(k, 31), $(k, 139), $(k, 8), k.gzhead ? ($(k, (k.gzhead.text ? 1 : 0) + (k.gzhead.hcrc ? 2 : 0) + (k.gzhead.extra ? 4 : 0) + (k.gzhead.name ? 8 : 0) + (k.gzhead.comment ? 16 : 0)), $(k, 255 & k.gzhead.time), $(k, k.gzhead.time >> 8 & 255), $(k, k.gzhead.time >> 16 & 255), $(k, k.gzhead.time >> 24 & 255), $(k, k.level === 9 ? 2 : 2 <= k.strategy || k.level < 2 ? 4 : 0), $(k, 255 & k.gzhead.os), k.gzhead.extra && k.gzhead.extra.length && ($(k, 255 & k.gzhead.extra.length), $(k, k.gzhead.extra.length >> 8 & 255)), k.gzhead.hcrc && (b.adler = a(b.adler, k.pending_buf, k.pending, 0)), k.gzindex = 0, k.status = 69) : ($(k, 0), $(k, 0), $(k, 0), $(k, 0), $(k, 0), $(k, k.level === 9 ? 2 : 2 <= k.strategy || k.level < 2 ? 4 : 0), $(k, 3), k.status = M);
           else {
-            var Y = h + (k.w_bits - 8 << 4) << 8;
-            Y |= (2 <= k.strategy || k.level < 2 ? 0 : k.level < 6 ? 1 : k.level === 6 ? 2 : 3) << 6, k.strstart !== 0 && (Y |= 32), Y += 31 - Y % 31, k.status = M, L(k, Y), k.strstart !== 0 && (L(k, b.adler >>> 16), L(k, 65535 & b.adler)), b.adler = 1;
+            var K = h + (k.w_bits - 8 << 4) << 8;
+            K |= (2 <= k.strategy || k.level < 2 ? 0 : k.level < 6 ? 1 : k.level === 6 ? 2 : 3) << 6, k.strstart !== 0 && (K |= 32), K += 31 - K % 31, k.status = M, L(k, K), k.strstart !== 0 && (L(k, b.adler >>> 16), L(k, 65535 & b.adler)), b.adler = 1;
           }
           if (k.status === 69) if (k.gzhead.extra) {
-            for (S = k.pending; k.gzindex < (65535 & k.gzhead.extra.length) && (k.pending !== k.pending_buf_size || (k.gzhead.hcrc && k.pending > S && (b.adler = a(b.adler, k.pending_buf, k.pending - S, S)), D(b), S = k.pending, k.pending !== k.pending_buf_size)); ) $(k, 255 & k.gzhead.extra[k.gzindex]), k.gzindex++;
+            for (S = k.pending; k.gzindex < (65535 & k.gzhead.extra.length) && (k.pending !== k.pending_buf_size || (k.gzhead.hcrc && k.pending > S && (b.adler = a(b.adler, k.pending_buf, k.pending - S, S)), P(b), S = k.pending, k.pending !== k.pending_buf_size)); ) $(k, 255 & k.gzhead.extra[k.gzindex]), k.gzindex++;
             k.gzhead.hcrc && k.pending > S && (b.adler = a(b.adler, k.pending_buf, k.pending - S, S)), k.gzindex === k.gzhead.extra.length && (k.gzindex = 0, k.status = 73);
           } else k.status = 73;
           if (k.status === 73) if (k.gzhead.name) {
             S = k.pending;
             do {
-              if (k.pending === k.pending_buf_size && (k.gzhead.hcrc && k.pending > S && (b.adler = a(b.adler, k.pending_buf, k.pending - S, S)), D(b), S = k.pending, k.pending === k.pending_buf_size)) {
+              if (k.pending === k.pending_buf_size && (k.gzhead.hcrc && k.pending > S && (b.adler = a(b.adler, k.pending_buf, k.pending - S, S)), P(b), S = k.pending, k.pending === k.pending_buf_size)) {
                 U = 1;
                 break;
               }
@@ -1509,7 +1509,7 @@ function hi() {
           if (k.status === 91) if (k.gzhead.comment) {
             S = k.pending;
             do {
-              if (k.pending === k.pending_buf_size && (k.gzhead.hcrc && k.pending > S && (b.adler = a(b.adler, k.pending_buf, k.pending - S, S)), D(b), S = k.pending, k.pending === k.pending_buf_size)) {
+              if (k.pending === k.pending_buf_size && (k.gzhead.hcrc && k.pending > S && (b.adler = a(b.adler, k.pending_buf, k.pending - S, S)), P(b), S = k.pending, k.pending === k.pending_buf_size)) {
                 U = 1;
                 break;
               }
@@ -1517,8 +1517,8 @@ function hi() {
             } while (U !== 0);
             k.gzhead.hcrc && k.pending > S && (b.adler = a(b.adler, k.pending_buf, k.pending - S, S)), U === 0 && (k.status = 103);
           } else k.status = 103;
-          if (k.status === 103 && (k.gzhead.hcrc ? (k.pending + 2 > k.pending_buf_size && D(b), k.pending + 2 <= k.pending_buf_size && ($(k, 255 & b.adler), $(k, b.adler >> 8 & 255), b.adler = 0, k.status = M)) : k.status = M), k.pending !== 0) {
-            if (D(b), b.avail_out === 0) return k.last_flush = -1, d;
+          if (k.status === 103 && (k.gzhead.hcrc ? (k.pending + 2 > k.pending_buf_size && P(b), k.pending + 2 <= k.pending_buf_size && ($(k, 255 & b.adler), $(k, b.adler >> 8 & 255), b.adler = 0, k.status = M)) : k.status = M), k.pending !== 0) {
+            if (P(b), b.avail_out === 0) return k.last_flush = -1, d;
           } else if (b.avail_in === 0 && Z(X) <= Z(W) && X !== g) return ne(b, -5);
           if (k.status === 666 && b.avail_in !== 0) return ne(b, -5);
           if (b.avail_in !== 0 || k.lookahead !== 0 || X !== f && k.status !== 666) {
@@ -1530,7 +1530,7 @@ function hi() {
                 }
                 if (V.match_length = 0, se = c._tr_tally(V, 0, V.window[V.strstart]), V.lookahead--, V.strstart++, se && (F(V, !1), V.strm.avail_out === 0)) return w;
               }
-              return V.insert = 0, te === g ? (F(V, !0), V.strm.avail_out === 0 ? ee : K) : V.last_lit && (F(V, !1), V.strm.avail_out === 0) ? w : G;
+              return V.insert = 0, te === g ? (F(V, !0), V.strm.avail_out === 0 ? ee : Y) : V.last_lit && (F(V, !1), V.strm.avail_out === 0) ? w : G;
             })(k, X) : k.strategy === 3 ? (function(V, te) {
               for (var se, oe, ce, xe, ye = V.window; ; ) {
                 if (V.lookahead <= I) {
@@ -1546,23 +1546,23 @@ function hi() {
                 }
                 if (V.match_length >= R ? (se = c._tr_tally(V, 1, V.match_length - R), V.lookahead -= V.match_length, V.strstart += V.match_length, V.match_length = 0) : (se = c._tr_tally(V, 0, V.window[V.strstart]), V.lookahead--, V.strstart++), se && (F(V, !1), V.strm.avail_out === 0)) return w;
               }
-              return V.insert = 0, te === g ? (F(V, !0), V.strm.avail_out === 0 ? ee : K) : V.last_lit && (F(V, !1), V.strm.avail_out === 0) ? w : G;
+              return V.insert = 0, te === g ? (F(V, !0), V.strm.avail_out === 0 ? ee : Y) : V.last_lit && (F(V, !1), V.strm.avail_out === 0) ? w : G;
             })(k, X) : s[k.level].func(k, X);
-            if (J !== ee && J !== K || (k.status = 666), J === w || J === ee) return b.avail_out === 0 && (k.last_flush = -1), d;
-            if (J === G && (X === 1 ? c._tr_align(k) : X !== 5 && (c._tr_stored_block(k, 0, 0, !1), X === 3 && (Q(k.head), k.lookahead === 0 && (k.strstart = 0, k.block_start = 0, k.insert = 0))), D(b), b.avail_out === 0)) return k.last_flush = -1, d;
+            if (J !== ee && J !== Y || (k.status = 666), J === w || J === ee) return b.avail_out === 0 && (k.last_flush = -1), d;
+            if (J === G && (X === 1 ? c._tr_align(k) : X !== 5 && (c._tr_stored_block(k, 0, 0, !1), X === 3 && (Q(k.head), k.lookahead === 0 && (k.strstart = 0, k.block_start = 0, k.insert = 0))), P(b), b.avail_out === 0)) return k.last_flush = -1, d;
           }
-          return X !== g ? d : k.wrap <= 0 ? 1 : (k.wrap === 2 ? ($(k, 255 & b.adler), $(k, b.adler >> 8 & 255), $(k, b.adler >> 16 & 255), $(k, b.adler >> 24 & 255), $(k, 255 & b.total_in), $(k, b.total_in >> 8 & 255), $(k, b.total_in >> 16 & 255), $(k, b.total_in >> 24 & 255)) : (L(k, b.adler >>> 16), L(k, 65535 & b.adler)), D(b), 0 < k.wrap && (k.wrap = -k.wrap), k.pending !== 0 ? d : 1);
+          return X !== g ? d : k.wrap <= 0 ? 1 : (k.wrap === 2 ? ($(k, 255 & b.adler), $(k, b.adler >> 8 & 255), $(k, b.adler >> 16 & 255), $(k, b.adler >> 24 & 255), $(k, 255 & b.total_in), $(k, b.total_in >> 8 & 255), $(k, b.total_in >> 16 & 255), $(k, b.total_in >> 24 & 255)) : (L(k, b.adler >>> 16), L(k, 65535 & b.adler)), P(b), 0 < k.wrap && (k.wrap = -k.wrap), k.pending !== 0 ? d : 1);
         }, n.deflateEnd = function(b) {
           var X;
-          return b && b.state ? (X = b.state.status) !== T && X !== 69 && X !== 73 && X !== 91 && X !== 103 && X !== M && X !== 666 ? ne(b, m) : (b.state = null, X === M ? ne(b, -3) : d) : m;
+          return b && b.state ? (X = b.state.status) !== E && X !== 69 && X !== 73 && X !== 91 && X !== 103 && X !== M && X !== 666 ? ne(b, m) : (b.state = null, X === M ? ne(b, -3) : d) : m;
         }, n.deflateSetDictionary = function(b, X) {
-          var W, k, S, U, Y, J, V, te, se = X.length;
-          if (!b || !b.state || (U = (W = b.state).wrap) === 2 || U === 1 && W.status !== T || W.lookahead) return m;
-          for (U === 1 && (b.adler = A(b.adler, X, se, 0)), W.wrap = 0, se >= W.w_size && (U === 0 && (Q(W.head), W.strstart = 0, W.block_start = 0, W.insert = 0), te = new l.Buf8(W.w_size), l.arraySet(te, X, se - W.w_size, W.w_size, 0), X = te, se = W.w_size), Y = b.avail_in, J = b.next_in, V = b.input, b.avail_in = se, b.next_in = 0, b.input = X, H(W); W.lookahead >= R; ) {
+          var W, k, S, U, K, J, V, te, se = X.length;
+          if (!b || !b.state || (U = (W = b.state).wrap) === 2 || U === 1 && W.status !== E || W.lookahead) return m;
+          for (U === 1 && (b.adler = A(b.adler, X, se, 0)), W.wrap = 0, se >= W.w_size && (U === 0 && (Q(W.head), W.strstart = 0, W.block_start = 0, W.insert = 0), te = new l.Buf8(W.w_size), l.arraySet(te, X, se - W.w_size, W.w_size, 0), X = te, se = W.w_size), K = b.avail_in, J = b.next_in, V = b.input, b.avail_in = se, b.next_in = 0, b.input = X, H(W); W.lookahead >= R; ) {
             for (k = W.strstart, S = W.lookahead - (R - 1); W.ins_h = (W.ins_h << W.hash_shift ^ W.window[k + R - 1]) & W.hash_mask, W.prev[k & W.w_mask] = W.head[W.ins_h], W.head[W.ins_h] = k, k++, --S; ) ;
             W.strstart = k, W.lookahead = R - 1, H(W);
           }
-          return W.strstart += W.lookahead, W.block_start = W.strstart, W.insert = W.lookahead, W.lookahead = 0, W.match_length = W.prev_length = R - 1, W.match_available = 0, b.next_in = J, b.input = V, b.avail_in = Y, W.wrap = U, d;
+          return W.strstart += W.lookahead, W.block_start = W.strstart, W.insert = W.lookahead, W.lookahead = 0, W.match_length = W.prev_length = R - 1, W.match_available = 0, b.next_in = J, b.input = V, b.avail_in = K, W.wrap = U, d;
         }, n.deflateInfo = "pako deflate (from Nodeca project)";
       }, { "../utils/common": 41, "./adler32": 43, "./crc32": 45, "./messages": 51, "./trees": 52 }], 47: [function(t, i, n) {
         i.exports = function() {
@@ -1570,16 +1570,16 @@ function hi() {
         };
       }, {}], 48: [function(t, i, n) {
         i.exports = function(s, l) {
-          var c, A, a, o, f, g, d, m, u, y, p, h, _, E, v, C, x, B, R, I, O, T, M, w, G;
-          c = s.state, A = s.next_in, w = s.input, a = A + (s.avail_in - 5), o = s.next_out, G = s.output, f = o - (l - s.avail_out), g = o + (s.avail_out - 257), d = c.dmax, m = c.wsize, u = c.whave, y = c.wnext, p = c.window, h = c.hold, _ = c.bits, E = c.lencode, v = c.distcode, C = (1 << c.lenbits) - 1, x = (1 << c.distbits) - 1;
+          var c, A, a, o, f, g, d, m, u, y, p, h, _, T, v, C, x, B, R, I, O, E, M, w, G;
+          c = s.state, A = s.next_in, w = s.input, a = A + (s.avail_in - 5), o = s.next_out, G = s.output, f = o - (l - s.avail_out), g = o + (s.avail_out - 257), d = c.dmax, m = c.wsize, u = c.whave, y = c.wnext, p = c.window, h = c.hold, _ = c.bits, T = c.lencode, v = c.distcode, C = (1 << c.lenbits) - 1, x = (1 << c.distbits) - 1;
           e: do {
-            _ < 15 && (h += w[A++] << _, _ += 8, h += w[A++] << _, _ += 8), B = E[h & C];
+            _ < 15 && (h += w[A++] << _, _ += 8, h += w[A++] << _, _ += 8), B = T[h & C];
             t: for (; ; ) {
               if (h >>>= R = B >>> 24, _ -= R, (R = B >>> 16 & 255) === 0) G[o++] = 65535 & B;
               else {
                 if (!(16 & R)) {
                   if ((64 & R) == 0) {
-                    B = E[(65535 & B) + (h & (1 << R) - 1)];
+                    B = T[(65535 & B) + (h & (1 << R) - 1)];
                     continue t;
                   }
                   if (32 & R) {
@@ -1608,28 +1608,28 @@ function hi() {
                       s.msg = "invalid distance too far back", c.mode = 30;
                       break e;
                     }
-                    if (M = p, (T = 0) === y) {
-                      if (T += m - R, R < I) {
-                        for (I -= R; G[o++] = p[T++], --R; ) ;
-                        T = o - O, M = G;
+                    if (M = p, (E = 0) === y) {
+                      if (E += m - R, R < I) {
+                        for (I -= R; G[o++] = p[E++], --R; ) ;
+                        E = o - O, M = G;
                       }
                     } else if (y < R) {
-                      if (T += m + y - R, (R -= y) < I) {
-                        for (I -= R; G[o++] = p[T++], --R; ) ;
-                        if (T = 0, y < I) {
-                          for (I -= R = y; G[o++] = p[T++], --R; ) ;
-                          T = o - O, M = G;
+                      if (E += m + y - R, (R -= y) < I) {
+                        for (I -= R; G[o++] = p[E++], --R; ) ;
+                        if (E = 0, y < I) {
+                          for (I -= R = y; G[o++] = p[E++], --R; ) ;
+                          E = o - O, M = G;
                         }
                       }
-                    } else if (T += y - R, R < I) {
-                      for (I -= R; G[o++] = p[T++], --R; ) ;
-                      T = o - O, M = G;
+                    } else if (E += y - R, R < I) {
+                      for (I -= R; G[o++] = p[E++], --R; ) ;
+                      E = o - O, M = G;
                     }
-                    for (; 2 < I; ) G[o++] = M[T++], G[o++] = M[T++], G[o++] = M[T++], I -= 3;
-                    I && (G[o++] = M[T++], 1 < I && (G[o++] = M[T++]));
+                    for (; 2 < I; ) G[o++] = M[E++], G[o++] = M[E++], G[o++] = M[E++], I -= 3;
+                    I && (G[o++] = M[E++], 1 < I && (G[o++] = M[E++]));
                   } else {
-                    for (T = o - O; G[o++] = G[T++], G[o++] = G[T++], G[o++] = G[T++], 2 < (I -= 3); ) ;
-                    I && (G[o++] = G[T++], 1 < I && (G[o++] = G[T++]));
+                    for (E = o - O; G[o++] = G[E++], G[o++] = G[E++], G[o++] = G[E++], 2 < (I -= 3); ) ;
+                    I && (G[o++] = G[E++], 1 < I && (G[o++] = G[E++]));
                   }
                   break;
                 }
@@ -1641,51 +1641,51 @@ function hi() {
         };
       }, {}], 49: [function(t, i, n) {
         var s = t("../utils/common"), l = t("./adler32"), c = t("./crc32"), A = t("./inffast"), a = t("./inftrees"), o = 1, f = 2, g = 0, d = -2, m = 1, u = 852, y = 592;
-        function p(T) {
-          return (T >>> 24 & 255) + (T >>> 8 & 65280) + ((65280 & T) << 8) + ((255 & T) << 24);
+        function p(E) {
+          return (E >>> 24 & 255) + (E >>> 8 & 65280) + ((65280 & E) << 8) + ((255 & E) << 24);
         }
         function h() {
           this.mode = 0, this.last = !1, this.wrap = 0, this.havedict = !1, this.flags = 0, this.dmax = 0, this.check = 0, this.total = 0, this.head = null, this.wbits = 0, this.wsize = 0, this.whave = 0, this.wnext = 0, this.window = null, this.hold = 0, this.bits = 0, this.length = 0, this.offset = 0, this.extra = 0, this.lencode = null, this.distcode = null, this.lenbits = 0, this.distbits = 0, this.ncode = 0, this.nlen = 0, this.ndist = 0, this.have = 0, this.next = null, this.lens = new s.Buf16(320), this.work = new s.Buf16(288), this.lendyn = null, this.distdyn = null, this.sane = 0, this.back = 0, this.was = 0;
         }
-        function _(T) {
+        function _(E) {
           var M;
-          return T && T.state ? (M = T.state, T.total_in = T.total_out = M.total = 0, T.msg = "", M.wrap && (T.adler = 1 & M.wrap), M.mode = m, M.last = 0, M.havedict = 0, M.dmax = 32768, M.head = null, M.hold = 0, M.bits = 0, M.lencode = M.lendyn = new s.Buf32(u), M.distcode = M.distdyn = new s.Buf32(y), M.sane = 1, M.back = -1, g) : d;
+          return E && E.state ? (M = E.state, E.total_in = E.total_out = M.total = 0, E.msg = "", M.wrap && (E.adler = 1 & M.wrap), M.mode = m, M.last = 0, M.havedict = 0, M.dmax = 32768, M.head = null, M.hold = 0, M.bits = 0, M.lencode = M.lendyn = new s.Buf32(u), M.distcode = M.distdyn = new s.Buf32(y), M.sane = 1, M.back = -1, g) : d;
         }
-        function E(T) {
+        function T(E) {
           var M;
-          return T && T.state ? ((M = T.state).wsize = 0, M.whave = 0, M.wnext = 0, _(T)) : d;
+          return E && E.state ? ((M = E.state).wsize = 0, M.whave = 0, M.wnext = 0, _(E)) : d;
         }
-        function v(T, M) {
+        function v(E, M) {
           var w, G;
-          return T && T.state ? (G = T.state, M < 0 ? (w = 0, M = -M) : (w = 1 + (M >> 4), M < 48 && (M &= 15)), M && (M < 8 || 15 < M) ? d : (G.window !== null && G.wbits !== M && (G.window = null), G.wrap = w, G.wbits = M, E(T))) : d;
+          return E && E.state ? (G = E.state, M < 0 ? (w = 0, M = -M) : (w = 1 + (M >> 4), M < 48 && (M &= 15)), M && (M < 8 || 15 < M) ? d : (G.window !== null && G.wbits !== M && (G.window = null), G.wrap = w, G.wbits = M, T(E))) : d;
         }
-        function C(T, M) {
+        function C(E, M) {
           var w, G;
-          return T ? (G = new h(), (T.state = G).window = null, (w = v(T, M)) !== g && (T.state = null), w) : d;
+          return E ? (G = new h(), (E.state = G).window = null, (w = v(E, M)) !== g && (E.state = null), w) : d;
         }
         var x, B, R = !0;
-        function I(T) {
+        function I(E) {
           if (R) {
             var M;
-            for (x = new s.Buf32(512), B = new s.Buf32(32), M = 0; M < 144; ) T.lens[M++] = 8;
-            for (; M < 256; ) T.lens[M++] = 9;
-            for (; M < 280; ) T.lens[M++] = 7;
-            for (; M < 288; ) T.lens[M++] = 8;
-            for (a(o, T.lens, 0, 288, x, 0, T.work, { bits: 9 }), M = 0; M < 32; ) T.lens[M++] = 5;
-            a(f, T.lens, 0, 32, B, 0, T.work, { bits: 5 }), R = !1;
+            for (x = new s.Buf32(512), B = new s.Buf32(32), M = 0; M < 144; ) E.lens[M++] = 8;
+            for (; M < 256; ) E.lens[M++] = 9;
+            for (; M < 280; ) E.lens[M++] = 7;
+            for (; M < 288; ) E.lens[M++] = 8;
+            for (a(o, E.lens, 0, 288, x, 0, E.work, { bits: 9 }), M = 0; M < 32; ) E.lens[M++] = 5;
+            a(f, E.lens, 0, 32, B, 0, E.work, { bits: 5 }), R = !1;
           }
-          T.lencode = x, T.lenbits = 9, T.distcode = B, T.distbits = 5;
+          E.lencode = x, E.lenbits = 9, E.distcode = B, E.distbits = 5;
         }
-        function O(T, M, w, G) {
-          var ee, K = T.state;
-          return K.window === null && (K.wsize = 1 << K.wbits, K.wnext = 0, K.whave = 0, K.window = new s.Buf8(K.wsize)), G >= K.wsize ? (s.arraySet(K.window, M, w - K.wsize, K.wsize, 0), K.wnext = 0, K.whave = K.wsize) : (G < (ee = K.wsize - K.wnext) && (ee = G), s.arraySet(K.window, M, w - G, ee, K.wnext), (G -= ee) ? (s.arraySet(K.window, M, w - G, G, 0), K.wnext = G, K.whave = K.wsize) : (K.wnext += ee, K.wnext === K.wsize && (K.wnext = 0), K.whave < K.wsize && (K.whave += ee))), 0;
+        function O(E, M, w, G) {
+          var ee, Y = E.state;
+          return Y.window === null && (Y.wsize = 1 << Y.wbits, Y.wnext = 0, Y.whave = 0, Y.window = new s.Buf8(Y.wsize)), G >= Y.wsize ? (s.arraySet(Y.window, M, w - Y.wsize, Y.wsize, 0), Y.wnext = 0, Y.whave = Y.wsize) : (G < (ee = Y.wsize - Y.wnext) && (ee = G), s.arraySet(Y.window, M, w - G, ee, Y.wnext), (G -= ee) ? (s.arraySet(Y.window, M, w - G, G, 0), Y.wnext = G, Y.whave = Y.wsize) : (Y.wnext += ee, Y.wnext === Y.wsize && (Y.wnext = 0), Y.whave < Y.wsize && (Y.whave += ee))), 0;
         }
-        n.inflateReset = E, n.inflateReset2 = v, n.inflateResetKeep = _, n.inflateInit = function(T) {
-          return C(T, 15);
-        }, n.inflateInit2 = C, n.inflate = function(T, M) {
-          var w, G, ee, K, ne, Z, Q, D, F, $, L, N, H, ie, ae, le, Ae, z, q, j, b, X, W, k, S = 0, U = new s.Buf8(4), Y = [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15];
-          if (!T || !T.state || !T.output || !T.input && T.avail_in !== 0) return d;
-          (w = T.state).mode === 12 && (w.mode = 13), ne = T.next_out, ee = T.output, Q = T.avail_out, K = T.next_in, G = T.input, Z = T.avail_in, D = w.hold, F = w.bits, $ = Z, L = Q, X = g;
+        n.inflateReset = T, n.inflateReset2 = v, n.inflateResetKeep = _, n.inflateInit = function(E) {
+          return C(E, 15);
+        }, n.inflateInit2 = C, n.inflate = function(E, M) {
+          var w, G, ee, Y, ne, Z, Q, P, F, $, L, N, H, ie, ae, le, Ae, z, q, j, b, X, W, k, S = 0, U = new s.Buf8(4), K = [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15];
+          if (!E || !E.state || !E.output || !E.input && E.avail_in !== 0) return d;
+          (w = E.state).mode === 12 && (w.mode = 13), ne = E.next_out, ee = E.output, Q = E.avail_out, Y = E.next_in, G = E.input, Z = E.avail_in, P = w.hold, F = w.bits, $ = Z, L = Q, X = g;
           e: for (; ; ) switch (w.mode) {
             case m:
               if (w.wrap === 0) {
@@ -1694,145 +1694,145 @@ function hi() {
               }
               for (; F < 16; ) {
                 if (Z === 0) break e;
-                Z--, D += G[K++] << F, F += 8;
+                Z--, P += G[Y++] << F, F += 8;
               }
-              if (2 & w.wrap && D === 35615) {
-                U[w.check = 0] = 255 & D, U[1] = D >>> 8 & 255, w.check = c(w.check, U, 2, 0), F = D = 0, w.mode = 2;
+              if (2 & w.wrap && P === 35615) {
+                U[w.check = 0] = 255 & P, U[1] = P >>> 8 & 255, w.check = c(w.check, U, 2, 0), F = P = 0, w.mode = 2;
                 break;
               }
-              if (w.flags = 0, w.head && (w.head.done = !1), !(1 & w.wrap) || (((255 & D) << 8) + (D >> 8)) % 31) {
-                T.msg = "incorrect header check", w.mode = 30;
+              if (w.flags = 0, w.head && (w.head.done = !1), !(1 & w.wrap) || (((255 & P) << 8) + (P >> 8)) % 31) {
+                E.msg = "incorrect header check", w.mode = 30;
                 break;
               }
-              if ((15 & D) != 8) {
-                T.msg = "unknown compression method", w.mode = 30;
+              if ((15 & P) != 8) {
+                E.msg = "unknown compression method", w.mode = 30;
                 break;
               }
-              if (F -= 4, b = 8 + (15 & (D >>>= 4)), w.wbits === 0) w.wbits = b;
+              if (F -= 4, b = 8 + (15 & (P >>>= 4)), w.wbits === 0) w.wbits = b;
               else if (b > w.wbits) {
-                T.msg = "invalid window size", w.mode = 30;
+                E.msg = "invalid window size", w.mode = 30;
                 break;
               }
-              w.dmax = 1 << b, T.adler = w.check = 1, w.mode = 512 & D ? 10 : 12, F = D = 0;
+              w.dmax = 1 << b, E.adler = w.check = 1, w.mode = 512 & P ? 10 : 12, F = P = 0;
               break;
             case 2:
               for (; F < 16; ) {
                 if (Z === 0) break e;
-                Z--, D += G[K++] << F, F += 8;
+                Z--, P += G[Y++] << F, F += 8;
               }
-              if (w.flags = D, (255 & w.flags) != 8) {
-                T.msg = "unknown compression method", w.mode = 30;
+              if (w.flags = P, (255 & w.flags) != 8) {
+                E.msg = "unknown compression method", w.mode = 30;
                 break;
               }
               if (57344 & w.flags) {
-                T.msg = "unknown header flags set", w.mode = 30;
+                E.msg = "unknown header flags set", w.mode = 30;
                 break;
               }
-              w.head && (w.head.text = D >> 8 & 1), 512 & w.flags && (U[0] = 255 & D, U[1] = D >>> 8 & 255, w.check = c(w.check, U, 2, 0)), F = D = 0, w.mode = 3;
+              w.head && (w.head.text = P >> 8 & 1), 512 & w.flags && (U[0] = 255 & P, U[1] = P >>> 8 & 255, w.check = c(w.check, U, 2, 0)), F = P = 0, w.mode = 3;
             case 3:
               for (; F < 32; ) {
                 if (Z === 0) break e;
-                Z--, D += G[K++] << F, F += 8;
+                Z--, P += G[Y++] << F, F += 8;
               }
-              w.head && (w.head.time = D), 512 & w.flags && (U[0] = 255 & D, U[1] = D >>> 8 & 255, U[2] = D >>> 16 & 255, U[3] = D >>> 24 & 255, w.check = c(w.check, U, 4, 0)), F = D = 0, w.mode = 4;
+              w.head && (w.head.time = P), 512 & w.flags && (U[0] = 255 & P, U[1] = P >>> 8 & 255, U[2] = P >>> 16 & 255, U[3] = P >>> 24 & 255, w.check = c(w.check, U, 4, 0)), F = P = 0, w.mode = 4;
             case 4:
               for (; F < 16; ) {
                 if (Z === 0) break e;
-                Z--, D += G[K++] << F, F += 8;
+                Z--, P += G[Y++] << F, F += 8;
               }
-              w.head && (w.head.xflags = 255 & D, w.head.os = D >> 8), 512 & w.flags && (U[0] = 255 & D, U[1] = D >>> 8 & 255, w.check = c(w.check, U, 2, 0)), F = D = 0, w.mode = 5;
+              w.head && (w.head.xflags = 255 & P, w.head.os = P >> 8), 512 & w.flags && (U[0] = 255 & P, U[1] = P >>> 8 & 255, w.check = c(w.check, U, 2, 0)), F = P = 0, w.mode = 5;
             case 5:
               if (1024 & w.flags) {
                 for (; F < 16; ) {
                   if (Z === 0) break e;
-                  Z--, D += G[K++] << F, F += 8;
+                  Z--, P += G[Y++] << F, F += 8;
                 }
-                w.length = D, w.head && (w.head.extra_len = D), 512 & w.flags && (U[0] = 255 & D, U[1] = D >>> 8 & 255, w.check = c(w.check, U, 2, 0)), F = D = 0;
+                w.length = P, w.head && (w.head.extra_len = P), 512 & w.flags && (U[0] = 255 & P, U[1] = P >>> 8 & 255, w.check = c(w.check, U, 2, 0)), F = P = 0;
               } else w.head && (w.head.extra = null);
               w.mode = 6;
             case 6:
-              if (1024 & w.flags && (Z < (N = w.length) && (N = Z), N && (w.head && (b = w.head.extra_len - w.length, w.head.extra || (w.head.extra = new Array(w.head.extra_len)), s.arraySet(w.head.extra, G, K, N, b)), 512 & w.flags && (w.check = c(w.check, G, N, K)), Z -= N, K += N, w.length -= N), w.length)) break e;
+              if (1024 & w.flags && (Z < (N = w.length) && (N = Z), N && (w.head && (b = w.head.extra_len - w.length, w.head.extra || (w.head.extra = new Array(w.head.extra_len)), s.arraySet(w.head.extra, G, Y, N, b)), 512 & w.flags && (w.check = c(w.check, G, N, Y)), Z -= N, Y += N, w.length -= N), w.length)) break e;
               w.length = 0, w.mode = 7;
             case 7:
               if (2048 & w.flags) {
                 if (Z === 0) break e;
-                for (N = 0; b = G[K + N++], w.head && b && w.length < 65536 && (w.head.name += String.fromCharCode(b)), b && N < Z; ) ;
-                if (512 & w.flags && (w.check = c(w.check, G, N, K)), Z -= N, K += N, b) break e;
+                for (N = 0; b = G[Y + N++], w.head && b && w.length < 65536 && (w.head.name += String.fromCharCode(b)), b && N < Z; ) ;
+                if (512 & w.flags && (w.check = c(w.check, G, N, Y)), Z -= N, Y += N, b) break e;
               } else w.head && (w.head.name = null);
               w.length = 0, w.mode = 8;
             case 8:
               if (4096 & w.flags) {
                 if (Z === 0) break e;
-                for (N = 0; b = G[K + N++], w.head && b && w.length < 65536 && (w.head.comment += String.fromCharCode(b)), b && N < Z; ) ;
-                if (512 & w.flags && (w.check = c(w.check, G, N, K)), Z -= N, K += N, b) break e;
+                for (N = 0; b = G[Y + N++], w.head && b && w.length < 65536 && (w.head.comment += String.fromCharCode(b)), b && N < Z; ) ;
+                if (512 & w.flags && (w.check = c(w.check, G, N, Y)), Z -= N, Y += N, b) break e;
               } else w.head && (w.head.comment = null);
               w.mode = 9;
             case 9:
               if (512 & w.flags) {
                 for (; F < 16; ) {
                   if (Z === 0) break e;
-                  Z--, D += G[K++] << F, F += 8;
+                  Z--, P += G[Y++] << F, F += 8;
                 }
-                if (D !== (65535 & w.check)) {
-                  T.msg = "header crc mismatch", w.mode = 30;
+                if (P !== (65535 & w.check)) {
+                  E.msg = "header crc mismatch", w.mode = 30;
                   break;
                 }
-                F = D = 0;
+                F = P = 0;
               }
-              w.head && (w.head.hcrc = w.flags >> 9 & 1, w.head.done = !0), T.adler = w.check = 0, w.mode = 12;
+              w.head && (w.head.hcrc = w.flags >> 9 & 1, w.head.done = !0), E.adler = w.check = 0, w.mode = 12;
               break;
             case 10:
               for (; F < 32; ) {
                 if (Z === 0) break e;
-                Z--, D += G[K++] << F, F += 8;
+                Z--, P += G[Y++] << F, F += 8;
               }
-              T.adler = w.check = p(D), F = D = 0, w.mode = 11;
+              E.adler = w.check = p(P), F = P = 0, w.mode = 11;
             case 11:
-              if (w.havedict === 0) return T.next_out = ne, T.avail_out = Q, T.next_in = K, T.avail_in = Z, w.hold = D, w.bits = F, 2;
-              T.adler = w.check = 1, w.mode = 12;
+              if (w.havedict === 0) return E.next_out = ne, E.avail_out = Q, E.next_in = Y, E.avail_in = Z, w.hold = P, w.bits = F, 2;
+              E.adler = w.check = 1, w.mode = 12;
             case 12:
               if (M === 5 || M === 6) break e;
             case 13:
               if (w.last) {
-                D >>>= 7 & F, F -= 7 & F, w.mode = 27;
+                P >>>= 7 & F, F -= 7 & F, w.mode = 27;
                 break;
               }
               for (; F < 3; ) {
                 if (Z === 0) break e;
-                Z--, D += G[K++] << F, F += 8;
+                Z--, P += G[Y++] << F, F += 8;
               }
-              switch (w.last = 1 & D, F -= 1, 3 & (D >>>= 1)) {
+              switch (w.last = 1 & P, F -= 1, 3 & (P >>>= 1)) {
                 case 0:
                   w.mode = 14;
                   break;
                 case 1:
                   if (I(w), w.mode = 20, M !== 6) break;
-                  D >>>= 2, F -= 2;
+                  P >>>= 2, F -= 2;
                   break e;
                 case 2:
                   w.mode = 17;
                   break;
                 case 3:
-                  T.msg = "invalid block type", w.mode = 30;
+                  E.msg = "invalid block type", w.mode = 30;
               }
-              D >>>= 2, F -= 2;
+              P >>>= 2, F -= 2;
               break;
             case 14:
-              for (D >>>= 7 & F, F -= 7 & F; F < 32; ) {
+              for (P >>>= 7 & F, F -= 7 & F; F < 32; ) {
                 if (Z === 0) break e;
-                Z--, D += G[K++] << F, F += 8;
+                Z--, P += G[Y++] << F, F += 8;
               }
-              if ((65535 & D) != (D >>> 16 ^ 65535)) {
-                T.msg = "invalid stored block lengths", w.mode = 30;
+              if ((65535 & P) != (P >>> 16 ^ 65535)) {
+                E.msg = "invalid stored block lengths", w.mode = 30;
                 break;
               }
-              if (w.length = 65535 & D, F = D = 0, w.mode = 15, M === 6) break e;
+              if (w.length = 65535 & P, F = P = 0, w.mode = 15, M === 6) break e;
             case 15:
               w.mode = 16;
             case 16:
               if (N = w.length) {
                 if (Z < N && (N = Z), Q < N && (N = Q), N === 0) break e;
-                s.arraySet(ee, G, K, N, ne), Z -= N, K += N, Q -= N, ne += N, w.length -= N;
+                s.arraySet(ee, G, Y, N, ne), Z -= N, Y += N, Q -= N, ne += N, w.length -= N;
                 break;
               }
               w.mode = 12;
@@ -1840,10 +1840,10 @@ function hi() {
             case 17:
               for (; F < 14; ) {
                 if (Z === 0) break e;
-                Z--, D += G[K++] << F, F += 8;
+                Z--, P += G[Y++] << F, F += 8;
               }
-              if (w.nlen = 257 + (31 & D), D >>>= 5, F -= 5, w.ndist = 1 + (31 & D), D >>>= 5, F -= 5, w.ncode = 4 + (15 & D), D >>>= 4, F -= 4, 286 < w.nlen || 30 < w.ndist) {
-                T.msg = "too many length or distance symbols", w.mode = 30;
+              if (w.nlen = 257 + (31 & P), P >>>= 5, F -= 5, w.ndist = 1 + (31 & P), P >>>= 5, F -= 5, w.ncode = 4 + (15 & P), P >>>= 4, F -= 4, 286 < w.nlen || 30 < w.ndist) {
+                E.msg = "too many length or distance symbols", w.mode = 30;
                 break;
               }
               w.have = 0, w.mode = 18;
@@ -1851,49 +1851,49 @@ function hi() {
               for (; w.have < w.ncode; ) {
                 for (; F < 3; ) {
                   if (Z === 0) break e;
-                  Z--, D += G[K++] << F, F += 8;
+                  Z--, P += G[Y++] << F, F += 8;
                 }
-                w.lens[Y[w.have++]] = 7 & D, D >>>= 3, F -= 3;
+                w.lens[K[w.have++]] = 7 & P, P >>>= 3, F -= 3;
               }
-              for (; w.have < 19; ) w.lens[Y[w.have++]] = 0;
+              for (; w.have < 19; ) w.lens[K[w.have++]] = 0;
               if (w.lencode = w.lendyn, w.lenbits = 7, W = { bits: w.lenbits }, X = a(0, w.lens, 0, 19, w.lencode, 0, w.work, W), w.lenbits = W.bits, X) {
-                T.msg = "invalid code lengths set", w.mode = 30;
+                E.msg = "invalid code lengths set", w.mode = 30;
                 break;
               }
               w.have = 0, w.mode = 19;
             case 19:
               for (; w.have < w.nlen + w.ndist; ) {
-                for (; le = (S = w.lencode[D & (1 << w.lenbits) - 1]) >>> 16 & 255, Ae = 65535 & S, !((ae = S >>> 24) <= F); ) {
+                for (; le = (S = w.lencode[P & (1 << w.lenbits) - 1]) >>> 16 & 255, Ae = 65535 & S, !((ae = S >>> 24) <= F); ) {
                   if (Z === 0) break e;
-                  Z--, D += G[K++] << F, F += 8;
+                  Z--, P += G[Y++] << F, F += 8;
                 }
-                if (Ae < 16) D >>>= ae, F -= ae, w.lens[w.have++] = Ae;
+                if (Ae < 16) P >>>= ae, F -= ae, w.lens[w.have++] = Ae;
                 else {
                   if (Ae === 16) {
                     for (k = ae + 2; F < k; ) {
                       if (Z === 0) break e;
-                      Z--, D += G[K++] << F, F += 8;
+                      Z--, P += G[Y++] << F, F += 8;
                     }
-                    if (D >>>= ae, F -= ae, w.have === 0) {
-                      T.msg = "invalid bit length repeat", w.mode = 30;
+                    if (P >>>= ae, F -= ae, w.have === 0) {
+                      E.msg = "invalid bit length repeat", w.mode = 30;
                       break;
                     }
-                    b = w.lens[w.have - 1], N = 3 + (3 & D), D >>>= 2, F -= 2;
+                    b = w.lens[w.have - 1], N = 3 + (3 & P), P >>>= 2, F -= 2;
                   } else if (Ae === 17) {
                     for (k = ae + 3; F < k; ) {
                       if (Z === 0) break e;
-                      Z--, D += G[K++] << F, F += 8;
+                      Z--, P += G[Y++] << F, F += 8;
                     }
-                    F -= ae, b = 0, N = 3 + (7 & (D >>>= ae)), D >>>= 3, F -= 3;
+                    F -= ae, b = 0, N = 3 + (7 & (P >>>= ae)), P >>>= 3, F -= 3;
                   } else {
                     for (k = ae + 7; F < k; ) {
                       if (Z === 0) break e;
-                      Z--, D += G[K++] << F, F += 8;
+                      Z--, P += G[Y++] << F, F += 8;
                     }
-                    F -= ae, b = 0, N = 11 + (127 & (D >>>= ae)), D >>>= 7, F -= 7;
+                    F -= ae, b = 0, N = 11 + (127 & (P >>>= ae)), P >>>= 7, F -= 7;
                   }
                   if (w.have + N > w.nlen + w.ndist) {
-                    T.msg = "invalid bit length repeat", w.mode = 30;
+                    E.msg = "invalid bit length repeat", w.mode = 30;
                     break;
                   }
                   for (; N--; ) w.lens[w.have++] = b;
@@ -1901,15 +1901,15 @@ function hi() {
               }
               if (w.mode === 30) break;
               if (w.lens[256] === 0) {
-                T.msg = "invalid code -- missing end-of-block", w.mode = 30;
+                E.msg = "invalid code -- missing end-of-block", w.mode = 30;
                 break;
               }
               if (w.lenbits = 9, W = { bits: w.lenbits }, X = a(o, w.lens, 0, w.nlen, w.lencode, 0, w.work, W), w.lenbits = W.bits, X) {
-                T.msg = "invalid literal/lengths set", w.mode = 30;
+                E.msg = "invalid literal/lengths set", w.mode = 30;
                 break;
               }
               if (w.distbits = 6, w.distcode = w.distdyn, W = { bits: w.distbits }, X = a(f, w.lens, w.nlen, w.ndist, w.distcode, 0, w.work, W), w.distbits = W.bits, X) {
-                T.msg = "invalid distances set", w.mode = 30;
+                E.msg = "invalid distances set", w.mode = 30;
                 break;
               }
               if (w.mode = 20, M === 6) break e;
@@ -1917,21 +1917,21 @@ function hi() {
               w.mode = 21;
             case 21:
               if (6 <= Z && 258 <= Q) {
-                T.next_out = ne, T.avail_out = Q, T.next_in = K, T.avail_in = Z, w.hold = D, w.bits = F, A(T, L), ne = T.next_out, ee = T.output, Q = T.avail_out, K = T.next_in, G = T.input, Z = T.avail_in, D = w.hold, F = w.bits, w.mode === 12 && (w.back = -1);
+                E.next_out = ne, E.avail_out = Q, E.next_in = Y, E.avail_in = Z, w.hold = P, w.bits = F, A(E, L), ne = E.next_out, ee = E.output, Q = E.avail_out, Y = E.next_in, G = E.input, Z = E.avail_in, P = w.hold, F = w.bits, w.mode === 12 && (w.back = -1);
                 break;
               }
-              for (w.back = 0; le = (S = w.lencode[D & (1 << w.lenbits) - 1]) >>> 16 & 255, Ae = 65535 & S, !((ae = S >>> 24) <= F); ) {
+              for (w.back = 0; le = (S = w.lencode[P & (1 << w.lenbits) - 1]) >>> 16 & 255, Ae = 65535 & S, !((ae = S >>> 24) <= F); ) {
                 if (Z === 0) break e;
-                Z--, D += G[K++] << F, F += 8;
+                Z--, P += G[Y++] << F, F += 8;
               }
               if (le && (240 & le) == 0) {
-                for (z = ae, q = le, j = Ae; le = (S = w.lencode[j + ((D & (1 << z + q) - 1) >> z)]) >>> 16 & 255, Ae = 65535 & S, !(z + (ae = S >>> 24) <= F); ) {
+                for (z = ae, q = le, j = Ae; le = (S = w.lencode[j + ((P & (1 << z + q) - 1) >> z)]) >>> 16 & 255, Ae = 65535 & S, !(z + (ae = S >>> 24) <= F); ) {
                   if (Z === 0) break e;
-                  Z--, D += G[K++] << F, F += 8;
+                  Z--, P += G[Y++] << F, F += 8;
                 }
-                D >>>= z, F -= z, w.back += z;
+                P >>>= z, F -= z, w.back += z;
               }
-              if (D >>>= ae, F -= ae, w.back += ae, w.length = Ae, le === 0) {
+              if (P >>>= ae, F -= ae, w.back += ae, w.length = Ae, le === 0) {
                 w.mode = 26;
                 break;
               }
@@ -1940,7 +1940,7 @@ function hi() {
                 break;
               }
               if (64 & le) {
-                T.msg = "invalid literal/length code", w.mode = 30;
+                E.msg = "invalid literal/length code", w.mode = 30;
                 break;
               }
               w.extra = 15 & le, w.mode = 22;
@@ -1948,25 +1948,25 @@ function hi() {
               if (w.extra) {
                 for (k = w.extra; F < k; ) {
                   if (Z === 0) break e;
-                  Z--, D += G[K++] << F, F += 8;
+                  Z--, P += G[Y++] << F, F += 8;
                 }
-                w.length += D & (1 << w.extra) - 1, D >>>= w.extra, F -= w.extra, w.back += w.extra;
+                w.length += P & (1 << w.extra) - 1, P >>>= w.extra, F -= w.extra, w.back += w.extra;
               }
               w.was = w.length, w.mode = 23;
             case 23:
-              for (; le = (S = w.distcode[D & (1 << w.distbits) - 1]) >>> 16 & 255, Ae = 65535 & S, !((ae = S >>> 24) <= F); ) {
+              for (; le = (S = w.distcode[P & (1 << w.distbits) - 1]) >>> 16 & 255, Ae = 65535 & S, !((ae = S >>> 24) <= F); ) {
                 if (Z === 0) break e;
-                Z--, D += G[K++] << F, F += 8;
+                Z--, P += G[Y++] << F, F += 8;
               }
               if ((240 & le) == 0) {
-                for (z = ae, q = le, j = Ae; le = (S = w.distcode[j + ((D & (1 << z + q) - 1) >> z)]) >>> 16 & 255, Ae = 65535 & S, !(z + (ae = S >>> 24) <= F); ) {
+                for (z = ae, q = le, j = Ae; le = (S = w.distcode[j + ((P & (1 << z + q) - 1) >> z)]) >>> 16 & 255, Ae = 65535 & S, !(z + (ae = S >>> 24) <= F); ) {
                   if (Z === 0) break e;
-                  Z--, D += G[K++] << F, F += 8;
+                  Z--, P += G[Y++] << F, F += 8;
                 }
-                D >>>= z, F -= z, w.back += z;
+                P >>>= z, F -= z, w.back += z;
               }
-              if (D >>>= ae, F -= ae, w.back += ae, 64 & le) {
-                T.msg = "invalid distance code", w.mode = 30;
+              if (P >>>= ae, F -= ae, w.back += ae, 64 & le) {
+                E.msg = "invalid distance code", w.mode = 30;
                 break;
               }
               w.offset = Ae, w.extra = 15 & le, w.mode = 24;
@@ -1974,12 +1974,12 @@ function hi() {
               if (w.extra) {
                 for (k = w.extra; F < k; ) {
                   if (Z === 0) break e;
-                  Z--, D += G[K++] << F, F += 8;
+                  Z--, P += G[Y++] << F, F += 8;
                 }
-                w.offset += D & (1 << w.extra) - 1, D >>>= w.extra, F -= w.extra, w.back += w.extra;
+                w.offset += P & (1 << w.extra) - 1, P >>>= w.extra, F -= w.extra, w.back += w.extra;
               }
               if (w.offset > w.dmax) {
-                T.msg = "invalid distance too far back", w.mode = 30;
+                E.msg = "invalid distance too far back", w.mode = 30;
                 break;
               }
               w.mode = 25;
@@ -1987,7 +1987,7 @@ function hi() {
               if (Q === 0) break e;
               if (N = L - Q, w.offset > N) {
                 if ((N = w.offset - N) > w.whave && w.sane) {
-                  T.msg = "invalid distance too far back", w.mode = 30;
+                  E.msg = "invalid distance too far back", w.mode = 30;
                   break;
                 }
                 H = N > w.wnext ? (N -= w.wnext, w.wsize - N) : w.wnext - N, N > w.length && (N = w.length), ie = w.window;
@@ -2003,26 +2003,26 @@ function hi() {
               if (w.wrap) {
                 for (; F < 32; ) {
                   if (Z === 0) break e;
-                  Z--, D |= G[K++] << F, F += 8;
+                  Z--, P |= G[Y++] << F, F += 8;
                 }
-                if (L -= Q, T.total_out += L, w.total += L, L && (T.adler = w.check = w.flags ? c(w.check, ee, L, ne - L) : l(w.check, ee, L, ne - L)), L = Q, (w.flags ? D : p(D)) !== w.check) {
-                  T.msg = "incorrect data check", w.mode = 30;
+                if (L -= Q, E.total_out += L, w.total += L, L && (E.adler = w.check = w.flags ? c(w.check, ee, L, ne - L) : l(w.check, ee, L, ne - L)), L = Q, (w.flags ? P : p(P)) !== w.check) {
+                  E.msg = "incorrect data check", w.mode = 30;
                   break;
                 }
-                F = D = 0;
+                F = P = 0;
               }
               w.mode = 28;
             case 28:
               if (w.wrap && w.flags) {
                 for (; F < 32; ) {
                   if (Z === 0) break e;
-                  Z--, D += G[K++] << F, F += 8;
+                  Z--, P += G[Y++] << F, F += 8;
                 }
-                if (D !== (4294967295 & w.total)) {
-                  T.msg = "incorrect length check", w.mode = 30;
+                if (P !== (4294967295 & w.total)) {
+                  E.msg = "incorrect length check", w.mode = 30;
                   break;
                 }
-                F = D = 0;
+                F = P = 0;
               }
               w.mode = 29;
             case 29:
@@ -2036,46 +2036,46 @@ function hi() {
             default:
               return d;
           }
-          return T.next_out = ne, T.avail_out = Q, T.next_in = K, T.avail_in = Z, w.hold = D, w.bits = F, (w.wsize || L !== T.avail_out && w.mode < 30 && (w.mode < 27 || M !== 4)) && O(T, T.output, T.next_out, L - T.avail_out) ? (w.mode = 31, -4) : ($ -= T.avail_in, L -= T.avail_out, T.total_in += $, T.total_out += L, w.total += L, w.wrap && L && (T.adler = w.check = w.flags ? c(w.check, ee, L, T.next_out - L) : l(w.check, ee, L, T.next_out - L)), T.data_type = w.bits + (w.last ? 64 : 0) + (w.mode === 12 ? 128 : 0) + (w.mode === 20 || w.mode === 15 ? 256 : 0), ($ == 0 && L === 0 || M === 4) && X === g && (X = -5), X);
-        }, n.inflateEnd = function(T) {
-          if (!T || !T.state) return d;
-          var M = T.state;
-          return M.window && (M.window = null), T.state = null, g;
-        }, n.inflateGetHeader = function(T, M) {
+          return E.next_out = ne, E.avail_out = Q, E.next_in = Y, E.avail_in = Z, w.hold = P, w.bits = F, (w.wsize || L !== E.avail_out && w.mode < 30 && (w.mode < 27 || M !== 4)) && O(E, E.output, E.next_out, L - E.avail_out) ? (w.mode = 31, -4) : ($ -= E.avail_in, L -= E.avail_out, E.total_in += $, E.total_out += L, w.total += L, w.wrap && L && (E.adler = w.check = w.flags ? c(w.check, ee, L, E.next_out - L) : l(w.check, ee, L, E.next_out - L)), E.data_type = w.bits + (w.last ? 64 : 0) + (w.mode === 12 ? 128 : 0) + (w.mode === 20 || w.mode === 15 ? 256 : 0), ($ == 0 && L === 0 || M === 4) && X === g && (X = -5), X);
+        }, n.inflateEnd = function(E) {
+          if (!E || !E.state) return d;
+          var M = E.state;
+          return M.window && (M.window = null), E.state = null, g;
+        }, n.inflateGetHeader = function(E, M) {
           var w;
-          return T && T.state ? (2 & (w = T.state).wrap) == 0 ? d : ((w.head = M).done = !1, g) : d;
-        }, n.inflateSetDictionary = function(T, M) {
+          return E && E.state ? (2 & (w = E.state).wrap) == 0 ? d : ((w.head = M).done = !1, g) : d;
+        }, n.inflateSetDictionary = function(E, M) {
           var w, G = M.length;
-          return T && T.state ? (w = T.state).wrap !== 0 && w.mode !== 11 ? d : w.mode === 11 && l(1, M, G, 0) !== w.check ? -3 : O(T, M, G, G) ? (w.mode = 31, -4) : (w.havedict = 1, g) : d;
+          return E && E.state ? (w = E.state).wrap !== 0 && w.mode !== 11 ? d : w.mode === 11 && l(1, M, G, 0) !== w.check ? -3 : O(E, M, G, G) ? (w.mode = 31, -4) : (w.havedict = 1, g) : d;
         }, n.inflateInfo = "pako inflate (from Nodeca project)";
       }, { "../utils/common": 41, "./adler32": 43, "./crc32": 45, "./inffast": 48, "./inftrees": 50 }], 50: [function(t, i, n) {
         var s = t("../utils/common"), l = [3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0], c = [16, 16, 16, 16, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18, 18, 19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 16, 72, 78], A = [1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577, 0, 0], a = [16, 16, 16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23, 24, 24, 25, 25, 26, 26, 27, 27, 28, 28, 29, 29, 64, 64];
         i.exports = function(o, f, g, d, m, u, y, p) {
-          var h, _, E, v, C, x, B, R, I, O = p.bits, T = 0, M = 0, w = 0, G = 0, ee = 0, K = 0, ne = 0, Z = 0, Q = 0, D = 0, F = null, $ = 0, L = new s.Buf16(16), N = new s.Buf16(16), H = null, ie = 0;
-          for (T = 0; T <= 15; T++) L[T] = 0;
+          var h, _, T, v, C, x, B, R, I, O = p.bits, E = 0, M = 0, w = 0, G = 0, ee = 0, Y = 0, ne = 0, Z = 0, Q = 0, P = 0, F = null, $ = 0, L = new s.Buf16(16), N = new s.Buf16(16), H = null, ie = 0;
+          for (E = 0; E <= 15; E++) L[E] = 0;
           for (M = 0; M < d; M++) L[f[g + M]]++;
           for (ee = O, G = 15; 1 <= G && L[G] === 0; G--) ;
           if (G < ee && (ee = G), G === 0) return m[u++] = 20971520, m[u++] = 20971520, p.bits = 1, 0;
           for (w = 1; w < G && L[w] === 0; w++) ;
-          for (ee < w && (ee = w), T = Z = 1; T <= 15; T++) if (Z <<= 1, (Z -= L[T]) < 0) return -1;
+          for (ee < w && (ee = w), E = Z = 1; E <= 15; E++) if (Z <<= 1, (Z -= L[E]) < 0) return -1;
           if (0 < Z && (o === 0 || G !== 1)) return -1;
-          for (N[1] = 0, T = 1; T < 15; T++) N[T + 1] = N[T] + L[T];
+          for (N[1] = 0, E = 1; E < 15; E++) N[E + 1] = N[E] + L[E];
           for (M = 0; M < d; M++) f[g + M] !== 0 && (y[N[f[g + M]]++] = M);
-          if (x = o === 0 ? (F = H = y, 19) : o === 1 ? (F = l, $ -= 257, H = c, ie -= 257, 256) : (F = A, H = a, -1), T = w, C = u, ne = M = D = 0, E = -1, v = (Q = 1 << (K = ee)) - 1, o === 1 && 852 < Q || o === 2 && 592 < Q) return 1;
+          if (x = o === 0 ? (F = H = y, 19) : o === 1 ? (F = l, $ -= 257, H = c, ie -= 257, 256) : (F = A, H = a, -1), E = w, C = u, ne = M = P = 0, T = -1, v = (Q = 1 << (Y = ee)) - 1, o === 1 && 852 < Q || o === 2 && 592 < Q) return 1;
           for (; ; ) {
-            for (B = T - ne, I = y[M] < x ? (R = 0, y[M]) : y[M] > x ? (R = H[ie + y[M]], F[$ + y[M]]) : (R = 96, 0), h = 1 << T - ne, w = _ = 1 << K; m[C + (D >> ne) + (_ -= h)] = B << 24 | R << 16 | I | 0, _ !== 0; ) ;
-            for (h = 1 << T - 1; D & h; ) h >>= 1;
-            if (h !== 0 ? (D &= h - 1, D += h) : D = 0, M++, --L[T] == 0) {
-              if (T === G) break;
-              T = f[g + y[M]];
+            for (B = E - ne, I = y[M] < x ? (R = 0, y[M]) : y[M] > x ? (R = H[ie + y[M]], F[$ + y[M]]) : (R = 96, 0), h = 1 << E - ne, w = _ = 1 << Y; m[C + (P >> ne) + (_ -= h)] = B << 24 | R << 16 | I | 0, _ !== 0; ) ;
+            for (h = 1 << E - 1; P & h; ) h >>= 1;
+            if (h !== 0 ? (P &= h - 1, P += h) : P = 0, M++, --L[E] == 0) {
+              if (E === G) break;
+              E = f[g + y[M]];
             }
-            if (ee < T && (D & v) !== E) {
-              for (ne === 0 && (ne = ee), C += w, Z = 1 << (K = T - ne); K + ne < G && !((Z -= L[K + ne]) <= 0); ) K++, Z <<= 1;
-              if (Q += 1 << K, o === 1 && 852 < Q || o === 2 && 592 < Q) return 1;
-              m[E = D & v] = ee << 24 | K << 16 | C - u | 0;
+            if (ee < E && (P & v) !== T) {
+              for (ne === 0 && (ne = ee), C += w, Z = 1 << (Y = E - ne); Y + ne < G && !((Z -= L[Y + ne]) <= 0); ) Y++, Z <<= 1;
+              if (Q += 1 << Y, o === 1 && 852 < Q || o === 2 && 592 < Q) return 1;
+              m[T = P & v] = ee << 24 | Y << 16 | C - u | 0;
             }
           }
-          return D !== 0 && (m[C + D] = T - ne << 24 | 64 << 16 | 0), p.bits = ee, 0;
+          return P !== 0 && (m[C + P] = E - ne << 24 | 64 << 16 | 0), p.bits = ee, 0;
         };
       }, { "../utils/common": 41 }], 51: [function(t, i, n) {
         i.exports = { 2: "need dictionary", 1: "stream end", 0: "", "-1": "file error", "-2": "stream error", "-3": "data error", "-4": "insufficient memory", "-5": "buffer error", "-6": "incompatible version" };
@@ -2084,21 +2084,21 @@ function hi() {
         function A(S) {
           for (var U = S.length; 0 <= --U; ) S[U] = 0;
         }
-        var a = 0, o = 29, f = 256, g = f + 1 + o, d = 30, m = 19, u = 2 * g + 1, y = 15, p = 16, h = 7, _ = 256, E = 16, v = 17, C = 18, x = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0], B = [0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13], R = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 7], I = [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15], O = new Array(2 * (g + 2));
+        var a = 0, o = 29, f = 256, g = f + 1 + o, d = 30, m = 19, u = 2 * g + 1, y = 15, p = 16, h = 7, _ = 256, T = 16, v = 17, C = 18, x = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0], B = [0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13], R = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 7], I = [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15], O = new Array(2 * (g + 2));
         A(O);
-        var T = new Array(2 * d);
-        A(T);
+        var E = new Array(2 * d);
+        A(E);
         var M = new Array(512);
         A(M);
         var w = new Array(256);
         A(w);
         var G = new Array(o);
         A(G);
-        var ee, K, ne, Z = new Array(d);
-        function Q(S, U, Y, J, V) {
-          this.static_tree = S, this.extra_bits = U, this.extra_base = Y, this.elems = J, this.max_length = V, this.has_stree = S && S.length;
+        var ee, Y, ne, Z = new Array(d);
+        function Q(S, U, K, J, V) {
+          this.static_tree = S, this.extra_bits = U, this.extra_base = K, this.elems = J, this.max_length = V, this.has_stree = S && S.length;
         }
-        function D(S, U) {
+        function P(S, U) {
           this.dyn_tree = S, this.max_code = 0, this.stat_desc = U;
         }
         function F(S) {
@@ -2107,19 +2107,19 @@ function hi() {
         function $(S, U) {
           S.pending_buf[S.pending++] = 255 & U, S.pending_buf[S.pending++] = U >>> 8 & 255;
         }
-        function L(S, U, Y) {
-          S.bi_valid > p - Y ? (S.bi_buf |= U << S.bi_valid & 65535, $(S, S.bi_buf), S.bi_buf = U >> p - S.bi_valid, S.bi_valid += Y - p) : (S.bi_buf |= U << S.bi_valid & 65535, S.bi_valid += Y);
+        function L(S, U, K) {
+          S.bi_valid > p - K ? (S.bi_buf |= U << S.bi_valid & 65535, $(S, S.bi_buf), S.bi_buf = U >> p - S.bi_valid, S.bi_valid += K - p) : (S.bi_buf |= U << S.bi_valid & 65535, S.bi_valid += K);
         }
-        function N(S, U, Y) {
-          L(S, Y[2 * U], Y[2 * U + 1]);
+        function N(S, U, K) {
+          L(S, K[2 * U], K[2 * U + 1]);
         }
         function H(S, U) {
-          for (var Y = 0; Y |= 1 & S, S >>>= 1, Y <<= 1, 0 < --U; ) ;
-          return Y >>> 1;
+          for (var K = 0; K |= 1 & S, S >>>= 1, K <<= 1, 0 < --U; ) ;
+          return K >>> 1;
         }
-        function ie(S, U, Y) {
+        function ie(S, U, K) {
           var J, V, te = new Array(y + 1), se = 0;
-          for (J = 1; J <= y; J++) te[J] = se = se + Y[J - 1] << 1;
+          for (J = 1; J <= y; J++) te[J] = se = se + K[J - 1] << 1;
           for (V = 0; V <= U; V++) {
             var oe = S[2 * V + 1];
             oe !== 0 && (S[2 * V] = H(te[oe]++, oe));
@@ -2135,72 +2135,72 @@ function hi() {
         function le(S) {
           8 < S.bi_valid ? $(S, S.bi_buf) : 0 < S.bi_valid && (S.pending_buf[S.pending++] = S.bi_buf), S.bi_buf = 0, S.bi_valid = 0;
         }
-        function Ae(S, U, Y, J) {
-          var V = 2 * U, te = 2 * Y;
-          return S[V] < S[te] || S[V] === S[te] && J[U] <= J[Y];
+        function Ae(S, U, K, J) {
+          var V = 2 * U, te = 2 * K;
+          return S[V] < S[te] || S[V] === S[te] && J[U] <= J[K];
         }
-        function z(S, U, Y) {
-          for (var J = S.heap[Y], V = Y << 1; V <= S.heap_len && (V < S.heap_len && Ae(U, S.heap[V + 1], S.heap[V], S.depth) && V++, !Ae(U, J, S.heap[V], S.depth)); ) S.heap[Y] = S.heap[V], Y = V, V <<= 1;
-          S.heap[Y] = J;
+        function z(S, U, K) {
+          for (var J = S.heap[K], V = K << 1; V <= S.heap_len && (V < S.heap_len && Ae(U, S.heap[V + 1], S.heap[V], S.depth) && V++, !Ae(U, J, S.heap[V], S.depth)); ) S.heap[K] = S.heap[V], K = V, V <<= 1;
+          S.heap[K] = J;
         }
-        function q(S, U, Y) {
+        function q(S, U, K) {
           var J, V, te, se, oe = 0;
-          if (S.last_lit !== 0) for (; J = S.pending_buf[S.d_buf + 2 * oe] << 8 | S.pending_buf[S.d_buf + 2 * oe + 1], V = S.pending_buf[S.l_buf + oe], oe++, J === 0 ? N(S, V, U) : (N(S, (te = w[V]) + f + 1, U), (se = x[te]) !== 0 && L(S, V -= G[te], se), N(S, te = F(--J), Y), (se = B[te]) !== 0 && L(S, J -= Z[te], se)), oe < S.last_lit; ) ;
+          if (S.last_lit !== 0) for (; J = S.pending_buf[S.d_buf + 2 * oe] << 8 | S.pending_buf[S.d_buf + 2 * oe + 1], V = S.pending_buf[S.l_buf + oe], oe++, J === 0 ? N(S, V, U) : (N(S, (te = w[V]) + f + 1, U), (se = x[te]) !== 0 && L(S, V -= G[te], se), N(S, te = F(--J), K), (se = B[te]) !== 0 && L(S, J -= Z[te], se)), oe < S.last_lit; ) ;
           N(S, _, U);
         }
         function j(S, U) {
-          var Y, J, V, te = U.dyn_tree, se = U.stat_desc.static_tree, oe = U.stat_desc.has_stree, ce = U.stat_desc.elems, xe = -1;
-          for (S.heap_len = 0, S.heap_max = u, Y = 0; Y < ce; Y++) te[2 * Y] !== 0 ? (S.heap[++S.heap_len] = xe = Y, S.depth[Y] = 0) : te[2 * Y + 1] = 0;
+          var K, J, V, te = U.dyn_tree, se = U.stat_desc.static_tree, oe = U.stat_desc.has_stree, ce = U.stat_desc.elems, xe = -1;
+          for (S.heap_len = 0, S.heap_max = u, K = 0; K < ce; K++) te[2 * K] !== 0 ? (S.heap[++S.heap_len] = xe = K, S.depth[K] = 0) : te[2 * K + 1] = 0;
           for (; S.heap_len < 2; ) te[2 * (V = S.heap[++S.heap_len] = xe < 2 ? ++xe : 0)] = 1, S.depth[V] = 0, S.opt_len--, oe && (S.static_len -= se[2 * V + 1]);
-          for (U.max_code = xe, Y = S.heap_len >> 1; 1 <= Y; Y--) z(S, te, Y);
-          for (V = ce; Y = S.heap[1], S.heap[1] = S.heap[S.heap_len--], z(S, te, 1), J = S.heap[1], S.heap[--S.heap_max] = Y, S.heap[--S.heap_max] = J, te[2 * V] = te[2 * Y] + te[2 * J], S.depth[V] = (S.depth[Y] >= S.depth[J] ? S.depth[Y] : S.depth[J]) + 1, te[2 * Y + 1] = te[2 * J + 1] = V, S.heap[1] = V++, z(S, te, 1), 2 <= S.heap_len; ) ;
+          for (U.max_code = xe, K = S.heap_len >> 1; 1 <= K; K--) z(S, te, K);
+          for (V = ce; K = S.heap[1], S.heap[1] = S.heap[S.heap_len--], z(S, te, 1), J = S.heap[1], S.heap[--S.heap_max] = K, S.heap[--S.heap_max] = J, te[2 * V] = te[2 * K] + te[2 * J], S.depth[V] = (S.depth[K] >= S.depth[J] ? S.depth[K] : S.depth[J]) + 1, te[2 * K + 1] = te[2 * J + 1] = V, S.heap[1] = V++, z(S, te, 1), 2 <= S.heap_len; ) ;
           S.heap[--S.heap_max] = S.heap[1], (function(ye, Ie) {
-            var ot, qe, Rt, Le, qt, Zr, He = Ie.dyn_tree, Ha = Ie.max_code, di = Ie.stat_desc.static_tree, fi = Ie.stat_desc.has_stree, ui = Ie.stat_desc.extra_bits, Va = Ie.stat_desc.extra_base, Dt = Ie.stat_desc.max_length, Ht = 0;
+            var it, qe, Dt, Le, Ht, ea, Ve = Ie.dyn_tree, Qa = Ie.max_code, Ai = Ie.stat_desc.static_tree, di = Ie.stat_desc.has_stree, fi = Ie.stat_desc.extra_bits, ja = Ie.stat_desc.extra_base, Pt = Ie.stat_desc.max_length, Vt = 0;
             for (Le = 0; Le <= y; Le++) ye.bl_count[Le] = 0;
-            for (He[2 * ye.heap[ye.heap_max] + 1] = 0, ot = ye.heap_max + 1; ot < u; ot++) Dt < (Le = He[2 * He[2 * (qe = ye.heap[ot]) + 1] + 1] + 1) && (Le = Dt, Ht++), He[2 * qe + 1] = Le, Ha < qe || (ye.bl_count[Le]++, qt = 0, Va <= qe && (qt = ui[qe - Va]), Zr = He[2 * qe], ye.opt_len += Zr * (Le + qt), fi && (ye.static_len += Zr * (di[2 * qe + 1] + qt)));
-            if (Ht !== 0) {
+            for (Ve[2 * ye.heap[ye.heap_max] + 1] = 0, it = ye.heap_max + 1; it < u; it++) Pt < (Le = Ve[2 * Ve[2 * (qe = ye.heap[it]) + 1] + 1] + 1) && (Le = Pt, Vt++), Ve[2 * qe + 1] = Le, Qa < qe || (ye.bl_count[Le]++, Ht = 0, ja <= qe && (Ht = fi[qe - ja]), ea = Ve[2 * qe], ye.opt_len += ea * (Le + Ht), di && (ye.static_len += ea * (Ai[2 * qe + 1] + Ht)));
+            if (Vt !== 0) {
               do {
-                for (Le = Dt - 1; ye.bl_count[Le] === 0; ) Le--;
-                ye.bl_count[Le]--, ye.bl_count[Le + 1] += 2, ye.bl_count[Dt]--, Ht -= 2;
-              } while (0 < Ht);
-              for (Le = Dt; Le !== 0; Le--) for (qe = ye.bl_count[Le]; qe !== 0; ) Ha < (Rt = ye.heap[--ot]) || (He[2 * Rt + 1] !== Le && (ye.opt_len += (Le - He[2 * Rt + 1]) * He[2 * Rt], He[2 * Rt + 1] = Le), qe--);
+                for (Le = Pt - 1; ye.bl_count[Le] === 0; ) Le--;
+                ye.bl_count[Le]--, ye.bl_count[Le + 1] += 2, ye.bl_count[Pt]--, Vt -= 2;
+              } while (0 < Vt);
+              for (Le = Pt; Le !== 0; Le--) for (qe = ye.bl_count[Le]; qe !== 0; ) Qa < (Dt = ye.heap[--it]) || (Ve[2 * Dt + 1] !== Le && (ye.opt_len += (Le - Ve[2 * Dt + 1]) * Ve[2 * Dt], Ve[2 * Dt + 1] = Le), qe--);
             }
           })(S, U), ie(te, xe, S.bl_count);
         }
-        function b(S, U, Y) {
+        function b(S, U, K) {
           var J, V, te = -1, se = U[1], oe = 0, ce = 7, xe = 4;
-          for (se === 0 && (ce = 138, xe = 3), U[2 * (Y + 1) + 1] = 65535, J = 0; J <= Y; J++) V = se, se = U[2 * (J + 1) + 1], ++oe < ce && V === se || (oe < xe ? S.bl_tree[2 * V] += oe : V !== 0 ? (V !== te && S.bl_tree[2 * V]++, S.bl_tree[2 * E]++) : oe <= 10 ? S.bl_tree[2 * v]++ : S.bl_tree[2 * C]++, te = V, xe = (oe = 0) === se ? (ce = 138, 3) : V === se ? (ce = 6, 3) : (ce = 7, 4));
+          for (se === 0 && (ce = 138, xe = 3), U[2 * (K + 1) + 1] = 65535, J = 0; J <= K; J++) V = se, se = U[2 * (J + 1) + 1], ++oe < ce && V === se || (oe < xe ? S.bl_tree[2 * V] += oe : V !== 0 ? (V !== te && S.bl_tree[2 * V]++, S.bl_tree[2 * T]++) : oe <= 10 ? S.bl_tree[2 * v]++ : S.bl_tree[2 * C]++, te = V, xe = (oe = 0) === se ? (ce = 138, 3) : V === se ? (ce = 6, 3) : (ce = 7, 4));
         }
-        function X(S, U, Y) {
+        function X(S, U, K) {
           var J, V, te = -1, se = U[1], oe = 0, ce = 7, xe = 4;
-          for (se === 0 && (ce = 138, xe = 3), J = 0; J <= Y; J++) if (V = se, se = U[2 * (J + 1) + 1], !(++oe < ce && V === se)) {
+          for (se === 0 && (ce = 138, xe = 3), J = 0; J <= K; J++) if (V = se, se = U[2 * (J + 1) + 1], !(++oe < ce && V === se)) {
             if (oe < xe) for (; N(S, V, S.bl_tree), --oe != 0; ) ;
-            else V !== 0 ? (V !== te && (N(S, V, S.bl_tree), oe--), N(S, E, S.bl_tree), L(S, oe - 3, 2)) : oe <= 10 ? (N(S, v, S.bl_tree), L(S, oe - 3, 3)) : (N(S, C, S.bl_tree), L(S, oe - 11, 7));
+            else V !== 0 ? (V !== te && (N(S, V, S.bl_tree), oe--), N(S, T, S.bl_tree), L(S, oe - 3, 2)) : oe <= 10 ? (N(S, v, S.bl_tree), L(S, oe - 3, 3)) : (N(S, C, S.bl_tree), L(S, oe - 11, 7));
             te = V, xe = (oe = 0) === se ? (ce = 138, 3) : V === se ? (ce = 6, 3) : (ce = 7, 4);
           }
         }
         A(Z);
         var W = !1;
-        function k(S, U, Y, J) {
+        function k(S, U, K, J) {
           L(S, (a << 1) + (J ? 1 : 0), 3), (function(V, te, se, oe) {
             le(V), $(V, se), $(V, ~se), s.arraySet(V.pending_buf, V.window, te, se, V.pending), V.pending += se;
-          })(S, U, Y);
+          })(S, U, K);
         }
         n._tr_init = function(S) {
           W || ((function() {
-            var U, Y, J, V, te, se = new Array(y + 1);
+            var U, K, J, V, te, se = new Array(y + 1);
             for (V = J = 0; V < o - 1; V++) for (G[V] = J, U = 0; U < 1 << x[V]; U++) w[J++] = V;
             for (w[J - 1] = V, V = te = 0; V < 16; V++) for (Z[V] = te, U = 0; U < 1 << B[V]; U++) M[te++] = V;
             for (te >>= 7; V < d; V++) for (Z[V] = te << 7, U = 0; U < 1 << B[V] - 7; U++) M[256 + te++] = V;
-            for (Y = 0; Y <= y; Y++) se[Y] = 0;
+            for (K = 0; K <= y; K++) se[K] = 0;
             for (U = 0; U <= 143; ) O[2 * U + 1] = 8, U++, se[8]++;
             for (; U <= 255; ) O[2 * U + 1] = 9, U++, se[9]++;
             for (; U <= 279; ) O[2 * U + 1] = 7, U++, se[7]++;
             for (; U <= 287; ) O[2 * U + 1] = 8, U++, se[8]++;
-            for (ie(O, g + 1, se), U = 0; U < d; U++) T[2 * U + 1] = 5, T[2 * U] = H(U, 5);
-            ee = new Q(O, x, f + 1, g, y), K = new Q(T, B, 0, d, y), ne = new Q(new Array(0), R, 0, m, h);
-          })(), W = !0), S.l_desc = new D(S.dyn_ltree, ee), S.d_desc = new D(S.dyn_dtree, K), S.bl_desc = new D(S.bl_tree, ne), S.bi_buf = 0, S.bi_valid = 0, ae(S);
-        }, n._tr_stored_block = k, n._tr_flush_block = function(S, U, Y, J) {
+            for (ie(O, g + 1, se), U = 0; U < d; U++) E[2 * U + 1] = 5, E[2 * U] = H(U, 5);
+            ee = new Q(O, x, f + 1, g, y), Y = new Q(E, B, 0, d, y), ne = new Q(new Array(0), R, 0, m, h);
+          })(), W = !0), S.l_desc = new P(S.dyn_ltree, ee), S.d_desc = new P(S.dyn_dtree, Y), S.bl_desc = new P(S.bl_tree, ne), S.bi_buf = 0, S.bi_valid = 0, ae(S);
+        }, n._tr_stored_block = k, n._tr_flush_block = function(S, U, K, J) {
           var V, te, se = 0;
           0 < S.level ? (S.strm.data_type === 2 && (S.strm.data_type = (function(oe) {
             var ce, xe = 4093624447;
@@ -2212,13 +2212,13 @@ function hi() {
             var ce;
             for (b(oe, oe.dyn_ltree, oe.l_desc.max_code), b(oe, oe.dyn_dtree, oe.d_desc.max_code), j(oe, oe.bl_desc), ce = m - 1; 3 <= ce && oe.bl_tree[2 * I[ce] + 1] === 0; ce--) ;
             return oe.opt_len += 3 * (ce + 1) + 5 + 5 + 4, ce;
-          })(S), V = S.opt_len + 3 + 7 >>> 3, (te = S.static_len + 3 + 7 >>> 3) <= V && (V = te)) : V = te = Y + 5, Y + 4 <= V && U !== -1 ? k(S, U, Y, J) : S.strategy === 4 || te === V ? (L(S, 2 + (J ? 1 : 0), 3), q(S, O, T)) : (L(S, 4 + (J ? 1 : 0), 3), (function(oe, ce, xe, ye) {
+          })(S), V = S.opt_len + 3 + 7 >>> 3, (te = S.static_len + 3 + 7 >>> 3) <= V && (V = te)) : V = te = K + 5, K + 4 <= V && U !== -1 ? k(S, U, K, J) : S.strategy === 4 || te === V ? (L(S, 2 + (J ? 1 : 0), 3), q(S, O, E)) : (L(S, 4 + (J ? 1 : 0), 3), (function(oe, ce, xe, ye) {
             var Ie;
             for (L(oe, ce - 257, 5), L(oe, xe - 1, 5), L(oe, ye - 4, 4), Ie = 0; Ie < ye; Ie++) L(oe, oe.bl_tree[2 * I[Ie] + 1], 3);
             X(oe, oe.dyn_ltree, ce - 1), X(oe, oe.dyn_dtree, xe - 1);
           })(S, S.l_desc.max_code + 1, S.d_desc.max_code + 1, se + 1), q(S, S.dyn_ltree, S.dyn_dtree)), ae(S), J && le(S);
-        }, n._tr_tally = function(S, U, Y) {
-          return S.pending_buf[S.d_buf + 2 * S.last_lit] = U >>> 8 & 255, S.pending_buf[S.d_buf + 2 * S.last_lit + 1] = 255 & U, S.pending_buf[S.l_buf + S.last_lit] = 255 & Y, S.last_lit++, U === 0 ? S.dyn_ltree[2 * Y]++ : (S.matches++, U--, S.dyn_ltree[2 * (w[Y] + f + 1)]++, S.dyn_dtree[2 * F(U)]++), S.last_lit === S.lit_bufsize - 1;
+        }, n._tr_tally = function(S, U, K) {
+          return S.pending_buf[S.d_buf + 2 * S.last_lit] = U >>> 8 & 255, S.pending_buf[S.d_buf + 2 * S.last_lit + 1] = 255 & U, S.pending_buf[S.l_buf + S.last_lit] = 255 & K, S.last_lit++, U === 0 ? S.dyn_ltree[2 * K]++ : (S.matches++, U--, S.dyn_ltree[2 * (w[K] + f + 1)]++, S.dyn_dtree[2 * F(U)]++), S.last_lit === S.lit_bufsize - 1;
         }, n._tr_align = function(S) {
           L(S, 2, 3), N(S, _, O), (function(U) {
             U.bi_valid === 16 ? ($(U, U.bi_buf), U.bi_buf = 0, U.bi_valid = 0) : 8 <= U.bi_valid && (U.pending_buf[U.pending++] = 255 & U.bi_buf, U.bi_buf >>= 8, U.bi_valid -= 8);
@@ -2233,44 +2233,44 @@ function hi() {
           (function(l, c) {
             if (!l.setImmediate) {
               var A, a, o, f, g = 1, d = {}, m = !1, u = l.document, y = Object.getPrototypeOf && Object.getPrototypeOf(l);
-              y = y && y.setTimeout ? y : l, A = {}.toString.call(l.process) === "[object process]" ? function(E) {
+              y = y && y.setTimeout ? y : l, A = {}.toString.call(l.process) === "[object process]" ? function(T) {
                 process.nextTick(function() {
-                  h(E);
+                  h(T);
                 });
               } : (function() {
                 if (l.postMessage && !l.importScripts) {
-                  var E = !0, v = l.onmessage;
+                  var T = !0, v = l.onmessage;
                   return l.onmessage = function() {
-                    E = !1;
-                  }, l.postMessage("", "*"), l.onmessage = v, E;
+                    T = !1;
+                  }, l.postMessage("", "*"), l.onmessage = v, T;
                 }
-              })() ? (f = "setImmediate$" + Math.random() + "$", l.addEventListener ? l.addEventListener("message", _, !1) : l.attachEvent("onmessage", _), function(E) {
-                l.postMessage(f + E, "*");
-              }) : l.MessageChannel ? ((o = new MessageChannel()).port1.onmessage = function(E) {
-                h(E.data);
-              }, function(E) {
-                o.port2.postMessage(E);
-              }) : u && "onreadystatechange" in u.createElement("script") ? (a = u.documentElement, function(E) {
+              })() ? (f = "setImmediate$" + Math.random() + "$", l.addEventListener ? l.addEventListener("message", _, !1) : l.attachEvent("onmessage", _), function(T) {
+                l.postMessage(f + T, "*");
+              }) : l.MessageChannel ? ((o = new MessageChannel()).port1.onmessage = function(T) {
+                h(T.data);
+              }, function(T) {
+                o.port2.postMessage(T);
+              }) : u && "onreadystatechange" in u.createElement("script") ? (a = u.documentElement, function(T) {
                 var v = u.createElement("script");
                 v.onreadystatechange = function() {
-                  h(E), v.onreadystatechange = null, a.removeChild(v), v = null;
+                  h(T), v.onreadystatechange = null, a.removeChild(v), v = null;
                 }, a.appendChild(v);
-              }) : function(E) {
-                setTimeout(h, 0, E);
-              }, y.setImmediate = function(E) {
-                typeof E != "function" && (E = new Function("" + E));
+              }) : function(T) {
+                setTimeout(h, 0, T);
+              }, y.setImmediate = function(T) {
+                typeof T != "function" && (T = new Function("" + T));
                 for (var v = new Array(arguments.length - 1), C = 0; C < v.length; C++) v[C] = arguments[C + 1];
-                var x = { callback: E, args: v };
+                var x = { callback: T, args: v };
                 return d[g] = x, A(g), g++;
               }, y.clearImmediate = p;
             }
-            function p(E) {
-              delete d[E];
+            function p(T) {
+              delete d[T];
             }
-            function h(E) {
-              if (m) setTimeout(h, 0, E);
+            function h(T) {
+              if (m) setTimeout(h, 0, T);
               else {
-                var v = d[E];
+                var v = d[T];
                 if (v) {
                   m = !0;
                   try {
@@ -2294,22 +2294,22 @@ function hi() {
                       }
                     })(v);
                   } finally {
-                    p(E), m = !1;
+                    p(T), m = !1;
                   }
                 }
               }
             }
-            function _(E) {
-              E.source === l && typeof E.data == "string" && E.data.indexOf(f) === 0 && h(+E.data.slice(f.length));
+            function _(T) {
+              T.source === l && typeof T.data == "string" && T.data.indexOf(f) === 0 && h(+T.data.slice(f.length));
             }
           })(typeof self > "u" ? s === void 0 ? this : s : self);
-        }).call(this, typeof Vt < "u" ? Vt : typeof self < "u" ? self : typeof window < "u" ? window : {});
+        }).call(this, typeof Qt < "u" ? Qt : typeof self < "u" ? self : typeof window < "u" ? window : {});
       }, {}] }, {}, [10])(10);
     });
-  })(ea)), ea.exports;
+  })(ta)), ta.exports;
 }
-var pi = hi();
-const Lo = /* @__PURE__ */ Ia(pi);
+var hi = ui();
+const Do = /* @__PURE__ */ Ia(hi);
 function $e(e, r, t, i) {
   function n(s) {
     return s instanceof t ? s : new t(function(l) {
@@ -2337,8 +2337,8 @@ function $e(e, r, t, i) {
     a((i = i.apply(e, [])).next());
   });
 }
-const he = 914400, Xt = 12700, De = `\r
-`, mi = 2147483649, ta = /^[0-9a-fA-F]{6}$/, gi = 1.67, yi = 27, mt = { type: "solid", color: "666666", pt: 1 }, Ro = [0.05, 0.1, 0.05, 0.1], gt = { color: "363636", pt: 1 }, ft = { color: "888888", style: "solid", size: 1, cap: "flat" }, Fe = "000000", Ge = 12, vi = 18, yt = "LAYOUT_16x9", Ca = "DEFAULT", Do = "333333", it = { type: "outer", blur: 3, offset: 23e3 / 12700, angle: 90, color: "000000", opacity: 0.35, rotateWithShape: !0 }, $t = [0.5, 0.5, 0.5, 0.5], ja = { color: "000000" }, bi = { size: 8, color: "FFFFFF", opacity: 0.75 }, Ye = "2094734552", Fr = "2094734553", It = "2094734554", xa = "2094734555", Po = "2094734556", Pt = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""), kt = [
+const he = 914400, Wt = 12700, De = `\r
+`, pi = 2147483649, ra = /^[0-9a-fA-F]{6}$/, mi = 1.67, gi = 27, mt = { type: "solid", color: "666666", pt: 1 }, Po = [0.05, 0.1, 0.05, 0.1], gt = { color: "363636", pt: 1 }, ut = { color: "888888", style: "solid", size: 1, cap: "flat" }, Fe = "000000", Ge = 12, yi = 18, yt = "LAYOUT_16x9", Ca = "DEFAULT", Bo = "333333", st = { type: "outer", blur: 3, offset: 23e3 / 12700, angle: 90, color: "000000", opacity: 0.35, rotateWithShape: !0 }, zt = [0.5, 0.5, 0.5, 0.5], Ka = { color: "000000" }, vi = { size: 8, color: "FFFFFF", opacity: 0.75 }, Ke = "2094734552", Mr = "2094734553", kt = "2094734554", xa = "2094734555", No = "2094734556", Bt = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""), Ft = [
   "C0504D",
   "4F81BD",
   "9BBB59",
@@ -2355,7 +2355,7 @@ const he = 914400, Xt = 12700, De = `\r
   "F79646",
   "628FC6",
   "C86360"
-], wi = [
+], bi = [
   "5DA5DA",
   "FAA43A",
   "60BD68",
@@ -2383,15 +2383,15 @@ var _t;
 (function(e) {
   e.b = "b", e.ctr = "ctr", e.t = "t";
 })(_t || (_t = {}));
-const Bo = "{F7021451-1387-4CA6-816F-3879F97B5CBC}";
-var Ea;
-(function(e) {
-  e.arraybuffer = "arraybuffer", e.base64 = "base64", e.binarystring = "binarystring", e.blob = "blob", e.nodebuffer = "nodebuffer", e.uint8array = "uint8array";
-})(Ea || (Ea = {}));
+const So = "{F7021451-1387-4CA6-816F-3879F97B5CBC}";
 var Ta;
 (function(e) {
-  e.area = "area", e.bar = "bar", e.bar3d = "bar3D", e.bubble = "bubble", e.bubble3d = "bubble3D", e.doughnut = "doughnut", e.line = "line", e.pie = "pie", e.radar = "radar", e.scatter = "scatter";
+  e.arraybuffer = "arraybuffer", e.base64 = "base64", e.binarystring = "binarystring", e.blob = "blob", e.nodebuffer = "nodebuffer", e.uint8array = "uint8array";
 })(Ta || (Ta = {}));
+var Ea;
+(function(e) {
+  e.area = "area", e.bar = "bar", e.bar3d = "bar3D", e.bubble = "bubble", e.bubble3d = "bubble3D", e.doughnut = "doughnut", e.line = "line", e.pie = "pie", e.radar = "radar", e.scatter = "scatter";
+})(Ea || (Ea = {}));
 var La;
 (function(e) {
   e.accentBorderCallout1 = "accentBorderCallout1", e.accentBorderCallout2 = "accentBorderCallout2", e.accentBorderCallout3 = "accentBorderCallout3", e.accentCallout1 = "accentCallout1", e.accentCallout2 = "accentCallout2", e.accentCallout3 = "accentCallout3", e.actionButtonBackPrevious = "actionButtonBackPrevious", e.actionButtonBeginning = "actionButtonBeginning", e.actionButtonBlank = "actionButtonBlank", e.actionButtonDocument = "actionButtonDocument", e.actionButtonEnd = "actionButtonEnd", e.actionButtonForwardNext = "actionButtonForwardNext", e.actionButtonHelp = "actionButtonHelp", e.actionButtonHome = "actionButtonHome", e.actionButtonInformation = "actionButtonInformation", e.actionButtonMovie = "actionButtonMovie", e.actionButtonReturn = "actionButtonReturn", e.actionButtonSound = "actionButtonSound", e.arc = "arc", e.bentArrow = "bentArrow", e.bentUpArrow = "bentUpArrow", e.bevel = "bevel", e.blockArc = "blockArc", e.borderCallout1 = "borderCallout1", e.borderCallout2 = "borderCallout2", e.borderCallout3 = "borderCallout3", e.bracePair = "bracePair", e.bracketPair = "bracketPair", e.callout1 = "callout1", e.callout2 = "callout2", e.callout3 = "callout3", e.can = "can", e.chartPlus = "chartPlus", e.chartStar = "chartStar", e.chartX = "chartX", e.chevron = "chevron", e.chord = "chord", e.circularArrow = "circularArrow", e.cloud = "cloud", e.cloudCallout = "cloudCallout", e.corner = "corner", e.cornerTabs = "cornerTabs", e.cube = "cube", e.curvedDownArrow = "curvedDownArrow", e.curvedLeftArrow = "curvedLeftArrow", e.curvedRightArrow = "curvedRightArrow", e.curvedUpArrow = "curvedUpArrow", e.custGeom = "custGeom", e.decagon = "decagon", e.diagStripe = "diagStripe", e.diamond = "diamond", e.dodecagon = "dodecagon", e.donut = "donut", e.doubleWave = "doubleWave", e.downArrow = "downArrow", e.downArrowCallout = "downArrowCallout", e.ellipse = "ellipse", e.ellipseRibbon = "ellipseRibbon", e.ellipseRibbon2 = "ellipseRibbon2", e.flowChartAlternateProcess = "flowChartAlternateProcess", e.flowChartCollate = "flowChartCollate", e.flowChartConnector = "flowChartConnector", e.flowChartDecision = "flowChartDecision", e.flowChartDelay = "flowChartDelay", e.flowChartDisplay = "flowChartDisplay", e.flowChartDocument = "flowChartDocument", e.flowChartExtract = "flowChartExtract", e.flowChartInputOutput = "flowChartInputOutput", e.flowChartInternalStorage = "flowChartInternalStorage", e.flowChartMagneticDisk = "flowChartMagneticDisk", e.flowChartMagneticDrum = "flowChartMagneticDrum", e.flowChartMagneticTape = "flowChartMagneticTape", e.flowChartManualInput = "flowChartManualInput", e.flowChartManualOperation = "flowChartManualOperation", e.flowChartMerge = "flowChartMerge", e.flowChartMultidocument = "flowChartMultidocument", e.flowChartOfflineStorage = "flowChartOfflineStorage", e.flowChartOffpageConnector = "flowChartOffpageConnector", e.flowChartOnlineStorage = "flowChartOnlineStorage", e.flowChartOr = "flowChartOr", e.flowChartPredefinedProcess = "flowChartPredefinedProcess", e.flowChartPreparation = "flowChartPreparation", e.flowChartProcess = "flowChartProcess", e.flowChartPunchedCard = "flowChartPunchedCard", e.flowChartPunchedTape = "flowChartPunchedTape", e.flowChartSort = "flowChartSort", e.flowChartSummingJunction = "flowChartSummingJunction", e.flowChartTerminator = "flowChartTerminator", e.folderCorner = "folderCorner", e.frame = "frame", e.funnel = "funnel", e.gear6 = "gear6", e.gear9 = "gear9", e.halfFrame = "halfFrame", e.heart = "heart", e.heptagon = "heptagon", e.hexagon = "hexagon", e.homePlate = "homePlate", e.horizontalScroll = "horizontalScroll", e.irregularSeal1 = "irregularSeal1", e.irregularSeal2 = "irregularSeal2", e.leftArrow = "leftArrow", e.leftArrowCallout = "leftArrowCallout", e.leftBrace = "leftBrace", e.leftBracket = "leftBracket", e.leftCircularArrow = "leftCircularArrow", e.leftRightArrow = "leftRightArrow", e.leftRightArrowCallout = "leftRightArrowCallout", e.leftRightCircularArrow = "leftRightCircularArrow", e.leftRightRibbon = "leftRightRibbon", e.leftRightUpArrow = "leftRightUpArrow", e.leftUpArrow = "leftUpArrow", e.lightningBolt = "lightningBolt", e.line = "line", e.lineInv = "lineInv", e.mathDivide = "mathDivide", e.mathEqual = "mathEqual", e.mathMinus = "mathMinus", e.mathMultiply = "mathMultiply", e.mathNotEqual = "mathNotEqual", e.mathPlus = "mathPlus", e.moon = "moon", e.noSmoking = "noSmoking", e.nonIsoscelesTrapezoid = "nonIsoscelesTrapezoid", e.notchedRightArrow = "notchedRightArrow", e.octagon = "octagon", e.parallelogram = "parallelogram", e.pentagon = "pentagon", e.pie = "pie", e.pieWedge = "pieWedge", e.plaque = "plaque", e.plaqueTabs = "plaqueTabs", e.plus = "plus", e.quadArrow = "quadArrow", e.quadArrowCallout = "quadArrowCallout", e.rect = "rect", e.ribbon = "ribbon", e.ribbon2 = "ribbon2", e.rightArrow = "rightArrow", e.rightArrowCallout = "rightArrowCallout", e.rightBrace = "rightBrace", e.rightBracket = "rightBracket", e.round1Rect = "round1Rect", e.round2DiagRect = "round2DiagRect", e.round2SameRect = "round2SameRect", e.roundRect = "roundRect", e.rtTriangle = "rtTriangle", e.smileyFace = "smileyFace", e.snip1Rect = "snip1Rect", e.snip2DiagRect = "snip2DiagRect", e.snip2SameRect = "snip2SameRect", e.snipRoundRect = "snipRoundRect", e.squareTabs = "squareTabs", e.star10 = "star10", e.star12 = "star12", e.star16 = "star16", e.star24 = "star24", e.star32 = "star32", e.star4 = "star4", e.star5 = "star5", e.star6 = "star6", e.star7 = "star7", e.star8 = "star8", e.stripedRightArrow = "stripedRightArrow", e.sun = "sun", e.swooshArrow = "swooshArrow", e.teardrop = "teardrop", e.trapezoid = "trapezoid", e.triangle = "triangle", e.upArrow = "upArrow", e.upArrowCallout = "upArrowCallout", e.upDownArrow = "upDownArrow", e.upDownArrowCallout = "upDownArrowCallout", e.uturnArrow = "uturnArrow", e.verticalScroll = "verticalScroll", e.wave = "wave", e.wedgeEllipseCallout = "wedgeEllipseCallout", e.wedgeRectCallout = "wedgeRectCallout", e.wedgeRoundRectCallout = "wedgeRoundRectCallout";
@@ -2408,18 +2408,18 @@ var Da;
 (function(e) {
   e.top = "top", e.middle = "middle", e.bottom = "bottom";
 })(Da || (Da = {}));
-var tt;
+var rt;
 (function(e) {
   e.ACTION_BUTTON_BACK_OR_PREVIOUS = "actionButtonBackPrevious", e.ACTION_BUTTON_BEGINNING = "actionButtonBeginning", e.ACTION_BUTTON_CUSTOM = "actionButtonBlank", e.ACTION_BUTTON_DOCUMENT = "actionButtonDocument", e.ACTION_BUTTON_END = "actionButtonEnd", e.ACTION_BUTTON_FORWARD_OR_NEXT = "actionButtonForwardNext", e.ACTION_BUTTON_HELP = "actionButtonHelp", e.ACTION_BUTTON_HOME = "actionButtonHome", e.ACTION_BUTTON_INFORMATION = "actionButtonInformation", e.ACTION_BUTTON_MOVIE = "actionButtonMovie", e.ACTION_BUTTON_RETURN = "actionButtonReturn", e.ACTION_BUTTON_SOUND = "actionButtonSound", e.ARC = "arc", e.BALLOON = "wedgeRoundRectCallout", e.BENT_ARROW = "bentArrow", e.BENT_UP_ARROW = "bentUpArrow", e.BEVEL = "bevel", e.BLOCK_ARC = "blockArc", e.CAN = "can", e.CHART_PLUS = "chartPlus", e.CHART_STAR = "chartStar", e.CHART_X = "chartX", e.CHEVRON = "chevron", e.CHORD = "chord", e.CIRCULAR_ARROW = "circularArrow", e.CLOUD = "cloud", e.CLOUD_CALLOUT = "cloudCallout", e.CORNER = "corner", e.CORNER_TABS = "cornerTabs", e.CROSS = "plus", e.CUBE = "cube", e.CURVED_DOWN_ARROW = "curvedDownArrow", e.CURVED_DOWN_RIBBON = "ellipseRibbon", e.CURVED_LEFT_ARROW = "curvedLeftArrow", e.CURVED_RIGHT_ARROW = "curvedRightArrow", e.CURVED_UP_ARROW = "curvedUpArrow", e.CURVED_UP_RIBBON = "ellipseRibbon2", e.CUSTOM_GEOMETRY = "custGeom", e.DECAGON = "decagon", e.DIAGONAL_STRIPE = "diagStripe", e.DIAMOND = "diamond", e.DODECAGON = "dodecagon", e.DONUT = "donut", e.DOUBLE_BRACE = "bracePair", e.DOUBLE_BRACKET = "bracketPair", e.DOUBLE_WAVE = "doubleWave", e.DOWN_ARROW = "downArrow", e.DOWN_ARROW_CALLOUT = "downArrowCallout", e.DOWN_RIBBON = "ribbon", e.EXPLOSION1 = "irregularSeal1", e.EXPLOSION2 = "irregularSeal2", e.FLOWCHART_ALTERNATE_PROCESS = "flowChartAlternateProcess", e.FLOWCHART_CARD = "flowChartPunchedCard", e.FLOWCHART_COLLATE = "flowChartCollate", e.FLOWCHART_CONNECTOR = "flowChartConnector", e.FLOWCHART_DATA = "flowChartInputOutput", e.FLOWCHART_DECISION = "flowChartDecision", e.FLOWCHART_DELAY = "flowChartDelay", e.FLOWCHART_DIRECT_ACCESS_STORAGE = "flowChartMagneticDrum", e.FLOWCHART_DISPLAY = "flowChartDisplay", e.FLOWCHART_DOCUMENT = "flowChartDocument", e.FLOWCHART_EXTRACT = "flowChartExtract", e.FLOWCHART_INTERNAL_STORAGE = "flowChartInternalStorage", e.FLOWCHART_MAGNETIC_DISK = "flowChartMagneticDisk", e.FLOWCHART_MANUAL_INPUT = "flowChartManualInput", e.FLOWCHART_MANUAL_OPERATION = "flowChartManualOperation", e.FLOWCHART_MERGE = "flowChartMerge", e.FLOWCHART_MULTIDOCUMENT = "flowChartMultidocument", e.FLOWCHART_OFFLINE_STORAGE = "flowChartOfflineStorage", e.FLOWCHART_OFFPAGE_CONNECTOR = "flowChartOffpageConnector", e.FLOWCHART_OR = "flowChartOr", e.FLOWCHART_PREDEFINED_PROCESS = "flowChartPredefinedProcess", e.FLOWCHART_PREPARATION = "flowChartPreparation", e.FLOWCHART_PROCESS = "flowChartProcess", e.FLOWCHART_PUNCHED_TAPE = "flowChartPunchedTape", e.FLOWCHART_SEQUENTIAL_ACCESS_STORAGE = "flowChartMagneticTape", e.FLOWCHART_SORT = "flowChartSort", e.FLOWCHART_STORED_DATA = "flowChartOnlineStorage", e.FLOWCHART_SUMMING_JUNCTION = "flowChartSummingJunction", e.FLOWCHART_TERMINATOR = "flowChartTerminator", e.FOLDED_CORNER = "folderCorner", e.FRAME = "frame", e.FUNNEL = "funnel", e.GEAR_6 = "gear6", e.GEAR_9 = "gear9", e.HALF_FRAME = "halfFrame", e.HEART = "heart", e.HEPTAGON = "heptagon", e.HEXAGON = "hexagon", e.HORIZONTAL_SCROLL = "horizontalScroll", e.ISOSCELES_TRIANGLE = "triangle", e.LEFT_ARROW = "leftArrow", e.LEFT_ARROW_CALLOUT = "leftArrowCallout", e.LEFT_BRACE = "leftBrace", e.LEFT_BRACKET = "leftBracket", e.LEFT_CIRCULAR_ARROW = "leftCircularArrow", e.LEFT_RIGHT_ARROW = "leftRightArrow", e.LEFT_RIGHT_ARROW_CALLOUT = "leftRightArrowCallout", e.LEFT_RIGHT_CIRCULAR_ARROW = "leftRightCircularArrow", e.LEFT_RIGHT_RIBBON = "leftRightRibbon", e.LEFT_RIGHT_UP_ARROW = "leftRightUpArrow", e.LEFT_UP_ARROW = "leftUpArrow", e.LIGHTNING_BOLT = "lightningBolt", e.LINE_CALLOUT_1 = "borderCallout1", e.LINE_CALLOUT_1_ACCENT_BAR = "accentCallout1", e.LINE_CALLOUT_1_BORDER_AND_ACCENT_BAR = "accentBorderCallout1", e.LINE_CALLOUT_1_NO_BORDER = "callout1", e.LINE_CALLOUT_2 = "borderCallout2", e.LINE_CALLOUT_2_ACCENT_BAR = "accentCallout2", e.LINE_CALLOUT_2_BORDER_AND_ACCENT_BAR = "accentBorderCallout2", e.LINE_CALLOUT_2_NO_BORDER = "callout2", e.LINE_CALLOUT_3 = "borderCallout3", e.LINE_CALLOUT_3_ACCENT_BAR = "accentCallout3", e.LINE_CALLOUT_3_BORDER_AND_ACCENT_BAR = "accentBorderCallout3", e.LINE_CALLOUT_3_NO_BORDER = "callout3", e.LINE_CALLOUT_4 = "borderCallout4", e.LINE_CALLOUT_4_ACCENT_BAR = "accentCallout3=4", e.LINE_CALLOUT_4_BORDER_AND_ACCENT_BAR = "accentBorderCallout4", e.LINE_CALLOUT_4_NO_BORDER = "callout4", e.LINE = "line", e.LINE_INVERSE = "lineInv", e.MATH_DIVIDE = "mathDivide", e.MATH_EQUAL = "mathEqual", e.MATH_MINUS = "mathMinus", e.MATH_MULTIPLY = "mathMultiply", e.MATH_NOT_EQUAL = "mathNotEqual", e.MATH_PLUS = "mathPlus", e.MOON = "moon", e.NON_ISOSCELES_TRAPEZOID = "nonIsoscelesTrapezoid", e.NOTCHED_RIGHT_ARROW = "notchedRightArrow", e.NO_SYMBOL = "noSmoking", e.OCTAGON = "octagon", e.OVAL = "ellipse", e.OVAL_CALLOUT = "wedgeEllipseCallout", e.PARALLELOGRAM = "parallelogram", e.PENTAGON = "homePlate", e.PIE = "pie", e.PIE_WEDGE = "pieWedge", e.PLAQUE = "plaque", e.PLAQUE_TABS = "plaqueTabs", e.QUAD_ARROW = "quadArrow", e.QUAD_ARROW_CALLOUT = "quadArrowCallout", e.RECTANGLE = "rect", e.RECTANGULAR_CALLOUT = "wedgeRectCallout", e.REGULAR_PENTAGON = "pentagon", e.RIGHT_ARROW = "rightArrow", e.RIGHT_ARROW_CALLOUT = "rightArrowCallout", e.RIGHT_BRACE = "rightBrace", e.RIGHT_BRACKET = "rightBracket", e.RIGHT_TRIANGLE = "rtTriangle", e.ROUNDED_RECTANGLE = "roundRect", e.ROUNDED_RECTANGULAR_CALLOUT = "wedgeRoundRectCallout", e.ROUND_1_RECTANGLE = "round1Rect", e.ROUND_2_DIAG_RECTANGLE = "round2DiagRect", e.ROUND_2_SAME_RECTANGLE = "round2SameRect", e.SMILEY_FACE = "smileyFace", e.SNIP_1_RECTANGLE = "snip1Rect", e.SNIP_2_DIAG_RECTANGLE = "snip2DiagRect", e.SNIP_2_SAME_RECTANGLE = "snip2SameRect", e.SNIP_ROUND_RECTANGLE = "snipRoundRect", e.SQUARE_TABS = "squareTabs", e.STAR_10_POINT = "star10", e.STAR_12_POINT = "star12", e.STAR_16_POINT = "star16", e.STAR_24_POINT = "star24", e.STAR_32_POINT = "star32", e.STAR_4_POINT = "star4", e.STAR_5_POINT = "star5", e.STAR_6_POINT = "star6", e.STAR_7_POINT = "star7", e.STAR_8_POINT = "star8", e.STRIPED_RIGHT_ARROW = "stripedRightArrow", e.SUN = "sun", e.SWOOSH_ARROW = "swooshArrow", e.TEAR = "teardrop", e.TRAPEZOID = "trapezoid", e.UP_ARROW = "upArrow", e.UP_ARROW_CALLOUT = "upArrowCallout", e.UP_DOWN_ARROW = "upDownArrow", e.UP_DOWN_ARROW_CALLOUT = "upDownArrowCallout", e.UP_RIBBON = "ribbon2", e.U_TURN_ARROW = "uturnArrow", e.VERTICAL_SCROLL = "verticalScroll", e.WAVE = "wave";
-})(tt || (tt = {}));
+})(rt || (rt = {}));
 var re;
 (function(e) {
   e.AREA = "area", e.BAR = "bar", e.BAR3D = "bar3D", e.BUBBLE = "bubble", e.BUBBLE3D = "bubble3D", e.DOUGHNUT = "doughnut", e.LINE = "line", e.PIE = "pie", e.RADAR = "radar", e.SCATTER = "scatter";
 })(re || (re = {}));
-var $r;
+var zr;
 (function(e) {
   e.TEXT1 = "tx1", e.TEXT2 = "tx2", e.BACKGROUND1 = "bg1", e.BACKGROUND2 = "bg2", e.ACCENT1 = "accent1", e.ACCENT2 = "accent2", e.ACCENT3 = "accent3", e.ACCENT4 = "accent4", e.ACCENT5 = "accent5", e.ACCENT6 = "accent6";
-})($r || ($r = {}));
+})(zr || (zr = {}));
 var et;
 (function(e) {
   e.chart = "chart", e.image = "image", e.line = "line", e.rect = "rect", e.text = "text", e.placeholder = "placeholder";
@@ -2428,19 +2428,19 @@ var ue;
 (function(e) {
   e.chart = "chart", e.hyperlink = "hyperlink", e.image = "image", e.media = "media", e.online = "online", e.placeholder = "placeholder", e.table = "table", e.tablecell = "tablecell", e.text = "text", e.notes = "notes";
 })(ue || (ue = {}));
-var Mt;
+var Ot;
 (function(e) {
   e.title = "title", e.body = "body", e.image = "pic", e.chart = "chart", e.table = "tbl", e.media = "media";
-})(Mt || (Mt = {}));
+})(Ot || (Ot = {}));
 var Ct;
 (function(e) {
   e.DEFAULT = "&#x2022;", e.CHECK = "&#x2713;", e.STAR = "&#x2605;", e.TRIANGLE = "&#x25B6;";
 })(Ct || (Ct = {}));
-const xt = "data:image/png;base64,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", _i = "data:image/png;base64,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AAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKREkRUAAACwrUpLSwuGDRvWfMCAAS26du3avKysrLiioqKkZcuWzZs1a1bcvHnz0tLS0rJsNtusuLi4ebNmzUoLCgo+8/eijY2N9Zs3b66pra2tqqur21xTU1NdVVVVs2nTptqNGzdWbdiwoeYvf/nL5hUrVlQtWLBgw6xZs6pqamoaJQYAAEDaKYABAACIiIghQ4aUHnTQQW379u3bql27dq3at2/fpkWLFq2bN29eWVpa2qpZs2bNCwsLm2ez2fLCwsLyoqKi8sLCwtKknK+hoaG6vr6+qqGh4S91dXV/aWhoqNq8eXNVTU3NuqqqqvUbNmxYu2rVqjWrV69e99Zbb6177rnnPpgzZ06NTwYAAABJogAGAADIA8OGDWt+xBFHdBwwYECnLl26dGjdunXHFi1adCgtLe1YUlLSvlmzZq0KCgqK07yDwsLCssLCwrKIaPdp/zuNjY21mzdvXrdp06ZVNTU172/YsGHl2rVr31+2bNnKBQsWrHjyySffnzVrVpVPGAAAAE1Fpuexsd9HfaF+ZcSal0ptCAAAIAE6deqUPf744zvtueeeXbp3796lbdu2XSorKzuXlpZ2KS0t7VBYWFhhSztGQ0PDxpqampU1NTXL169fv+yDDz5Y9s477yybPXv2sj/96U8rVqxYUWdLAAAAbE9t9q6Jog4f/TUFMAAAQEJks9nMt7/97Y4jRozo1bdv397t2rXrXl5e3rWsrKxzcXFx+4gosKUmp7G2tnZVTU3Nso0bNy5btWrV0tdff/2tJ598cvG999672noAAADYFgpgAACAhPne977X6a9Fb/v27Xu1bNmyV1lZWa8kvXOXLauvr9/wl7/8ZdG6desWL1u2bNHChQsX/fGPf1w8derUjbYDAADAliiAAQAAmqhsNps59dRTuxx66KH9+/Tp87n27dv3Ly8v719UVOSRzXlq06ZNKzZu3Pj6+++//8abb775xqOPPvrG3XffvcpmAAAA+CsFMAAAQBNx6qmndvniF784qHfv3v3btWv3uYqKis8VFhaW2wxbUl9fv37Dhg1vfPDBB68vXrz4jccee2z+jTfeuNxmAAAA8pMCGAAAYBc45phjWn/rW9/aq3///kPatGnTv6Kiop9HOLO9NDQ0VG/cuPGtNWvWLFy4cOGcO+6445WHHnporc0AAACknwIYAABgJzjjjDO6f+lLX9qrV69eg1u3bj2orKysR0RkbIadJFddXb103bp18xcvXjz30UcffeXqq69+x1oAAADSRwEMAACwnZWWlhb86le/2u3QQw8d1r17931btmw5qLCwsMxmaEoaGhqqP/zww/nvvPPOzGeeeWbW2LFj36ipqWm0GQAAgGRTAAMAAGwHP/7xj7t+9atf3bdXr15D27Ztu1c2m21jKyRJXV3dmg8++OCVRYsWvfznP/95xh/+8IdltgIAAJA8CmAAAIBtcOKJJ7Y75ZRTDujXr9+w1q1bD81ms61shTSpq6tbt3bt2pfffPPNWbfccsvUe++9d7WtAAAANH0KYAAAgE+hoqKi4IILLhg0YsSI/bp27bpfy5YtB2YymUKbIR/kcrmGDz/8cP6777474/nnn59x4YUXvrZx40aPiwYAAGiCFMAAAAAf4/jjj2/7/e9//8D+/fsf2Lp1630KCgpKbAUiGhsbN61fv37eW2+9NeWGG2545u67715lKwAAAE2DAhgAAOB/ZLPZzAUXXPC5I4888sDu3bsfWFFRsVtEFNgMbFl1dfWSd999d8qsWbNmnnvuuS+vW7euwVYAAAB2DQUwAACQ10pLSwsuvfTSQYcccsjBXbt2HVFWVtbDVmDb1dbWrnr//fdfmDp16uRf/vKXL65evbreVgAAAHYeBTAAAJB3Bg0aVHrBBRd8fs899zywQ4cOBxQVFbWwFdj+Ghsba9euXTtrzpw5T59//vmTX3755WpbAQAA2LEUwAAAQF4YNmxY8/POO+/gIUOGHOZ9vrDz/W0ZfNFFFz07a9asKlsBAADY/hTAAABAarVq1arwyiuv3HfEiBEjO3TocFBhYWGZrcCu19DQUP3+++8/O2XKlIk/+clPZm7cuLHRVgAAALYPBTAAAJAqrVq1Kvztb3+7/3777Xd4x44dRxQWFpbbCjRdDQ0NG99///0pM2bMeOqHP/zhC8pgAACAz0YBDAAApMJZZ53V45vf/OaRvXr1GllaWtrVRiB5ampq3l28ePHEO++8c9LVV1/9jo0AAABsPQUwAACQWMOHDy+/6KKLvjB48OCjW7RoMdBGID0+/PDDV+fNmzfhvPPOe3L69Ol/sREAAIBPRwEMAAAkSqtWrQpvuOGGQ/bbb79/atOmzX6ZTCZrK5BeuVyubs2aNTNmzJjx2JgxYyavW7euwVYAAAA+ngIYAABIhB//+Mddv/e9732lZ8+e/1RcXNzWRiD/1NbWfvD2228/dssttzz029/+9l0bAQAA+L8UwAAAQJNVUVFRcO21137+4IMPPrZ169b7ZTKZAlsBIqJxzZo1M59//vnxp5122hR3BQMAAPx/CmAAAKDJOeWUUzqefvrpx/bu3ftL2Wy2jY0AH6e+vn7j0qVLH/vd7373x+uvv36ZjQAAAPlOAQwAADQJ2Ww2c+uttx5wyCGHnNC6deu9I8LdvsDWaFy7du1L06ZN+/OPfvSjZ1evXl1vJQAAQD5SAAMAALtU//79S6655pp/2nPPPY8tLy/vayPAZ1VTU7NswYIF488999wHp06dutFGAACAfKIABgAAdomf//znPU855ZQTu3btemRhYWGZjQDbW2NjY92KFSuevOWWW+689NJLF9kIAACQDxTAAADATuMxz8Cusn79+rlPP/30f5188slT6+rqcjYCAACklQIYAADY4fr27Vv8hz/84a+Pee5nI8CuUlNT8+68efPu/8EPfvDgwoULN9kIAACQNgpgAABghxkyZEjpNddc89XBgwefWFxc3MFGgKaitrZ21dy5c+/5yU9+8uc5c+bU2AgAAJAWWyqAPYoNAADYJqNHj+4wb968n06ZMuXRYcOGnaH8BZqa4uLi9sOGDTtjypQpj86bN++nJ510UntbAQAA0s4dwAAAwFY599xze33/+9//dufOnY/IZDJZGwGSIpfL1S1fvvzJG2644fbLLrvsbRsBAACSyiOgAQCAz+y8887r+53vfOfbHTt2PDyTyRTaCJBUuVyuYcWKFU/cdNNN//XrX/96sY0AAABJowAGAAC22WWXXTboG9/4xg9at249zDaAtFm7du2su++++9pzzjnnNdsAAACSQgEMAABsNcUvkE8UwQAAQJIogAEAgE9N8Qvks7Vr18665557rvv5z38+3zYAAICmaksFcGHlwOj6UV9orIqoWZG1PQAAyBO/+MUvet9xxx3nHHrooT8pLS3tYiNAPiotLe2y7777HvP973+/X1lZ2ZIpU6assxUAAKCpKetcHwXlH/01BTAAAOS5M844o/u99957zpe//OWflZeX94qIjK0AeS5TXl7e8+CDDx71/e9/v3dEvDVjxowPrQUAAGgqFMAAAMD/ceKJJ7a77777fjJq1Kh/KS8v7xOKX4B/lCkvL+99+OGHj/rWt77VfvXq1Qvnz59fbS0AAMCutqUC2DuAAQAgzwwdOrTs+uuvP6l///4nFRYWltkI20NjY2Ns2rQpqquro6amJurr62PTpk2xefPmqK+vj+rq6qivr4/NmzfHpk2boqGhYZv/fxUWFkZJSUk0a9YsioqKoqysLIqKiqJZs2ZRUlISRUVFUVpa+r9/FRQUCIjtoqGhoeq11167a8yYMffMmTOnxkYAAIBdZUvvAFYAAwBAnujUqVP2nnvuGbXXXnudnM1mK22Ej9PQ0BAbN26MDRs2/J+/Nm7cGBs3boyamprYtGlTbNq0KWpqaqK2trbJnqe4uDhKSkqitLT0f/9eUVERFRUV0aJFi//zV0VFRRQWFvog8LHq6urWvvjii7eceOKJf169enW9jQAAADubAhgAAPLcXXfdddAXv/jF00tLS7vZRn7L5XKxYcOGWLt2baxbty7Wrl37d3+tW7cuNmzYkPd7atGiRbRu3TpatWoVrVu3jjZt2vzvf27dunW0aNHCh4morq5e+sgjj1zzne98Z6ptAAAAO5MCGAAA8tTVV189+MQTTzyzoqJioG3kj8bGxli5cmUsX748Pvjgg1i9evX//n3t2rXR2NhoSZ9RYWFhtGrVKtq1axdt27b937937tw5OnTo4LHTeWbDhg3z77333qvOPPPMebYBAADsDApgAADIM1/72tfaXHrppad27979qIjQRKVUQ0NDrFq1KlasWBHvv//+//595cqVTfqRzGlXXFwcHTp0iI4dO0bnzp2jY8eO0alTp2jXrp1HS6dYLpdrfOeddx76+c9/fv2ECRPW2QgAALAjKYABACBP9OrVq9ldd931jT322OM7hYWFZTaSHh9++GG88847sXTp0njvvfdixYoVsXr16mhoaLCchCgsLIz27dtHp06dolu3btG9e/fo3r27x0mnTENDQ9W8efNu++Y3v/nHJUuWbLYRAABgR1AAAwBAHrjrrrtG/NM//dOZJSUlXWwj2davXx9Lly6Nd955539L3w8//NBiUqqysvJ/y+C//tWqVSuLSbiamppljz322G9Gjx49xTYAAIDtTQEMAAAp9qtf/arPD3/4w5+1atVqL9tIno0bN8aSJUvirbfeikWLFsV7770XmzZtspg8V1JSEl27do0+ffpE3759o3fv3lFeXm4xCbRu3bqXr7322ivGjh27yDYAAIDtRQEMAAApNGjQoNI77rjju7vttttJBQUFWRtJhtWrV8ebb74ZixcvjiVLlsTy5cujsbHRYtiigoKC6Ny5c/Tu3Tt69+4d/fr1i7Zt21pMQjQ2Nta98cYbd33rW9+6ff78+TU2AgAAfFYKYAAASJHS0tKCBx988Jj99tvvn7PZbBsbaboaGhri7bffjrfeeisWLFgQS5YscXcv201FRUX06tUr+vbtG3379o2ePXtGYWGhxTRhdXV1a2bMmHHjV77ylYdqamr85gcAALDNFMAAAJASp59+erdf/vKX51ZWVu5jG03T6tWr47XXXouFCxfGm2++GRs3brQUdooWLVpE3759Y8CAATFw4EB3CDdh69evf/E//uM//vPqq69+xzYAAIBtoQAGAICEGzRoUOm99977w969ex+byWTc4teErF+/PubNmxcLFiyIN954Q+FLk9GiRYvo169fDBgwIPbYY4+orKy0lCYkl8s1LF68eNyJJ554rcdCAwAAW0sBDAAACXbNNdcMOemkk35RVlbWyzZ2vVwuF++++27MnTs3XnvttViyZIl3+NLkFRQURK9evWLQoEExePDg6Natm6U0EdXV1UvuvvvuX//kJz+ZYxsAAMCnpQAGAIAEOuqoo1r99re//VmHDh0Ot41da9OmTTF79uyYO3duLFy4MKqqqiyFRGvevHn0798/Bg8eHHvuuWeUlJRYyi62cuXKp04//fTLJ0yYsM42AACAT6IABgCAhBk3btwRRxxxxFnZbLaNbewaVVVVMXfu3Jg7d27Mnz8/amtrLYVUKi4ujoEDB8bgwYNj8ODBUV5ebim7SF1d3ZqnnnrqqlGjRj1hGwAAwJYogAEAICFOOeWUjhdddNEvW7duvZ9t7HwrV66MWbNmxdy5c+Odd96JXC5nKeSdzp07x9577x3Dhg2LDh06WMgusHbt2hnnnXfepbfccsv7tgEAAHwUBTAAADRxpaWlBU899dQ3Bw8e/L2CggLPYt2JVqxYES+99FK89NJLsXz5cguBv/HXMnjvvfeOTp06WchO1NjYuGnu3Lk3H3744XfV1NR40TgAAPB3FMAAANCEjR49usOll176yzZt2gy3jZ1j/fr18eKLL8bMmTNj6dKlFgKfQs+ePWPfffeNYcOGRYsWLSxkJ1mzZs0L55577q/vvvvuVbYBAAD8lQIYAACaoIqKioKJEyd+c/Dgwd8vKCgotpEda8OGDfHiiy/G9OnTlb7wGfXo0SOGDx8ew4YNi4qKCgvZwdwNDAAA/CMFMAAANDGnnHJKx7Fjx/5rZWXlMNvYcerr6+PVV1+NGTNmxLx586Kurs5SYDvKZrMxZMiQ2HfffWP33XePwsJCS9mB1q5dO+MXv/jFv995550rbQMAAPKbAhgAAJqIbDabeeKJJ47fZ599fuSu3x0jl8vFwoULY/r06TF79uzYtGmTpcBOUFpaGkOGDInhw4fHgAEDLGQHaWhoqJ42bdo1Rx555J9tAwAA8pcCGAAAmoDjjz++7ZVXXvmr1q1be9fvDrBmzZqYNm1azJw5M1audHMc7EodO3aMz3/+87H//vt7X/CO+3fetDPPPPOScePGfWAbAACQfxTAAACwi9100037HXvssf9WXFzc1ja2n1wuF6+99lo8//zzMW/evKivr7cUaEKKiopizz33jBEjRsTnPve5yGQylrId1dbWrvrjH/948Q9+8INZtgEAAPlFAQwAALvIkCFDSu+///5zunTp8k+2sf2sXbs2Jk+eHNOnT48PP/zQQiABKisrY8SIEXHIIYdEeXm5hWxHy5Yte+zrX//6f86ZM6fGNgAAID9sqQAurBwYXT/qC41VETUrsrYHAADb6IILLtjt97///VVt2rQZZhvbx+LFi2P8+PFx9913xxtvvBG1tbWWAgmxadOmeOONN+LZZ5+NtWvXRps2bTweejtp0aJFv5NOOumg0tLSuc8+++xaGwEAgPQr61wfBR/zu7XuAAYAgO0sm81mJk2a9PVhw4b9pKCgwG9VfkZ1dXUxY8aMeOaZZ+K9996zEEiRfv36xSGHHBJDhw6NgoICC/mMGhsbN8+YMeOaL37xi+Pq6upyNgIAAOnlEdAAALCTHH/88W2vuuqqCyorK/exjc9mzZo18dRTT8XUqVNj06ZNFgIpVlFREZ///OfjsMMOi8rKSgv5jNavXz/r9NNPv3DcuHEf2AYAAKSTAhgAAHaC22677fNf+9rXzstms5W2se0WLVoUjz/+eMybNy9yOTewQT4pKiqKIUOGxBFHHBG9e/e2kM+grq5u3QMPPHDRySefPM02AAAgfRTAAACwA1VUVBQ8/fTTpwwcOPCUTCbjGabbIJfLxauvvhpPPvlkLFy40EIgz2UymRgwYEAcccQRMWjQIAvZ9n+3Ns6fP/+Www8//JaNGzc22ggAAKTHlgrgwsqB0fWjvtBYFVGzwuvKAABgS0488cR2EyZMuLx79+5fzmQyGRvZOo2NjTFr1qy49dZb48knn4wPPvC0UuC/rV69OmbMmBFz5syJ0tLS6NSpU/jX7NbJZDKZ9u3bD/3+978/dPny5TNfffXValsBAIB0KOtcHwXlH/O9gDuAAQBg29x66637H3vssRcWFRW1sI2tU1NTE0899VQ8++yzsWHDBgsBPlGLFi3i4IMPjsMPPzxKS/28YmvV19d/OG7cuPNPPvnk6bYBAADJ5xHQAACwHWWz2cyzzz77rSFDhvzAI5+3zqZNm2Ly5Mnx1FNPKX6BbdKiRYs47LDD4pBDDlEEb6VcLtfwyiuvXHfooYfeWVdX5yXrAACQYApgAADYTo455pjW11133cWVlZV728ant2HDhnj88cdjypQpUVtbayHAZ1ZcXBwHHnhgfPGLX4wWLTyIYWusWbNm2re//e3zn3nmGb+JAwAACeUdwAAAsB1cfvnlu1900UW/LS8v72cbn05VVVVMmDAhbrnllnjzzTejoaHBUoDtoqGhIZYsWRLPPfdc1NTURI8ePSKb9XOMT6OsrKzb17/+9SPbtm0774knnlhtIwAAkMDreu8ABgCAz+bhhx/+8qGHHnpOQUFBsW18sk2bNsUzzzwTTzzxRFRVVVkIsMOVl5fHkUceGYccckgUF/tX9afR2Ni46emnn/71Mccc87htAABAsngENAAAbKN27doVTZ48+YxevXodZxufrK6uLp5++umYOHGi4hfYJSoqKuKLX/xiHHzwwe4I/pQWLVr0x4MOOuiadevWeUwDAAAkhEdAAwDANjj22GPbPvzww7/p2LHjobaxZXV1dfHkk0/GddddF3Pnzo26ujpLAXaJzZs3x2uvvRbPPfdcRET06NEjCgsLLWYLWrduvfv3vve9fd9+++1pCxYsqLYRAABo+rb0CGgFMAAAfITLL7989wsuuOB3zZs372UbH6+xsTGmTJkS119/fbzyyiuKX6DJ2Lx5cyxYsCCmT58excXF0a1bt8hkMhbzMUpKSjp8+ctfPrJt27ZzvBcYAACaPu8ABgCArTB+/Pgjv/CFL/xLQUFBiW18vAULFsT48eNj6dKllgE0eT169IivfOUrMWjQIMvYgsbGxpqJEydecuyxxz5pGwAA0HR5BzAAAHwK7dq1K3ruued+1qNHj6/axsdbtGhR3H///bF48WLLABKnV69ecdxxx0WfPn0sYwuWLl3654MOOujy1atX19sGAAA0Pd4BDAAAn2DYsGHNn3766V936tTpC7bx0TZs2BD33Xdf/PGPf4y1a9daCJBI69evj2nTpsW6deuiZ8+eUVLiYQ8fpbKysv+3v/3t/lOmTJmyfPlyz/cHAIAmxjuAAQBgC372s5/1uP76669t0aKF54J+hJqamhg/fnzcfPPN8fbbb0cul7MUINFyuVy888478cwzz0RVVVX07t07slk/A/lHZWVl3U488cTD6+rqZkyfPv1DGwEAgCZ0va4ABgCAj3bFFVfscdZZZ11dXFzcwTb+Xi6XixkzZsR1110XCxYsiMbGRksBUqWxsTGWLFkSM2bMiPLy8ujSpUtkMhmL+RvZbLbFQQcddHibNm1mP/HEE6ttBAAAmoYtFcDeAQwAQN6aNGnSqAMOOODsTCZTaBt/b9GiRXHPPffEu+++axlA3ujWrVucdNJJ0bt3b8v4B7lcrm7y5Mm//vKXv/yIbQAAwK63pXcAK4ABAMg7paWlBTNnzjyzT58+x9vG39uwYUOMGzcuZsyY4VHPQF7KZDKx3377xde//vWoqKiwkH+waNGiP+27775X1dTUeCwEAADsQgpgAAD4H926dctOnjz5V506dRppG/9fLpeLqVOnxp///OfYuHGjhQB5r6KiIkaNGhX777+/x0L/g+XLlz9+6KGHXvLuu+/W2QYAAOwaWyqAvQMYAIC8MXz48PInnnjiynbt2o2wjf/vnXfeiWuvvTaee+652Lx5s4UARMTmzZtjzpw58dprr0XPnj2jRYsWlvI/Kioq+n7rW98aMnXq1Ofee+89f3AAAMAusKV3ACuAAQDIC9/+9rc73n777X9o0aLFANv4b1VVVXHXXXfFvffeG+vXr7cQgI+wbt26eP7552P9+vWx2267RVFRkaVERElJSefjjjvuoA8++GDKK6+88hcbAQCAnUsBDABAXjv//PP7XXzxxX8oKSnpbBv/bfr06XHttdfGokWLLAPgU3jnnXdi2rRp0bp16+jc2R8nERHZbLbyC1/4whElJSUvTp48eY2NAADAzqMABgAgb/3ud7/b60c/+tFVRUVFrWwjYs2aNXHzzTfHpEmTora21kIAtkJtbW289NJL8c4770Tfvn2jtLQ073dSWFhYNnz48C/26dNn4UMPPbTMpwQAAHYOBTAAAHnp1ltv3f+b3/zmfxYWFjbP913kcrl4/vnn4/rrr4/ly5f7cAB8BitXroxp06ZFRUVFdOvWLTKZTF7vo6CgIDto0KBDBw0atOiBBx54xycEAAB2vC0VwJmex8Z+H/WF+pURa17ym6wAACTTww8//KXDDjvsXzKZTN6/rPGDDz6I22+/Pd544w0fDIDtbMCAAfGtb30r2rRpk/e7yOVyjVOmTPn1yJEjH/LJAACAHavN3jVR1OGjv6YABgAgdV555ZXTPve5z30r3/fQ0NAQjz32WDz++ONRV1fngwGwg2Sz2Tj66KPjC1/4QhQUFOT9Pl5//fU79tprr9/7ZAAAwI6jAAYAIC9ks9nMyy+/fFafPn2Oz/ddvPvuu3HbbbfFe++954MBsJN069YtvvOd70S3bt3yfhdLliy5f5999rmypqam0ScDAAC2PwUwAACpV1paWjBr1qyzevfufVw+7yGXy8WTTz4ZDz74oLt+AXaBbDYbxxxzTBxxxBF5fzfw0qVLHxg6dOjlSmAAANj+FMAAAKRar169mk2ePHlsu3btDsrnPaxcuTJuueWWePvtt30oAHaxnj17ximnnBIdOnTI6z2sXr16yiGHHPIvS5Ys2exTAQAA28+WCuDCyoHR9aO+0FgVUbMia3sAADRpQ4cOLXvqqacub9Omzf75uoNcLhfPPPNMXH/99bF27VofCoAmYP369TFlypQoKSmJnj17RiaTycs9NG/evPtJJ500ZPLkyc+sWLHCoykAAGA7KetcHwXlH/01BTAAAIk1ZMiQ0kceeeSKVq1a7Z2vO6iuro7bb789nnjiiWhs9IRNgKaksbEx5s+fH++//34MGDAgstn8/DlLaWlpp6997WuDn3rqqadXrlxZ75MBAACfnQIYAIDUOfTQQ1s8+OCDv2/ZsuUe+bqDOXPmxNVXX+2RzwBN3PLly+OFF16Ijh075u0joUtLSzudcMIJ+7/00ktPv/3227U+FQAA8NkogAEASJVhw4Y1v++++37TsmXLQfl4/vr6+hg/fnz88Y9/jNpaP0MHSILNmzfHiy++GJs3b47ddtstCgoK8m4HxcXFbY866qg9n3vuuaeXL1/ucdAAAPAZKIABAEiNI488snLcuHG/b9GixcB8PP97770XV111VcyZM8eHASCBFi1aFC+//HL069cvWrRokXfnLykp6XDcccftP2fOnGcWLVq0yScCAAC2jQIYAIBUOPLIIyvvvPPO35aXl++Wj+d/+umn48Ybb4wPP/zQhwEgwf7yl7/ECy+8ECUlJdGrV6+8O3+zZs3aHHXUUfspgQEAYNspgAEASLxjjz227W233faH5s2b98m3s1dVVcXNN98cTz31VDQ2NvowAKRAY2NjzJ8/P5YtWxYDBgyIZs2a5dX5mzVr1uaYY4458M0333xm4cKFNT4RAACwdRTAAAAk2qGHHtritttuuzofy9+33347rrnmmli8eLEPAkAKvf/++/HKK69Enz59orKyMq/Ons1mK4888sh9Zs6c+dTSpUs3+zQAAMCnpwAGACCxjjjiiJb33nvvteXl5f3y6dy5XC4mTZoUN998c1RVVfkgAKRYVVVVTJ06NbLZbPTp0ycymUzenL24uLjtV7/61c+/8sorTy1evLjWpwEAAD4dBTAAAIl06KGHtrj33nt/l2/lb3V1ddx0000xefLkyOVyPggAeSCXy8WCBQvi3Xffjd133z2y2fz5mUyzZs1aH3300fvNmDHjSXcCAwDAp6MABgAgcYYOHVo2fvz4qysqKgbk07mXLVsWV111lUc+A+SplStXxiuvvBKf+9znoqKiIm/O3axZszZHH3300GeeeebJFStW1PkkAADAlimAAQBIlCFDhpQ++uij17Rs2XL3fDr31KlT49prr42NGzf6EADksaqqqpg+fXq0bds2unTpkjfnLikpaT9q1KihTz755JMrV66s90kAAICPt6UCuMB6AABoSjp16pSdMGHCv1dWVu6RL2dubGyMcePGxR133BF1dW56AiCitrY2br755hg/fnw0NjbmzbkrKyv3mDBhwr9369bNXQkAALCNFMAAADQZrVq1Kpw+ffolbdq02T9fzlxdXR2/+93vYtKkSd73C8DfyeVy8fjjj8fvf//7qK6uzptzt2nTZv8pU6Zc0qpVq0KfAgAA2HoKYAAAmoSKioqC2bNnX9KuXbuD8uXMS5cujYsuuijmz5/vAwDAx3r11VfjoosuiqVLl+bNmdu1a3fQ7Nmz/72iosLPrgAAYCu5iAYAoEmYOXPmz9q1a3dIvpz35ZdfjiuuuCLWrVsnfAA+0bp16+KKK66Il19+OW/O3K5du4Nnzpz5M+kDAMDWUQADALDLvfjii2N69OgxKh/Omsvl4oEHHogbbrghamtrhQ/Ap1ZbWxs33HBDPPDAA3nz2oAePXqMevHFF8dIHwAAPj0FMAAAu9SkSZO+NnDgwFPy4ax1dXVx8803x8SJE73vF4BtksvlYuLEiXHLLbdEXV1dXpx54MCBJ0+aNOlr0gcAgE9HAQwAwC7z6KOPHnXggQeekw9nXbduXfz617+OWbNmCR6Az2zmzJnx61//Ol9eJZA58MADz3n00UePkjwAAHyywsqB0fWjvtBYFVGzImtDAADsEDfeeOO+Rx999EWZTKYw7Wddvnx5XHXVVbFy5UrBA7DdbNiwIWbPnh0DBw6MioqKtB8307179/179uz56sMPP7xc+gAA5LuyzvVRUP7RX1MAAwCw011xxRV7fPe7372qoKCgWdrPOmfOnPjtb38bGzduFDwA2111dXVMmzYtOnfuHB07dkz1WTOZTOHuu+9+eJs2bV6aNGnSKukDAJDPFMAAADQZZ5xxRvef/exnvy0sLCxP+1knTJgQd999d9TX1wsegB2moaEhXnrppchms9G3b99UnzWTyRTttddeB/3lL395dubMmRukDwBAvlIAAwDQJBx00EEVf/jDH64pLi7ulOZz5nK5eOCBB+Kxxx4TOgA77c+eBQsWRF1dXfTv3z8ymUxqz1pQUFBywAEHDJs+ffqkpUuXbpY+AAD5aEsFcIH1AACwMwwaNKj0vvvuu7qsrKxXms9ZV1cX1113XUyaNEnoAOx0EydOjOuvvz7q6upSfc6ysrJef/rTn67u379/idQBAODvKYABANjhKioqCh577LGLKyoqBqb5nNXV1XHNNdfE7NmzhQ7ALvPKK6/ElVdeGVVVVak+Z4sWLQZOnDhxbEVFhZ9vAQDA33CBDADADjdz5syftW3b9sA0n3HdunVx2WWXxRtvvCFwAHa5xYsXx2WXXRZr165N9TnbtWt34MyZM38mcQAA+P8UwAAA7FBPPvnkqB49eoxK8xlXrVoVV1xxRSxfvlzgADQZK1asiCuuuCJWrlyZ6nP26NFj1KRJk0ZJHAAA/lth5cDo+lFfaKyKqFmRtSEAALbZjTfeuO+XvvSlCzOZTGp/8fDdd9+NK6+8MtatWydwAJqc6urqmDVrVvTv3z8qKytTe85u3boN79mz57yHH37Yb2MBAJAXyjrXR0H5R39NAQwAwA5x3nnn9T311FOvLigoKE7rGV977bW45pprorq6WuAANFmbN2+OGTNmRI8ePaJ9+/apPGMmkykYNGjQIYWFhVOee+45v5UFAEDqKYABANipjjrqqFb/8R//8YdmzZq1SusZX3755bj++uujrq5O4AA0eQ0NDfHSSy9Fp06dolOnTqk8Y0FBQXbYsGGfnz9//qQ33nhjk9QBAEizLRXA3gEMAMB21a1bt+wNN9zwnyUlJR3TesYpU6bEjTfeGPX19QIHIDHq6+vjxhtvjKlTp6b2jCUlJZ1uuOGG/+jWrZu7GgAAyFsKYAAAtqunn376XyorK/dI6/kmTZoUd955ZzQ2NgobgMRpbGyMO+64I5588snUnrGysnLw008//UtpAwCQrxTAAABsN88///w3unTp8k9pPd/EiRNj3LhxkcvlhA1AYuVyubj//vtTXQJ36dLlS88+++yJ0gYAIB95BzAAANvFTTfdNPzII488L5PJZNJ4vsceeyzGjx8vaABS47XXXotmzZpF3759U3m+zp0779urV695Dz/88DJpAwCQNlt6B7ACGACAz+wXv/hF7x/+8IdXFxQUNEvj+R544IF45JFHBA1A6ixYsCDq6upiwIABqTtbJpPJDBo06ODGxsbnpk6dul7aAACkiQIYAIAd5oADDqj43e9+99tmzZq1TeP5xo0bF5MmTRI0AKm1aNGi2Lx5cwwcODB1ZysoKMjut99+w5577rnH33vvvc3SBgAgLbZUAHsHMAAA2yybzWbuvPPOfyktLe2exvNNmDBB+QtAXpg0aVI89NBDqTxbaWlpj3vuuedfstlsRtIAAOQDBTAAANvs+eef/06HDh0OTePZHn744Xj44YeFDEDeeOSRR+LPf/5zKs/WoUOHw5599tlvSxkAgHygAAYAYJvcd999hw8ePPjUNJ7t/vvvjwkTJggZgLzz2GOPxX333ZfKs+25554/+NOf/nSYlAEASDvvAAYAYKudccYZ3ceMGXN5QUFBcdrONnHixHjkkUeEDEDeWrx4cWSz2ejbt2/ajpbp06fPvn/5y18mz5w5c4OkAQBIsi29A1gBDADAVhk2bFjzG2+88Q/NmjVrl7azPfroo6l99CUAbI2FCxdGUVFR9OvXL1XnKigoKD7wwAP3e/LJJx9dsWJFnaQBAEiqLRXAHgENAMBWuffee39ZWlraPW3nevzxx+PBBx8UMAD8jz//+c8xceLE1J2rtLS0x3333fdLCQMAkFYKYAAAPrVJkyaN6tSp0xEpPFeMHz9ewADwD8aPHx+TJ09O3bk6der0hUmTJn1VwgAApJFHQAMA8Kmcd955fU888cR/z2QyRWk618yZM+Puu+8WMAB8jNdeey06duwYnTt3TtW5unbtuk9BQcHzzz333DopAwCQNN4BDADAZ3LEEUe0vOKKK67NZrOVaTrXyy+/HDfffHPkcjkhA8DHyOVyMXv27OjSpUt06tQpNefKZDJF++yzz/CpU6c+9u67726WNAAASeIdwAAAbLNsNpu55ZZb/q2kpKRjms61YMGCuPnmm6OxsVHIAPAJGhsb4+abb44333wzVecqLS3tcvfdd5+fzWYzUgYAIC0UwAAAbNGkSZO+3rZt2wPTdKZly5bFDTfcEPX19QIGgE+prq4urr322li+fHmqztWuXbsDH3/88VESBgAgLTwCGgCAj3XZZZcN+upXvzo2k8mk5hcH33///bjyyiujqqpKwACwlerq6uLll1+OIUOGRHl5eWrO1aVLl31LS0unPvPMM2ukDABAEngENAAAW61///4lJ5988q8ymUxRWs60YcOG+P3vfx8bN24UMABso40bN8bvfve7VP15WlBQkP3hD394ft++fYslDABA4q9vrQAAgI/y4IMPnl1WVtYrLeeprq6O3/zmN7Fq1SrhAsBntGrVqrjyyiujuro6NWcqKyvr8/DDD58lXQAAkk4BDADA/zF+/Pgju3XrdnRazlNfX5/KdxYCwK60fPnyuO6666K+vj41Z+rRo8dXx40bd4R0AQBIMgUwAAB/53vf+16nI4444py0nCeXy8Vtt90Wb7zxhnABYDt7/fXX47bbbotcLpeaMx155JHnfvvb3+4oXQAAkkoBDADA/6qoqCi4+OKLLywsLCxPy5nGjx8fs2bNEi4A7CCzZs2Khx56KDXnKSwsrPj1r399QUVFhZ+bAQCQSC5kAQD4XxMnThxdWVk5OC3nef7552PixImCBYAd7LHHHosXXnghNeeprKzc89FHHz1RsgAAJFFh5cDo+lFfaKyKqFmRtSEAgDxxwQUX7DZq1KgLM5lMYRrO8+qrr8Ytt9ySqkdSAkBT/7O3d+/e0a5du1Scp2PHjkNzudxzU6ZMWSddAACamrLO9VHwMc/wcwcwAADRt2/f4h//+McXZzKZVPwG4HvvvRc33HBDNDY2ChcAdpKGhoa47rrrYtmyZak4T0FBQfbss88e27dv32LpAgCQqGtZKwAAYPz48T8qKyvrkYazbNiwIX7/+99HbW2tYAFgJ9u0aVP8/ve/j40bN6biPGVlZb3GjRs3RrIAACSJAhgAIM/ddNNNw/v06XN8Gs5SX18f1157baxdu1awALCLrFmzJq699tqor69PxXn69ev3jd///vdDJQsAQFIogAEA8thBBx1Uceyxx/5rRGTScJ477rgjFi9eLFgA2MUWLVoUd955Z1qOU/CNb3zj34YNG9ZcsgAAJOIC1goAAPLXzTfffFZxcXG7NJxl4sSJMX36dKECQBMxbdq0mDRpUirOUlJS0unOO+88Q6oAACSBAhgAIE/913/914FdunT5UhrO8tprr8Wf//xnoQJAEzN+/PhYsGBBKs7SrVu3o2+66abhUgUAoKlTAAMA5KEvfelLlV/5yld+lYazrFixIq6//vpobGwULAA0MY2NjXHdddfFihUr0nCczHHHHfergw46qEKyAAA0ZQpgAIA8dPXVV5+ezWYrk36OmpqauPbaa2PTpk1CBYAmatOmTXHttddGTU1N4s+SzWbb3njjjT+RKgAATZkCGAAgz9x6663Du3Tp8uWknyOXy8Utt9wSK1euFCoANHErV66MW2+9NXK5XOLP4lHQAAA0dQpgAIA8MnTo0LKvfvWrv0jDWSZMmBBz584VKgAkxJw5c+Kxxx5LxVlGjRr1i6FDh5ZJFQCApkgBDACQR+64444fFRcXd0z6OV5++eV45JFHBAoACfPQQw+l4he4SkpKOt5xxx0/lCgAAE2RAhgAIE9cfvnlu/fs2XNU0s/xwQcfxB133JGKR0gCQL7J5XJx2223xZo1axJ/lp49ex57+eWX7y5VAACaGgUwAEAe6NatW/a73/3uv2YymURf/9XX18cNN9wQ1dXVQgWAhKqqqoobb7wx6uvrE32OTCZT8N3vfvdX3bp1y0oVAICmRAEMAJAHxo8ff0pZWVmvpJ/jnnvuiaVLlwoUABJuyZIlcd999yX+HGVlZT3Hjx9/ikQBAGhKFMAAACn385//vOeAAQNGJ/0c06dPjylTpggUAFJi8uTJMWPGjMSfY8CAAaN//vOf95QoAABNhQIYACDFstls5qyzzjo3k8kk+tGEK1asiLvvvlugAJAyd911V6xYsSLRZ8hkMtmzzjrr3Gw2m5EoAABNgQIYACDFxo0b98XKysq9knyG2trauOGGG6K2tlagAJAyf/1zfvPmzYk+R2Vl5V7jxo0bKVEAAJoCBTAAQEoNHz68/OCDDz4t6ee4//77Y/ny5QIFgJRavnx5jBs3LvHnGDFixI+HDRvWXKIAAOxqCmAAgJS69dZbT8tms22TfIYZM2bEc889J0wASLnJkyfHzJkzE32G4uLitrfffvtp0gQAYFdTAAMApNBVV121R48ePb6S5DOsXLky7rrrLmECQJ64++6744MPPkj0GXr27PnVK664Yg9pAgCwKymAAQBSprS0tOAb3/jGT5N8rdfY2Bi333679/4CQB6pqamJ2267LRobG5N8jIJvfvObZ5aWlvqZGwAAu+6i1AoAANJlwoQJX6uoqBiQ5DOMHz8+Fi1aJEwAyDNvvvlmPPjgg4k+Q4sWLQY9+OCDx0gTAIBdRQEMAJAiRx55ZOWwYcN+kOQzzJ07N5544glhAkCemjhxYixYsCDRZxg+fPiPjjjiiJbSBABgV1AAAwCkyBVXXHFyUVFRRVLnr6qqijvvvDNyuZwwASBP5XK5uP3226O6ujqxZygqKmrxm9/85mRpAgCwKyiAAQBS4vzzz+/Xu3fv45J8httvvz0+/PBDYQJAnlu3bl3cfvvtiT5D7969jz///PP7SRMAgJ1NAQwAkALZbDZz6qmn/jyTyST2+m769OkxZ84cYQIAERExe/bsmDFjRmLnz2QyBaeeeurPs9lsRpoAAOxMCmAAgBT44x//eERlZeXgpM6/du3auPfeewUJAPyde+65J9atW5fY+SsrKwf/6U9/+oIkAQDYmRTAAAAJ17dv3+JDDjnkR0k+w9133x01NTXCBAD+Tk1NTdx9992JPsPBBx/8o759+xZLEwCAnUUBDACQcHfdddc3S0pKOiV1/smTJ8e8efMECQB8pLlz58azzz6b2PlLSko63nPPPd+SJAAAO4sCGAAgwb70pS9VDhw48KSkzr9mzZoYP368IAGALXrggQdizZo1iZ2/f//+Jx111FGtJAkAwM6gAAYASLArrrji1MLCwvIkzp7L5eK2226LTZs2CRIA2KJNmzbFbbfdFrlcLpHzFxYWll1++eU/kCQAADuDAhgAIKF+8Ytf9O7evftXkjr/s88+G2+88YYgAYBP5Y033ojnn38+sfN369bt6F/96ld9JAkAwI6mAAYASKgf/vCHP8pkMom8nvvggw/igQceECIAsFXGjRsX69atS+TsmUym4NRTT/2xFAEA2NEUwAAACXTdddcNa9eu3YFJnD2Xy8Udd9wRtbW1ggQAtsqmTZvizjvvTOz8bdq02f+mm27aT5IAAOxICmAAgIQpLS0t+NrXvnZ6Uud/4YUXYuHChYIEALbJq6++GjNmzEjs/Mccc8zpFRUVfiYHAMAO42ITACBhbr/99oMrKip2S+LsGzZsiHHjxgkRAPhM7r///qiqqkrk7OXl5X3/67/+6wgpAgCwoyiAAQASpKKiouCwww47Nanz33vvvYn9YS0A0HRs2LAh7r///sTOf9BBB/1zq1atCiUJAMCOoAAGAEiQ+++//+iysrKeSZx9zpw58dJLLwkRANguXnjhhViwYEEiZy8tLe32xz/+8StSBABgR1AAAwAkRN++fYv33Xfff07i7LW1tXHvvfcKEQDYru6+++6oq6tL5Oz77bffKf379y+RIgAA25sCGAAgIW6++eZRxcXFbZM4+yOPPBJr164VIgCwXa1atSoee+yxRM6ezWbb3njjjV+TIgAA25sCGAAgAYYOHVq21157fSeJs7/33nvxxBNPCBEA2CEmTpwYK1asSOTsQ4YM+c7QoUPLpAgAwPakAAYASIBrr732xKKiosqkzZ3L5eKee+6JxsZGIQIAO0R9fX3cddddkcvlEjd7UVFR5bXXXnuCFAEA2J4UwAAATdwBBxxQMWDAgG8kcfYZM2bEW2+9JUQAYId6880348UXX0zk7AMGDPjG8OHDy6UIAMD2ogAGAGjirrrqqhOKiooqkjb3pk2b4oEHHhAgALBT3H///VFbW5u4uYuKilpcffXV7gIGAGC7UQADADRhBx10UEX//v0Teffvww8/HB9++KEQAYCdYv369TFhwoREzj5w4MBvHHDAARVSBABge1AAAwA0Yf/5n/95bGFhYfOkzb1q1aqYPHmyAAGAnerpp5+O1atXJ27uwsLC8ssuu2yUBAEA2B4UwAAATdQBBxxQMWjQoNFJnP3uu++O+vp6IQIAO1V9fX3cddddiZx99913/+bQoUPLpAgAwGelAAYAaKIuv/zyYwsLC8uTNvfcuXNjwYIFAgQAdokFCxbE3LlzEzd3UVFRi9/97ndflyAAAJ+VAhgAoAkaOnRo2aBBgxL37t+6urr405/+JEAAYJf605/+FHV1dYmbe/fdd//mkCFDSiUIAMBnoQAGAGiCfvOb33ylqKioZdLmfu655xL53j0AIF1Wr14dzz33XOLmLioqann11VcfLUEAAD4LBTAAQBPTq1evZoMHD/5m0uaurq6ORx55RIAAQJPwyCOPRHV1deLmHjJkyLe6deuWlSAAANtKAQwA0MTcdNNNxxQXF7dN2twTJkyIqqoqAQIATUJVVVUifzmtuLi43a233uouYAAAtpkCGACgCWnVqlXhXnvtdVLS5l61alU8++yzAgQAmpTJkyfHqlWrEjf30KFDR7dq1apQggAAbAsFMABAE3LLLbccXlJS0jlpcz/44INRX18vQACgSamvr48HH3wwcXOXlJR0vummmw6VIAAA20IBDADQRGSz2cwBBxzw7aTNvWjRonjppZcECAA0SS+99FIsXrw4cXOPGDHiO9lsNiNBAAC2lgIYAKCJuOaaa/YuLy/vm7S5H3roocjlcgIEAJqkXC6XyLuAy8vL+1111VV7SRAAgK2lAAYAaCK+8pWvfDdpM8+bNy8WLlwoPACgSVu4cGG8+uqrrg8BAMgLCmAAgCbgsssuG1RZWblPkmbO5XIxfvx44QEAifDAAw8k7qklrVu33veSSy7pLz0AALaGAhgAoAkYNWrUCUmbefbs2bFs2TLhAQCJsGzZsnjllVcSN/cJJ5xwovQAANgaCmAAgF3sn//5nzt37NjxiCTN3NjYGA888IDwAIBEGT9+fDQ0NCRq5k6dOn1h9OjRHaQHAMCnpQAGANjFfvSjH30tk8kk6rps2rRpsWrVKuEBAImyatWqeOGFFxI1cyaTKfzpT386SnoAAHxaCmAAgF1o0KBBpX369Plqkmaur6+PCRMmCA8ASKQJEyZEXV1dombu27fvV/r27VssPQAAPg0FMADALnTZZZcdXlRUVJGkmadOnRpr164VHgCQSOvXr48pU6YkauaioqLK3/zmN0dIDwCAT0MBDACwi2Sz2cy+++57UpJmrqurc/cvAJB4jz76aOLuAt5///1PymazGekBAPBJFMAAALvI1VdfPbSsrKx3kmaeMmVKbNiwQXgAQKJt2LAhnn/++UTNXFZW1ueqq67aS3oAAHwSBTAAwC7y5S9/+bgkzVtfXx8TJ04UHACQCo8//nji7gL+0pe+dLzkAAD4JApgAIBdYPTo0R3atm07IkkzT5s2LdatWyc8ACAVPvzww5g+fXqiZm7fvv2I0aNHd5AeAABbogAGANgFfvrTn47KZDKFSZm3vr4+HnnkEcEBAKnyyCOPRH19fWLmzWQyhT/96U+/JjkAALZEAQwAsJN16tQp26dPn6OTNLO7fwGANFq3bl1MmzYtUTP36dPnmE6dOmWlBwDAx1EAAwDsZFddddUB2Wy2dVLmbWxsjEmTJgmOVOvYsWN06OCJmgD5aNKkSdHY2JiYebPZbOurrrrqAMkBAPBxFMAAADvZiBEjvp6keV988cVYtWqV4Ei1Ll26xIUXXhinnXZadO3a1UIA8siqVavipZdecj0JAEBqKIABAHaiM844o3tlZeXeSZk3l8vFxIkTBUdeyGQyMXjw4PjVr34VY8aMcUcwQB55/PHHI5fLJWbeysrKvc8444zukgMA4KMogAEAdqJTTjnlqxGRScq8CxYsiPfee09w5JVMJhN77713XHjhhTFmzJho3769pQCk3HvvvRcLFy5M1B9X/3NdCQAA/4cCGABgJ+nVq1ezXr16fTlJM3v3L/nsr0XwBRdcECeffHK0bdvWUgBSLGnXPb169fpyr169mkkOAIB/pAAGANhJrrjiioOLiopaJmXeBN4JAztEYWFhDB8+PC688MIYPXp0VFZWWgpACi1YsCCWLVuWmHmLiopaXnnllYdIDgCAf6QABgDYSYYPH/6VJM2btHfhwY5WVFQUI0aMiEsuuSRGjx4dLVu2tBSAFMnlcvH4448naub99tvvK5IDAOAfKYABAHaC0aNHd6isrByalHnXrl0bL7/8suDgI/y1CL744ovjhBNOiBYtWlgKQEq89NJLsW7dusTMW1lZudfo0aM7SA4AgL+lAAYA2AlOP/30o5J07fXMM89EQ0OD4GALiouL47DDDouxY8fGqFGjoqyszFIAEq6hoSGeeeaZJI1c8D/XmQAA8P8vEq0AAGDHymazmX79+n05KfPW1tbGlClTBAefUnFxcYwcOTIuvfTSGDVqVJSWlloKQII9//zzUVtbm5h5+/Xr9+VsNpuRHAAAf6UABgDYwX7zm9/sWVJS0jkp886YMSOqq6sFB1uppKQkRo4cGZdcckkcffTRUVJSYikACVRdXR0zZ85M0p8/na+44orBkgMA4K8UwAAAO9gXvvCFLyVl1lwuF08//bTQ4DNo3rx5HHXUUXHJJZfEyJEjI5vNWgpAwjz11FORy+USM++RRx75ZakBAPBXCmAAgB1oyJAhpZ07dz4iKfO+/vrrsWLFCsHBdlBeXh6jRo2KSy+9VBEMkDArVqyI119/PTHzdunS5fD+/ft79AQAABGhAAYA2KHGjh17aGFhYWJeCOruX9j+KioqYtSoUXHxxRfH4YcfHkVFRZYC4LpouyosLGz+H//xHwdLDQCACAUwAMAOteeeex6ZlFnXrl0b8+bNExrsIK1atYrjjz8+LrroohgxYkQUFPh2DKApmzdvXqxZsyYx8+61115HSg0AgAgFMADADnPMMce0bt269b5Jmfe5556LxsZGwcEO1qZNmxg9enRcfPHFimCAJqyxsTGee+65JP35MvyYY45pLTkAAPykAQBgBznzzDMPz2Qyibjeqq+vj6lTpwoNdqK2bdvG6NGj47zzzovhw4crggGaoBdeeCHq6+sTMWsmkyk844wzDpUaAAB+wgAAsIP079//C0mZdc6cObFhwwahwS7QqVOnOPnkk+Pf/u3fYu+9945MJmMpAE3Ehg0bYvbs2YmZd8CAAR4DDQCAAhgAYEf43ve+16mysnKPpMybpMcbQlp17tw5xowZE7/61a8UwQBNyPPPP5+YWSsrKwd/73vf6yQ1AID8pgAGANgBTj755CMiIhHtzcqVK+P1118XGjQRXbt2jTFjxsQ555wTgwcPthCAXez111+PlStXJmXczMknn3y41AAA8psCGABgB+jXr19iHv88ZcqUyOVyQoMmpnfv3nHaaafFOeecE/3797cQgF0kl8vFlClTknQd6jHQAAB5TgEMALCdnX766d0qKip2S8Ks9fX1MW3aNKFBE9anT58466yz4pxzzonddtvNQgB2gWnTpkV9fX0iZq2oqNjt9NNP7yY1AID8pQAGANjORo8efURSZp03b15s3LhRaJAAffr0ibPPPjvOPPPM6Nmzp4UA7EQbN26MefPmuR4FACARFMAAANtZr169EvPetSQ9zhD4bwMGDIhf/vKXceaZZ0b37t0tBGAnmTp1apKuRw+TGABA/lIAAwBsR2eccUb38vLyvkmYdf369fHaa68JDRJqwIAB8S//8i9x2mmnRbdunvQJsKPNnz8/Pvzww0TMWl5e3u9HP/pRF6kBAOQnBTAAwHZ03HHHHZSUWWfMmBGNjY1CgwTLZDIxePDg+Nd//dcYM2ZMdOjQwVIAdpDGxsaYMWNGYub9xje+cYjUAADykwIYAGA76tOnz8FJmDOXyyXqMYbAlmUymdh7773jwgsvjDFjxkT79u0tBWAHeOGFF5J0XXqIxAAA8pMCGABgOznppJPat2zZcvckzLpkyZJYuXKl0CBl/loEX3DBBXHyySdH27ZtLQVgO1qxYkW8/fbbiZi1srJy0PHHH+8PAgCAPKQABgDYTr773e8eGBGZJMyapMcXAluvsLAwhg8fHhdeeGGMHj06KisrLQVgO5k+fXpSRi34/ve/f6DEAADyjwIYAGA72X333Q9Nwpz19fUxc+ZMgUEeKCoqihEjRsQll1wSo0ePjpYtW1oKwGc0c+bMqK+vT8SsAwcOPFRiAAD5RwEMALAdHHTQQRUtW7bcKwmzLly4MKqrq4UGeeSvRfDFF18cJ5xwQrRo0cJSALZRVVVVvP7664mYtVWrVkOHDx9eLjUAgPyiAAYA2A7OPvvsz2cymaIkzOrxz5C/iouL47DDDouxY8fGqFGjoqyszFIAtkFSnqaSyWSy55577uclBgCQXxTAAADbwe67735AEuasra2NOXPmCAzyXHFxcYwcOTIuvfRSRTDANpg9e3bU1dUlYtY99tjjAIkBAOQXBTAAwGfUqlWrwnbt2u2fhFnnzZsXtbW1QgMiIqKkpCRGjhwZY8eOjaOPPjpKSkosBeBT2LRpU8ybNy8Rs7Zv337/iooKPwMEAMgjLv4AAD6jCy+8cPeioqKKJMz64osvCgz4P5o3bx5HHXVUXHLJJTFy5MjIZrOWAvAJZs2alYg5i4qKWlx88cWDJAYAkD8UwAAAn9GBBx6YiMfqVVdXJ+ZOFWDXKC8vj1GjRsWll16qCAb4BPPmzYuamppEzHrQQQd5DDQAQB5RAAMAfEZdu3YdnoQ5582bF/X19QIDPlFFRUWMGjUqLr744jj88MOjqKjIUgD+QV1dXbz66quJmLVLly77SwwAIH8ogAEAPoNTTjmlY3l5+W5JmPXll18WGLBVWrVqFccff3xcdNFFMWLEiCgo8C0kwN966aWXEjFnRUXFbieddFJ7iQEA5AffvQMAfAYnnnji55MwZ21tbcyfP19gwDZp06ZNjB49OsaOHasIBvgb8+fPj9ra2iSMmvnud7/7eYkBAOQH37UDAHwGn/vc5/ZLwpwLFy6Muro6gQGfyV+L4PPOOy+GDx+uCAby3ubNm2PhwoWJmLVfv37DJQYAkB98tw4AsI1atWpV2Lp1672TMKvHPwPbU6dOneLkk0+Oc889NwYNGmQhQF6bPXt2IuZs06bN3hUVFX4WCACQB1z0AQBso/PPP39gYWFheVOfs76+PubMmSMwYLvr2bNn/OQnP4nzzjsv9t5778hkMpYC5J3Zs2dHfX19k5+zqKio4vzzzx8oMQCA9FMAAwBso/3333/fJMz5+uuvR01NjcCAHaZLly4xZsyYOOecc2Lw4MEWAuSV6urqeOONNxIx64EHHriPxAAA0k8BDACwjbp27ZqIxz/PnTtXWMBO0bt37zjttNPinHPOif79+1sIkDeScr3VvXv3vaUFAJB+CmAAgG0wZMiQ0srKyj2a+py5XM7jn4Gdrk+fPnHWWWfFOeecE7vttpuFAKk3e/bsyOVyTX7Oli1b7jlo0KBSiQEApJsCGABgG5x55pl7ZjKZbFOfc9myZbFu3TqBAbtEnz594uyzz44zzzwzevbsaSFAaq1bty6WL1/e5OfMZDLZs846a4jEAADSrcgKAAC23tChQ4clYc558+YJC9jlBgwYEAMGDIgFCxbE+PHjY+nSpZYCpM68efOiS5cuTX7OffbZZ5+ImC4xAID0cgcwAMA26Nix4z5JmHP+/PnCApqMAQMGxC9/+cs47bTTolu3bhYCpEpSrrs6deq0j7QAANJNAQwAsJWOOOKIlhUVFf2a+pxVVVWxaNEigQFNSiaTicGDB8e//uu/xpgxY6JDhw6WAqTCW2+9FVVVVU1+zoqKis8deuihLSQGAJBeCmAAgK108sknD46ITFOfc/78+dHY2CgwoEnKZDKx9957x4UXXhhjxoyJ9u3bWwqQaI2NjbFgwYJE/Cv4u9/97h4SAwBILwUwAMBW2n333fdMwpze/wskwV+L4AsuuCBOPvnkaNu2raUAiZWU66/BgwfvKS0AgPQqsgIAgK3Trl27wU19xlwul5Q7UAAiIqKwsDCGDx8e++yzT0ybNi0mTJgQ69evtxggURYsWBC5XC4ymab9sJgOHToMlhYAQHq5AxgAYCsMGjSotGXLlgOa+pzvvfdebNy4UWBA4hQVFcWIESPikksuidGjR0fLli0tBUiMDz/8MJYtW9bk52zZsuXA/v37l0gMACCdFMAAAFvhxz/+8aBMJtPkn6Li7l8g6f5aBI8dOzZOOOGEaNGihaUAibBw4cImP2Mmk8n+5Cc/GSAtAIB0UgADAGyFvffee88kzJmEHzwCfBrNmjWLww47LMaOHRujRo2KsrIySwGatKT8Il5SrmsBANh63gEMALAVunbtOqSpz1hfXx9vvvmmsIBUKS4ujpEjR8bBBx8czz77bDz++ONRXV1tMUCT8+abb0Z9fX0UFTXtH7t16dJlT2kBAKSTO4ABAD6lioqKgoqKikFNfc4lS5bE5s2bBQakUklJSYwcOTLGjh0bRx99dJSUeIUl0LTU1tbG0qVLm/ycLVu2HFRaWupngwAAKeQiDwDgUzr77LP7FhYWNvlnj7722mvCAlKvefPmcdRRR8Ull1wSI0eOjGbNmlkK4HpsKxQWFpafffbZvaQFAJA+CmAAgE9p//3375+EOV9//XVhAXmjvLw8Ro0aFf/+7/8eI0eOjGw2aymA67FP6fOf//xAaQEApI8CGADgU+rRo8fuTX3G2traePvtt4UF5J2KiooYNWpUXHzxxXH44Yc3+XdvAum2ePHiRLySo1evXoOkBQCQPgpgAIBPqXXr1k3+DoklS5ZEQ0ODsIC81apVqzj++OPj4osvjhEjRkRBgW97gZ2voaEhlixZ0uTnbNOmjQIYACCFfCcMAPApDBkypLR58+a9m/qcb775prAAIqJ169YxevToGDt2rCIYcF32MZo3b95n0KBBpdICAEgX3wEDAHwKp556av9MJtPkr53eeustYQH8jTZt2sTo0aPjvPPOi+HDhyuCAddlfyOTyRT84Ac/+Jy0AADSxXe+AACfwuDBg5v84/Hq6+tj0aJFwgL4CJ06dYqTTz45/u3f/i323nvvyGQylgLsUIsXL07Eqzn23HPPgdICAEgXBTAAwKfQpUuXAU19xnfeeSfq6uqEBbAFnTt3jjFjxiiCgR2utrY23n333SRc53oPMABAyiiAAQA+hZYtW/Zv6jN6/DPAp9elS5cYM2ZMnHvuuTF48GALAfL2+iwJ17kAAGwdBTAAwCcYPnx4eUlJSeemPqfHPwNsvV69esVpp50W55xzTvTvrwMB8u/6rLS0tPPw4cPLpQUAkB4KYACAT/Ctb31rt4ho8s8IXbx4sbAAtlGfPn3irLPOinPOOSd22203CwG2i4T8gl7m29/+dj9pAQCkhwIYAOAT7L777k2+CVi7dm1s2LBBWACfUZ8+feLss8+OM888M3r27GkhwGfy4Ycfxrp165r8nAMHDlQAAwCkSJEVAABsWadOnZr8D8TefvttQQFsRwMGDIgBAwbEggULYvz48bF06VJLAbb5Oq1Vq1audwEA2GkUwAAAn6CyslIBDJCnBgwYEP3794958+bFQw89FO+++66lAFtlyZIlsddeezX1613PvgcASBEFMADAFnTq1CnbvHnzXk19ziVLlggLYAfJZDIxePDg2GOPPeLll1+OBx98MFauXGkxQGqu05o3b967Xbt2RatXr66XGABA8nkHMADAFowZM6ZnJpPJNuUZGxsbPZoUYCfIZDKx9957x4UXXhhjxoyJ9u3bWwrwiZYuXRqNjY1NesaCgoLsqaee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k8nE7NmzY+LEibFmzRoNAXif/VNSzJo161kTAwBongTAAAC70O233/7KOeecszU/P78022sdMGBAtG/f3tWu0My9+uqrMWnSpFi1apVmALyPjh07xgEHHJCIWhsbG6u/8Y1v/NXUAACaJwEwAMAutHLlyob169fP6tat2+hsrzWVSsXhhx8ekyZNMjhohubMmROTJ0+OJUuWaAbAh3D44YdHKpVKRK3r16+fVVFR0WhqAADNU54WAADsWq+++mpirts77LDDDAyamTfffDP+/d//PX7yk58IfwE+pFQqFSNGjEhMva+88sozpgYA0Hw5AQwAsIvddNNNz5166qnV+fn5rbO91m7dukX//v1j4cKFBgc5btmyZfHYY4/F/PnzNQPgIzrggAOic+fOiai1sbFxy4033jjL1AAAmi8BMADALrZy5cqG8vLyGT179vx0Euo9+uijBcCQw5YvXx7jxo0T/AJ8wv1SUpSXlz9TXl7eYGoAAM2XABgAYDeYMWPGUxdccEEiAuAhQ4ZE69ato7q62uAgh6xcuTImTJgQc+fOjUwmoyEAH1ObNm3i0EMPTUy9zz777FOmBgDQvPkGMADAbvDVr371lYaGhk1JqLWgoCCOOOIIQ4McsW7duvj5z38ed955Z8yZM0f4C/AJjRw5MvLz8xNRa0NDw8abbrrpVVMDAGjenAAGANgNKisrm1atWjW9T58+5ySh3qOPPjqefPJJQREk2Pr16+Oxxx6L2bNn+3cZYBdJpVIxatSoxNS7cuXKadXV1WmTAwBo3pwABgDYTaZNm5aY6/c6duwYAwYMMDRIoA0bNsSvf/3r+Nd//dd49dVXhb8Au9CAAQOiY8eOian36aefftLUAAAQAAMA7CZf+9rX5tTX11ckpd6jjjrK0CBBqqqq4v77749vf/vb8eKLL0ZTU5OmAOxiRx55ZGJqra+vX/eNb3zjdVMDAMAV0AAAu0ltbW16xYoVT++///6fT0K9hx56aLRt2zaqqqoMD7LYli1bYsqUKfHcc8/F9u3bNQRgN2nbtm0MGTIkMfUuX778qdraWtc/AwDgBDAAwO70xz/+cUJSas3Pz4/jjjvO0CBL1dTUxKOPPhq33XZb/OUvfxH+Auxmxx57bOTn5yel3Myvf/3rCaYGAECEABgAYLe66667llZXV89PSr1HH310tGjRwuAgi7wd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qATAAABZ4umnn968fPnyxF3xN3r06GjXrp0BAgBZqUOHDnH88ccnru5ly5ZNmD59+hYTBADgoxIAAwBkkbvvvvtPmUymKUk1FxYWxumnn254AEBWOvPMMxP3yYpMJtN41113/dH0AAD4OATAAABZ5Be/+MWatWvXTkta3UcccUT06tXLAAGArNK7d+847LDDEld3eXn5X+6///51JggAwMchAAYAyDIPP/zwn5JWcyqVijPPPNPwAICsMmbMmEilUomr+8EHH/yT6QEA8HEJgAEAsszXv/71NzZs2DAraXUPHDgwDj74YAMEALLCoEGDYsCAAYmru6KiYuatt966wAQBAPi4BMAAAFlo3Lhxv01i3WPGjIm8PFtMAGDvysvLizFjxiSy9j//+c+/NUEAAD7RflgLAACyz/XXXz+nqqrqr0mru1evXnHUUUcZIACwVx1zzDHRvXv3xNW9adOmV2666aa5JggAwCchAAYAyFJ/+tOf7k1i3WPGjInS0lIDBAD2ijZt2sRZZ52VyNofeOCBe00QAIBPSgAMAJClbrrpprlJPAVcXFwcZ555pgECAHvFWWedFS1btkxc3Zs2bXrl5ptvnmeCAAB8UgJgAIAsNm7cuF8lse5Ro0ZF7969DRAA2KP69OkTI0eOTGTtjz322K9MEACAXUEADACQxcaOHTu7qqrqb0mrO5VKxfnnnx+pVMoQAYA9tv/4/Oc/n8j9R2Vl5d+uueaav5kiAAC7ggAYACDLTZ069bdJrLtv374xZMgQAwQA9ojDDjsssTeQTJ48+TcmCADAriIABgDIcpdeeumLVVVVryax9s9//vNRXFxsiADAblVaWhrnn39+Imuvqqr66+WXX/6SKQIAsKsIgAEAEuChhx76WRLrLisri9NPP90AAYDd6qyzzoqSkpIklp753e9+91MTBABgVxIAAwAkwA033DB3w4YNs5JY+3HHHRd9+vQxRABgt+jbt28cddRRiay9oqJi1te//vU3TBEAgF1JAAwAkBA///nPfxoR6aTVnUql4vOf/3zk5dl6AgC7Vn5+flx00UWRSqWSWH76F7/4xX+bIgAAu5q3cAAACXHHHXe8tW7duulJrL13795xzDHHGCIAsEudcMIJ0b1790TWXl5e/pc77rjjLVMEAGBXEwADACTI3XfffW8mk2lKYu1nnXVWtG3b1hAB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onv37vEv//IvccABBzSrdWcymaYnnnji9s997nPPeAoAAODDEQADAJBYDz/88NJjjjlmY+/evY+KiGZzFKq0tDSGDx8eq1evjvXr13sQAHLcwIED45prrol27do1t6VnZsyY8YOzzjprqqcAAAA+PAEwAACJdv/99795zDHHVO6zzz5HRDMKgVu0aBGHHXZYtGzZMhYuXBjpdNrDAJBjCgoK4pxzzonzzz8/WrRo0dyWn37uuefuOuWUUyZ4EgAA4KMRAAMAkHi///3v5w8bNmxF3759j2lO10GnUqno27dvDB06NBYvXhxbtmzxMADkiJ49e8YNN9wQgwcPblbf+434x7XPU6ZM+fbpp58+2ZMAAAAfnQAYAICc8OCDDy4ZNmzYin79+jWrEDgionXr1nHEEUdEfX19LF261MMAkGCpVCpOOOGEuOKKK6JNmzbNbv07wt9vnXPOOX/xNAAAwMcjAAYAIGc89NBDS4YNG7a8X79+xza3EDg/Pz8OPvjg6NWrV8yfPz8aGho8EAAJU1JSEpdffnmccMIJkZ+f3+zWn8lkGp944olvffazn53maQAAgI9PAAwAQE556KGHlo4cOXJdnz59RqWa252ZEdG1a9cYNmxYLFu2LCorKz0QAAnRt2/fuO6662K//fZrluvPZDLpp59++rvnnHPO054GAAD4ZATAAADknD/96U+LDj300KX7779/s7sOOiKiuLg4jjzyyCgpKYk333wz0um0hwIgSxUUFMRnP/vZuPDCC6OkpKRZ9iCdTjc88sgjt5x//vnTPREAAPDJCYABAMhJDz/88NId3wQelUqlmt09mqlUKvr06RMHH3xwLFy4MLZt2+ahAMgynTt3jrFjx8bQoUOjGV5aERH/CH+feOKJ2y+88MLnPBEAALBrCIABAMhZDz300JIePXq8NmjQoGPz8vJaNMcetG3bNkaNGhVNTU2xZMkSDwVAFkilUjF69Oi48soro0OHDs22D01NTdt++9vf/stll132oqcCAAB2HQEwAAA5bdKkSeXdu3efM3jw4GYbAufn58eAAQOiV69esWDBgti+fbsHA2Avad26dVx66aVx/PHHR35+frPtQ2NjY/WvfvWrf7nuuute81QAAMCuJQAGACDnTZ48eW1jY+OMI4444uiCgoKS5tqHrl27xqhRo2Lbtm2xcuVKDwbAHpRKpWLUqFExduzY6NWrV7PuRX19/fo77rjjK9/61rcWejIAAGDXEwADANAsPP/881UbNmx45rjjjjuqsLCwrLn2obCwMAYNGhT77bdfLF68OGpraz0cALtZ+/bt44orrogTTzwxCgub9/uU2tralTfffPPVP/nJT1Z7MgAAYPcQAAMA0Gz87W9/27p27doZJ5xwwsjCwsK2zbkXnTp1ipEjR0Z1dbXTwAC70ciRI+Pqq6+OHj16NPte1NTULL/hhhuu/e1vf7vOkwEAALuPABgAgGbltdde2zpv3rynTznllKFFRUWdmnMvCgsL49BDD4399tsvFi1a5DQwwC709qnfk08+udmf+o2I2Lx587yLL774unHjxm30dAAAwO71fgFwat9zYsTOftC4LmLjq610DwCAxOrVq1fhs88++69du3Y9QTciGhoaYurUqTF58uRobGzUEICPqaCgIE499dQYPXq04HeH8vLyp4499tjvrly5skE3AABg9+swrDYKuuz8ZwJgAAByWuvWrfNeeumlm/fdd9+zdeMfVq9eHffff38sWbJEMwA+ov322y8uuugi1z2/w8KFC38/fPjwnzY0NGR0AwAA9gwBMAAAzd7zzz9/8aGHHnp1RKR0IyKTycTMmTPjz3/+c9TV1WkIwAcoKSmJ8847L0aMGBGplL9Kdki//PLL9xx77LEPagUAAOxZ7xcA+wYwAADNwn333Tfn+OOP39yrV6/DQwgcqVQqevfuHcOHD49169ZFRUWFhwTgPRxyyCExduzY6N+/v/B3h0wm0/jMM8/828knnzxONwAAYM97v28AC4ABAGg2fve7370xePDgJf369Ts6lUrl60hEcXFxjBgxInr06BFLly6N2tpaTQHYoUOHDvGFL3whzjzzzCguLtaQHZqammoeeOCBWz73uc9N1w0AANg7BMAAALDDww8/vKygoOC54cOHH1FQUFCqI//QrVu3OO6446K0tDQWL14cTU1NmgI0Wy1btoxzzjknLr300ujevbuGvENtbe2K22677arbbrvtDd0AAIC9RwAMAADv8Oyzz25avHjx0yeddNKQoqKiTjryD3l5edGnT58YOXJkbN26NVatWqUpQLNz+OGHx1e+8pUYMGBA5OXlacg7VFVV/e3CCy+8/oEHHvDdAAAA2MsEwAAA8C7z58+vefbZZ58+44wz+hcX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OigOOOCAKCoq0pQs0djYuGXmzJk/PvPMMyc2NDS4XgAAAPjQBMAAAJADjjzyyNY/+9nPrujbt++5EZGnI9mluro6Fi5cGPPnz4958+ZFZWWlprBXtGvXLg455JAYMGBA9O/fP1q39nsjWSj91ltv/fmqq676xaxZs6q1AwAA+KgEwAAAkEN++ctfjhgzZsyNrVq16q0b2SmdTsfKlStj0aJFsXDhwli8eHFs27ZNY9gtSkpKol+/ftG/f//Yf//9o1evXpGX53dEslVNTc3yRx999EdXXnnlK7oBAAB8XAJgAADIMd26dSt8+OGHPzd48ODL8vPzbdyzXCaTiTVr1sTChQtj0aJFsWjRotiyZYvG8LGUlZVF//79/xn6du/ePVKplMZkuaampprXXnvtV2PGjHmgoqKiUUcAAIBPQgAMAAA56rjjjiv7r//6r8tdC508mzdvjuXLl8eKFSti+fLlsXjx4qipqdEY/pfi4uLo169f9O7dO/bZZ5/Yd999o6ysTGMSJJPJpJcsWfLn66677pfTp0/3mx8AAMAuIQAGAIAc99Of/nTIueeee3NpaWlf3UimxsbGWLlyZSxdujSWLVsWy5cvj3Xr1kUmk9GcZiKVSkWXLl1in332iT59+kSfPn2iV69eUVBQoDkJtXXr1sUPPvjgj6699tq/6wYAALArCYABAKAZaNeuXf64cePOGTp06BUFBQWtdST56uvrY+XKlf88KbxixYpYu3ZtpNNpzUm4vLy86Nq1a+yzzz7//KdXr17RsmVLzckBjY2NW/7617/+4pxzznm0srKySUcAAIBdTQAMAADNyIknntjmnnvuuXzfffcdk0qlHB3MMdu3b481a9bEmjVrYu3atbF27dooLy+PDRs2CIazUF5eXnTs2DG6desWXbt2jW7dukW3bt2iR48eUVhYqEE5JpPJNC5ZsuRR1z0DAAC7mwAYAACaoa9+9av7Xnfdddd16NDhCN3IfY2Njf8MhNetWxfr1q2LioqKWLduXWzbtk2DdrPS0tLo3LnzP//p0qVLdO3aNbp27eoK52Ziw4YNM//rv/7rxz/60Y+W6wYAALC7CYABAKAZ++UvfznirLPOuq64uNj3gZupmpqaWL9+/T//qaioiMrKyqisrIxNmzZFY2OjJn2AgoKCaN++fbRr1y7at28fHTt2jC5dukSnTp2ic+fOUVxcrEnN1NatW98aP378PVdcccXLugEAAOwpAmAAAGjm2rVrl//ggw+eOWLEiCsLCwvb6gjvtHnz5n+GwZs2bYrKysqorq6OLVu2xJYtW6K6ujqqq6sjk8nk3NpTqVS0bt06WrduHWVlZdGmTZsoLS39X2Fvu3btok2bNh4U/peGhobKl1566efnnHPO+OrqavevAwAAe5QAGAAAiIiIoUOHFt97770XHHjggRfk5+c7ssiHlk6n/xkEV1dXR01Nzfv+k8lkora2NtLpdNTX10dTU1PU1dXt0u8U5+XlRcuWLSM/Pz+KiooiLy8vWrVqFalUKoqLi3f6T0lJSbRq1eqfgW9paWnk5eUZMB9aU1NTzYIFC/745S9/+Y+zZ8+u0REAAGBvEAADAAD/y2mnndb2rrvuurRPnz5n5+XlFeoIe9LbgfDbtm/f/r7XUBcUFESLFi3++b/fDnxhT8pkMg1LliwZd8stt/xq0qRJVToCAADsTQJgAABgp0477bS2d95554X777//5wTBAP9XJpNpWLhw4QO33nrrHwS/AABAtni/ADi/7UHRc2c/SG+LqC33/gcAAHLZokWL6u69995X0un0swcddFCnkpKS3roC8A8VFRUz/7//7/+77aKLLpq6aNGiOh0BAACyRXH3xsgr3fnPBMAAAEDMnDmz8u67736qqalpWr9+/Ypbt27dN5VKpXQGaG4ymUx6zZo1U+65555/Peeccx6cOXNmpa4AAADZRgAMAAB8KDNnzqz88Y9//Gw6nZ4uCAaak7eD37vvvvtfzz///McEvwAAQDYTAAMAAB+JIBhoLgS/AABAEgmAAQCAj+XtILisrOyFvn37diwuLu4VEYJgIBdkKioqnrv33nu/PWbMmEcEvwAAQJK8XwCc2vecGLGzHzSui9j4aivdAwAA/unqq6/u8ZWvfOX8Pn36nJWXl9dCR4CkSafT9UuXLh3/X//1Xw/84he/WKMjAABAEnUYVhsFXXb+MwEwAADwkZ1xxhntb7/99rMPPPDA8/Pz81vrCJDtmpqaqhcsWPDgd77znUcmTpzotC8AAJBoAmAAAGC3GD58eMkPf/jDzwwePPjioqKijjoCZJv6+voNr7322u9vvPHGx2fPnl2jIwAAQC4QAAMAALvV0KFDi++5556zDjnkkPOKioq66giwt9XV1a19/fXXH7z++uvHC34BAIBcIwAGAAD2iFatWuXdc889w0455ZTzO3bseJSOAHtYZsOGDbOmTJny4PXXX/9qbW1tWksAAIBcJAAGAAD2uH/913/tf/7555/dq1ev0/Ly8lroCLC7pNPp+pUrV05+4IEHHvnOd76zSEcAAIBcJwAGAAD2mjPOOKP97bfffvYBBxzw2YKCgjY6AuwqjY2NVW+++eafv/e97z06YcKETToCAAA0FwJgAABgrxs+fHjJ97///dGDBg0aU1paur+OAB9XdXX1wtdee+3Rr371q1Nfe+21Wh0BAACaGwEwAACQVb761a/ue8EFF3y6b9++ZxUUFLTWEeCDNDY2bnnrrbfG/+EPf5j4ox/9aLmOAAAAzZkAGAAAyEpDhw4t/sEPfnDy4MGDz27dunV/HQHerbq6+s2XX375weuuu+7ppUuXbtcRAAAAATAAAJDlCgsLU3ffffeQ0aNHn9G1a9fj8vLyinQFmq90Ol1XXl4+bcqUKROuvfbav+sIAADA/yYABgAAEqNPnz4t/v3f/33UyJEjz2rfvv2nIiKlK9AsZDZt2vTXF1544bGvfe1rzzntCwAA8N4EwAAAQCJddNFFXa6++uqTDzzwwLNbtmzZTUcg99TV1a1ZsGDBuJ/+9KdP3n///et0BAAA4IMJgAEAgETr1q1b4d13333k4YcffmqHDh2OyMvLK9QVSK50Ot2wcePGWbNmzZp8/fXXz6qoqGjUFQAAgA9PAAwAAOSMo48+uvWtt956/CGHHHJKu3btBkdEnq5AIqQrKytfmzdv3uQ777xz+owZM6q1BAAA4OMRAAMAADnpuOOOK/vGN75x/CGHHHJa27ZtB4bvBUO2yVRVVc2dN2/epO9///vTpk+fvkVLAAAAPjkBMAAAkPNuu+22vmedddZJffr0Oa5Vq1a9dQT2ntra2uXLly+f/uijjz51xx13vKUjAAAAu5YAGAAAaFa+9KUvdbv44ouP7t+//wlOBsMekamqqpq7cOHCv/z+97+fcd9995VrCQAAwO4jAAYAAJqtSy65pOtll112jDAYdrl0VVXVvIULF/7lV7/61bO/+93v1moJAADAniEABgAAiIirr766x/nnnz9q//33P7JNmzZDUqlUga7Ah5fJZBoqKyv/vnjx4uf+9Kc/zbr33ntX6woAAMCeJwAGAAB4l379+hV97WtfGzRy5MhRPXv2PLaoqKizrsD/VV9fv37VqlXPvPDCC8/9+7//+5zFixfX6woAAMDeJQAGAAB4H61bt8678847Bx599NFHde/efURpaen+4apomq/M1q1bF69Zs+bF5557btY3v/nNOdXV1WltAQAAyB4CYAAAgI9g8ODBrcaOHXvI8OHDD+vevfvw1q1bHxACYXJXprq6+s01a9a88sorr7z8k5/8ZN5rr71Wqy0AAADZSwAMAADwCVx//fX7nHHGGYf169dvePv27Yfm5+e31hWSrLGxsXrjxo2vvvXWWy+PHz/+lR//+McrdQUAACA5BMAAAAC70Je//OUe55xzzvA+ffoM7tix45CioqKuukI2q6+vX7t27doXFy9ePGfixImv3Xvvvat1BQAAILkEwAAAALvRl7/85R6f+cxnBvfr129Qly5dDm/ZsqVAmL2qrq5u7bp16wS+AAAAOUoADAAAsIe0atUq75prrtnn2GOPPXi//fY7uH379oeUlpb2TaVS+brDbpKuqalZtnHjxnlvvfXW3GeffXbef/3Xfy2vra1Naw0AAEBuEgADAADsRQceeGDLq6+++oAhQ4Yc3LNnz4Pbtm17sGuj+biampqqq6qqXi8vL583Z86ceb/85S/nvfjii1t1BgAAoPkQAAMAAGSZoUOHFn/xi1/cf9CgQQf26NHjwHbt2h3YqlWr3qlUKk932CFdU1OzvLKycsHq1asXzJkzZ8Gf//znJTNmzKjWGgAAgOZNAAwAAJAAxx13XNkFF1xw4MEHH3xA165dDywtLd23pKRkn1QqVag7uS2TyTRs27ZtRXV19dJ169YtfOONNxZOmDBh4YQJEzbpDgAAAO8mAAYAAEiw8847r+OJJ57Yp3///vt16dKlT5s2bfZr3bp1v/z8/GLdSZampqaa6urqxZs3b16ybt26pQsXLlzy9NNPL33ooYc26A4AAAAflgAYAAAgx7Rr1y7/kksu6TFkyJCe++67b89OnTr1Kisr61VcXNyzZcuW3VKpVL4u7R2ZTKaprq6uvKamZtWWLVtWVlRUrFy6dOnK2bNnr7r//vvXVFZWNukSAAAAn4QAGAAAoBnp1KlTwec+97luQ4cO7bnPPvv0aNeuXafWrVt3Li4u7tqyZcvORUVFnfLy8lro1MeTTqe319fXr6+rq6uoqalZW11dvb6y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AACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoMY3JP//9K8My551lzpAk293a7QAAAAAAAAD8iIw3r+SL7TpPxuSt4/ibJJuz20QDBgAAAAAAAHhzrJPp6NvHYcyyjLl7dJTPbl/Jp6sPLufSsM+5ec7q5YOrF0OeP/SVaAAAAAAAAIA3weH7u6zfm79dWDIMSw6225w785vsx3XyzasOby5ssz69c4sAAAAAAAAAr9n69C6bC9sT93a7rKdnORin5Otxynzi1JQcfiwCAwAAAAAAALxO69O7HH68TaaT98cp85R8vbp3Nfszv8q0LHn7xMF1sjk/ZzUPmZ/MmWefhAYAAAAAAAD4oayPdjn7223Gn7x6ZrXPnetX8mBKkpv3cufDd/Pufn5FL56SzcVtNheT3dNt8tQlAwAAAAAAAHyv1sm0ySv/9XtsNWZ3I/lHkgzHi7/4XY7WYz5yiwAAAAAAAAA/Ivtcv/3nPEyS1fHa42t5+vNLyX7JoRsCAAAAAAAAePPt1/nbV3/KvePn1Xc371/NYxEYAAAAAAAA4M0yTHk2rvNo2WdzvHZqzN9v/SF3vju3evng/at5fPDLPDu1yuGyZHSVAAAAAAAAAK/XOGe4ueSvZ4e8M8xZbVe5ceuPufvy3Oqkw4+v5emDX+fuuTlLhhwsEYIBAAAAAAAAXpclGR8OuXP0TR4cPM/9z/+SRyfNDf/1TZezOp/87KdjzizJZkhO7edMy/w/nAUAAAAAAADg/zaMWcZkP8/ZLsmLacr2/MV8+cnvs/tP5/4FmLjAq1ifcioAAAAASUVORK5CYII=";
+const xt = "data:image/png;base64,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", wi = "data:image/png;base64,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AAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKSEAhgAAAAAAAAgJRTAAAAAAAAAACmhAAYAAAAAAABICQUwAAAAAAAAQEoogAEAAAAAAABSQgEMAAAAAAAAkBIKYAAAAAAAAICUUAADAAAAAAAApIQCGAAAAAAAACAlFMAAAAAAAAAAKaEABgAAAAAAAEgJBTAAAAAAAABASiiAAQAAAAAAAFJCAQwAAAAAAACQEgpgAAAAAAAAgJRQAAMAAAAAAACkhAIYAAAAAAAAICUUwAAAAAAAAAApoQAGAAAAAAAASAkFMAAAAAAAAEBKKIABAAAAAAAAUkIBDAAAAAAAAJASCmAAAAAAAACAlFAAAwAAAAAAAKREkRUAAACwrUpLSwuGDRvWfMCAAS26du3avKysrLiioqKkZcuWzZs1a1bcvHnz0tLS0rJsNtusuLi4ebNmzUoLCgo+8/eijY2N9Zs3b66pra2tqqur21xTU1NdVVVVs2nTptqNGzdWbdiwoeYvf/nL5hUrVlQtWLBgw6xZs6pqamoaJQYAAEDaKYABAACIiIghQ4aUHnTQQW379u3bql27dq3at2/fpkWLFq2bN29eWVpa2qpZs2bNCwsLm2ez2fLCwsLyoqKi8sLCwtKknK+hoaG6vr6+qqGh4S91dXV/aWhoqNq8eXNVTU3NuqqqqvUbNmxYu2rVqjWrV69e99Zbb6177rnnPpgzZ06NTwYAAABJogAGAADIA8OGDWt+xBFHdBwwYECnLl26dGjdunXHFi1adCgtLe1YUlLSvlmzZq0KCgqK07yDwsLCssLCwrKIaPdp/zuNjY21mzdvXrdp06ZVNTU172/YsGHl2rVr31+2bNnKBQsWrHjyySffnzVrVpVPGAAAAE1Fpuexsd9HfaF+ZcSal0ptCAAAIAE6deqUPf744zvtueeeXbp3796lbdu2XSorKzuXlpZ2KS0t7VBYWFhhSztGQ0PDxpqampU1NTXL169fv+yDDz5Y9s477yybPXv2sj/96U8rVqxYUWdLAAAAbE9t9q6Jog4f/TUFMAAAQEJks9nMt7/97Y4jRozo1bdv397t2rXrXl5e3rWsrKxzcXFx+4gosKUmp7G2tnZVTU3Nso0bNy5btWrV0tdff/2tJ598cvG999672noAAADYFgpgAACAhPne977X6a9Fb/v27Xu1bNmyV1lZWa8kvXOXLauvr9/wl7/8ZdG6desWL1u2bNHChQsX/fGPf1w8derUjbYDAADAliiAAQAAmqhsNps59dRTuxx66KH9+/Tp87n27dv3Ly8v719UVOSRzXlq06ZNKzZu3Pj6+++//8abb775xqOPPvrG3XffvcpmAAAA+CsFMAAAQBNx6qmndvniF784qHfv3v3btWv3uYqKis8VFhaW2wxbUl9fv37Dhg1vfPDBB68vXrz4jccee2z+jTfeuNxmAAAA8pMCGAAAYBc45phjWn/rW9/aq3///kPatGnTv6Kiop9HOLO9NDQ0VG/cuPGtNWvWLFy4cOGcO+6445WHHnporc0AAACknwIYAABgJzjjjDO6f+lLX9qrV69eg1u3bj2orKysR0RkbIadJFddXb103bp18xcvXjz30UcffeXqq69+x1oAAADSRwEMAACwnZWWlhb86le/2u3QQw8d1r17931btmw5qLCwsMxmaEoaGhqqP/zww/nvvPPOzGeeeWbW2LFj36ipqWm0GQAAgGRTAAMAAGwHP/7xj7t+9atf3bdXr15D27Ztu1c2m21jKyRJXV3dmg8++OCVRYsWvfznP/95xh/+8IdltgIAAJA8CmAAAIBtcOKJJ7Y75ZRTDujXr9+w1q1bD81ms61shTSpq6tbt3bt2pfffPPNWbfccsvUe++9d7WtAAAANH0KYAAAgE+hoqKi4IILLhg0YsSI/bp27bpfy5YtB2YymUKbIR/kcrmGDz/8cP6777474/nnn59x4YUXvrZx40aPiwYAAGiCFMAAAAAf4/jjj2/7/e9//8D+/fsf2Lp1630KCgpKbAUiGhsbN61fv37eW2+9NeWGG2545u67715lKwAAAE2DAhgAAOB/ZLPZzAUXXPC5I4888sDu3bsfWFFRsVtEFNgMbFl1dfWSd999d8qsWbNmnnvuuS+vW7euwVYAAAB2DQUwAACQ10pLSwsuvfTSQYcccsjBXbt2HVFWVtbDVmDb1dbWrnr//fdfmDp16uRf/vKXL65evbreVgAAAHYeBTAAAJB3Bg0aVHrBBRd8fs899zywQ4cOBxQVFbWwFdj+Ghsba9euXTtrzpw5T59//vmTX3755WpbAQAA2LEUwAAAQF4YNmxY8/POO+/gIUOGHOZ9vrDz/W0ZfNFFFz07a9asKlsBAADY/hTAAABAarVq1arwyiuv3HfEiBEjO3TocFBhYWGZrcCu19DQUP3+++8/O2XKlIk/+clPZm7cuLHRVgAAALYPBTAAAJAqrVq1Kvztb3+7/3777Xd4x44dRxQWFpbbCjRdDQ0NG99///0pM2bMeOqHP/zhC8pgAACAz0YBDAAApMJZZ53V45vf/OaRvXr1GllaWtrVRiB5ampq3l28ePHEO++8c9LVV1/9jo0AAABsPQUwAACQWMOHDy+/6KKLvjB48OCjW7RoMdBGID0+/PDDV+fNmzfhvPPOe3L69Ol/sREAAIBPRwEMAAAkSqtWrQpvuOGGQ/bbb79/atOmzX6ZTCZrK5BeuVyubs2aNTNmzJjx2JgxYyavW7euwVYAAAA+ngIYAABIhB//+Mddv/e9732lZ8+e/1RcXNzWRiD/1NbWfvD2228/dssttzz029/+9l0bAQAA+L8UwAAAQJNVUVFRcO21137+4IMPPrZ169b7ZTKZAlsBIqJxzZo1M59//vnxp5122hR3BQMAAPx/CmAAAKDJOeWUUzqefvrpx/bu3ftL2Wy2jY0AH6e+vn7j0qVLH/vd7373x+uvv36ZjQAAAPlOAQwAADQJ2Ww2c+uttx5wyCGHnNC6deu9I8LdvsDWaFy7du1L06ZN+/OPfvSjZ1evXl1vJQAAQD5SAAMAALtU//79S6655pp/2nPPPY8tLy/vayPAZ1VTU7NswYIF488999wHp06dutFGAACAfKIABgAAdomf//znPU855ZQTu3btemRhYWGZjQDbW2NjY92KFSuevOWWW+689NJLF9kIAACQDxTAAADATuMxz8Cusn79+rlPP/30f5188slT6+rqcjYCAACklQIYAADY4fr27Vv8hz/84a+Pee5nI8CuUlNT8+68efPu/8EPfvDgwoULN9kIAACQNgpgAABghxkyZEjpNddc89XBgwefWFxc3MFGgKaitrZ21dy5c+/5yU9+8uc5c+bU2AgAAJAWWyqAPYoNAADYJqNHj+4wb968n06ZMuXRYcOGnaH8BZqa4uLi9sOGDTtjypQpj86bN++nJ510UntbAQAA0s4dwAAAwFY599xze33/+9//dufOnY/IZDJZGwGSIpfL1S1fvvzJG2644fbLLrvsbRsBAACSyiOgAQCAz+y8887r+53vfOfbHTt2PDyTyRTaCJBUuVyuYcWKFU/cdNNN//XrX/96sY0AAABJowAGAAC22WWXXTboG9/4xg9at249zDaAtFm7du2su++++9pzzjnnNdsAAACSQgEMAABsNcUvkE8UwQAAQJIogAEAgE9N8Qvks7Vr18665557rvv5z38+3zYAAICmaksFcGHlwOj6UV9orIqoWZG1PQAAyBO/+MUvet9xxx3nHHrooT8pLS3tYiNAPiotLe2y7777HvP973+/X1lZ2ZIpU6assxUAAKCpKetcHwXlH/01BTAAAOS5M844o/u99957zpe//OWflZeX94qIjK0AeS5TXl7e8+CDDx71/e9/v3dEvDVjxowPrQUAAGgqFMAAAMD/ceKJJ7a77777fjJq1Kh/KS8v7xOKX4B/lCkvL+99+OGHj/rWt77VfvXq1Qvnz59fbS0AAMCutqUC2DuAAQAgzwwdOrTs+uuvP6l///4nFRYWltkI20NjY2Ns2rQpqquro6amJurr62PTpk2xefPmqK+vj+rq6qivr4/NmzfHpk2boqGhYZv/fxUWFkZJSUk0a9YsioqKoqysLIqKiqJZs2ZRUlISRUVFUVpa+r9/FRQUCIjtoqGhoeq11167a8yYMffMmTOnxkYAAIBdZUvvAFYAAwBAnujUqVP2nnvuGbXXXnudnM1mK22Ej9PQ0BAbN26MDRs2/J+/Nm7cGBs3boyamprYtGlTbNq0KWpqaqK2trbJnqe4uDhKSkqitLT0f/9eUVERFRUV0aJFi//zV0VFRRQWFvog8LHq6urWvvjii7eceOKJf169enW9jQAAADubAhgAAPLcXXfdddAXv/jF00tLS7vZRn7L5XKxYcOGWLt2baxbty7Wrl37d3+tW7cuNmzYkPd7atGiRbRu3TpatWoVrVu3jjZt2vzvf27dunW0aNHCh4morq5e+sgjj1zzne98Z6ptAAAAO5MCGAAA8tTVV189+MQTTzyzoqJioG3kj8bGxli5cmUsX748Pvjgg1i9evX//n3t2rXR2NhoSZ9RYWFhtGrVKtq1axdt27b937937tw5OnTo4LHTeWbDhg3z77333qvOPPPMebYBAADsDApgAADIM1/72tfaXHrppad27979qIjQRKVUQ0NDrFq1KlasWBHvv//+//595cqVTfqRzGlXXFwcHTp0iI4dO0bnzp2jY8eO0alTp2jXrp1HS6dYLpdrfOeddx76+c9/fv2ECRPW2QgAALAjKYABACBP9OrVq9ldd931jT322OM7hYWFZTaSHh9++GG88847sXTp0njvvfdixYoVsXr16mhoaLCchCgsLIz27dtHp06dolu3btG9e/fo3r27x0mnTENDQ9W8efNu++Y3v/nHJUuWbLYRAABgR1AAAwBAHrjrrrtG/NM//dOZJSUlXWwj2davXx9Lly6Nd955539L3w8//NBiUqqysvJ/y+C//tWqVSuLSbiamppljz322G9Gjx49xTYAAIDtTQEMAAAp9qtf/arPD3/4w5+1atVqL9tIno0bN8aSJUvirbfeikWLFsV7770XmzZtspg8V1JSEl27do0+ffpE3759o3fv3lFeXm4xCbRu3bqXr7322ivGjh27yDYAAIDtRQEMAAApNGjQoNI77rjju7vttttJBQUFWRtJhtWrV8ebb74ZixcvjiVLlsTy5cujsbHRYtiigoKC6Ny5c/Tu3Tt69+4d/fr1i7Zt21pMQjQ2Nta98cYbd33rW9+6ff78+TU2AgAAfFYKYAAASJHS0tKCBx988Jj99tvvn7PZbBsbaboaGhri7bffjrfeeisWLFgQS5YscXcv201FRUX06tUr+vbtG3379o2ePXtGYWGhxTRhdXV1a2bMmHHjV77ylYdqamr85gcAALDNFMAAAJASp59+erdf/vKX51ZWVu5jG03T6tWr47XXXouFCxfGm2++GRs3brQUdooWLVpE3759Y8CAATFw4EB3CDdh69evf/E//uM//vPqq69+xzYAAIBtoQAGAICEGzRoUOm99977w969ex+byWTc4teErF+/PubNmxcLFiyIN954Q+FLk9GiRYvo169fDBgwIPbYY4+orKy0lCYkl8s1LF68eNyJJ554rcdCAwAAW0sBDAAACXbNNdcMOemkk35RVlbWyzZ2vVwuF++++27MnTs3XnvttViyZIl3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B7lcrm7y5Mm//vKXv/yIbQAAwK63pXcAK4ABAMg7paWlBTNnzjyzT58+x9vG39uwYUOMGzcuZsyY4VHPQF7KZDKx3377xde//vWoqKiwkH+waNGiP+27775X1dTUeCwEAADsQgpgAAD4H926dctOnjz5V506dRppG/9fLpeLqVOnxp///OfYuHGjhQB5r6KiIkaNGhX777+/x0L/g+XLlz9+6KGHXvLuu+/W2QYAAOwaWyqAvQMYAIC8MXz48PInnnjiynbt2o2wjf/vnXfeiWuvvTaee+652Lx5s4UARMTmzZtjzpw58dprr0XPnj2jRYsWlvI/Kioq+n7rW98aMnXq1Ofee+89f3AAAMAusKV3ACuAAQDIC9/+9rc73n777X9o0aLFANv4b1VVVXHXXXfFvffeG+vXr7cQgI+wbt26eP7552P9+vWx2267RVFRkaVERElJSefjjjvuoA8++GDKK6+88hcbAQCAnUsBDABAXjv//PP7XXzxxX8oKSnpbBv/bfr06XHttdfGokWLLAPgU3jnnXdi2rRp0bp16+jc2R8nERHZbLbyC1/4whElJSUvTp48eY2NAADAzqMABgAgb/3ud7/b60c/+tFVRUVFrWwjYs2aNXHzzTfHpEmTora21kIAtkJtbW289NJL8c4770Tfvn2jtLQ073dSWFhYNnz48C/26dNn4UMPPbTMpwQAAHYOBTAAAHnp1ltv3f+b3/zmfxYWFjbP913kcrl4/vnn4/rrr4/ly5f7cAB8BitXroxp06ZFRUVFdOvWLTKZTF7vo6CgIDto0KBDBw0atOiBBx54xycEAAB2vC0VwJmex8Z+H/WF+pURa17ym6wAACTTww8//KXDDjvsXzKZTN6/rPGDDz6I22+/Pd544w0fDIDtbMCAAfGtb30r2rRpk/e7yOVyjVOmTPn1yJEjH/LJAACAHavN3jVR1OGjv6YABgAgdV555ZXTPve5z30r3/fQ0NAQjz32WDz++ONRV1fngwGwg2Sz2Tj66KPjC1/4QhQUFOT9Pl5//fU79tprr9/7ZAAAwI6jAAYAIC9ks9nMyy+/fFafPn2Oz/ddvPvuu3HbbbfFe++954MBsJN069YtvvOd70S3bt3yfhdLliy5f5999rmypqam0ScDAAC2PwUwAACpV1paWjBr1qyzevfufVw+7yGXy8WTTz4ZDz74oLt+AXaBbDYbxxxzTBxxxBF5fzfw0qVLHxg6dOjlSmAAANj+FMAAAKRar169mk2ePHlsu3btDsrnPaxcuTJuueWWePvtt30oAHaxnj17ximnnBIdOnTI6z2sXr16yiGHHPIvS5Ys2exTAQAA28+WCuDCyoHR9aO+0FgVUbMia3sAADRpQ4cOLXvqqacub9Omzf75uoNcLhfPPPNMXH/99bF27VofCoAmYP369TFlypQoKSmJnj17RiaTycs9NG/evPtJJ500ZPLkyc+sWLHCoykAAGA7KetcHwXlH/01BTAAAIk1ZMiQ0kceeeSKVq1a7Z2vO6iuro7bb789nnjiiWhs9IRNgKaksbEx5s+fH++//34MGDAgstn8/DlLaWlpp6997WuDn3rqqadXrlxZ75MBAACfnQIYAIDUOfTQQ1s8+OCDv2/ZsuUe+bqDOXPmxNVXX+2RzwBN3PLly+OFF16Ijh075u0joUtLSzudcMIJ+7/00ktPv/3227U+FQAA8NkogAEASJVhw4Y1v++++37TsmXLQfl4/vr6+hg/fnz88Y9/jNpaP0MHSILNmzfHiy++GJs3b47ddtstCgoK8m4HxcXFbY866qg9n3vuuaeXL1/ucdAAAPAZKIABAEiNI488snLcuHG/b9GixcB8PP97770XV111VcyZM8eHASCBFi1aFC+//HL069cvWrRokXfnLykp6XDcccftP2fOnGcWLVq0yScCAAC2jQIYAIBUOPLIIyvvvPPO35aXl++Wj+d/+umn48Ybb4wPP/zQhwEgwf7yl7/ECy+8ECUlJdGrV6+8O3+zZs3aHHXUUfspgQEAYNspgAEASLxjjz227W233faH5s2b98m3s1dVVcXNN98cTz31VDQ2NvowAKRAY2NjzJ8/P5YtWxYDBgyIZs2a5dX5mzVr1uaYY4458M0333xm4cKFNT4RAACwdRTAAAAk2qGHHtritttuuzofy9+33347rrnmmli8eLEPAkAKvf/++/HKK69Enz59orKyMq/Ons1mK4888sh9Zs6c+dTSpUs3+zQAAMCnpwAGACCxjjjiiJb33nvvteXl5f3y6dy5XC4mTZoUN998c1RVVfkgAKRYVVVVTJ06NbLZbPTp0ycymUzenL24uLjtV7/61c+/8sorTy1evLjWpwEAAD4dBTAAAIl06KGHtrj33nt/l2/lb3V1ddx0000xefLkyOVyPggAeSCXy8WCBQvi3Xffjd133z2y2fz5mUyzZs1aH3300fvNmDHjSXcCAwDAp6MABgAgcYYOHVo2fvz4qysqKgbk07mXLVsWV111lUc+A+SplStXxiuvvBKf+9znoqKiIm/O3axZszZHH3300GeeeebJFStW1PkkAADAlimAAQBIlCFDhpQ++uij17Rs2XL3fDr31KlT49prr42NGzf6EADksaqqqpg+fXq0bds2unTpkjfnLikpaT9q1KihTz755JMrV66s90kAAICPt6UCuMB6AABoSjp16pSdMGHCv1dWVu6RL2dubGyMcePGxR133BF1dW56AiCitrY2br755hg/fnw0NjbmzbkrKyv3mDBhwr9369bNXQkAALCNFMAAADQZrVq1Kpw+ffolbdq02T9fzlxdXR2/+93vYtKkSd73C8DfyeVy8fjjj8fvf//7qK6uzptzt2nTZv8pU6Zc0qpVq0KfAgAA2HoKYAAAmoSKioqC2bNnX9KuXbuD8uXMS5cujYsuuijmz5/vAwDAx3r11VfjoosuiqVLl+bNmdu1a3fQ7Nmz/72iosLPrgAAYCu5iAYAoEmYOXPmz9q1a3dIvpz35ZdfjiuuuCLWrVsnfAA+0bp16+KKK66Il19+OW/O3K5du4Nnzpz5M+kDAMDWUQADALDLvfjii2N69OgxKh/Omsvl4oEHHogbbrghamtrhQ/Ap1ZbWxs33HBDPPDAA3nz2oAePXqMevHFF8dIHwAAPj0FMAAAu9SkSZO+NnDgwFPy4ax1dXVx8803x8SJE73vF4BtksvlYuLEiXHLLbdEXV1dXpx54MCBJ0+aNOlr0gcAgE9HAQwAwC7z6KOPHnXggQeekw9nXbduXfz617+OWbNmCR6Az2zmzJnx61//Ol9eJZA58MADz3n00UePkjwAAHyywsqB0fWjvtBYFVGzImtDAADsEDfeeOO+Rx999EWZTKYw7Wddvnx5XHXVVbFy5UrBA7DdbNiwIWbPnh0DBw6MioqKtB8307179/179uz56sMPP7xc+gAA5LuyzvVRUP7RX1MAAwCw011xxRV7fPe7372qoKCgWdrPOmfOnPjtb38bGzduFDwA2111dXVMmzYtOnfuHB07dkz1WTOZTOHuu+9+eJs2bV6aNGnSKukDAJDPFMAAADQZZ5xxRvef/exnvy0sLCxP+1knTJgQd999d9TX1wsegB2moaEhXnrppchms9G3b99UnzWTyRTttddeB/3lL395dubMmRukDwBAvlIAAwDQJBx00EEVf/jDH64pLi7ulOZz5nK5eOCBB+Kxxx4TOgA77c+eBQsWRF1dXfTv3z8ymUxqz1pQUFBywAEHDJs+ffqkpUuXbpY+AAD5aEsFcIH1AACwMwwaNKj0vvvuu7qsrKxXms9ZV1cX1113XUyaNEnoAOx0EydOjOuvvz7q6upSfc6ysrJef/rTn67u379/idQBAODvKYABANjhKioqCh577LGLKyoqBqb5nNXV1XHNNdfE7NmzhQ7ALvPKK6/ElVdeGVVVVak+Z4sWLQZOnDhxbEVFhZ9vAQDA33CBDADADjdz5syftW3b9sA0n3HdunVx2WWXxRtvvCFwAHa5xYsXx2WXXRZr165N9TnbtWt34MyZM38mcQAA+P8UwAAA7FBPPvnkqB49eoxK8xlXrVoVV1xxRSxfvlzgADQZK1asiCuuuCJWrlyZ6nP26NFj1KRJk0ZJHAAA/lth5cDo+lFfaKyKqFmRtSEAALbZjTfeuO+XvvSlCzOZTGp/8fDdd9+NK6+8MtatWydwAJqc6urqmDVrVvTv3z8qKytTe85u3boN79mz57yHH37Yb2MBAJAXyjrXR0H5R39NAQwAwA5x3nnn9T311FOvLigoKE7rGV977bW45pprorq6WuAANFmbN2+OGTNmRI8ePaJ9+/apPGMmkykYNGjQIYWFhVOee+45v5UFAEDqKYABANipjjrqqFb/8R//8YdmzZq1SusZX3755bj++uujrq5O4AA0eQ0NDfHSSy9Fp06dolOnTqk8Y0FBQXbYsGGfnz9//qQ33nhjk9QBAEizLRXA3gEMAMB21a1bt+wNN9zwnyUlJR3TesYpU6bEjTfeGPX19QIHIDHq6+vjxhtvjKlTp6b2jCUlJZ1uuOGG/+jWrZu7GgAAyFsKYAAAtqunn376XyorK/dI6/kmTZoUd955ZzQ2NgobgMRpbGyMO+64I5588snUnrGysnLw008//UtpAwCQrxTAAABsN88///w3unTp8k9pPd/EiRNj3LhxkcvlhA1AYuVyubj//vtTXQJ36dLlS88+++yJ0gYAIB95BzAAANvFTTfdNPzII488L5PJZNJ4vsceeyzGjx8vaABS47XXXotmzZpF3759U3m+zp0779urV695Dz/88DJpAwCQNlt6B7ACGACAz+wXv/hF7x/+8IdXFxQUNEvj+R544IF45JFHBA1A6ixYsCDq6upiwIABqTtbJpPJDBo06ODGxsbnpk6dul7aAACkiQIYAIAd5oADDqj43e9+99tmzZq1TeP5xo0bF5MmTRI0AKm1aNGi2Lx5cwwcODB1ZysoKMjut99+w5577rnH33vvvc3SBgAgLbZUAHsHMAAA2yybzWbuvPPOfyktLe2exvNNmDBB+QtAXpg0aVI89NBDqTxbaWlpj3vuuedfstlsRtIAAOQDBTAAANvs+eef/06HDh0OTePZHn744Xj44YeFDEDeeOSRR+LPf/5zKs/WoUOHw5599tlvSxkAgHygAAYAYJvcd999hw8ePPjUNJ7t/vvvjwkTJggZgLzz2GOPxX333ZfKs+25554/+NOf/nSYlAEASDvvAAYAYKudccYZ3ceMGXN5QUFBcdrONnHixHjkkUeEDEDeWrx4cWSz2ejbt2/ajpbp06fPvn/5y18mz5w5c4OkAQBIsi29A1gBDADAVhk2bFjzG2+88Q/NmjVrl7azPfroo6l99CUAbI2FCxdGUVFR9OvXL1XnKigoKD7wwAP3e/LJJx9dsWJFnaQBAEiqLRXAHgENAMBWuffee39ZWlraPW3nevzxx+PBBx8UMAD8jz//+c8xceLE1J2rtLS0x3333fdLCQMAkFYKYAAAPrVJkyaN6tSp0xEpPFeMHz9ewADwD8aPHx+TJ09O3bk6der0hUmTJn1VwgAApJFHQAMA8Kmcd955fU888cR/z2QyRWk618yZM+Puu+8WMAB8jNdeey06duwYnTt3TtW5unbtuk9BQcHzzz333DopAwCQNN4BDADAZ3LEEUe0vOKKK67NZrOVaTrXyy+/HDfffHPkcjkhA8DHyOVyMXv27OjSpUt06tQpNefKZDJF++yzz/CpU6c+9u67726WNAAASeIdwAAAbLNsNpu55ZZb/q2kpKRjms61YMGCuPnmm6OxsVHIAPAJGhsb4+abb44333wzVecqLS3tcvfdd5+fzWYzUgYAIC0UwAAAbNGkSZO+3rZt2wPTdKZly5bFDTfcEPX19QIGgE+prq4urr322li+fHmqztWuXbsDH3/88VESBgAgLTwCGgCAj3XZZZcN+upXvzo2k8mk5hcH33///bjyyiujqqpKwACwlerq6uLll1+OIUOGRHl5eWrO1aVLl31LS0unPvPMM2ukDABAEngENAAAW61///4lJ5988q8ymUxRWs60YcOG+P3vfx8bN24UMABso40bN8bvfve7VP15WlBQkP3hD394ft++fYslDABA4q9vrQAAgI/y4IMPnl1WVtYrLeeprq6O3/zmN7Fq1SrhAsBntGrVqrjyyiujuro6NWcqKyvr8/DDD58lXQAAkk4BDADA/zF+/Pgju3XrdnRazlNfX5/KdxYCwK60fPnyuO6666K+vj41Z+rRo8dXx40bd4R0AQBIMgUwAAB/53vf+16nI4444py0nCeXy8Vtt90Wb7zxhnABYDt7/fXX47bbbotcLpeaMx155JHnfvvb3+4oXQAAkkoBDADA/6qoqCi4+OKLLywsLCxPy5nGjx8fs2bNEi4A7CCzZs2Khx56KDXnKSwsrPj1r399QUVFhZ+bAQCQSC5kAQD4XxMnThxdWVk5OC3nef7552PixImCBYAd7LHHHosXXnghNeeprKzc89FHHz1RsgAAJFFh5cDo+lFfaKyKqFmRtSEAgDxxwQUX7DZq1KgLM5lMYRrO8+qrr8Ytt9ySqkdSAkBT/7O3d+/e0a5du1Scp2PHjkNzudxzU6ZMWSddAACamrLO9VHwMc/wcwcwAADRt2/f4h//+McXZzKZVPwG4HvvvRc33HBDNDY2ChcAdpKGhoa47rrrYtmyZak4T0FBQfbss88e27dv32LpAgCQqGtZKwAAYPz48T8qKyvrkYazbNiwIX7/+99HbW2tYAFgJ9u0aVP8/ve/j40bN6biPGVlZb3GjRs3RrIAACSJAhgAIM/ddNNNw/v06XN8Gs5SX18f1157baxdu1awALCLrFmzJq699tqor69PxXn69ev3jd///vdDJQsAQFIogAEA8thBBx1Uceyxx/5rRGTScJ477rgjFi9eLFgA2MUWLVoUd955Z1qOU/CNb3zj34YNG9ZcsgAAJOIC1goAAPLXzTfffFZxcXG7NJxl4sSJMX36dKECQBMxbdq0mDRpUirOUlJS0unOO+88Q6oAACSBAhgAIE/913/914FdunT5UhrO8tprr8Wf//xnoQJAEzN+/PhYsGBBKs7SrVu3o2+66abhUgUAoKlTAAMA5KEvfelLlV/5yld+lYazrFixIq6//vpobGwULAA0MY2NjXHdddfFihUr0nCczHHHHfergw46qEKyAAA0ZQpgAIA8dPXVV5+ezWYrk36OmpqauPbaa2PTpk1CBYAmatOmTXHttddGTU1N4s+SzWbb3njjjT+RKgAATZkCGAAgz9x6663Du3Tp8uWknyOXy8Utt9wSK1euFCoANHErV66MW2+9NXK5XOLP4lHQAAA0dQpgAIA8MnTo0LKvfvWrv0jDWSZMmBBz584VKgAkxJw5c+Kxxx5LxVlGjRr1i6FDh5ZJFQCApkgBDACQR+64444fFRcXd0z6OV5++eV45JFHBAoACfPQQw+l4he4SkpKOt5xxx0/lCgAAE2RAhgAIE9cfvnlu/fs2XNU0s/xwQcfxB133JGKR0gCQL7J5XJx2223xZo1axJ/lp49ex57+eWX7y5VAACaGgUwAEAe6NatW/a73/3uv2YymURf/9XX18cNN9wQ1dXVQgWAhKqqqoobb7wx6uvrE32OTCZT8N3vfvdX3bp1y0oVAICmRAEMAJAHxo8ff0pZWVmvpJ/jnnvuiaVLlwoUABJuyZIlcd999yX+HGVlZT3Hjx9/ikQBAGhKFMAAACn385//vOeAAQNGJ/0c06dPjylTpggUAFJi8uTJMWPGjMSfY8CAAaN//vOf95QoAABNhQIYACDFstls5qyzzjo3k8kk+tGEK1asiLvvvlugAJAyd911V6xYsSLRZ8hkMtmzzjrr3Gw2m5EoAABNgQIYACDFxo0b98XKysq9knyG2trauOGGG6K2tlagAJAyf/1zfvPmzYk+R2Vl5V7jxo0bKVEAAJoCBTAAQEoNHz68/OCDDz4t6ee4//77Y/ny5QIFgJRavnx5jBs3LvHnGDFixI+HDRvWXKIAAOxqCmAAgJS69dZbT8tms22TfIYZM2bEc889J0wASLnJkyfHzJkzE32G4uLitrfffvtp0gQAYFdTAAMApNBVV121R48ePb6S5DOsXLky7rrrLmECQJ64++6744MPPkj0GXr27PnVK664Yg9pAgCwKymAAQBSprS0tOAb3/jGT5N8rdfY2Bi333679/4CQB6pqamJ2267LRobG5N8jIJvfvObZ5aWlvqZGwAAu+6i1AoAANJlwoQJX6uoqBiQ5DOMHz8+Fi1aJEwAyDNvvvlmPPjgg4k+Q4sWLQY9+OCDx0gTAIBdRQEMAJAiRx55ZOWwYcN+kOQzzJ07N5544glhAkCemjhxYixYsCDRZxg+fPiPjjjiiJbSBABgV1AAAwCkyBVXXHFyUVFRRVLnr6qqijvvvDNyuZwwASBP5XK5uP3226O6ujqxZygqKmrxm9/85mRpAgCwKyiAAQBS4vzzz+/Xu3fv45J8httvvz0+/PBDYQJAnlu3bl3cfvvtiT5D7969jz///PP7SRMAgJ1NAQwAkALZbDZz6qmn/jyTyST2+m769OkxZ84cYQIAERExe/bsmDFjRmLnz2QyBaeeeurPs9lsRpoAAOxMCmAAgBT44x//eERlZeXgpM6/du3auPfeewUJAPyde+65J9atW5fY+SsrKwf/6U9/+oIkAQDYmRTAAAAJ17dv3+JDDjnkR0k+w9133x01NTXCBAD+Tk1NTdx9992JPsPBBx/8o759+xZLEwCAnUUBDACQcHfdddc3S0pKOiV1/smTJ8e8efMECQB8pLlz58azzz6b2PlLSko63nPPPd+SJAAAO4sCGAAgwb70pS9VDhw48KSkzr9mzZoYP368IAGALXrggQdizZo1iZ2/f//+Jx111FGtJAkAwM6gAAYASLArrrji1MLCwvIkzp7L5eK2226LTZs2CRIA2KJNmzbFbbfdFrlcLpHzFxYWll1++eU/kCQAADuDAhgAIKF+8Ytf9O7evftXkjr/s88+G2+88YYgAYBP5Y033ojnn38+sfN369bt6F/96ld9JAkAwI6mAAYASKgf/vCHP8pkMom8nvvggw/igQceECIAsFXGjRsX69atS+TsmUym4NRTT/2xFAEA2NEUwAAACXTdddcNa9eu3YFJnD2Xy8Udd9wRtbW1ggQAtsqmTZvizjvvTOz8bdq02f+mm27aT5IAAOxICmAAgIQpLS0t+NrXvnZ6Uud/4YUXYuHChYIEALbJq6++GjNmzEjs/Mccc8zpFRUVfiYHAMAO42ITACBhbr/99oMrKip2S+LsGzZsiHHjxgkRAPhM7r///qiqqkrk7OXl5X3/67/+6wgpAgCwoyiAAQASpKKiouCwww47Nanz33vvvYn9YS0A0HRs2LAh7r///sTOf9BBB/1zq1atCiUJAMCOoAAGAEiQ+++//+iysrKeSZx9zpw58dJLLwkRANguXnjhhViwYEEiZy8tLe32xz/+8StSBABgR1AAAwAkRN++fYv33Xfff07i7LW1tXHvvfcKEQDYru6+++6oq6tL5Oz77bffKf379y+RIgAA25sCGAAgIW6++eZRxcXFbZM4+yOPPBJr164VIgCwXa1atSoee+yxRM6ezWbb3njjjV+TIgAA25sCGAAgAYYOHVq21157fSeJs7/33nvxxBNPCBEA2CEmTpwYK1asSOTsQ4YM+c7QoUPLpAgAwPakAAYASIBrr732xKKiosqkzZ3L5eKee+6JxsZGIQIAO0R9fX3cddddkcvlEjd7UVFR5bXXXnuCFAEA2J4UwAAATdwBBxxQMWDAgG8kcfYZM2bEW2+9JUQAYId6880348UXX0zk7AMGDPjG8OHDy6UIAMD2ogAGAGjirrrqqhOKiooqkjb3pk2b4oEHHhAgALBT3H///VFbW5u4uYuKilpcffXV7gIGAGC7UQADADRhBx10UEX//v0Teffvww8/HB9++KEQAYCdYv369TFhwoREzj5w4MBvHHDAARVSBABge1AAAwA0Yf/5n/95bGFhYfOkzb1q1aqYPHmyAAGAnerpp5+O1atXJ27uwsLC8ssuu2yUBAEA2B4UwAAATdQBBxxQMWjQoNFJnP3uu++O+vp6IQIAO1V9fX3cddddiZx99913/+bQoUPLpAgAwGelAAYAaKIuv/zyYwsLC8uTNvfcuXNjwYIFAgQAdokFCxbE3LlzEzd3UVFRi9/97ndflyAAAJ+VAhgAoAkaOnRo2aBBgxL37t+6urr405/+JEAAYJf605/+FHV1dYmbe/fdd//mkCFDSiUIAMBnoQAGAGiCfvOb33ylqKioZdLmfu655xL53j0AIF1Wr14dzz33XOLmLioqann11VcfLUEAAD4LBTAAQBPTq1evZoMHD/5m0uaurq6ORx55RIAAQJPwyCOPRHV1deLmHjJkyLe6deuWlSAAANtKAQwA0MTcdNNNxxQXF7dN2twTJkyIqqoqAQIATUJVVVUifzmtuLi43a233uouYAAAtpkCGACgCWnVqlXhXnvtdVLS5l61alU8++yzAgQAmpTJkyfHqlWrEjf30KFDR7dq1apQggAAbAsFMABAE3LLLbccXlJS0jlpcz/44INRX18vQACgSamvr48HH3wwcXOXlJR0vummmw6VIAAA20IBDADQRGSz2cwBBxzw7aTNvWjRonjppZcECAA0SS+99FIsXrw4cXOPGDHiO9lsNiNBAAC2lgIYAKCJuOaaa/YuLy/vm7S5H3roocjlcgIEAJqkXC6XyLuAy8vL+1111VV7SRAAgK2lAAYAaCK+8pWvfDdpM8+bNy8WLlwoPACgSVu4cGG8+uqrrg8BAMgLCmAAgCbgsssuG1RZWblPkmbO5XIxfvx44QEAifDAAw8k7qklrVu33veSSy7pLz0AALaGAhgAoAkYNWrUCUmbefbs2bFs2TLhAQCJsGzZsnjllVcSN/cJJ5xwovQAANgaCmAAgF3sn//5nzt37NjxiCTN3NjYGA888IDwAIBEGT9+fDQ0NCRq5k6dOn1h9OjRHaQHAMCnpQAGANjFfvSjH30tk8kk6rps2rRpsWrVKuEBAImyatWqeOGFFxI1cyaTKfzpT386SnoAAHxaCmAAgF1o0KBBpX369Plqkmaur6+PCRMmCA8ASKQJEyZEXV1dombu27fvV/r27VssPQAAPg0FMADALnTZZZcdXlRUVJGkmadOnRpr164VHgCQSOvXr48pU6YkauaioqLK3/zmN0dIDwCAT0MBDACwi2Sz2cy+++57UpJmrqurc/cvAJB4jz76aOLuAt5///1PymazGekBAPBJFMAAALvI1VdfPbSsrKx3kmaeMmVKbNiwQXgAQKJt2LAhnn/++UTNXFZW1ueqq67aS3oAAHwSBTAAwC7y5S9/+bgkzVtfXx8TJ04UHACQCo8//nji7gL+0pe+dLzkAAD4JApgAIBdYPTo0R3atm07IkkzT5s2LdatWyc8ACAVPvzww5g+fXqiZm7fvv2I0aNHd5AeAABbogAGANgFfvrTn47KZDKFSZm3vr4+HnnkEcEBAKnyyCOPRH19fWLmzWQyhT/96U+/JjkAALZEAQwAsJN16tQp26dPn6OTNLO7fwGANFq3bl1MmzYtUTP36dPnmE6dOmWlBwDAx1EAAwDsZFddddUB2Wy2dVLmbWxsjEmTJgmOVOvYsWN06OCJmgD5aNKkSdHY2JiYebPZbOurrrrqAMkBAPBxFMAAADvZiBEjvp6keV988cVYtWqV4Ei1Ll26xIUXXhinnXZadO3a1UIA8siqVavipZdecj0JAEBqKIABAHaiM844o3tlZeXeSZk3l8vFxIkTBUdeyGQyMXjw4PjVr34VY8aMcUcwQB55/PHHI5fLJWbeysrKvc8444zukgMA4KMogAEAdqJTTjnlqxGRScq8CxYsiPfee09w5JVMJhN77713XHjhhTFmzJho3769pQCk3HvvvRcLFy5M1B9X/3NdCQAA/4cCGABgJ+nVq1ezXr16fTlJM3v3L/nsr0XwBRdcECeffHK0bdvWUgBSLGnXPb169fpyr169mkkOAIB/pAAGANhJrrjiioOLiopaJmXeBN4JAztEYWFhDB8+PC688MIYPXp0VFZWWgpACi1YsCCWLVuWmHmLiopaXnnllYdIDgCAf6QABgDYSYYPH/6VJM2btHfhwY5WVFQUI0aMiEsuuSRGjx4dLVu2tBSAFMnlcvH4448naub99tvvK5IDAOAfKYABAHaC0aNHd6isrByalHnXrl0bL7/8suDgI/y1CL744ovjhBNOiBYtWlgKQEq89NJLsW7dusTMW1lZudfo0aM7SA4AgL+lAAYA2AlOP/30o5J07fXMM89EQ0OD4GALiouL47DDDouxY8fGqFGjoqyszFIAEq6hoSGeeeaZJI1c8D/XmQAA8P8vEq0AAGDHymazmX79+n05KfPW1tbGlClTBAefUnFxcYwcOTIuvfTSGDVqVJSWlloKQII9//zzUVtbm5h5+/Xr9+VsNpuRHAAAf6UABgDYwX7zm9/sWVJS0jkp886YMSOqq6sFB1uppKQkRo4cGZdcckkcffTRUVJSYikACVRdXR0zZ85M0p8/na+44orBkgMA4K8UwAAAO9gXvvCFLyVl1lwuF08//bTQ4DNo3rx5HHXUUXHJJZfEyJEjI5vNWgpAwjz11FORy+USM++RRx75ZakBAPBXCmAAgB1oyJAhpZ07dz4iKfO+/vrrsWLFCsHBdlBeXh6jRo2KSy+9VBEMkDArVqyI119/PTHzdunS5fD+/ft79AQAABGhAAYA2KHGjh17aGFhYWJeCOruX9j+KioqYtSoUXHxxRfH4YcfHkVFRZYC4LpouyosLGz+H//xHwdLDQCACAUwAMAOteeeex6ZlFnXrl0b8+bNExrsIK1atYrjjz8+LrroohgxYkQUFPh2DKApmzdvXqxZsyYx8+61115HSg0AgAgFMADADnPMMce0bt269b5Jmfe5556LxsZGwcEO1qZNmxg9enRcfPHFimCAJqyxsTGee+65JP35MvyYY45pLTkAAPykAQBgBznzzDMPz2Qyibje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FpafffbZvaQFAJA+CmAAgE9p//3375+EOV9//XVhAXmjvLw8Ro0aFf/+7/8eI0eOjGw2aymA67FP6fOf//xAaQEApI8CGADgU+rRo8fuTX3G2traePvtt4UF5J2KiooYNWpUXHzxxXH44Yc3+XdvAum2ePHiRLySo1evXoOkBQCQPgpgAIBPqXXr1k3+DoklS5ZEQ0ODsIC81apVqzj++OPj4osvjhEjRkRBgW97gZ2voaEhlixZ0uTnbNOmjQIYACCFfCcMAPApDBkypLR58+a9m/qcb775prAAIqJ169YxevToGDt2rCIYcF32MZo3b95n0KBBpdICAEgX3wEDAHwKp556av9MJtPkr53eeustYQH8jTZt2sTo0aPjvPPOi+HDhyuCAddlfyOTyRT84Ac/+Jy0AADSxXe+AACfwuDBg5v84/Hq6+tj0aJFwgL4CJ06dYqTTz45/u3f/i323nvvyGQylgLsUIsXL07Eqzn23HPPgdICAEgXBTAAwKfQpUuXAU19xnfeeSfq6uqEBbAFnTt3jjFjxiiCgR2utrY23n333SRc53oPMABAyiiAAQA+hZYtW/Zv6jN6/DPAp9elS5cYM2ZMnHvuuTF48GALAfL2+iwJ17kAAGwdBTAAwCcYPnx4eUlJSeemPqfHPwNsvV69esVpp50W55xzTvTvrwMB8u/6rLS0tPPw4cPLpQUAkB4KYACAT/Ctb31rt4ho8s8IXbx4sbAAtlGfPn3irLPOinPOOSd22203CwG2i4T8gl7m29/+dj9pAQCkhwIYAOAT7L777k2+CVi7dm1s2LBBWACfUZ8+feLss8+OM888M3r27GkhwGfy4Ycfxrp165r8nAMHDlQAAwCkSJEVAABsWadOnZr8D8TefvttQQFsRwMGDIgBAwbEggULYvz48bF06VJLAbb5Oq1Vq1audwEA2GkUwAAAn6CyslIBDJCnBgwYEP3794958+bFQw89FO+++66lAFtlyZIlsddeezX1613PvgcASBEFMADAFnTq1CnbvHnzXk19ziVLlggLYAfJZDIxePDg2GOPPeLll1+OBx98MFauXGkxQGqu05o3b967Xbt2RatXr66XGABA8nkHMADAFowZM6ZnJpPJNuUZGxsbPZoUYCfIZDKx9957x4UXXhhjxoyJ9u3bWwrwiZYuXRqNjY1NesaCgoLsqaee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k8nE7NmzY+LEibFmzRoNAXif/VNSzJo161kTAwBongTAAAC70O233/7KOeecszU/P78022sdMGBAtG/f3tWu0My9+uqrMWnSpFi1apVmALyPjh07xgEHHJCIWhsbG6u/8Y1v/NXUAACaJwEwAMAutHLlyob169fP6tat2+hsrzWVSsXhhx8ekyZNMjhohubMmROTJ0+OJUuWaAbAh3D44YdHKpVKRK3r16+fVVFR0WhqAADNU54WAADsWq+++mpirts77LDDDAyamTfffDP+/d//PX7yk58IfwE+pFQqFSNGjEhMva+88sozpgYA0Hw5AQwAsIvddNNNz5166qnV+fn5rbO91m7dukX//v1j4cKFBgc5btmyZfHYY4/F/PnzNQPgIzrggAOic+fOiai1sbFxy4033jjL1AAAmi8BMADALrZy5cqG8vLyGT179vx0Euo9+uijBcCQw5YvXx7jxo0T/AJ8wv1SUpSXlz9TXl7eYGoAAM2XABgAYDeYMWPGUxdccEEiAuAhQ4ZE69ato7q62uAgh6xcuTImTJgQc+fOjUwmoyEAH1ObNm3i0EMPTUy9zz777FOmBgDQvPkGMADAbvDVr371lYaGhk1JqLWgoCCOOOIIQ4McsW7duvj5z38ed955Z8yZM0f4C/AJjRw5MvLz8xNRa0NDw8abbrrpVVMDAGjenAAGANgNKisrm1atWjW9T58+5ySh3qOPPjqefPJJQREk2Pr16+Oxxx6L2bNn+3cZYBdJpVIxatSoxNS7cuXKadXV1WmTAwBo3pwABgDYTaZNm5aY6/c6duwYAwYMMDRIoA0bNsSvf/3r+Nd//dd49dVXhb8Au9CAAQOiY8eOian36aefftLUAAAQAAMA7CZf+9rX5tTX11ckpd6jjjrK0CBBqqqq4v77749vf/vb8eKLL0ZTU5OmAOxiRx55ZGJqra+vX/eNb3zjdVMDAMAV0AAAu0ltbW16xYoVT++///6fT0K9hx56aLRt2zaqqqoMD7LYli1bYsqUKfHcc8/F9u3bNQRgN2nbtm0MGTIkMfUuX778qdraWtc/AwDgBDAAwO70xz/+cUJSas3Pz4/jjjvO0CBL1dTUxKOPPhq33XZb/OUvfxH+Auxmxx57bOTn5yel3Myvf/3rCaYGAECEABgAYLe66667llZXV89PSr1HH310tGjRwuAgi7wd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qATAAABZ4umnn968fPnyxF3xN3r06GjXrp0BAgBZqUOHDnH88ccnru5ly5ZNmD59+hYTBADgoxIAAwBkkbvvvvtPmUymKUk1FxYWxumnn254AEBWOvPMMxP3yYpMJtN41113/dH0AAD4OATAAABZ5Be/+MWatWvXTkta3UcccUT06tXLAAGArNK7d+847LDDEld3eXn5X+6///51JggAwMchAAYAyDIPP/zwn5JWcyqVijPPPNPwAICsMmbMmEilUomr+8EHH/yT6QEA8HEJgAEAsszXv/71NzZs2DAraXUPHDgwDj74YAMEALLCoEGDYsCAAYmru6KiYuatt966wAQBAPi4BMAAAFlo3Lhxv01i3WPGjIm8PFtMAGDvysvLizFjxiSy9j//+c+/NUEAAD7RflgLAACyz/XXXz+nqqrqr0mru1evXnHUUUcZIACwVx1zzDHRvXv3xNW9adOmV2666aa5JggAwCchAAYAyFJ/+tOf7k1i3WPGjInS0lIDBAD2ijZt2sRZZ52VyNofeOCBe00QAIBPSgAMAJClbrrpprlJPAVcXFwcZ555pgECAHvFWWedFS1btkxc3Zs2bXrl5ptvnmeCAAB8UgJgAIAsNm7cuF8lse5Ro0ZF7969DRAA2KP69OkTI0eOTGTtjz322K9MEACAXUEADACQxcaOHTu7qqrqb0mrO5VKxfnnnx+pVMoQAYA9tv/4/Oc/n8j9R2Vl5d+uueaav5kiAAC7ggAYACDLTZ069bdJrLtv374xZMgQAwQA9ojDDjsssTeQTJ48+TcmCADAriIABgDIcpdeeumLVVVVryax9s9//vNRXFxsiADAblVaWhrnn39+Imuvqqr66+WXX/6SKQIAsKsIgAEAEuChhx76WRLrLisri9NPP90AAYDd6qyzzoqSkpIklp753e9+91MTBABgVxIAAwAkwA033DB3w4YNs5JY+3HHHRd9+vQxRABgt+jbt28cddRRiay9oqJi1te//vU3TBEAgF1JAAwAkBA///nPfxoR6aTVnUql4vOf/3zk5dl6AgC7Vn5+flx00UWRSqWSWH76F7/4xX+bIgAAu5q3cAAACXHHHXe8tW7duulJrL13795xzDHHGCIAsEudcMIJ0b1790TWXl5e/pc77rjjLVMEAGBXEwADACTI3XfffW8mk2lKYu1nnXVWtG3b1hABgF2iQ4cOcfrppyey9kwm03T33Xf/3BQBANgdBMAAAAlyzz33rCgvL386ibW3bNkyzj33XEMEAHaJc889N1q0aJHI2tesWTP1xz/+8UpTBABgdxAAAwAkzA9/+MOfZzKZhiTWPnz48Bg0aJAhAgCfyKGHHhpDhw5NZO3pdLrhBz/4wS9MEQCA3UUADACQMPfee+/qRYsWPZDU+i+++OIoKSkxSADgY2ndunVcfPHFia1/4cKFf7jvvvvKTRIAgN1FAAwAkECXXXbZrxsaGjYlsfaysjJXQQMAH9u5554bpaWliay9oaFh4+WXX/47UwQAYHcSAAMAJNDs2bNrXn311V8ntf4jjjgiDj74YIMEAD6SwYMHx+GHH57Y+l955ZX7Zs+eXWOSAADsTgJgAICEOueccx6tqalZmtT6L7roomjZsqVBAgAfSsuWLeNzn/tcYuuvqalZMmbMmMdMEgCA3U0ADACQUJWVlU3Tpk37RVLrb9++fZx++ukGCQB8KGeccUa0b98+sfU/+eST91ZXV6dNEgCA3U0ADACQYOedd960qqqqV5Ja/wknnOAqaADgAx188MFx/PHHJ7b+TZs2vXzBBRc8a5IAAOwJAmAAgIT74x//eG9EZJJYeyqVigsuuMBV0ADAe2rZsmVccMEFkUqlkrqEzP333/8zkwQAYE8RAAMAJNzNN988b9WqVU8ktf6OHTsm+nt+AMDudcEFF0THjh0TW/+KFSse//rXv/6GSQIAsKcIgAEAcsCNN974k6ampq1JrX/kyJExdOhQgwQA/pdPfepTMWLEiMTW39TUVH3zzTf/t0kCALAnCYABAHLAxIkTK//+97//KslruPDCC6OsrMwwAYCIiGjTpk18/vOfT/QaZs+efd/EiRMrTRMAgD1JAAwAkCPOPvvsh2pqapYntf7S0tK46KKLDBIAiFQqFV/84hejtLQ0sWuoqal566yzznrYNAEA2NMEwAAAOaKioqJx0qRJP07yGgYPHhwjR440TABo5o444og46KCDEr2GJ5544qeVlZVNpgkAwJ4mAAYAyCGXXHLJzIqKihlJXsMFF1wQ3bp1M0wAaKZ69uyZ+KufKyoqZnzhC1+YZZoAAOwNAmAAgBzzb//2b/ek0+ntSa2/RYsWceWVV0ZhYaFhAkAzU1hYGF/60pcSvQ9Ip9Pb/+3f/u0e0wQAYG8RAAMA5Jh777139aJFix5M8hq6d+8eZ555pmECQDNzxhlnRPfu3RO9hsWLFz947733rjZNAAD2FgEwAEAO+uxnP/vL2traRL94PPHEE2Pw4MGGCQDNxKBBg+Kkk05K9Bpqa2tXn3vuub80TQAA9iYBMABADlq8eHH9uHHj/j3Ja0ilUnHJJZdE27ZtDRQAclybNm3ikksuiVQqleh1jBs37t8XL15cb6IAAOxNAmAAgBx1+eWXv1RRUTEjyWsoLS2NL3zhC4l/GQwAvLe3f+mrdevWiV5HRUXFM5dffvlLJgoAwN4mAAYAyGE33HDDXU1NTVuTvIaDDjrI94ABIId95jOfiUMOOSTRa2hqaqq+4YYbfmiaAABkAwEwAEAOGzdu3MbZs2cn/jt0p5xyiu8BA0AOOuSQQ+LTn/504tfx17/+9efjxo3baKIAAGQDATAAQI77zGc+81B1dfXCJK8hlUrFF7/4xejQoYOBAkCO6NixY3zpS19K/KceNm/ePO+00057xEQBAMgWAmAAgBxXXV2dfuCBB34UEekkr6O4uDguvfTSyMuzhQWApMvPz4/LLrssiouLk76U9P333/+ftbW1aVMFACBbeHsGANAMXH/99XMWLVr0YNLXsf/++8e5555roACQcOedd1707ds38etYuHDhH7/61a++bqIAAGQTATAAQDNxySWX/Lyurq486es4/vjjfQ8YABJs2LBhccwxxyR+HXV1dWsuvPDC+0wUAIBsIwAGAGgmXnvttdoHHnjguxGRSfI6UqlUfOlLX4oePXoYKgAkTO/evePSSy9N/Hd/IyLzwAMPfO/111+vNVUAALKNABgAoBm5+uqr/7Z06dJHk76OoqKiGDt2bJSWlhoqACRE69at46qrrorCwsLEr2X58uXjrr766r+ZKgAA2UgADADQzJx33nn/r66ubnXS19GhQ4e4/PLLIy/PlhYAsl1eXl5cfvnl0b59+8Svpb6+ft0ll1zyE1MFACBr999aAADQvLz++uu1Dz744Pcj4VdBR0QMGDAgzjrrLEMFgCw3ZsyYOPDAA3NiLY899tgPXnnllW2mCgBAthIAAwA0Q1/5ylf+umbNmqm5sJaTTz45Dj30UEMFgCw1ZMiQOOmkk3JiLWvXrv3LpZde+oKpAgCQzQTAAADN1GWXXfYf9fX1FUlfRyqViksvvTS6d+9uqACQZXr06BFf/OIXI5VKJX4tDQ0Nm6655pofmioAANlOAAwA0EzNmDGj+oEHHvhO5MBV0C1btozrr78+2rZta7AAkCXatWsX1113XbRs2TIXlpN56KGH/nXSpElVJgsAQLYTAAMANGNf+cpX/rpkyZI/58Ja2rZtG1dffXW0aNHCYAFgL2vRokVcffXVOfPLWUuXLn30iiuueNlkAQBIAgEwAEAzd+655/6ktrZ2eS6spXfv3jlzzSQAJNXbn2fYZ599cmI9tbW1y88555wfmywAAEkhAAYAaOYWLFhQ97Of/ezbmUymMRfWM2zYsDjllFMMFgD2kk9/+tMxdOjQnFhLJpNp/NnPfvbtBQsW1JksAABJIQAGACBuvfXWBfPnz78/V9Zz5plnxuDBgw0WAPaw4cOHx2c+85mcWc/8+fN/d+utty4wWQAAkkQADABARESMGTPmvpqamrdyYS2pVCouu+yy6Nmzp8ECwB7Su3fvuPjii3PmUwxbt25ddPrpp//aZAEASBoBMAAAERGxcuXKhh/+8Ie3pdPpnLjisGXLlvEv//Iv0aVLF8MFgN2sS5cucf3110dRUVFOrKepqanmu9/97jfKy8sbTBcAgKQRAAMA8E933XXX0ueff/6eXFlPaWlpXHvttVFWVma4ALCblJWVxXXXXRclJSU5s6aZM2fe/f/+3/9bZboAACSRABgAgP/l5JNPHldeXv50rqynU6dOMXbs2Jw5kQQA2aSoqCiuueaa6NixY86sqby8/MlTTz11gukCAJBUAmAAAP6PSy655K66urq1ubKefffdN6644orIy7P9BYBdJS8vL6688sro3bt3zqyprq6u/JJLLvmh6QIAkOi9uhYAAPBus2bNqn7ooYfujIh0rqxp4MCBcd555xkuAOwi559/fhxyyCG5tKT0gw8+eOesWbOqTRcAgCTLb3tQ9NzpjndbRG15oQ4BADRTEydOXDNmzJi8Tp06Dc2VNfXp0yfy8/PjzTffNGAA+ATOOuusOOmkk3JqTa+//vp9Z5555kTTBQAgCYq7N0Ze6c5/5gQwAADv6dRTT/31li1bXs+lNZ122mlx9NFHGy4AfEzHHntsnHrqqTm1pi1btrxx2mmn/cZ0AQDIBQJgAADeU0VFReONN974jcbGxqpcWtcFF1wQRx55pAEDwEd05JFHxuc+97mcWlNjY2PVzTff/I2KiopGEwYAIBcIgAEAeF9//OMf1z/yyCPfiRz6HnAqlYqLLroohgwZYsAA8CENHTo0LrrookilUrm0rPQjjzzynfvvv3+dCQMAkCsEwAAAfKBLL730hQULFvwupzbCeXnxpS99Kfbff38DBoAPcNBBB8WXvvSlyMvLrVdJCxYs+N2ll176ggkDAJBLBMAAAHwoo0eP/mVVVdXcXFpTYWFhfOUrX4kePXoYMAC8h169esUVV1wRBQUFObWuqqqqOaNHj/6lCQMAkGsEwAAAfCgVFRWNV1111S0NDQ0bcmldJSUlcfPNN8c+++xjyADwLr17946bbropiouLc2pdDQ0NG6666qqv++4vAAC5SAAMAMCHNmHChE3333//tzKZTDqX1lVcXBzXXXdddO/e3ZABYIfu3bvHtddeG61atcqpdWUymfT999//rQkTJmwyZQAAcpEAGACAj2Ts2LGz58+f/9tcW1fr1q3juuuuiw4dOhgyAM1ehw4d4rrrrovWrVvn3Nrmz5//m7Fjx842ZQAAcpUAGACAj+y44477xaZNm17MtXW1a9cubrzxxmjXrp0hA9BstW3bNmf/Pty4ceOLxx13nO/+AgCQ0wTAAAB8ZNXV1emLL774W3V1datzbW0dO3aMG2+8Mdq0aWPQADQ7ZWVlceONN0bHjh1zbm21tbWrL7zwwturq6vTJg0AQC7Lb3tQ9NzZD9LbImrLC3UIAICdWrZsWf327dtfOvbYY0/Ny8trkUtrKykpiaFDh8Zrr70WNTU1hg1As9ChQ4f42te+Fp06dcq5tTU1NW39zne+M/bBBx9cb9IAAOSC4u6NkVe6858JgAEA+NhefPHFzYcccsiyAQMGnBgRqZzaRBcXx5AhQ4TAADQLHTt2jJtuuik6dOiQi8tLjx8//ravfvWrc0waAIBc8X4BsCugAQD4RC688MIZb7zxxm9ycW3t27ePm266KSdPQgHA2zp16pTL4W+88cYbv77wwgufM2kAAJoLATAAAJ/YqFGjfrFhw4aZubi2t0Pgzp07GzQAOadz585x0003Rfv27XNyfRs2bJg5atSo+0waAIDmRAAMAMAnVltbm77sssu+V1dXtzoX19euXbu44YYbomPHjoYNQM7o0KFDXH/99dGuXbtc3Z+s/sIXvvDd2tratGkDANCc+AYwAAC7xJIlS+oj4pVRo0admpeX1yLX1ldcXBxDhw6NuXPnxrZt2wwcgETr0qVL3HjjjTl77XNTU1P1nXfeec0f/vCHdaYNAEAuer9vAAuAAQDYZWbNmlXVo0ePuYceeujoVCqVn2vra9WqVYwYMSIWLVoUlZWVBg5AIu23335x0003RVlZWU6uL51ON/z617++4fbbb3/TtAEAyFUCYAAA9phJkyatPeqoozbsu+++R+fi+goLC2P48OGxbNmy2LBhg4EDkCgDBgyIa6+9Nlq1apWza5w2bdq/XXLJJc+ZNgAAuez9AmDfAAYAYJc77bTTHn/rrbcezNX1FRUVxTXXXBNDhgwxbAASY8iQIXHNNddEUVFRzq5xwYIFvzv99NOfMG0AAJozATAAALvFEUcccc+GDRtm5ur6CgoK4sorr4wjjjjCsAFIwt/LceWVV0ZBQUHOrrG8vPypESNG/LdpAwDQ3AmAAQDYLaqrq9MXXXTRd2pra1fk7GY6Ly8uvvjiOPLIIw0cgKw1atSouPjiiyMvL3dfA23dunXxZz/72e83NDRkTBwAgObON4ABANhtli9fvr2mpuaFY4899uT8/PyWubjGVCoVgwYNikwmE4sWLTJ0ALLK6aefHueee26kUqmcXWN9fX3FDTfccM3UqVOrTBwAgObi/b4BLAAGAGC3evnll7cUFBS8cMQRR4zOy8trkYtrTKVSccABB0SnTp1i7ty5kck4fATA3lVYWBhXXHFFHHPMMTm9zsbGxuo777zzKz/72c9WmzoAAM2JABgAgL1qxowZlb169Xp98ODBJ6dSqfxcXWfPnj2jb9++8fe//z0aGxsNHoC9olWrVnH11VfHwIEDc3qd6XS64be//e2Nt9122wJTBwCguREAAwCw1z3xxBPlw4cPX9OvX79jIyJn76Hs2LFjDBw4MObMmRN1dXUGD8Ae1a5du7jxxhujT58+ub7U9JQpU779xS9+8XlTBwCgOXq/ADhPewAA2FPGjBkz9Y033vh1rq+zZ8+eceONN0bHjh0NHYA9pkuXLnHTTTdF9+7dc36tc+fO/eU555zzF1MHAID/SwAMAMAe9alPfernS5cufTjX19mlS5e49dZb48ADDzR0AHa7gQMHxje/+c3o1KlTzq/1rbfeemjEiBG/MnUAANg5ATAAAHvcsccee8/GjRtfyPV1FhcXx7XXXhsjRowwdAB2m8MPPzyuuuqqaNmyZc6vdePGjc8fffTR95g6AAC8NwEwAAB7XEVFReNxxx339crKyr/l+loLCgrisssui/PPPz9SqZThA7DLpFKpOP/88+PSSy+NgoKCnF/vpk2bXj7ssMNuqaysbDJ9AAB4bwJgAAD2isWLF9efddZZN1dXV7/ZHNZ7/PHHx5e//OUoKioyfAA+sRYtWsSXv/zlOP7445vFequrq98cM2bMN8rLyxtMHwAA3l9+24Oi585+kN4WUVteqEMAAOw2a9asaVi1atWs0aNHH1dQUNA619fbrVu3OOCAA2LevHlRX1/vAQDgYykrK4trrrkmDjrooGax3rq6uvKxY8de89RTT202fQAA+Ifi7o2RV7rznwmAAQDYq+bNm1ezevXqZ04++eTjCwoKSnN9ve3atYuRI0fG8uXLY+PGjR4AAD6S/v37x0033RRdu3ZtFuutr69fd9111335T3/6U4XpAwDA/xAAAwCQ1ebMmbMtlUq9fOSRR56Ul5eX83ckt2jRIkaMGBG1tbWxdOlSDwAAH8rxxx8fX/rSl5rN5wQaGxu33HXXXdf99Kc/XWn6AADwvwmAAQDIejNnzqzs2bPn64MHDz4plUrl5/p6U6lUHHLIIdGqVatYsGBBZDIZDwEAO5WXlxef/exn4/TTT49UKtUs1pxOp7f//ve//+o3vvGN1z0BAADwfwmAAQBIhEmTJpXvs88+8wYOHHhCKpUqaA5r3m+//WLAgAExd+5c3wUG4P8oKyuL6667LoYNG9Zs1pxOp7f/8Y9/vOmqq676qycAAAB2TgAMAEBiTJw4cc3BBx+85MADDzwulUrlNYc1t2/fPoYOHRqLFi2KLVu2eAgAiIiIffbZJ66//vro2bNns1lzJpNpnDBhwm1f/OIXn/cEAADAexMAAwCQKI8++ujy/fff/42DDjrohOZwHXRERHFxcRx11FHR2NgYb731locAoJkbPXp0XHHFFVFSUtJs1pxOpxsefvjhr15yySWzPAEAAPD+BMAAACTO+PHjVw0cOHDpAQcccGxzOQmcSqViwIAB0aVLl3jjjTeiqanJgwDQzBQVFcWll14aJ554YrP53m/EP07+Pv7447dffPHFMz0FAADwwQTAAAAk0iOPPLLs0EMPXbb//vs3mxA4IqJHjx4xZMiQePPNN2Pr1q0eBIBmonv37vEv//IvccABBzSrdWcymaYnnnji9s997nPPeAoAAODDEQADAJBYDz/88NJjjjlmY+/evY+KiGZzFKq0tDSGDx8eq1evjvXr13sQAHLcwIED45prrol27do1t6VnZsyY8YOzzjprqqcAAAA+PAEwAACJdv/99795zDHHVO6zzz5HRDMKgVu0aBGHHXZYtGzZMhYuXBjpdNrDAJBjCgoK4pxzzonzzz8/WrRo0dyWn37uuefuOuWUUyZ4EgAA4KMRAAMAkHi///3v5w8bNmxF3759j2lO10GnUqno27dvDB06NBYvXhxbtmzxMADkiJ49e8YNN9wQgwcPblbf+434x7XPU6ZM+fbpp58+2ZMAAAAfnQAYAICc8OCDDy4ZNmzYin79+jWrEDgionXr1nHEEUdEfX19LF261MMAkGCpVCpOOOGEuOKKK6JNmzbNbv07wt9vnXPOOX/xNAAAwMcjAAYAIGc89NBDS4YNG7a8X79+xza3EDg/Pz8OPvjg6NWrV8yfPz8aGho8EAAJU1JSEpdffnmccMIJkZ+f3+zWn8lkGp944olvffazn53maQAAgI9PAAwAQE556KGHlo4cOXJdnz59RqWa252ZEdG1a9cYNmxYLFu2LCorKz0QAAnRt2/fuO6662K//fZrluvPZDLpp59++rvnnHPO054GAAD4ZATAAADknD/96U+LDj300KX7779/s7sOOiKiuLg4jjzyyCgpKYk333wz0um0hwIgSxUUFMRnP/vZuPDCC6OkpKRZ9iCdTjc88sgjt5x//vnTPREAAPDJCYABAMhJDz/88NId3wQelUqlmt09mqlUKvr06RMHH3xwLFy4MLZt2+ahAMgynTt3jrFjx8bQoUOjGV5aERH/CH+feOKJ2y+88MLnPBEAALBrCIABAMhZDz300JIePXq8NmjQoGPz8vJaNMcetG3bNkaNGhVNTU2xZMkSDwVAFkilUjF69Oi48soro0OHDs22D01NTdt++9vf/stll132oqcCAAB2HQEwAAA5bdKkSeXdu3efM3jw4GYbAufn58eAAQOiV69esWDBgti+fbsHA2Avad26dVx66aVx/PHHR35+frPtQ2NjY/WvfvWrf7nuuute81QAAMCuJQAGACDnTZ48eW1jY+OMI4444uiCgoKS5tqHrl27xqhRo2Lbtm2xcuVKDwbAHpRKpWLUqFExduzY6NWrV7PuRX19/fo77rjjK9/61rcWejIAAGDXEwADANAsPP/881UbNmx45rjjjjuqsLCwrLn2obCwMAYNGhT77bdfLF68OGpraz0cALtZ+/bt44orrogTTzwxCgub9/uU2tralTfffPPVP/nJT1Z7MgAAYPcQAAMA0Gz87W9/27p27doZJ5xwwsjCwsK2zbkXnTp1ipEjR0Z1dbXTwAC70ciRI+Pqq6+OHj16NPte1NTULL/hhhuu/e1vf7vOkwEAALuPABgAgGbltdde2zpv3rynTznllKFFRUWdmnMvCgsL49BDD4399tsvFi1a5DQwwC709qnfk08+udmf+o2I2Lx587yLL774unHjxm30dAAAwO71fgFwat9zYsTOftC4LmLjq610DwCAxOrVq1fhs88++69du3Y9QTciGhoaYurUqTF58uRobGzUEICPqaCgIE499dQYPXq04HeH8vLyp4499tjvrly5skE3AABg9+swrDYKuuz8ZwJgAAByWuvWrfNeeumlm/fdd9+zdeMfVq9eHffff38sWbJEMwA+ov322y8uuugi1z2/w8KFC38/fPjwnzY0NGR0AwAA9gwBMAAAzd7zzz9/8aGHHnp1RKR0IyKTycTMmTPjz3/+c9TV1WkIwAcoKSmJ8847L0aMGBGplL9Kdki//PLL9xx77LEPagUAAOxZ7xcA+wYwAADNwn333Tfn+OOP39yrV6/DQwgcqVQqevfuHcOHD49169ZFRUWFhwTgPRxyyCExduzY6N+/v/B3h0wm0/jMM8/828knnzxONwAAYM97v28AC4ABAGg2fve7370xePDgJf369Ts6lUrl60hEcXFxjBgxInr06BFLly6N2tpaTQHYoUOHDvGFL3whzjzzzCguLtaQHZqammoeeOCBWz73uc9N1w0AANg7BMAAALDDww8/vKygoOC54cOHH1FQUFCqI//QrVu3OO6446K0tDQWL14cTU1NmgI0Wy1btoxzzjknLr300ujevbuGvENtbe2K22677arbbrvtDd0AAIC9RwAMAADv8Oyzz25avHjx0yeddNKQoqKiTjryD3l5edGnT58YOXJkbN26NVatWqUpQLNz+OGHx1e+8pUYMGBA5OXlacg7VFVV/e3CCy+8/oEHHvDdAAAA2MsEwAAA8C7z58+vefbZZ58+44wz+hcX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OigOOOCAKCoq0pQs0djYuGXmzJk/PvPMMyc2NDS4XgAAAPjQBMAAAJADjjzyyNY/+9nPrujbt++5EZGnI9mluro6Fi5cGPPnz4958+ZFZWWlprBXtGvXLg455JAYMGBA9O/fP1q39nsjWSj91ltv/fmqq676xaxZs6q1AwAA+KgEwAAAkEN++ctfjhgzZsyNrVq16q0b2SmdTsfKlStj0aJFsXDhwli8eHFs27ZNY9gtSkpKol+/ftG/f//Yf//9o1evXpGX53dEslVNTc3yRx999EdXXnnlK7oBAAB8XAJgAADIMd26dSt8+OGHPzd48ODL8vPzbdyzXCaTiTVr1sTChQtj0aJFsWjRotiyZYvG8LGUlZVF//79/xn6du/ePVKplMZkuaampprXXnvtV2PGjHmgoqKiUUcAAIBPQgAMAAA56rjjjiv7r//6r8tdC508mzdvjuXLl8eKFSti+fLlsXjx4qipqdEY/pfi4uLo169f9O7dO/bZZ5/Yd999o6ysTGMSJJPJpJcsWfLn66677pfTp0/3mx8AAMAuIQAGAIAc99Of/nTIueeee3NpaWlf3UimxsbGWLlyZSxdujSWLVsWy5cvj3Xr1kUmk9GcZiKVSkWXLl1in332iT59+kSfPn2iV69eUVBQoDkJtXXr1sUPPvjgj6699tq/6wYAALArCYABAKAZaNeuXf64cePOGTp06BUFBQWtdST56uvrY+XKlf88KbxixYpYu3ZtpNNpzUm4vLy86Nq1a+yzzz7//KdXr17RsmVLzckBjY2NW/7617/+4pxzznm0srKySUcAAIBdTQAMAADNyIknntjmnnvuuXzfffcdk0qlHB3MMdu3b481a9bEmjVrYu3atbF27dooLy+PDRs2CIazUF5eXnTs2DG6desWXbt2jW7dukW3bt2iR48eUVhYqEE5JpPJNC5ZsuRR1z0DAAC7mwAYAACaoa9+9av7Xnfdddd16NDhCN3IfY2Njf8MhNetWxfr1q2LioqKWLduXWzbtk2DdrPS0tLo3LnzP//p0qVLdO3aNbp27eoK52Ziw4YNM//rv/7rxz/60Y+W6wYAALC7CYABAKAZ++UvfznirLPOuq64uNj3gZupmpqaWL9+/T//qaioiMrKyqisrIxNmzZFY2OjJn2AgoKCaN++fbRr1y7at28fHTt2jC5dukSnTp2ic+fOUVxcrEnN1NatW98aP378PVdcccXLugEAAOwpAmAAAGjm2rVrl//ggw+eOWLEiCsLCwvb6gjvtHnz5n+GwZs2bYrKysqorq6OLVu2xJYtW6K6ujqqq6sjk8nk3NpTqVS0bt06WrduHWVlZdGmTZsoLS39X2Fvu3btok2bNh4U/peGhobKl1566efnnHPO+OrqavevAwAAe5QAGAAAiIiIoUOHFt97770XHHjggRfk5+c7ssiHlk6n/xkEV1dXR01Nzfv+k8lkora2NtLpdNTX10dTU1PU1dXt0u8U5+XlRcuWLSM/Pz+KiooiLy8vWrVqFalUKoqLi3f6T0lJSbRq1eqfgW9paWnk5eUZMB9aU1NTzYIFC/745S9/+Y+zZ8+u0REAAGBvEAADAAD/y2mnndb2rrvuurRPnz5n5+XlFeoIe9LbgfDbtm/f/r7XUBcUFESLFi3++b/fDnxhT8pkMg1LliwZd8stt/xq0qRJVToCAADsTQJgAABgp0477bS2d95554X777//5wTBAP9XJpNpWLhw4QO33nrrHwS/AABAtni/ADi/7UHRc2c/SG+LqC33/gcAAHLZokWL6u69995X0un0swcddFCnkpKS3roC8A8VFRUz/7//7/+77aKLLpq6aNGiOh0BAACyRXH3xsgr3fnPBMAAAEDMnDmz8u67736qqalpWr9+/Ypbt27dN5VKpXQGaG4ymUx6zZo1U+65555/Peeccx6cOXNmpa4AAADZRgAMAAB8KDNnzqz88Y9//Gw6nZ4uCAaak7eD37vvvvtfzz///McEvwAAQDYTAAMAAB+JIBhoLgS/AABAEgmAAQCAj+XtILisrOyFvn37diwuLu4VEYJgIBdkKioqnrv33nu/PWbMmEcEvwAAQJK8XwCc2vecGLGzHzSui9j4aivdAwAA/unqq6/u8ZWvfOX8Pn36nJWXl9dCR4CkSafT9UuXLh3/X//1Xw/84he/WKMjAABAEnUYVhsFXXb+MwEwAADwkZ1xxhntb7/99rMPPPDA8/Pz81vrCJDtmpqaqhcsWPDgd77znUcmTpzotC8AAJBoAmAAAGC3GD58eMkPf/jDzwwePPjioqKijjoCZJv6+voNr7322u9vvPHGx2fPnl2jIwAAQC4QAAMAALvV0KFDi++5556zDjnkkPOKioq66giwt9XV1a19/fXXH7z++uvHC34BAIBcIwAGAAD2iFatWuXdc889w0455ZTzO3bseJSOAHtYZsOGDbOmTJny4PXXX/9qbW1tWksAAIBcJAAGAAD2uH/913/tf/7555/dq1ev0/Ly8lroCLC7pNPp+pUrV05+4IEHHvnOd76zSEcAAIBcJwAGAAD2mjPOOKP97bfffvYBBxzw2YKCgjY6AuwqjY2NVW+++eafv/e97z06YcKETToCAAA0FwJgAABgrxs+fHjJ97///dGDBg0aU1paur+OAB9XdXX1wtdee+3Rr371q1Nfe+21Wh0BAACaGwEwAACQVb761a/ue8EFF3y6b9++ZxUUFLTWEeCDNDY2bnnrrbfG/+EPf5j4ox/9aLmOAAAAzZkAGAAAyEpDhw4t/sEPfnDy4MGDz27dunV/HQHerbq6+s2XX375weuuu+7ppUuXbtcRAAAAATAAAJDlCgsLU3ffffeQ0aNHn9G1a9fj8vLyinQFmq90Ol1XXl4+bcqUKROuvfbav+sIAADA/yYABgAAEqNPnz4t/v3f/33UyJEjz2rfvv2nIiKlK9AsZDZt2vTXF1544bGvfe1rzzntCwAA8N4EwAAAQCJddNFFXa6++uqTDzzwwLNbtmzZTUcg99TV1a1ZsGDBuJ/+9KdP3n///et0BAAA4IMJgAEAgETr1q1b4d13333k4YcffmqHDh2OyMvLK9QVSK50Ot2wcePGWbNmzZp8/fXXz6qoqGjUFQAAgA9PAAwAAOSMo48+uvWtt956/CGHHHJKu3btBkdEnq5AIqQrKytfmzdv3uQ777xz+owZM6q1BAAA4OMRAAMAADnpuOOOK/vGN75x/CGHHHJa27ZtB4bvBUO2yVRVVc2dN2/epO9///vTpk+fvkVLAAAAPjkBMAAAkPNuu+22vmedddZJffr0Oa5Vq1a9dQT2ntra2uXLly+f/uijjz51xx13vKUjAAAAu5YAGAAAaFa+9KUvdbv44ouP7t+//wlOBsMekamqqpq7cOHCv/z+97+fcd9995VrCQAAwO4jAAYAAJqtSy65pOtll112jDAYdrl0VVXVvIULF/7lV7/61bO/+93v1moJAADAniEABgAAiIirr766x/nnnz9q//33P7JNmzZDUqlUga7Ah5fJZBoqKyv/vnjx4uf+9Kc/zbr33ntX6woAAMCeJwAGAAB4l379+hV97WtfGzRy5MhRPXv2PLaoqKizrsD/VV9fv37VqlXPvPDCC8/9+7//+5zFixfX6woAAMDeJQAGAAB4H61bt8678847Bx599NFHde/efURpaen+4apomq/M1q1bF69Zs+bF5557btY3v/nNOdXV1WltAQAAyB4CYAAAgI9g8ODBrcaOHXvI8OHDD+vevfvw1q1bHxACYXJXprq6+s01a9a88sorr7z8k5/8ZN5rr71Wqy0AAADZSwAMAADwCVx//fX7nHHGGYf169dvePv27Yfm5+e31hWSrLGxsXrjxo2vvvXWWy+PHz/+lR//+McrdQUAACA5BMAAAAC70Je//OUe55xzzvA+ffoM7tix45CioqKuukI2q6+vX7t27doXFy9ePGfixImv3Xvvvat1BQAAILkEwAAAALvRl7/85R6f+cxnBvfr129Qly5dDm/ZsqVAmL2qrq5u7bp16wS+AAAAOUoADAAAsIe0atUq75prrtnn2GOPPXi//fY7uH379oeUlpb2TaVS+brDbpKuqalZtnHjxnlvvfXW3GeffXbef/3Xfy2vra1Naw0AAEBuEgADAADsRQceeGDLq6+++oAhQ4Yc3LNnz4Pbtm17sGuj+biampqqq6qqXi8vL583Z86ceb/85S/nvfjii1t1BgAAoPkQAAMAAGSZoUOHFn/xi1/cf9CgQQf26NHjwHbt2h3YqlWr3qlUKk932CFdU1OzvLKycsHq1asXzJkzZ8Gf//znJTNmzKjWGgAAgOZNAAwAAJAAxx13XNkFF1xw4MEHH3xA165dDywtLd23pKRkn1QqVag7uS2TyTRs27ZtRXV19dJ169YtfOONNxZOmDBh4YQJEzbpDgAAAO8mAAYAAEiw8847r+OJJ57Yp3///vt16dKlT5s2bfZr3bp1v/z8/GLdSZampqaa6urqxZs3b16ybt26pQsXLlzy9NNPL33ooYc26A4AAAAflgAYAAAgx7Rr1y7/kksu6TFkyJCe++67b89OnTr1Kisr61VcXNyzZcuW3VKpVL4u7R2ZTKaprq6uvKamZtWWLVtWVlRUrFy6dOnK2bNnr7r//vvXVFZWNukSAAAAn4QAGAAAoBnp1KlTwec+97luQ4cO7bnPPvv0aNeuXafWrVt3Li4u7tqyZcvORUVFnfLy8lro1MeTTqe319fXr6+rq6uoqalZW11dvb6y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AACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoIQADAAAAAAAAlBCAAQAAAAAAAEoIwAAAAAAAAAAlBGAAAAAAAACAEgIwAAAAAAAAQAkBGAAAAAAAAKCEAAwAAAAAAABQQgAGAAAAAAAAKCEAAwAAAAAAAJQQgAEAAAAAAABKCMAAAAAAAAAAJQRgAAAAAAAAgBICMAAAAAAAAEAJARgAAAAAAACghAAMAAAAAAAAUEIABgAAAAAAACghAAMAAAAAAACUEIABAAAAAAAASgjAAAAAAAAAACUEYAAAAAAAAIASAjAAAAAAAABACQEYAAAAAAAAoIQADAAAAAAAAFBCAAYAAAAAAAAoMY3JP//9K8My551lzpAk293a7QAAAAAAAAD8iIw3r+SL7TpPxuSt4/ibJJuz20QDBgAAAAAAAHhzrJPp6NvHYcyyjLl7dJTPbl/Jp6sPLufSsM+5ec7q5YOrF0OeP/SVaAAAAAAAAIA3weH7u6zfm79dWDIMSw6225w785vsx3XyzasOby5ssz69c4sAAAAAAAAAr9n69C6bC9sT93a7rKdnORin5Otxynzi1JQcfiwCAwAAAAAAALxO69O7HH68TaaT98cp85R8vbp3Nfszv8q0LHn7xMF1sjk/ZzUPmZ/MmWefhAYAAAAAAAD4oayPdjn7223Gn7x6ZrXPnetX8mBKkpv3cufDd/Pufn5FL56SzcVtNheT3dNt8tQlAwAAAAAAAHyv1sm0ySv/9XtsNWZ3I/lHkgzHi7/4XY7WYz5yiwAAAAAAAAA/Ivtcv/3nPEyS1fHa42t5+vNLyX7JoRsCAAAAAAAAePPt1/nbV3/KvePn1Xc371/NYxEYAAAAAAAA4M0yTHk2rvNo2WdzvHZqzN9v/SF3vju3evng/at5fPDLPDu1yuGyZHSVAAAAAAAAAK/XOGe4ueSvZ4e8M8xZbVe5ceuPufvy3Oqkw4+v5emDX+fuuTlLhhwsEYIBAAAAAAAAXpclGR8OuXP0TR4cPM/9z/+SRyfNDf/1TZezOp/87KdjzizJZkhO7edMy/w/nAUAAAAAAADg/zaMWcZkP8/ZLsmLacr2/MV8+cnvs/tP5/4FmLjAq1ifcioAAAAASUVORK5CYII=";
 function pe(e, r, t) {
   return typeof e == "string" && !isNaN(Number(e)) && (e = Number(e)), typeof e == "number" && e < 100 ? ve(e) : typeof e == "number" && e >= 100 ? e : typeof e == "string" && e.includes("%") ? Math.round(r && r === "X" ? parseFloat(e) / 100 * t.width : r && r === "Y" ? parseFloat(e) / 100 * t.height : parseFloat(e) / 100 * t.width) : 0;
 }
-function Mr(e) {
+function Or(e) {
   return e.replace(/[xy]/g, function(r) {
     const t = Math.random() * 16 | 0;
     return (r === "x" ? t : t & 3 | 8).toString(16);
@@ -2454,27 +2454,27 @@ function ve(e) {
 }
 function de(e) {
   const r = Number(e) || 0;
-  return isNaN(r) ? 0 : Math.round(r * Xt);
+  return isNaN(r) ? 0 : Math.round(r * Wt);
 }
-function ut(e) {
+function ht(e) {
   return e = e || 0, Math.round((e > 360 ? e - 360 : e) * 6e4);
 }
-function ra(e) {
+function aa(e) {
   const r = e.toString(16);
   return r.length === 1 ? "0" + r : r;
 }
-function aa(e, r, t) {
-  return (ra(e) + ra(r) + ra(t)).toUpperCase();
+function na(e, r, t) {
+  return (aa(e) + aa(r) + aa(t)).toUpperCase();
 }
 function be(e, r) {
   let t = (e || "").replace("#", "");
-  !ta.test(t) && t !== Oe.background1 && t !== Oe.background2 && t !== Oe.text1 && t !== Oe.text2 && t !== Oe.accent1 && t !== Oe.accent2 && t !== Oe.accent3 && t !== Oe.accent4 && t !== Oe.accent5 && t !== Oe.accent6 && (console.warn(`"${t}" is not a valid scheme color or hex RGB! "${Fe}" used instead. Only provide 6-digit RGB or 'pptx.SchemeColor' values!`), t = Fe);
-  const i = ta.test(t) ? "srgbClr" : "schemeClr", n = 'val="' + (ta.test(t) ? t.toUpperCase() : t) + '"';
+  !ra.test(t) && t !== Oe.background1 && t !== Oe.background2 && t !== Oe.text1 && t !== Oe.text2 && t !== Oe.accent1 && t !== Oe.accent2 && t !== Oe.accent3 && t !== Oe.accent4 && t !== Oe.accent5 && t !== Oe.accent6 && (console.warn(`"${t}" is not a valid scheme color or hex RGB! "${Fe}" used instead. Only provide 6-digit RGB or 'pptx.SchemeColor' values!`), t = Fe);
+  const i = ra.test(t) ? "srgbClr" : "schemeClr", n = 'val="' + (ra.test(t) ? t.toUpperCase() : t) + '"';
   return r ? `<a:${i} ${n}>${r}</a:${i}>` : `<a:${i} ${n}/>`;
 }
-function Ci(e, r) {
+function _i(e, r) {
   let t = "";
-  const i = Object.assign(Object.assign({}, r), e), n = Math.round(i.size * Xt), s = i.color, l = Math.round(i.opacity * 1e5);
+  const i = Object.assign(Object.assign({}, r), e), n = Math.round(i.size * Wt), s = i.color, l = Math.round(i.opacity * 1e5);
   return t += `<a:glow rad="${n}">`, t += be(s, `<a:alpha val="${l}"/>`), t += "</a:glow>", t;
 }
 function ze(e) {
@@ -2488,9 +2488,9 @@ function ka(e) {
   if (!(!e || typeof e != "object"))
     return e.type !== "outer" && e.type !== "inner" && e.type !== "none" && (console.warn("Warning: shadow.type options are `outer`, `inner` or `none`."), e.type = "outer"), e.angle && ((isNaN(Number(e.angle)) || e.angle < 0 || e.angle > 359) && (console.warn("Warning: shadow.angle can only be 0-359"), e.angle = 270), e.angle = Math.round(Number(e.angle))), e.opacity && ((isNaN(Number(e.opacity)) || e.opacity < 0 || e.opacity > 1) && (console.warn("Warning: shadow.opacity can only be 0-1"), e.opacity = 0.75), e.opacity = Number(e.opacity)), e.color && e.color.startsWith("#") && (console.warn('Warning: shadow.color should not include hash (#) character, , e.g. "FF0000"'), e.color = e.color.replace("#", "")), e;
 }
-function xi(e, r, t) {
+function Ci(e, r, t) {
   var i, n;
-  const s = 2.3 + (!((i = e.options) === null || i === void 0) && i.autoPageCharWeight ? e.options.autoPageCharWeight : 0), l = Math.floor(r / Xt * he) / ((!((n = e.options) === null || n === void 0) && n.fontSize ? e.options.fontSize : Ge) / s), c = [];
+  const s = 2.3 + (!((i = e.options) === null || i === void 0) && i.autoPageCharWeight ? e.options.autoPageCharWeight : 0), l = Math.floor(r / Wt * he) / ((!((n = e.options) === null || n === void 0) && n.fontSize ? e.options.fontSize : Ge) / s), c = [];
   let A = [];
   const a = [], o = [];
   e.text && e.text.toString().trim().length === 0 ? A.push({ _type: ue.tablecell, text: " " }) : typeof e.text == "number" || typeof e.text == "string" ? A.push({ _type: ue.tablecell, text: (e.text || "").toString().trim() }) : Array.isArray(e.text) && (A = e.text);
@@ -2525,15 +2525,15 @@ function xi(e, r, t) {
     }), d.length > 0 && c.push(d);
   }), c;
 }
-function No(e = [], r = {}, t, i) {
-  let n = $t, s = he * 1, l = he * 1, c = 0, A = 0;
+function Io(e = [], r = {}, t, i) {
+  let n = zt, s = he * 1, l = he * 1, c = 0, A = 0;
   const a = [], o = pe(r.x, "X", t), f = pe(r.y, "Y", t), g = pe(r.w, "X", t), d = pe(r.h, "Y", t);
   let m = g;
   function u() {
     let p = 0;
     a.length === 0 && (p = f || ve(n[0])), a.length > 0 && (p = ve(r.autoPageSlideStartY || r.newSlideStartY || n[0])), l = (d || t.height) - p - ve(n[2]), a.length > 1 && (typeof r.autoPageSlideStartY == "number" ? l = (d || t.height) - ve(r.autoPageSlideStartY + n[2]) : typeof r.newSlideStartY == "number" ? l = (d || t.height) - ve(r.newSlideStartY + n[2]) : f && (l = (d || t.height) - ve((f / he < n[0] ? f / he : n[0]) + n[2]), l < d && (l = d)));
   }
-  if (r.verbose && (console.log("[[VERBOSE MODE]]"), console.log("|-- TABLE PROPS --------------------------------------------------------|"), console.log(`| presLayout.width ................................ = ${(t.width / he).toFixed(1)}`), console.log(`| presLayout.height ............................... = ${(t.height / he).toFixed(1)}`), console.log(`| tableProps.x .................................... = ${typeof r.x == "number" ? (r.x / he).toFixed(1) : r.x}`), console.log(`| tableProps.y .................................... = ${typeof r.y == "number" ? (r.y / he).toFixed(1) : r.y}`), console.log(`| tableProps.w .................................... = ${typeof r.w == "number" ? (r.w / he).toFixed(1) : r.w}`), console.log(`| tableProps.h .................................... = ${typeof r.h == "number" ? (r.h / he).toFixed(1) : r.h}`), console.log(`| tableProps.slideMargin .......................... = ${r.slideMargin ? String(r.slideMargin) : ""}`), console.log(`| tableProps.margin ............................... = ${String(r.margin)}`), console.log(`| tableProps.colW ................................. = ${String(r.colW)}`), console.log(`| tableProps.autoPageSlideStartY .................. = ${r.autoPageSlideStartY}`), console.log(`| tableProps.autoPageCharWeight ................... = ${r.autoPageCharWeight}`), console.log("|-- CALCULATIONS -------------------------------------------------------|"), console.log(`| tablePropX ...................................... = ${o / he}`), console.log(`| tablePropY ...................................... = ${f / he}`), console.log(`| tablePropW ...................................... = ${g / he}`), console.log(`| tablePropH ...................................... = ${d / he}`), console.log(`| tableCalcW ...................................... = ${m / he}`)), !r.slideMargin && r.slideMargin !== 0 && (r.slideMargin = $t[0]), i && typeof i._margin < "u" ? Array.isArray(i._margin) ? n = i._margin : isNaN(Number(i._margin)) || (n = [Number(i._margin), Number(i._margin), Number(i._margin), Number(i._margin)]) : (r.slideMargin || r.slideMargin === 0) && (Array.isArray(r.slideMargin) ? n = r.slideMargin : isNaN(r.slideMargin) || (n = [r.slideMargin, r.slideMargin, r.slideMargin, r.slideMargin])), r.verbose && console.log(`| arrInchMargins .................................. = [${n.join(", ")}]`), (e[0] || []).forEach((h) => {
+  if (r.verbose && (console.log("[[VERBOSE MODE]]"), console.log("|-- TABLE PROPS --------------------------------------------------------|"), console.log(`| presLayout.width ................................ = ${(t.width / he).toFixed(1)}`), console.log(`| presLayout.height ............................... = ${(t.height / he).toFixed(1)}`), console.log(`| tableProps.x .................................... = ${typeof r.x == "number" ? (r.x / he).toFixed(1) : r.x}`), console.log(`| tableProps.y .................................... = ${typeof r.y == "number" ? (r.y / he).toFixed(1) : r.y}`), console.log(`| tableProps.w .................................... = ${typeof r.w == "number" ? (r.w / he).toFixed(1) : r.w}`), console.log(`| tableProps.h .................................... = ${typeof r.h == "number" ? (r.h / he).toFixed(1) : r.h}`), console.log(`| tableProps.slideMargin .......................... = ${r.slideMargin ? String(r.slideMargin) : ""}`), console.log(`| tableProps.margin ............................... = ${String(r.margin)}`), console.log(`| tableProps.colW ................................. = ${String(r.colW)}`), console.log(`| tableProps.autoPageSlideStartY .................. = ${r.autoPageSlideStartY}`), console.log(`| tableProps.autoPageCharWeight ................... = ${r.autoPageCharWeight}`), console.log("|-- CALCULATIONS -------------------------------------------------------|"), console.log(`| tablePropX ...................................... = ${o / he}`), console.log(`| tablePropY ...................................... = ${f / he}`), console.log(`| tablePropW ...................................... = ${g / he}`), console.log(`| tablePropH ...................................... = ${d / he}`), console.log(`| tableCalcW ...................................... = ${m / he}`)), !r.slideMargin && r.slideMargin !== 0 && (r.slideMargin = zt[0]), i && typeof i._margin < "u" ? Array.isArray(i._margin) ? n = i._margin : isNaN(Number(i._margin)) || (n = [Number(i._margin), Number(i._margin), Number(i._margin), Number(i._margin)]) : (r.slideMargin || r.slideMargin === 0) && (Array.isArray(r.slideMargin) ? n = r.slideMargin : isNaN(r.slideMargin) || (n = [r.slideMargin, r.slideMargin, r.slideMargin, r.slideMargin])), r.verbose && console.log(`| arrInchMargins .................................. = [${n.join(", ")}]`), (e[0] || []).forEach((h) => {
     h || (h = { _type: ue.tablecell });
     const _ = h.options || null;
     A += Number(_?.colspan ? _.colspan : 1);
@@ -2551,26 +2551,26 @@ function No(e = [], r = {}, t, i) {
   let y = { rows: [] };
   return e.forEach((p, h) => {
     const _ = [];
-    let E = 0, v = 0, C = [];
+    let T = 0, v = 0, C = [];
     p.forEach((I) => {
-      var O, T, M, w;
+      var O, E, M, w;
       C.push({
         _type: ue.tablecell,
         text: [],
         options: I.options
-      }), I.options.margin && I.options.margin[0] >= 1 ? (!((O = I.options) === null || O === void 0) && O.margin && I.options.margin[0] && de(I.options.margin[0]) > E ? E = de(I.options.margin[0]) : r?.margin && r.margin[0] && de(r.margin[0]) > E && (E = de(r.margin[0])), !((T = I.options) === null || T === void 0) && T.margin && I.options.margin[2] && de(I.options.margin[2]) > v ? v = de(I.options.margin[2]) : r?.margin && r.margin[2] && de(r.margin[2]) > v && (v = de(r.margin[2]))) : (!((M = I.options) === null || M === void 0) && M.margin && I.options.margin[0] && ve(I.options.margin[0]) > E ? E = ve(I.options.margin[0]) : r?.margin && r.margin[0] && ve(r.margin[0]) > E && (E = ve(r.margin[0])), !((w = I.options) === null || w === void 0) && w.margin && I.options.margin[2] && ve(I.options.margin[2]) > v ? v = ve(I.options.margin[2]) : r?.margin && r.margin[2] && ve(r.margin[2]) > v && (v = ve(r.margin[2])));
-    }), u(), c += E + v, r.verbose && h === 0 && console.log(`| SLIDE [${a.length}]: emuSlideTabH ...... = ${(l / he).toFixed(1)} `), p.forEach((I, O) => {
-      var T;
+      }), I.options.margin && I.options.margin[0] >= 1 ? (!((O = I.options) === null || O === void 0) && O.margin && I.options.margin[0] && de(I.options.margin[0]) > T ? T = de(I.options.margin[0]) : r?.margin && r.margin[0] && de(r.margin[0]) > T && (T = de(r.margin[0])), !((E = I.options) === null || E === void 0) && E.margin && I.options.margin[2] && de(I.options.margin[2]) > v ? v = de(I.options.margin[2]) : r?.margin && r.margin[2] && de(r.margin[2]) > v && (v = de(r.margin[2]))) : (!((M = I.options) === null || M === void 0) && M.margin && I.options.margin[0] && ve(I.options.margin[0]) > T ? T = ve(I.options.margin[0]) : r?.margin && r.margin[0] && ve(r.margin[0]) > T && (T = ve(r.margin[0])), !((w = I.options) === null || w === void 0) && w.margin && I.options.margin[2] && ve(I.options.margin[2]) > v ? v = ve(I.options.margin[2]) : r?.margin && r.margin[2] && ve(r.margin[2]) > v && (v = ve(r.margin[2])));
+    }), u(), c += T + v, r.verbose && h === 0 && console.log(`| SLIDE [${a.length}]: emuSlideTabH ...... = ${(l / he).toFixed(1)} `), p.forEach((I, O) => {
+      var E;
       const M = {
         _type: ue.tablecell,
         _lines: null,
-        _lineHeight: ve((!((T = I.options) === null || T === void 0) && T.fontSize ? I.options.fontSize : r.fontSize ? r.fontSize : Ge) * (gi + (r.autoPageLineWeight ? r.autoPageLineWeight : 0)) / 100),
+        _lineHeight: ve((!((E = I.options) === null || E === void 0) && E.fontSize ? I.options.fontSize : r.fontSize ? r.fontSize : Ge) * (mi + (r.autoPageLineWeight ? r.autoPageLineWeight : 0)) / 100),
         text: [],
         options: I.options
       };
       M.options.rowspan && (M._lineHeight = 0), M.options.autoPageCharWeight = r.autoPageCharWeight ? r.autoPageCharWeight : null;
       let w = r.colW[O];
-      I.options.colspan && Array.isArray(r.colW) && (w = r.colW.filter((G, ee) => ee >= O && ee < ee + I.options.colspan).reduce((G, ee) => G + ee)), M._lines = xi(I, w), _.push(M);
+      I.options.colspan && Array.isArray(r.colW) && (w = r.colW.filter((G, ee) => ee >= O && ee < ee + I.options.colspan).reduce((G, ee) => G + ee)), M._lines = Ci(I, w), _.push(M);
     }), r.verbose && console.log(`
 | SLIDE [${a.length}]: ROW [${h}]: START...`);
     let x = 0, B = 0, R = !1;
@@ -2582,15 +2582,15 @@ function No(e = [], r = {}, t, i) {
       }), c + B > l && (r.verbose && (console.log(`
 |-----------------------------------------------------------------------|`), console.log(`|-- NEW SLIDE CREATED (currTabH+currLineH > maxH) => ${(c / he).toFixed(2)} + ${(I._lineHeight / he).toFixed(2)} > ${l / he}`), console.log(`|-----------------------------------------------------------------------|
 
-`)), C.length > 0 && C.map((G) => G.text.length).reduce((G, ee) => G + ee) > 0 && y.rows.push(C), a.push(y), y = { rows: [] }, C = [], p.forEach((G) => C.push({ _type: ue.tablecell, text: [], options: G.options })), u(), c += E + v, r.verbose && console.log(`| SLIDE [${a.length}]: emuSlideTabH ...... = ${(l / he).toFixed(1)} `), c = 0, (r.addHeaderToEach || r.autoPageRepeatHeader) && r._arrObjTabHeadRows && r._arrObjTabHeadRows.forEach((G) => {
+`)), C.length > 0 && C.map((G) => G.text.length).reduce((G, ee) => G + ee) > 0 && y.rows.push(C), a.push(y), y = { rows: [] }, C = [], p.forEach((G) => C.push({ _type: ue.tablecell, text: [], options: G.options })), u(), c += T + v, r.verbose && console.log(`| SLIDE [${a.length}]: emuSlideTabH ...... = ${(l / he).toFixed(1)} `), c = 0, (r.addHeaderToEach || r.autoPageRepeatHeader) && r._arrObjTabHeadRows && r._arrObjTabHeadRows.forEach((G) => {
         const ee = [];
-        let K = 0;
+        let Y = 0;
         G.forEach((ne) => {
-          ee.push(ne), ne._lineHeight > K && (K = ne._lineHeight);
-        }), y.rows.push(ee), c += K;
+          ee.push(ne), ne._lineHeight > Y && (Y = ne._lineHeight);
+        }), y.rows.push(ee), c += Y;
       }), O = C[x]);
-      const T = I._lines.shift();
-      Array.isArray(O.text) && (T ? O.text = O.text.concat(T) : O.text.length === 0 && (O.text = O.text.concat({ _type: ue.tablecell, text: "" }))), x === _.length - 1 && (c += B), x = x < _.length - 1 ? x + 1 : 0, _.map((w) => w._lines.length).reduce((w, G) => w + G) === 0 && (R = !0);
+      const E = I._lines.shift();
+      Array.isArray(O.text) && (E ? O.text = O.text.concat(E) : O.text.length === 0 && (O.text = O.text.concat({ _type: ue.tablecell, text: "" }))), x === _.length - 1 && (c += B), x = x < _.length - 1 ? x + 1 : 0, _.map((w) => w._lines.length).reduce((w, G) => w + G) === 0 && (R = !0);
     }
     C.length > 0 && y.rows.push(C), r.verbose && console.log(`- SLIDE [${a.length}]: ROW [${h}]: ...COMPLETE ...... emuTabCurrH = ${(c / he).toFixed(2)} ( emuSlideTabH = ${(l / he).toFixed(2)} )`);
   }), a.push(y), r.verbose && (console.log(`
@@ -2598,7 +2598,7 @@ function No(e = [], r = {}, t, i) {
 
 `)), a;
 }
-function Ei(e, r, t = {}, i) {
+function xi(e, r, t = {}, i) {
   const n = t || {};
   n.slideMargin = n.slideMargin || n.slideMargin === 0 ? n.slideMargin : 0.5;
   let s = n.w || e.presLayout.width;
@@ -2622,13 +2622,13 @@ function Ei(e, r, t = {}, i) {
     let h = 0;
     const _ = document.querySelector(`#${r} thead tr:first-child th:nth-child(${y + 1})`);
     _ && (h = Number(_.getAttribute("data-pptx-min-width")));
-    const E = document.querySelector(`#${r} thead tr:first-child th:nth-child(${y + 1})`);
-    E && (h = Number(E.getAttribute("data-pptx-width"))), a.push(h > p ? h : p);
+    const T = document.querySelector(`#${r} thead tr:first-child th:nth-child(${y + 1})`);
+    T && (h = Number(T.getAttribute("data-pptx-width"))), a.push(h > p ? h : p);
   }), n.verbose && console.log(`| arrColW ......................................... = [${a.join(", ")}]`), ["thead", "tbody", "tfoot"].forEach((u) => {
     document.querySelectorAll(`#${r} ${u} tr`).forEach((y) => {
       const p = y, h = [];
       switch (Array.from(p.cells).forEach((_) => {
-        const E = window.getComputedStyle(_).getPropertyValue("color").replace(/\s+/gi, "").replace("rgba(", "").replace("rgb(", "").replace(")", "").split(",");
+        const T = window.getComputedStyle(_).getPropertyValue("color").replace(/\s+/gi, "").replace("rgba(", "").replace("rgb(", "").replace(")", "").split(",");
         let v = window.getComputedStyle(_).getPropertyValue("background-color").replace(/\s+/gi, "").replace("rgba(", "").replace("rgb(", "").replace(")", "").split(",");
         // NOTE: (ISSUE#57): Default for unstyled tables is black bkgd, so use white instead
         (window.getComputedStyle(_).getPropertyValue("background-color") === "rgba(0, 0, 0, 0)" || window.getComputedStyle(_).getPropertyValue("transparent")) && (v = ["255", "255", "255"]);
@@ -2636,8 +2636,8 @@ function Ei(e, r, t = {}, i) {
           align: null,
           bold: window.getComputedStyle(_).getPropertyValue("font-weight") === "bold" || Number(window.getComputedStyle(_).getPropertyValue("font-weight")) >= 500,
           border: null,
-          color: aa(Number(E[0]), Number(E[1]), Number(E[2])),
-          fill: { color: aa(Number(v[0]), Number(v[1]), Number(v[2])) },
+          color: na(Number(T[0]), Number(T[1]), Number(T[2])),
+          fill: { color: na(Number(v[0]), Number(v[1]), Number(v[2])) },
           fontFace: (window.getComputedStyle(_).getPropertyValue("font-family") || "").split(",")[0].replace(/"/g, "").replace("inherit", "").replace("initial", "") || null,
           fontSize: Number(window.getComputedStyle(_).getPropertyValue("font-size").replace(/[a-z]/gi, "")),
           margin: null,
@@ -2659,8 +2659,8 @@ function Ei(e, r, t = {}, i) {
           const I = Math.round(Number(window.getComputedStyle(_).getPropertyValue("border-" + B + "-width").replace("px", "")));
           let O = [];
           O = window.getComputedStyle(_).getPropertyValue("border-" + B + "-color").replace(/\s+/gi, "").replace("rgba(", "").replace("rgb(", "").replace(")", "").split(",");
-          const T = aa(Number(O[0]), Number(O[1]), Number(O[2]));
-          C.border[R] = { pt: I, color: T };
+          const E = na(Number(O[0]), Number(O[1]), Number(O[2]));
+          C.border[R] = { pt: I, color: E };
         })), h.push({
           _type: ue.tablecell,
           text: _.innerText,
@@ -2682,7 +2682,7 @@ function Ei(e, r, t = {}, i) {
           break;
       }
     });
-  }), n._arrObjTabHeadRows = l || null, n.colW = a, No([...l, ...c, ...A], n, e.presLayout, i).forEach((u, y) => {
+  }), n._arrObjTabHeadRows = l || null, n.colW = a, Io([...l, ...c, ...A], n, e.presLayout, i).forEach((u, y) => {
     const p = e.addSlide({ masterName: n.masterSlideName || null });
     y === 0 && (n.y = n.y || f[0]), y > 0 && (n.y = n.autoPageSlideStartY || n.newSlideStartY || f[0]), n.verbose && console.log(`| opts.autoPageSlideStartY: ${n.autoPageSlideStartY} / arrInchMargins[0]: ${f[0]} => opts.y = ${n.y}`), p.addTable(u.rows, { x: n.x || f[3], y: n.y, w: Number(s) / he, colW: a, autoPage: !1 }), n.addImage && (n.addImage.options = n.addImage.options || {}, !n.addImage.image || !n.addImage.image.path && !n.addImage.image.data ? console.warn("Warning: tableToSlides.addImage requires either `path` or `data`") : p.addImage({
       path: n.addImage.image.path,
@@ -2695,13 +2695,13 @@ function Ei(e, r, t = {}, i) {
   });
 }
 let Ti = 0;
-function Li(e, r) {
+function Ei(e, r) {
   e.bkgd && (r.bkgd = e.bkgd), e.objects && Array.isArray(e.objects) && e.objects.length > 0 && e.objects.forEach((t, i) => {
     const n = Object.keys(t)[0], s = r;
-    et[n] && n === "chart" ? So(s, t[n].type, t[n].data, t[n].opts) : et[n] && n === "image" ? Io(s, t[n]) : et[n] && n === "line" ? Pa(s, tt.LINE, t[n]) : et[n] && n === "rect" ? Pa(s, tt.RECTANGLE, t[n]) : et[n] && n === "text" ? zr(s, [{ text: t[n].text }], t[n].options, !1) : et[n] && n === "placeholder" && (t[n].options.placeholder = t[n].options.name, delete t[n].options.name, t[n].options._placeholderType = t[n].options.type, delete t[n].options.type, t[n].options._placeholderIdx = 100 + i, zr(s, [{ text: t[n].text }], t[n].options, !0));
+    et[n] && n === "chart" ? ko(s, t[n].type, t[n].data, t[n].opts) : et[n] && n === "image" ? Fo(s, t[n]) : et[n] && n === "line" ? Pa(s, rt.LINE, t[n]) : et[n] && n === "rect" ? Pa(s, rt.RECTANGLE, t[n]) : et[n] && n === "text" ? Ur(s, [{ text: t[n].text }], t[n].options, !1) : et[n] && n === "placeholder" && (t[n].options.placeholder = t[n].options.name, delete t[n].options.name, t[n].options._placeholderType = t[n].options.type, delete t[n].options.type, t[n].options._placeholderIdx = 100 + i, Ur(s, [{ text: t[n].text }], t[n].options, !0));
   }), e.slideNumber && typeof e.slideNumber == "object" && (r._slideNumberProps = e.slideNumber);
 }
-function So(e, r, t, i) {
+function ko(e, r, t, i) {
   var n;
   function s(f) {
     !f || f.style === "none" || (f.size !== void 0 && (isNaN(Number(f.size)) || f.size <= 0) && (console.warn("Warning: chart.gridLine.size must be greater than 0."), delete f.size), f.style && !["solid", "dash", "dot"].includes(f.style) && (console.warn("Warning: chart.gridLine.style options: `solid`, `dash`, `dot`."), delete f.style), f.cap && !["flat", "square", "round"].includes(f.cap) && (console.warn("Warning: chart.gridLine.cap options: `flat`, `square`, `round`."), delete f.cap));
@@ -2722,11 +2722,11 @@ function So(e, r, t, i) {
   if (o._type = r, o.x = typeof o.x < "u" && o.x != null && !isNaN(Number(o.x)) ? o.x : 1, o.y = typeof o.y < "u" && o.y != null && !isNaN(Number(o.y)) ? o.y : 1, o.w = o.w || "50%", o.h = o.h || "50%", o.objectName = o.objectName ? fe(o.objectName) : `Chart ${e._slideObjects.filter((f) => f._type === ue.chart).length}`, ["bar", "col"].includes(o.barDir || "") || (o.barDir = "col"), o._type === re.AREA && (["stacked", "standard", "percentStacked"].includes(o.barGrouping || "") || (o.barGrouping = "standard")), o._type === re.BAR && (["clustered", "stacked", "percentStacked"].includes(o.barGrouping || "") || (o.barGrouping = "clustered")), o._type === re.BAR3D && (["clustered", "stacked", "standard", "percentStacked"].includes(o.barGrouping || "") || (o.barGrouping = "standard")), !((n = o.barGrouping) === null || n === void 0) && n.includes("tacked") && (o.barGapWidthPct || (o.barGapWidthPct = 50)), o.dataLabelPosition && ((o._type === re.AREA || o._type === re.BAR3D || o._type === re.DOUGHNUT || o._type === re.RADAR) && delete o.dataLabelPosition, o._type === re.PIE && (["bestFit", "ctr", "inEnd", "outEnd"].includes(o.dataLabelPosition) || delete o.dataLabelPosition), (o._type === re.BUBBLE || o._type === re.BUBBLE3D || o._type === re.LINE || o._type === re.SCATTER) && (["b", "ctr", "l", "r", "t"].includes(o.dataLabelPosition) || delete o.dataLabelPosition), o._type === re.BAR && (["stacked", "percentStacked"].includes(o.barGrouping || "") || ["ctr", "inBase", "inEnd"].includes(o.dataLabelPosition) || delete o.dataLabelPosition, ["clustered"].includes(o.barGrouping || "") || ["ctr", "inBase", "inEnd", "outEnd"].includes(o.dataLabelPosition) || delete o.dataLabelPosition)), o.dataLabelBkgrdColors = o.dataLabelBkgrdColors || !o.dataLabelBkgrdColors ? o.dataLabelBkgrdColors : !1, ["b", "l", "r", "t", "tr"].includes(o.legendPos || "") || (o.legendPos = "r"), ["cone", "coneToMax", "box", "cylinder", "pyramid", "pyramidToMax"].includes(o.bar3DShape || "") || (o.bar3DShape = "box"), ["circle", "dash", "diamond", "dot", "none", "square", "triangle"].includes(o.lineDataSymbol || "") || (o.lineDataSymbol = "circle"), ["gap", "span"].includes(o.displayBlanksAs || "") || (o.displayBlanksAs = "span"), ["standard", "marker", "filled"].includes(o.radarStyle || "") || (o.radarStyle = "standard"), o.lineDataSymbolSize = o.lineDataSymbolSize && !isNaN(o.lineDataSymbolSize) ? o.lineDataSymbolSize : 6, o.lineDataSymbolLineSize = o.lineDataSymbolLineSize && !isNaN(o.lineDataSymbolLineSize) ? de(o.lineDataSymbolLineSize) : de(0.75), o.layout && ["x", "y", "w", "h"].forEach((f) => {
     const g = o.layout[f];
     (isNaN(Number(g)) || g < 0 || g > 1) && (console.warn("Warning: chart.layout." + f + " can only be 0-1"), delete o.layout[f]);
-  }), o.catGridLine = o.catGridLine || (o._type === re.SCATTER ? { color: "D9D9D9", size: 1 } : { style: "none" }), o.valGridLine = o.valGridLine || (o._type === re.SCATTER ? { color: "D9D9D9", size: 1 } : {}), o.serGridLine = o.serGridLine || (o._type === re.SCATTER ? { color: "D9D9D9", size: 1 } : { style: "none" }), s(o.catGridLine), s(o.valGridLine), s(o.serGridLine), ka(o.shadow), o.showDataTable = o.showDataTable || !o.showDataTable ? o.showDataTable : !1, o.showDataTableHorzBorder = o.showDataTableHorzBorder || !o.showDataTableHorzBorder ? o.showDataTableHorzBorder : !0, o.showDataTableVertBorder = o.showDataTableVertBorder || !o.showDataTableVertBorder ? o.showDataTableVertBorder : !0, o.showDataTableOutline = o.showDataTableOutline || !o.showDataTableOutline ? o.showDataTableOutline : !0, o.showDataTableKeys = o.showDataTableKeys || !o.showDataTableKeys ? o.showDataTableKeys : !0, o.showLabel = o.showLabel || !o.showLabel ? o.showLabel : !1, o.showLegend = o.showLegend || !o.showLegend ? o.showLegend : !1, o.showPercent = o.showPercent || !o.showPercent ? o.showPercent : !0, o.showTitle = o.showTitle || !o.showTitle ? o.showTitle : !1, o.showValue = o.showValue || !o.showValue ? o.showValue : !1, o.showLeaderLines = o.showLeaderLines || !o.showLeaderLines ? o.showLeaderLines : !1, o.catAxisLineShow = typeof o.catAxisLineShow < "u" ? o.catAxisLineShow : !0, o.valAxisLineShow = typeof o.valAxisLineShow < "u" ? o.valAxisLineShow : !0, o.serAxisLineShow = typeof o.serAxisLineShow < "u" ? o.serAxisLineShow : !0, o.v3DRotX = !isNaN(o.v3DRotX) && o.v3DRotX >= -90 && o.v3DRotX <= 90 ? o.v3DRotX : 30, o.v3DRotY = !isNaN(o.v3DRotY) && o.v3DRotY >= 0 && o.v3DRotY <= 360 ? o.v3DRotY : 30, o.v3DRAngAx = o.v3DRAngAx || !o.v3DRAngAx ? o.v3DRAngAx : !0, o.v3DPerspective = !isNaN(o.v3DPerspective) && o.v3DPerspective >= 0 && o.v3DPerspective <= 240 ? o.v3DPerspective : 30, o.barGapWidthPct = !isNaN(o.barGapWidthPct) && o.barGapWidthPct >= 0 && o.barGapWidthPct <= 1e3 ? o.barGapWidthPct : 150, o.barGapDepthPct = !isNaN(o.barGapDepthPct) && o.barGapDepthPct >= 0 && o.barGapDepthPct <= 1e3 ? o.barGapDepthPct : 150, o.chartColors = Array.isArray(o.chartColors) ? o.chartColors : o._type === re.PIE || o._type === re.DOUGHNUT ? wi : kt, o.chartColorsOpacity = o.chartColorsOpacity && !isNaN(o.chartColorsOpacity) ? o.chartColorsOpacity : null, o.border = o.border && typeof o.border == "object" ? o.border : null, o.border && (!o.border.pt || isNaN(o.border.pt)) && (o.border.pt = gt.pt), o.border && (!o.border.color || typeof o.border.color != "string") && (o.border.color = gt.color), o.plotArea = o.plotArea || {}, o.plotArea.border = o.plotArea.border && typeof o.plotArea.border == "object" ? o.plotArea.border : null, o.plotArea.border && (!o.plotArea.border.pt || isNaN(o.plotArea.border.pt)) && (o.plotArea.border.pt = gt.pt), o.plotArea.border && (!o.plotArea.border.color || typeof o.plotArea.border.color != "string") && (o.plotArea.border.color = gt.color), o.border && (o.plotArea.border = o.border), o.plotArea.fill = o.plotArea.fill || { color: null, transparency: null }, o.fill && (o.plotArea.fill.color = o.fill), o.chartArea = o.chartArea || {}, o.chartArea.border = o.chartArea.border && typeof o.chartArea.border == "object" ? o.chartArea.border : null, o.chartArea.border && (o.chartArea.border = {
+  }), o.catGridLine = o.catGridLine || (o._type === re.SCATTER ? { color: "D9D9D9", size: 1 } : { style: "none" }), o.valGridLine = o.valGridLine || (o._type === re.SCATTER ? { color: "D9D9D9", size: 1 } : {}), o.serGridLine = o.serGridLine || (o._type === re.SCATTER ? { color: "D9D9D9", size: 1 } : { style: "none" }), s(o.catGridLine), s(o.valGridLine), s(o.serGridLine), ka(o.shadow), o.showDataTable = o.showDataTable || !o.showDataTable ? o.showDataTable : !1, o.showDataTableHorzBorder = o.showDataTableHorzBorder || !o.showDataTableHorzBorder ? o.showDataTableHorzBorder : !0, o.showDataTableVertBorder = o.showDataTableVertBorder || !o.showDataTableVertBorder ? o.showDataTableVertBorder : !0, o.showDataTableOutline = o.showDataTableOutline || !o.showDataTableOutline ? o.showDataTableOutline : !0, o.showDataTableKeys = o.showDataTableKeys || !o.showDataTableKeys ? o.showDataTableKeys : !0, o.showLabel = o.showLabel || !o.showLabel ? o.showLabel : !1, o.showLegend = o.showLegend || !o.showLegend ? o.showLegend : !1, o.showPercent = o.showPercent || !o.showPercent ? o.showPercent : !0, o.showTitle = o.showTitle || !o.showTitle ? o.showTitle : !1, o.showValue = o.showValue || !o.showValue ? o.showValue : !1, o.showLeaderLines = o.showLeaderLines || !o.showLeaderLines ? o.showLeaderLines : !1, o.catAxisLineShow = typeof o.catAxisLineShow < "u" ? o.catAxisLineShow : !0, o.valAxisLineShow = typeof o.valAxisLineShow < "u" ? o.valAxisLineShow : !0, o.serAxisLineShow = typeof o.serAxisLineShow < "u" ? o.serAxisLineShow : !0, o.v3DRotX = !isNaN(o.v3DRotX) && o.v3DRotX >= -90 && o.v3DRotX <= 90 ? o.v3DRotX : 30, o.v3DRotY = !isNaN(o.v3DRotY) && o.v3DRotY >= 0 && o.v3DRotY <= 360 ? o.v3DRotY : 30, o.v3DRAngAx = o.v3DRAngAx || !o.v3DRAngAx ? o.v3DRAngAx : !0, o.v3DPerspective = !isNaN(o.v3DPerspective) && o.v3DPerspective >= 0 && o.v3DPerspective <= 240 ? o.v3DPerspective : 30, o.barGapWidthPct = !isNaN(o.barGapWidthPct) && o.barGapWidthPct >= 0 && o.barGapWidthPct <= 1e3 ? o.barGapWidthPct : 150, o.barGapDepthPct = !isNaN(o.barGapDepthPct) && o.barGapDepthPct >= 0 && o.barGapDepthPct <= 1e3 ? o.barGapDepthPct : 150, o.chartColors = Array.isArray(o.chartColors) ? o.chartColors : o._type === re.PIE || o._type === re.DOUGHNUT ? bi : Ft, o.chartColorsOpacity = o.chartColorsOpacity && !isNaN(o.chartColorsOpacity) ? o.chartColorsOpacity : null, o.border = o.border && typeof o.border == "object" ? o.border : null, o.border && (!o.border.pt || isNaN(o.border.pt)) && (o.border.pt = gt.pt), o.border && (!o.border.color || typeof o.border.color != "string") && (o.border.color = gt.color), o.plotArea = o.plotArea || {}, o.plotArea.border = o.plotArea.border && typeof o.plotArea.border == "object" ? o.plotArea.border : null, o.plotArea.border && (!o.plotArea.border.pt || isNaN(o.plotArea.border.pt)) && (o.plotArea.border.pt = gt.pt), o.plotArea.border && (!o.plotArea.border.color || typeof o.plotArea.border.color != "string") && (o.plotArea.border.color = gt.color), o.border && (o.plotArea.border = o.border), o.plotArea.fill = o.plotArea.fill || { color: null, transparency: null }, o.fill && (o.plotArea.fill.color = o.fill), o.chartArea = o.chartArea || {}, o.chartArea.border = o.chartArea.border && typeof o.chartArea.border == "object" ? o.chartArea.border : null, o.chartArea.border && (o.chartArea.border = {
     color: o.chartArea.border.color || gt.color,
     pt: o.chartArea.border.pt || gt.pt
   }), o.chartArea.roundedCorners = typeof o.chartArea.roundedCorners == "boolean" ? o.chartArea.roundedCorners : !0, o.dataBorder = o.dataBorder && typeof o.dataBorder == "object" ? o.dataBorder : null, o.dataBorder && (!o.dataBorder.pt || isNaN(o.dataBorder.pt)) && (o.dataBorder.pt = 0.75), o.dataBorder && o.dataBorder.color) {
-    const f = typeof o.dataBorder.color == "string" && o.dataBorder.color.length === 6 && /^[0-9A-Fa-f]{6}$/.test(o.dataBorder.color), g = Object.values($r).includes(o.dataBorder.color);
+    const f = typeof o.dataBorder.color == "string" && o.dataBorder.color.length === 6 && /^[0-9A-Fa-f]{6}$/.test(o.dataBorder.color), g = Object.values(zr).includes(o.dataBorder.color);
     !f && !g && (o.dataBorder.color = "F9F9F9");
   }
   return !o.dataLabelFormatCode && o._type === re.SCATTER && (o.dataLabelFormatCode = "General"), !o.dataLabelFormatCode && (o._type === re.PIE || o._type === re.DOUGHNUT) && (o.dataLabelFormatCode = o.showPercent ? "0%" : "General"), o.dataLabelFormatCode = o.dataLabelFormatCode && typeof o.dataLabelFormatCode == "string" ? o.dataLabelFormatCode : "#,##0", !o.dataLabelFormatScatter && o._type === re.SCATTER && (o.dataLabelFormatScatter = "custom"), o.lineSize = typeof o.lineSize == "number" ? o.lineSize : 2, o.valAxisMajorUnit = typeof o.valAxisMajorUnit == "number" ? o.valAxisMajorUnit : null, o._type === re.AREA || o._type === re.BAR || o._type === re.BAR3D || o._type === re.LINE ? o.catAxisMultiLevelLabels = !!o.catAxisMultiLevelLabels : delete o.catAxisMultiLevelLabels, c._type = "chart", c.options = o, c.chartRid = Je(e), e._relsChart.push({
@@ -2739,7 +2739,7 @@ function So(e, r, t, i) {
     Target: `/ppt/charts/chart${l}.xml`
   }), e._slideObjects.push(c), c;
 }
-function Io(e, r) {
+function Fo(e, r) {
   const t = {
     _type: null,
     text: null,
@@ -2816,10 +2816,10 @@ function Io(e, r) {
   }
   e._slideObjects.push(t);
 }
-function Ri(e, r) {
+function Li(e, r) {
   const t = r.x || 0, i = r.y || 0, n = r.w || 2, s = r.h || 2, l = r.data || "", c = r.link || "", A = r.path || "", a = r.type || "audio";
   let o = "";
-  const f = r.cover || _i, g = r.objectName ? fe(r.objectName) : `Media ${e._slideObjects.filter((m) => m._type === ue.media).length}`, d = { _type: ue.media };
+  const f = r.cover || wi, g = r.objectName ? fe(r.objectName) : `Media ${e._slideObjects.filter((m) => m._type === ue.media).length}`, d = { _type: ue.media };
   if (!A && !l && a !== "online")
     throw new Error("addMedia() error: either `data` or `path` are required!");
   if (l && !l.toLowerCase().includes("base64,"))
@@ -2874,7 +2874,7 @@ function Ri(e, r) {
   }
   e._slideObjects.push(d);
 }
-function Di(e, r) {
+function Ri(e, r) {
   e._slideObjects.push({
     _type: ue.notes,
     text: [{ text: r }]
@@ -2885,7 +2885,7 @@ function Pa(e, r, t) {
   i.line = i.line || { type: "none" };
   const n = {
     _type: ue.text,
-    shape: r || tt.RECTANGLE,
+    shape: r || rt.RECTANGLE,
     options: i,
     text: null
   };
@@ -2893,7 +2893,7 @@ function Pa(e, r, t) {
     throw new Error("Missing/Invalid shape parameter! Example: `addShape(pptxgen.shapes.LINE, {x:1, y:1, w:1, h:1});`");
   const s = {
     type: i.line.type || "solid",
-    color: i.line.color || Do,
+    color: i.line.color || Bo,
     transparency: i.line.transparency || 0,
     width: i.line.width || 1,
     dashType: i.line.dashType || "solid",
@@ -2904,9 +2904,9 @@ function Pa(e, r, t) {
     const l = s;
     l.color = String(i.line), i.line = l;
   }
-  typeof i.lineSize == "number" && (i.line.width = i.lineSize), typeof i.lineDash == "string" && (i.line.dashType = i.lineDash), typeof i.lineHead == "string" && (i.line.beginArrowType = i.lineHead), typeof i.lineTail == "string" && (i.line.endArrowType = i.lineTail), Tt(e, n), e._slideObjects.push(n);
+  typeof i.lineSize == "number" && (i.line.width = i.lineSize), typeof i.lineDash == "string" && (i.line.dashType = i.lineDash), typeof i.lineHead == "string" && (i.line.beginArrowType = i.lineHead), typeof i.lineTail == "string" && (i.line.endArrowType = i.lineTail), Et(e, n), e._slideObjects.push(n);
 }
-function Pi(e, r, t, i, n, s, l) {
+function Di(e, r, t, i, n, s, l) {
   const c = [e], A = t && typeof t == "object" ? t : {};
   A.objectName = A.objectName ? fe(A.objectName) : `Table ${e._slideObjects.filter((g) => g._type === ue.table).length}`;
   {
@@ -2934,10 +2934,10 @@ function Pi(e, r, t, i, n, s, l) {
         };
       }), d.push(u);
     }) : (console.log("addTable: tableRows has a bad row. A row should be an array of cells. You provided:"), console.log(g)), a.push(d);
-  }), A.x = pe(A.x || (A.x === 0 ? 0 : he / 2), "X", n), A.y = pe(A.y || (A.y === 0 ? 0 : he / 2), "Y", n), A.h && (A.h = pe(A.h, "Y", n)), A.fontSize = A.fontSize || Ge, A.margin = A.margin === 0 || A.margin ? A.margin : Ro, typeof A.margin == "number" && (A.margin = [Number(A.margin), Number(A.margin), Number(A.margin), Number(A.margin)]), JSON.stringify({ arrRows: a }).indexOf("hyperlink") === -1 && (A.color || (A.color = A.color || Fe)), typeof A.border == "string" ? (console.warn("addTable `border` option must be an object. Ex: `{border: {type:'none'}}`"), A.border = null) : Array.isArray(A.border) && [0, 1, 2, 3].forEach((g) => {
+  }), A.x = pe(A.x || (A.x === 0 ? 0 : he / 2), "X", n), A.y = pe(A.y || (A.y === 0 ? 0 : he / 2), "Y", n), A.h && (A.h = pe(A.h, "Y", n)), A.fontSize = A.fontSize || Ge, A.margin = A.margin === 0 || A.margin ? A.margin : Po, typeof A.margin == "number" && (A.margin = [Number(A.margin), Number(A.margin), Number(A.margin), Number(A.margin)]), JSON.stringify({ arrRows: a }).indexOf("hyperlink") === -1 && (A.color || (A.color = A.color || Fe)), typeof A.border == "string" ? (console.warn("addTable `border` option must be an object. Ex: `{border: {type:'none'}}`"), A.border = null) : Array.isArray(A.border) && [0, 1, 2, 3].forEach((g) => {
     A.border[g] = A.border[g] ? { type: A.border[g].type || mt.type, color: A.border[g].color || mt.color, pt: A.border[g].pt || mt.pt } : { type: "none" };
   }), A.autoPage = typeof A.autoPage == "boolean" ? A.autoPage : !1, A.autoPageRepeatHeader = typeof A.autoPageRepeatHeader == "boolean" ? A.autoPageRepeatHeader : !1, A.autoPageHeaderRows = typeof A.autoPageHeaderRows < "u" && !isNaN(Number(A.autoPageHeaderRows)) ? Number(A.autoPageHeaderRows) : 1, A.autoPageLineWeight = typeof A.autoPageLineWeight < "u" && !isNaN(Number(A.autoPageLineWeight)) ? Number(A.autoPageLineWeight) : 0, A.autoPageLineWeight && (A.autoPageLineWeight > 1 ? A.autoPageLineWeight = 1 : A.autoPageLineWeight < -1 && (A.autoPageLineWeight = -1));
-  let o = $t;
+  let o = zt;
   if (i && typeof i._margin < "u" && (Array.isArray(i._margin) ? o = i._margin : isNaN(Number(i._margin)) || (o = [Number(i._margin), Number(i._margin), Number(i._margin), Number(i._margin)])), A.colW) {
     const g = a[0].reduce((d, m) => {
       var u;
@@ -2951,22 +2951,22 @@ function Pi(e, r, t, i, n, s, l) {
     });
   });
   const f = [];
-  return A && !A.autoPage ? (Tt(e, a), e._slideObjects.push({
+  return A && !A.autoPage ? (Et(e, a), e._slideObjects.push({
     _type: ue.table,
     arrTabRows: a,
     options: Object.assign({}, A)
-  })) : (A.autoPageRepeatHeader && (A._arrObjTabHeadRows = a.filter((g, d) => d < A.autoPageHeaderRows)), No(a, A, n, i).forEach((g, d) => {
+  })) : (A.autoPageRepeatHeader && (A._arrObjTabHeadRows = a.filter((g, d) => d < A.autoPageHeaderRows)), Io(a, A, n, i).forEach((g, d) => {
     l(e._slideNum + d) || c.push(s({ masterName: i?._name || null })), d > 0 && (A.y = ve(A.autoPageSlideStartY || A.newSlideStartY || o[0]));
     {
       const m = l(e._slideNum + d);
-      A.autoPage = !1, Tt(m, g.rows), m.addTable(g.rows, Object.assign({}, A)), d > 0 && f.push(m);
+      A.autoPage = !1, Et(m, g.rows), m.addTable(g.rows, Object.assign({}, A)), d > 0 && f.push(m);
     }
   })), f;
 }
-function zr(e, r, t, i) {
+function Ur(e, r, t, i) {
   const n = {
     _type: i ? ue.placeholder : ue.text,
-    shape: t?.shape || tt.RECTANGLE,
+    shape: t?.shape || rt.RECTANGLE,
     text: !r || r.length === 0 ? [{ text: "", options: null }] : r,
     options: t || {}
   };
@@ -2976,10 +2976,10 @@ function zr(e, r, t, i) {
         const c = e._slideLayout._slideObjects.filter((A) => A._type === "placeholder" && A.options && A.options.placeholder && A.options.placeholder === l.placeholder)[0];
         c?.options && (l = Object.assign(Object.assign({}, l), c.options));
       }
-      if (l.objectName = l.objectName ? fe(l.objectName) : `Text ${e._slideObjects.filter((c) => c._type === ue.text).length}`, l.shape === tt.LINE) {
+      if (l.objectName = l.objectName ? fe(l.objectName) : `Text ${e._slideObjects.filter((c) => c._type === ue.text).length}`, l.shape === rt.LINE) {
         const c = {
           type: l.line.type || "solid",
-          color: l.line.color || Do,
+          color: l.line.color || Bo,
           transparency: l.line.transparency || 0,
           width: l.line.width || 1,
           dashType: l.line.dashType || "solid",
@@ -2996,14 +2996,14 @@ function zr(e, r, t, i) {
     }
     return (l.align || "").toLowerCase().indexOf("c") === 0 ? l._bodyProp.align = wt.center : (l.align || "").toLowerCase().indexOf("l") === 0 ? l._bodyProp.align = wt.left : (l.align || "").toLowerCase().indexOf("r") === 0 ? l._bodyProp.align = wt.right : (l.align || "").toLowerCase().indexOf("j") === 0 && (l._bodyProp.align = wt.justify), (l.valign || "").toLowerCase().indexOf("b") === 0 ? l._bodyProp.anchor = _t.b : (l.valign || "").toLowerCase().indexOf("m") === 0 ? l._bodyProp.anchor = _t.ctr : (l.valign || "").toLowerCase().indexOf("t") === 0 && (l._bodyProp.anchor = _t.t), ka(l.shadow), l;
   }
-  n.options = s(n.options), n.text.forEach((l) => l.options = s(l.options || {})), Tt(e, n.text || ""), e._slideObjects.push(n);
+  n.options = s(n.options), n.text.forEach((l) => l.options = s(l.options || {})), Et(e, n.text || ""), e._slideObjects.push(n);
 }
-function Bi(e) {
+function Pi(e) {
   (e._slideLayout._slideObjects || []).forEach((r) => {
-    r._type === ue.placeholder && e._slideObjects.filter((t) => t.options && t.options.placeholder === r.options.placeholder).length === 0 && zr(e, [{ text: "" }], r.options, !1);
+    r._type === ue.placeholder && e._slideObjects.filter((t) => t.options && t.options.placeholder === r.options.placeholder).length === 0 && Ur(e, [{ text: "" }], r.options, !1);
   });
 }
-function ko(e, r) {
+function Mo(e, r) {
   var t;
   if (r.bkgd && (r.background || (r.background = {}), typeof r.bkgd == "string" ? r.background.color = r.bkgd : (r.bkgd.data && (r.background.data = r.bkgd.data), r.bkgd.path && (r.background.path = r.bkgd.path), r.bkgd.src && (r.background.path = r.bkgd.src))), !((t = r.background) === null || t === void 0) && t.fill && (r.background.color = r.background.fill), e && (e.path || e.data)) {
     e.path = e.path || "preencoded.png";
@@ -3020,16 +3020,16 @@ function ko(e, r) {
     }), r._bkgdImgRid = n;
   }
 }
-function Tt(e, r, t) {
+function Et(e, r, t) {
   let i = [];
   typeof r == "string" || typeof r == "number" || (Array.isArray(r) ? i = r : typeof r == "object" && (i = [r]), i.forEach((n, s) => {
     if (t && t[s] && t[s].hyperlink && (n.options = Object.assign(Object.assign({}, n.options), t[s])), Array.isArray(n)) {
       const l = [];
       n.forEach((c) => {
         c.options && !c.text.options && l.push(c.options);
-      }), Tt(e, n, l);
+      }), Et(e, n, l);
     } else if (Array.isArray(n.text))
-      Tt(e, n.text, t && t[s] ? [t[s]] : void 0);
+      Et(e, n.text, t && t[s] ? [t[s]] : void 0);
     else if (n && typeof n == "object" && n.options && n.options.hyperlink && !n.options.hyperlink._rId)
       if (typeof n.options.hyperlink != "object")
         console.log("ERROR: text `hyperlink` option should be an object. Ex: `hyperlink: {url:'https://github.com'}` ");
@@ -3052,7 +3052,7 @@ function Tt(e, r, t) {
     });
   }));
 }
-class Ni {
+class Bi {
   constructor(r) {
     var t;
     this.addSlide = r.addSlide, this.getSlide = r.getSlide, this._name = `Slide ${r.slideNumber}`, this._presLayout = r.presLayout, this._rId = r.slideRId, this._rels = [], this._relsChart = [], this._relsMedia = [], this._setSlideNum = r.setSlideNum, this._slideId = r.slideId, this._slideLayout = r.slideLayout || null, this._slideNum = r.slideNumber, this._slideObjects = [], this._slideNumberProps = !((t = this._slideLayout) === null || t === void 0) && t._slideNumberProps ? this._slideLayout._slideNumberProps : null;
@@ -3064,7 +3064,7 @@ class Ni {
     return this._bkgd;
   }
   set background(r) {
-    this._background = r, r && ko(r, this);
+    this._background = r, r && Mo(r, this);
   }
   get background() {
     return this._background;
@@ -3102,7 +3102,7 @@ class Ni {
    */
   addChart(r, t, i) {
     const n = i || {};
-    return n._type = r, So(this, r, t, i), this;
+    return n._type = r, ko(this, r, t, i), this;
   }
   /**
    * Add image to Slide
@@ -3110,7 +3110,7 @@ class Ni {
    * @return {Slide} this Slide
    */
   addImage(r) {
-    return Io(this, r), this;
+    return Fo(this, r), this;
   }
   /**
    * Add media (audio/video) to Slide
@@ -3118,7 +3118,7 @@ class Ni {
    * @return {Slide} this Slide
    */
   addMedia(r) {
-    return Ri(this, r), this;
+    return Li(this, r), this;
   }
   /**
    * Add speaker notes to Slide
@@ -3127,7 +3127,7 @@ class Ni {
    * @return {Slide} this Slide
    */
   addNotes(r) {
-    return Di(this, r), this;
+    return Ri(this, r), this;
   }
   /**
    * Add shape to Slide
@@ -3145,7 +3145,7 @@ class Ni {
    * @return {Slide} this Slide
    */
   addTable(r, t) {
-    return this._newAutoPagedSlides = Pi(this, r, t, this._slideLayout, this._presLayout, this.addSlide, this.getSlide), this;
+    return this._newAutoPagedSlides = Di(this, r, t, this._slideLayout, this._presLayout, this.addSlide, this.getSlide), this;
   }
   /**
    * Add text to Slide
@@ -3154,15 +3154,15 @@ class Ni {
    * @return {Slide} this Slide
    */
   addText(r, t) {
-    return zr(this, typeof r == "string" || typeof r == "number" ? [{ text: r, options: t }] : r, t, !1), this;
+    return Ur(this, typeof r == "string" || typeof r == "number" ? [{ text: r, options: t }] : r, t, !1), this;
   }
 }
-function Si(e, r) {
+function Ni(e, r) {
   return $e(this, void 0, void 0, function* () {
     const t = e.data;
     return yield new Promise((i, n) => {
       var s, l;
-      const c = new Lo(), A = (t.length - 1) * 2 + 1, a = ((l = (s = t[0]) === null || s === void 0 ? void 0 : s.labels) === null || l === void 0 ? void 0 : l.length) > 1;
+      const c = new Do(), A = (t.length - 1) * 2 + 1, a = ((l = (s = t[0]) === null || s === void 0 ? void 0 : s.labels) === null || l === void 0 ? void 0 : l.length) > 1;
       c.folder("_rels"), c.folder("docProps"), c.folder("xl/_rels"), c.folder("xl/tables"), c.folder("xl/theme"), c.folder("xl/worksheets"), c.folder("xl/worksheets/_rels"), c.file("[Content_Types].xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>  <Default Extension="xml" ContentType="application/xml"/>  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>  <Override PartName="/xl/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>  <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>  <Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>  <Override PartName="/xl/tables/table1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml"/>  <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>  <Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>
 `), c.file("_rels/.rels", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>
 `), c.file("docProps/app.xml", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>Microsoft Macintosh Excel</Application><DocSecurity>0</DocSecurity><ScaleCrop>false</ScaleCrop><HeadingPairs><vt:vector size="2" baseType="variant"><vt:variant><vt:lpstr>Worksheets</vt:lpstr></vt:variant><vt:variant><vt:i4>1</vt:i4></vt:variant></vt:vector></HeadingPairs><TitlesOfParts><vt:vector size="1" baseType="lpstr"><vt:lpstr>Sheet1</vt:lpstr></vt:vector></TitlesOfParts><Company></Company><LinksUpToDate>false</LinksUpToDate><SharedDoc>false</SharedDoc><HyperlinksChanged>false</HyperlinksChanged><AppVersion>16.0300</AppVersion></Properties>
@@ -3248,8 +3248,8 @@ function Si(e, r) {
             const y = t[0].labels.slice().reverse();
             y.forEach((p, h) => {
               if (p[m]) {
-                const E = h === 0 ? 1 : y[h - 1].filter((v) => v && v !== "").length;
-                u += E, o += `<c r="${_e(m + 1 + h)}${m + 2}" t="s"><v>${u}</v></c>`;
+                const T = h === 0 ? 1 : y[h - 1].filter((v) => v && v !== "").length;
+                u += T, o += `<c r="${_e(m + 1 + h)}${m + 2}" t="s"><v>${u}</v></c>`;
               }
             });
             for (let p = 0; p < f; p++)
@@ -3275,42 +3275,42 @@ function Si(e, r) {
 `, c.file("xl/worksheets/sheet1.xml", o);
       }
       c.generateAsync({ type: "base64" }).then((o) => {
-        r.file(`ppt/embeddings/Microsoft_Excel_Worksheet${e.globalId}.xlsx`, o, { base64: !0 }), r.file("ppt/charts/_rels/" + e.fileName + ".rels", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/package" Target="../embeddings/Microsoft_Excel_Worksheet${e.globalId}.xlsx"/></Relationships>`), r.file(`ppt/charts/${e.fileName}`, Ii(e)), i("");
+        r.file(`ppt/embeddings/Microsoft_Excel_Worksheet${e.globalId}.xlsx`, o, { base64: !0 }), r.file("ppt/charts/_rels/" + e.fileName + ".rels", `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/package" Target="../embeddings/Microsoft_Excel_Worksheet${e.globalId}.xlsx"/></Relationships>`), r.file(`ppt/charts/${e.fileName}`, Si(e)), i("");
       }).catch((o) => {
         n(o);
       });
     });
   });
 }
-function Ii(e) {
+function Si(e) {
   var r, t, i, n;
   let s = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>', l = !1;
-  if (s += '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">', s += '<c:date1904 val="0"/>', s += `<c:roundedCorners val="${e.opts.chartArea.roundedCorners ? "1" : "0"}"/>`, s += "<c:chart>", e.opts.showTitle ? (s += Vr({
+  if (s += '<c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">', s += '<c:date1904 val="0"/>', s += `<c:roundedCorners val="${e.opts.chartArea.roundedCorners ? "1" : "0"}"/>`, s += "<c:chart>", e.opts.showTitle ? (s += Qr({
     title: e.opts.title || "Chart Title",
     color: e.opts.titleColor,
     fontFace: e.opts.titleFontFace,
-    fontSize: e.opts.titleFontSize || vi,
+    fontSize: e.opts.titleFontSize || yi,
     titleAlign: e.opts.titleAlign,
     titleBold: e.opts.titleBold,
     titlePos: e.opts.titlePos,
     titleRotate: e.opts.titleRotate
   }, e.opts.x, e.opts.y), s += '<c:autoTitleDeleted val="0"/>') : s += '<c:autoTitleDeleted val="1"/>', e.opts._type === re.BAR3D && (s += `<c:view3D><c:rotX val="${e.opts.v3DRotX}"/><c:rotY val="${e.opts.v3DRotY}"/><c:rAngAx val="${e.opts.v3DRAngAx ? 1 : 0}"/><c:perspective val="${e.opts.v3DPerspective}"/></c:view3D>`), s += "<c:plotArea>", e.opts.layout ? (s += "<c:layout>", s += " <c:manualLayout>", s += '  <c:layoutTarget val="inner" />', s += '  <c:xMode val="edge" />', s += '  <c:yMode val="edge" />', s += '  <c:x val="' + (e.opts.layout.x || 0) + '" />', s += '  <c:y val="' + (e.opts.layout.y || 0) + '" />', s += '  <c:w val="' + (e.opts.layout.w || 1) + '" />', s += '  <c:h val="' + (e.opts.layout.h || 1) + '" />', s += " </c:manualLayout>", s += "</c:layout>") : s += "<c:layout/>", Array.isArray(e.opts._type) ? e.opts._type.forEach((c) => {
-    const A = Object.assign(Object.assign({}, e.opts), c.options), a = A.secondaryValAxis ? Fr : Ye, o = A.secondaryCatAxis ? xa : It;
-    l = l || A.secondaryValAxis, s += Ka(c.type, c.data, A, a, o);
-  }) : s += Ka(e.opts._type, e.data, e.opts, Ye, It), e.opts._type !== re.PIE && e.opts._type !== re.DOUGHNUT) {
+    const A = Object.assign(Object.assign({}, e.opts), c.options), a = A.secondaryValAxis ? Mr : Ke, o = A.secondaryCatAxis ? xa : kt;
+    l = l || A.secondaryValAxis, s += Ja(c.type, c.data, A, a, o);
+  }) : s += Ja(e.opts._type, e.data, e.opts, Ke, kt), e.opts._type !== re.PIE && e.opts._type !== re.DOUGHNUT) {
     if (e.opts.valAxes && e.opts.valAxes.length > 1 && !l)
       throw new Error("Secondary axis must be used by one of the multiple charts");
     if (e.opts.catAxes) {
       if (!e.opts.valAxes || e.opts.valAxes.length !== e.opts.catAxes.length)
         throw new Error("There must be the same number of value and category axes.");
-      s += na(Object.assign(Object.assign({}, e.opts), e.opts.catAxes[0]), It, Ye);
+      s += oa(Object.assign(Object.assign({}, e.opts), e.opts.catAxes[0]), kt, Ke);
     } else
-      s += na(e.opts, It, Ye);
-    e.opts.valAxes ? (s += oa(Object.assign(Object.assign({}, e.opts), e.opts.valAxes[0]), Ye), e.opts.valAxes[1] && (s += oa(Object.assign(Object.assign({}, e.opts), e.opts.valAxes[1]), Fr))) : (s += oa(e.opts, Ye), e.opts._type === re.BAR3D && (s += ki(e.opts, Po, Ye))), !((r = e.opts) === null || r === void 0) && r.catAxes && (!((t = e.opts) === null || t === void 0) && t.catAxes[1]) && (s += na(Object.assign(Object.assign({}, e.opts), e.opts.catAxes[1]), xa, Fr));
+      s += oa(e.opts, kt, Ke);
+    e.opts.valAxes ? (s += ia(Object.assign(Object.assign({}, e.opts), e.opts.valAxes[0]), Ke), e.opts.valAxes[1] && (s += ia(Object.assign(Object.assign({}, e.opts), e.opts.valAxes[1]), Mr))) : (s += ia(e.opts, Ke), e.opts._type === re.BAR3D && (s += Ii(e.opts, No, Ke))), !((r = e.opts) === null || r === void 0) && r.catAxes && (!((t = e.opts) === null || t === void 0) && t.catAxes[1]) && (s += oa(Object.assign(Object.assign({}, e.opts), e.opts.catAxes[1]), xa, Mr));
   }
   return e.opts.showDataTable && (s += "<c:dTable>", s += `  <c:showHorzBorder val="${e.opts.showDataTableHorzBorder ? 1 : 0}"/>`, s += `  <c:showVertBorder val="${e.opts.showDataTableVertBorder ? 1 : 0}"/>`, s += `  <c:showOutline    val="${e.opts.showDataTableOutline ? 1 : 0}"/>`, s += `  <c:showKeys       val="${e.opts.showDataTableKeys ? 1 : 0}"/>`, s += "  <c:spPr>", s += "    <a:noFill/>", s += '    <a:ln w="9525" cap="flat" cmpd="sng" algn="ctr"><a:solidFill><a:schemeClr val="tx1"><a:lumMod val="15000"/><a:lumOff val="85000"/></a:schemeClr></a:solidFill><a:round/></a:ln>', s += "    <a:effectLst/>", s += "  </c:spPr>", s += "  <c:txPr>", s += '   <a:bodyPr rot="0" spcFirstLastPara="1" vertOverflow="ellipsis" vert="horz" wrap="square" anchor="ctr" anchorCtr="1"/>', s += "   <a:lstStyle/>", s += "   <a:p>", s += '     <a:pPr rtl="0">', s += `       <a:defRPr sz="${Math.round((e.opts.dataTableFontSize || Ge) * 100)}" b="0" i="0" u="none" strike="noStrike" kern="1200" baseline="0">`, s += '         <a:solidFill><a:schemeClr val="tx1"><a:lumMod val="65000"/><a:lumOff val="35000"/></a:schemeClr></a:solidFill>', s += '         <a:latin typeface="+mn-lt"/>', s += '         <a:ea typeface="+mn-ea"/>', s += '         <a:cs typeface="+mn-cs"/>', s += "       </a:defRPr>", s += "     </a:pPr>", s += '    <a:endParaRPr lang="en-US"/>', s += "   </a:p>", s += " </c:txPr>", s += "</c:dTable>"), s += "  <c:spPr>", s += !((i = e.opts.plotArea.fill) === null || i === void 0) && i.color ? ze(e.opts.plotArea.fill) : "<a:noFill/>", s += e.opts.plotArea.border ? `<a:ln w="${de(e.opts.plotArea.border.pt)}" cap="flat">${ze(e.opts.plotArea.border.color)}</a:ln>` : "<a:ln><a:noFill/></a:ln>", s += "    <a:effectLst/>", s += "  </c:spPr>", s += "</c:plotArea>", e.opts.showLegend && (s += "<c:legend>", s += '<c:legendPos val="' + e.opts.legendPos + '"/>', s += '<c:overlay val="0"/>', (e.opts.legendFontFace || e.opts.legendFontSize || e.opts.legendColor) && (s += "<c:txPr>", s += "  <a:bodyPr/>", s += "  <a:lstStyle/>", s += "  <a:p>", s += "    <a:pPr>", s += e.opts.legendFontSize ? `<a:defRPr sz="${Math.round(Number(e.opts.legendFontSize) * 100)}">` : "<a:defRPr>", e.opts.legendColor && (s += ze(e.opts.legendColor)), e.opts.legendFontFace && (s += '<a:latin typeface="' + e.opts.legendFontFace + '"/>'), e.opts.legendFontFace && (s += '<a:cs    typeface="' + e.opts.legendFontFace + '"/>'), s += "      </a:defRPr>", s += "    </a:pPr>", s += '    <a:endParaRPr lang="en-US"/>', s += "  </a:p>", s += "</c:txPr>"), s += "</c:legend>"), s += '  <c:plotVisOnly val="1"/>', s += '  <c:dispBlanksAs val="' + e.opts.displayBlanksAs + '"/>', e.opts._type === re.SCATTER && (s += '<c:showDLblsOverMax val="1"/>'), s += "</c:chart>", s += "<c:spPr>", s += !((n = e.opts.chartArea.fill) === null || n === void 0) && n.color ? ze(e.opts.chartArea.fill) : "<a:noFill/>", s += e.opts.chartArea.border ? `<a:ln w="${de(e.opts.chartArea.border.pt)}" cap="flat">${ze(e.opts.chartArea.border.color)}</a:ln>` : "<a:ln><a:noFill/></a:ln>", s += "  <a:effectLst/>", s += "</c:spPr>", s += '<c:externalData r:id="rId1"><c:autoUpdate val="0"/></c:externalData>', s += "</c:chartSpace>", s;
 }
-function Ka(e, r, t, i, n, s) {
+function Ja(e, r, t, i, n, s) {
   let l = -1, c = 1, A = null, a = "";
   switch (e) {
     case re.AREA:
@@ -3322,30 +3322,30 @@ function Ka(e, r, t, i, n, s) {
         var f;
         l++, a += "<c:ser>", a += `  <c:idx val="${o._dataIndex}"/><c:order val="${o._dataIndex}"/>`, a += "  <c:tx>", a += "    <c:strRef>", a += "      <c:f>Sheet1!$" + _e(o._dataIndex + o.labels.length + 1) + "$1</c:f>", a += '      <c:strCache><c:ptCount val="1"/><c:pt idx="0"><c:v>' + fe(o.name) + "</c:v></c:pt></c:strCache>", a += "    </c:strRef>", a += "  </c:tx>";
         const g = t.chartColors ? t.chartColors[l % t.chartColors.length] : null;
-        a += "  <c:spPr>", g === "transparent" ? a += "<a:noFill/>" : t.chartColorsOpacity ? a += "<a:solidFill>" + be(g, `<a:alpha val="${Math.round(t.chartColorsOpacity * 1e3)}"/>`) + "</a:solidFill>" : a += "<a:solidFill>" + be(g) + "</a:solidFill>", e === re.LINE || e === re.RADAR ? t.lineSize === 0 ? a += "<a:ln><a:noFill/></a:ln>" : (a += `<a:ln w="${de(t.lineSize)}" cap="${Or(t.lineCap)}"><a:solidFill>${be(g)}</a:solidFill>`, a += '<a:prstDash val="' + (t.lineDash || "solid") + '"/><a:round/></a:ln>') : t.dataBorder && (a += `<a:ln w="${de(t.dataBorder.pt)}" cap="${Or(t.lineCap)}"><a:solidFill>${be(t.dataBorder.color)}</a:solidFill><a:prstDash val="solid"/><a:round/></a:ln>`), a += st(t.shadow, it), a += "  </c:spPr>", a += '  <c:invertIfNegative val="0"/>', e !== re.RADAR && (a += "<c:dLbls>", a += `<c:numFmt formatCode="${fe(t.dataLabelFormatCode) || "General"}" sourceLinked="0"/>`, t.dataLabelBkgrdColors && (a += `<c:spPr><a:solidFill>${be(g)}</a:solidFill></c:spPr>`), a += "<c:txPr><a:bodyPr/><a:lstStyle/><a:p><a:pPr>", a += `<a:defRPr b="${t.dataLabelFontBold ? 1 : 0}" i="${t.dataLabelFontItalic ? 1 : 0}" strike="noStrike" sz="${Math.round((t.dataLabelFontSize || Ge) * 100)}" u="none">`, a += `<a:solidFill>${be(t.dataLabelColor || Fe)}</a:solidFill>`, a += `<a:latin typeface="${t.dataLabelFontFace || "Arial"}"/>`, a += "</a:defRPr></a:pPr></a:p></c:txPr>", t.dataLabelPosition && (a += `<c:dLblPos val="${t.dataLabelPosition}"/>`), a += '<c:showLegendKey val="0"/>', a += `<c:showVal val="${t.showValue ? "1" : "0"}"/>`, a += `<c:showCatName val="0"/><c:showSerName val="${t.showSerName ? "1" : "0"}"/><c:showPercent val="0"/><c:showBubbleSize val="0"/>`, a += `<c:showLeaderLines val="${t.showLeaderLines ? "1" : "0"}"/>`, a += "</c:dLbls>"), (e === re.LINE || e === re.RADAR) && (a += "<c:marker>", a += '  <c:symbol val="' + t.lineDataSymbol + '"/>', t.lineDataSymbolSize && (a += `<c:size val="${t.lineDataSymbolSize}"/>`), a += "  <c:spPr>", a += `    <a:solidFill>${be(t.chartColors[o._dataIndex + 1 > t.chartColors.length ? Math.floor(Math.random() * t.chartColors.length) : o._dataIndex])}</a:solidFill>`, a += `    <a:ln w="${t.lineDataSymbolLineSize}" cap="flat"><a:solidFill>${be(t.lineDataSymbolLineColor || g)}</a:solidFill><a:prstDash val="solid"/><a:round/></a:ln>`, a += "    <a:effectLst/>", a += "  </c:spPr>", a += "</c:marker>"), (e === re.BAR || e === re.BAR3D) && r.length === 1 && (t.chartColors && t.chartColors !== kt && t.chartColors.length > 1 || !((f = t.invertedColors) === null || f === void 0) && f.length) && o.values.forEach((d, m) => {
-          const u = d < 0 ? t.invertedColors || t.chartColors || kt : t.chartColors || [];
-          a += "  <c:dPt>", a += `    <c:idx val="${m}"/>`, a += '      <c:invertIfNegative val="0"/>', a += '    <c:bubble3D val="0"/>', a += "    <c:spPr>", t.lineSize === 0 ? a += "<a:ln><a:noFill/></a:ln>" : e === re.BAR ? (a += "<a:solidFill>", a += '  <a:srgbClr val="' + u[m % u.length] + '"/>', a += "</a:solidFill>") : (a += "<a:ln>", a += "  <a:solidFill>", a += '   <a:srgbClr val="' + u[m % u.length] + '"/>', a += "  </a:solidFill>", a += "</a:ln>"), a += st(t.shadow, it), a += "    </c:spPr>", a += "  </c:dPt>";
+        a += "  <c:spPr>", g === "transparent" ? a += "<a:noFill/>" : t.chartColorsOpacity ? a += "<a:solidFill>" + be(g, `<a:alpha val="${Math.round(t.chartColorsOpacity * 1e3)}"/>`) + "</a:solidFill>" : a += "<a:solidFill>" + be(g) + "</a:solidFill>", e === re.LINE || e === re.RADAR ? t.lineSize === 0 ? a += "<a:ln><a:noFill/></a:ln>" : (a += `<a:ln w="${de(t.lineSize)}" cap="${$r(t.lineCap)}"><a:solidFill>${be(g)}</a:solidFill>`, a += '<a:prstDash val="' + (t.lineDash || "solid") + '"/><a:round/></a:ln>') : t.dataBorder && (a += `<a:ln w="${de(t.dataBorder.pt)}" cap="${$r(t.lineCap)}"><a:solidFill>${be(t.dataBorder.color)}</a:solidFill><a:prstDash val="solid"/><a:round/></a:ln>`), a += lt(t.shadow, st), a += "  </c:spPr>", a += '  <c:invertIfNegative val="0"/>', e !== re.RADAR && (a += "<c:dLbls>", a += `<c:numFmt formatCode="${fe(t.dataLabelFormatCode) || "General"}" sourceLinked="0"/>`, t.dataLabelBkgrdColors && (a += `<c:spPr><a:solidFill>${be(g)}</a:solidFill></c:spPr>`), a += "<c:txPr><a:bodyPr/><a:lstStyle/><a:p><a:pPr>", a += `<a:defRPr b="${t.dataLabelFontBold ? 1 : 0}" i="${t.dataLabelFontItalic ? 1 : 0}" strike="noStrike" sz="${Math.round((t.dataLabelFontSize || Ge) * 100)}" u="none">`, a += `<a:solidFill>${be(t.dataLabelColor || Fe)}</a:solidFill>`, a += `<a:latin typeface="${t.dataLabelFontFace || "Arial"}"/>`, a += "</a:defRPr></a:pPr></a:p></c:txPr>", t.dataLabelPosition && (a += `<c:dLblPos val="${t.dataLabelPosition}"/>`), a += '<c:showLegendKey val="0"/>', a += `<c:showVal val="${t.showValue ? "1" : "0"}"/>`, a += `<c:showCatName val="0"/><c:showSerName val="${t.showSerName ? "1" : "0"}"/><c:showPercent val="0"/><c:showBubbleSize val="0"/>`, a += `<c:showLeaderLines val="${t.showLeaderLines ? "1" : "0"}"/>`, a += "</c:dLbls>"), (e === re.LINE || e === re.RADAR) && (a += "<c:marker>", a += '  <c:symbol val="' + t.lineDataSymbol + '"/>', t.lineDataSymbolSize && (a += `<c:size val="${t.lineDataSymbolSize}"/>`), a += "  <c:spPr>", a += `    <a:solidFill>${be(t.chartColors[o._dataIndex + 1 > t.chartColors.length ? Math.floor(Math.random() * t.chartColors.length) : o._dataIndex])}</a:solidFill>`, a += `    <a:ln w="${t.lineDataSymbolLineSize}" cap="flat"><a:solidFill>${be(t.lineDataSymbolLineColor || g)}</a:solidFill><a:prstDash val="solid"/><a:round/></a:ln>`, a += "    <a:effectLst/>", a += "  </c:spPr>", a += "</c:marker>"), (e === re.BAR || e === re.BAR3D) && r.length === 1 && (t.chartColors && t.chartColors !== Ft && t.chartColors.length > 1 || !((f = t.invertedColors) === null || f === void 0) && f.length) && o.values.forEach((d, m) => {
+          const u = d < 0 ? t.invertedColors || t.chartColors || Ft : t.chartColors || [];
+          a += "  <c:dPt>", a += `    <c:idx val="${m}"/>`, a += '      <c:invertIfNegative val="0"/>', a += '    <c:bubble3D val="0"/>', a += "    <c:spPr>", t.lineSize === 0 ? a += "<a:ln><a:noFill/></a:ln>" : e === re.BAR ? (a += "<a:solidFill>", a += '  <a:srgbClr val="' + u[m % u.length] + '"/>', a += "</a:solidFill>") : (a += "<a:ln>", a += "  <a:solidFill>", a += '   <a:srgbClr val="' + u[m % u.length] + '"/>', a += "  </a:solidFill>", a += "</a:ln>"), a += lt(t.shadow, st), a += "    </c:spPr>", a += "  </c:dPt>";
         }), a += "<c:cat>", t.catLabelFormatCode ? (a += "  <c:numRef>", a += `    <c:f>Sheet1!$A$2:$A$${o.labels[0].length + 1}</c:f>`, a += "    <c:numCache>", a += "      <c:formatCode>" + (t.catLabelFormatCode || "General") + "</c:formatCode>", a += `      <c:ptCount val="${o.labels[0].length}"/>`, o.labels[0].forEach((d, m) => a += `<c:pt idx="${m}"><c:v>${fe(d)}</c:v></c:pt>`), a += "    </c:numCache>", a += "  </c:numRef>") : (a += "  <c:multiLvlStrRef>", a += `    <c:f>Sheet1!$A$2:$${_e(o.labels.length)}$${o.labels[0].length + 1}</c:f>`, a += "    <c:multiLvlStrCache>", a += `      <c:ptCount val="${o.labels[0].length}"/>`, o.labels.forEach((d) => {
           a += "<c:lvl>", d.forEach((m, u) => a += `<c:pt idx="${u}"><c:v>${fe(m)}</c:v></c:pt>`), a += "</c:lvl>";
         }), a += "    </c:multiLvlStrCache>", a += "  </c:multiLvlStrRef>"), a += "</c:cat>", a += "<c:val>", a += "  <c:numRef>", a += `<c:f>Sheet1!$${_e(o._dataIndex + o.labels.length + 1)}$2:$${_e(o._dataIndex + o.labels.length + 1)}$${o.labels[0].length + 1}</c:f>`, a += "    <c:numCache>", a += "      <c:formatCode>" + (t.valLabelFormatCode || t.dataTableFormatCode || "General") + "</c:formatCode>", a += `      <c:ptCount val="${o.labels[0].length}"/>`, o.values.forEach((d, m) => a += `<c:pt idx="${m}"><c:v>${d || d === 0 ? d : ""}</c:v></c:pt>`), a += "    </c:numCache>", a += "  </c:numRef>", a += "</c:val>", e === re.LINE && (a += '<c:smooth val="' + (t.lineSmooth ? "1" : "0") + '"/>'), a += "</c:ser>";
-      }), a += "  <c:dLbls>", a += `    <c:numFmt formatCode="${fe(t.dataLabelFormatCode) || "General"}" sourceLinked="0"/>`, a += "    <c:txPr>", a += "      <a:bodyPr/>", a += "      <a:lstStyle/>", a += "      <a:p><a:pPr>", a += `        <a:defRPr b="${t.dataLabelFontBold ? 1 : 0}" i="${t.dataLabelFontItalic ? 1 : 0}" strike="noStrike" sz="${Math.round((t.dataLabelFontSize || Ge) * 100)}" u="none">`, a += "          <a:solidFill>" + be(t.dataLabelColor || Fe) + "</a:solidFill>", a += '          <a:latin typeface="' + (t.dataLabelFontFace || "Arial") + '"/>', a += "        </a:defRPr>", a += "      </a:pPr></a:p>", a += "    </c:txPr>", t.dataLabelPosition && (a += ' <c:dLblPos val="' + t.dataLabelPosition + '"/>'), a += '    <c:showLegendKey val="0"/>', a += '    <c:showVal val="' + (t.showValue ? "1" : "0") + '"/>', a += '    <c:showCatName val="0"/>', a += '    <c:showSerName val="' + (t.showSerName ? "1" : "0") + '"/>', a += '    <c:showPercent val="0"/>', a += '    <c:showBubbleSize val="0"/>', a += `    <c:showLeaderLines val="${t.showLeaderLines ? "1" : "0"}"/>`, a += "  </c:dLbls>", e === re.BAR ? (a += `  <c:gapWidth val="${t.barGapWidthPct}"/>`, a += `  <c:overlap val="${(t.barGrouping || "").includes("tacked") ? 100 : t.barOverlapPct ? t.barOverlapPct : 0}"/>`) : e === re.BAR3D ? (a += `  <c:gapWidth val="${t.barGapWidthPct}"/>`, a += `  <c:gapDepth val="${t.barGapDepthPct}"/>`, a += '  <c:shape val="' + t.bar3DShape + '"/>') : e === re.LINE && (a += '  <c:marker val="1"/>'), a += `<c:axId val="${n}"/><c:axId val="${i}"/><c:axId val="${Po}"/>`, a += `</c:${e}Chart>`;
+      }), a += "  <c:dLbls>", a += `    <c:numFmt formatCode="${fe(t.dataLabelFormatCode) || "General"}" sourceLinked="0"/>`, a += "    <c:txPr>", a += "      <a:bodyPr/>", a += "      <a:lstStyle/>", a += "      <a:p><a:pPr>", a += `        <a:defRPr b="${t.dataLabelFontBold ? 1 : 0}" i="${t.dataLabelFontItalic ? 1 : 0}" strike="noStrike" sz="${Math.round((t.dataLabelFontSize || Ge) * 100)}" u="none">`, a += "          <a:solidFill>" + be(t.dataLabelColor || Fe) + "</a:solidFill>", a += '          <a:latin typeface="' + (t.dataLabelFontFace || "Arial") + '"/>', a += "        </a:defRPr>", a += "      </a:pPr></a:p>", a += "    </c:txPr>", t.dataLabelPosition && (a += ' <c:dLblPos val="' + t.dataLabelPosition + '"/>'), a += '    <c:showLegendKey val="0"/>', a += '    <c:showVal val="' + (t.showValue ? "1" : "0") + '"/>', a += '    <c:showCatName val="0"/>', a += '    <c:showSerName val="' + (t.showSerName ? "1" : "0") + '"/>', a += '    <c:showPercent val="0"/>', a += '    <c:showBubbleSize val="0"/>', a += `    <c:showLeaderLines val="${t.showLeaderLines ? "1" : "0"}"/>`, a += "  </c:dLbls>", e === re.BAR ? (a += `  <c:gapWidth val="${t.barGapWidthPct}"/>`, a += `  <c:overlap val="${(t.barGrouping || "").includes("tacked") ? 100 : t.barOverlapPct ? t.barOverlapPct : 0}"/>`) : e === re.BAR3D ? (a += `  <c:gapWidth val="${t.barGapWidthPct}"/>`, a += `  <c:gapDepth val="${t.barGapDepthPct}"/>`, a += '  <c:shape val="' + t.bar3DShape + '"/>') : e === re.LINE && (a += '  <c:marker val="1"/>'), a += `<c:axId val="${n}"/><c:axId val="${i}"/><c:axId val="${No}"/>`, a += `</c:${e}Chart>`;
       break;
     case re.SCATTER:
       a += "<c:" + e + "Chart>", a += '<c:scatterStyle val="lineMarker"/>', a += '<c:varyColors val="0"/>', l = -1, r.filter((o, f) => f > 0).forEach((o, f) => {
         l++, a += "<c:ser>", a += `  <c:idx val="${f}"/>`, a += `  <c:order val="${f}"/>`, a += "  <c:tx>", a += "    <c:strRef>", a += `      <c:f>Sheet1!$${_e(f + 2)}$1</c:f>`, a += '      <c:strCache><c:ptCount val="1"/><c:pt idx="0"><c:v>' + fe(o.name) + "</c:v></c:pt></c:strCache>", a += "    </c:strRef>", a += "  </c:tx>", a += "  <c:spPr>";
         {
           const g = t.chartColors[l % t.chartColors.length];
-          g === "transparent" ? a += "<a:noFill/>" : t.chartColorsOpacity ? a += "<a:solidFill>" + be(g, '<a:alpha val="' + Math.round(t.chartColorsOpacity * 1e3).toString() + '"/>') + "</a:solidFill>" : a += "<a:solidFill>" + be(g) + "</a:solidFill>", t.lineSize === 0 ? a += "<a:ln><a:noFill/></a:ln>" : (a += `<a:ln w="${de(t.lineSize)}" cap="${Or(t.lineCap)}"><a:solidFill>${be(g)}</a:solidFill>`, a += `<a:prstDash val="${t.lineDash || "solid"}"/><a:round/></a:ln>`), a += st(t.shadow, it);
+          g === "transparent" ? a += "<a:noFill/>" : t.chartColorsOpacity ? a += "<a:solidFill>" + be(g, '<a:alpha val="' + Math.round(t.chartColorsOpacity * 1e3).toString() + '"/>') + "</a:solidFill>" : a += "<a:solidFill>" + be(g) + "</a:solidFill>", t.lineSize === 0 ? a += "<a:ln><a:noFill/></a:ln>" : (a += `<a:ln w="${de(t.lineSize)}" cap="${$r(t.lineCap)}"><a:solidFill>${be(g)}</a:solidFill>`, a += `<a:prstDash val="${t.lineDash || "solid"}"/><a:round/></a:ln>`), a += lt(t.shadow, st);
         }
         if (a += "  </c:spPr>", a += "<c:marker>", a += '  <c:symbol val="' + t.lineDataSymbol + '"/>', t.lineDataSymbolSize && (a += `<c:size val="${t.lineDataSymbolSize}"/>`), a += "<c:spPr>", a += `<a:solidFill>${be(t.chartColors[f + 1 > t.chartColors.length ? Math.floor(Math.random() * t.chartColors.length) : f])}</a:solidFill>`, a += `<a:ln w="${t.lineDataSymbolLineSize}" cap="flat"><a:solidFill>${be(t.lineDataSymbolLineColor || t.chartColors[l % t.chartColors.length])}</a:solidFill><a:prstDash val="solid"/><a:round/></a:ln>`, a += "<a:effectLst/>", a += "</c:spPr>", a += "</c:marker>", t.showLabel) {
-          const g = Mr("-xxxx-xxxx-xxxx-xxxxxxxxxxxx");
+          const g = Or("-xxxx-xxxx-xxxx-xxxxxxxxxxxx");
           o.labels[0] && (t.dataLabelFormatScatter === "custom" || t.dataLabelFormatScatter === "customXY") && (a += "<c:dLbls>", o.labels[0].forEach((d, m) => {
-            (t.dataLabelFormatScatter === "custom" || t.dataLabelFormatScatter === "customXY") && (a += "  <c:dLbl>", a += `    <c:idx val="${m}"/>`, a += "    <c:tx>", a += "      <c:rich>", a += "            <a:bodyPr>", a += "                <a:spAutoFit/>", a += "            </a:bodyPr>", a += "            <a:lstStyle/>", a += "            <a:p>", a += "                <a:pPr>", a += "                    <a:defRPr/>", a += "                </a:pPr>", a += "              <a:r>", a += '                    <a:rPr lang="' + (t.lang || "en-US") + '" dirty="0"/>', a += "                    <a:t>" + fe(d) + "</a:t>", a += "              </a:r>", t.dataLabelFormatScatter === "customXY" && !/^ *$/.test(d) && (a += "              <a:r>", a += '                  <a:rPr lang="' + (t.lang || "en-US") + '" baseline="0" dirty="0"/>', a += "                  <a:t> (</a:t>", a += "              </a:r>", a += '              <a:fld id="{' + Mr("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx") + '}" type="XVALUE">', a += '                  <a:rPr lang="' + (t.lang || "en-US") + '" baseline="0"/>', a += "                  <a:pPr>", a += "                      <a:defRPr/>", a += "                  </a:pPr>", a += "                  <a:t>[" + fe(o.name) + "</a:t>", a += "              </a:fld>", a += "              <a:r>", a += '                  <a:rPr lang="' + (t.lang || "en-US") + '" baseline="0" dirty="0"/>', a += "                  <a:t>, </a:t>", a += "              </a:r>", a += '              <a:fld id="{' + Mr("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx") + '}" type="YVALUE">', a += '                  <a:rPr lang="' + (t.lang || "en-US") + '" baseline="0"/>', a += "                  <a:pPr>", a += "                      <a:defRPr/>", a += "                  </a:pPr>", a += "                  <a:t>[" + fe(o.name) + "]</a:t>", a += "              </a:fld>", a += "              <a:r>", a += '                  <a:rPr lang="' + (t.lang || "en-US") + '" baseline="0" dirty="0"/>', a += "                  <a:t>)</a:t>", a += "              </a:r>", a += '              <a:endParaRPr lang="' + (t.lang || "en-US") + '" dirty="0"/>'), a += "            </a:p>", a += "      </c:rich>", a += "    </c:tx>", a += "    <c:spPr>", a += "        <a:noFill/>", a += "        <a:ln>", a += "            <a:noFill/>", a += "        </a:ln>", a += "        <a:effectLst/>", a += "    </c:spPr>", t.dataLabelPosition && (a += ' <c:dLblPos val="' + t.dataLabelPosition + '"/>'), a += '    <c:showLegendKey val="0"/>', a += '    <c:showVal val="0"/>', a += '    <c:showCatName val="0"/>', a += '    <c:showSerName val="0"/>', a += '    <c:showPercent val="0"/>', a += '    <c:showBubbleSize val="0"/>', a += '       <c:showLeaderLines val="1"/>', a += "    <c:extLst>", a += '      <c:ext uri="{CE6537A1-D6FC-4f65-9D91-7224C49458BB}" xmlns:c15="http://schemas.microsoft.com/office/drawing/2012/chart"/>', a += '      <c:ext uri="{C3380CC4-5D6E-409C-BE32-E72D297353CC}" xmlns:c16="http://schemas.microsoft.com/office/drawing/2014/chart">', a += `            <c16:uniqueId val="{${"00000000".substring(0, 8 - (m + 1).toString().length).toString()}${m + 1}${g}}"/>`, a += "      </c:ext>", a += "        </c:extLst>", a += "</c:dLbl>");
+            (t.dataLabelFormatScatter === "custom" || t.dataLabelFormatScatter === "customXY") && (a += "  <c:dLbl>", a += `    <c:idx val="${m}"/>`, a += "    <c:tx>", a += "      <c:rich>", a += "            <a:bodyPr>", a += "                <a:spAutoFit/>", a += "            </a:bodyPr>", a += "            <a:lstStyle/>", a += "            <a:p>", a += "                <a:pPr>", a += "                    <a:defRPr/>", a += "                </a:pPr>", a += "              <a:r>", a += '                    <a:rPr lang="' + (t.lang || "en-US") + '" dirty="0"/>', a += "                    <a:t>" + fe(d) + "</a:t>", a += "              </a:r>", t.dataLabelFormatScatter === "customXY" && !/^ *$/.test(d) && (a += "              <a:r>", a += '                  <a:rPr lang="' + (t.lang || "en-US") + '" baseline="0" dirty="0"/>', a += "                  <a:t> (</a:t>", a += "              </a:r>", a += '              <a:fld id="{' + Or("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx") + '}" type="XVALUE">', a += '                  <a:rPr lang="' + (t.lang || "en-US") + '" baseline="0"/>', a += "                  <a:pPr>", a += "                      <a:defRPr/>", a += "                  </a:pPr>", a += "                  <a:t>[" + fe(o.name) + "</a:t>", a += "              </a:fld>", a += "              <a:r>", a += '                  <a:rPr lang="' + (t.lang || "en-US") + '" baseline="0" dirty="0"/>', a += "                  <a:t>, </a:t>", a += "              </a:r>", a += '              <a:fld id="{' + Or("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx") + '}" type="YVALUE">', a += '                  <a:rPr lang="' + (t.lang || "en-US") + '" baseline="0"/>', a += "                  <a:pPr>", a += "                      <a:defRPr/>", a += "                  </a:pPr>", a += "                  <a:t>[" + fe(o.name) + "]</a:t>", a += "              </a:fld>", a += "              <a:r>", a += '                  <a:rPr lang="' + (t.lang || "en-US") + '" baseline="0" dirty="0"/>', a += "                  <a:t>)</a:t>", a += "              </a:r>", a += '              <a:endParaRPr lang="' + (t.lang || "en-US") + '" dirty="0"/>'), a += "            </a:p>", a += "      </c:rich>", a += "    </c:tx>", a += "    <c:spPr>", a += "        <a:noFill/>", a += "        <a:ln>", a += "            <a:noFill/>", a += "        </a:ln>", a += "        <a:effectLst/>", a += "    </c:spPr>", t.dataLabelPosition && (a += ' <c:dLblPos val="' + t.dataLabelPosition + '"/>'), a += '    <c:showLegendKey val="0"/>', a += '    <c:showVal val="0"/>', a += '    <c:showCatName val="0"/>', a += '    <c:showSerName val="0"/>', a += '    <c:showPercent val="0"/>', a += '    <c:showBubbleSize val="0"/>', a += '       <c:showLeaderLines val="1"/>', a += "    <c:extLst>", a += '      <c:ext uri="{CE6537A1-D6FC-4f65-9D91-7224C49458BB}" xmlns:c15="http://schemas.microsoft.com/office/drawing/2012/chart"/>', a += '      <c:ext uri="{C3380CC4-5D6E-409C-BE32-E72D297353CC}" xmlns:c16="http://schemas.microsoft.com/office/drawing/2014/chart">', a += `            <c16:uniqueId val="{${"00000000".substring(0, 8 - (m + 1).toString().length).toString()}${m + 1}${g}}"/>`, a += "      </c:ext>", a += "        </c:extLst>", a += "</c:dLbl>");
           }), a += "</c:dLbls>"), t.dataLabelFormatScatter === "XY" && (a += "<c:dLbls>", a += "    <c:spPr>", a += "        <a:noFill/>", a += "        <a:ln>", a += "            <a:noFill/>", a += "        </a:ln>", a += "          <a:effectLst/>", a += "    </c:spPr>", a += "    <c:txPr>", a += "        <a:bodyPr>", a += "            <a:spAutoFit/>", a += "        </a:bodyPr>", a += "        <a:lstStyle/>", a += "        <a:p>", a += "            <a:pPr>", a += "                <a:defRPr/>", a += "            </a:pPr>", a += '            <a:endParaRPr lang="en-US"/>', a += "        </a:p>", a += "    </c:txPr>", t.dataLabelPosition && (a += ' <c:dLblPos val="' + t.dataLabelPosition + '"/>'), a += '    <c:showLegendKey val="0"/>', a += ` <c:showVal val="${t.showLabel ? "1" : "0"}"/>`, a += ` <c:showCatName val="${t.showLabel ? "1" : "0"}"/>`, a += ` <c:showSerName val="${t.showSerName ? "1" : "0"}"/>`, a += '    <c:showPercent val="0"/>', a += '    <c:showBubbleSize val="0"/>', a += "    <c:extLst>", a += '        <c:ext uri="{CE6537A1-D6FC-4f65-9D91-7224C49458BB}" xmlns:c15="http://schemas.microsoft.com/office/drawing/2012/chart">', a += '            <c15:showLeaderLines val="1"/>', a += "        </c:ext>", a += "    </c:extLst>", a += "</c:dLbls>");
         }
-        r.length === 1 && t.chartColors !== kt && o.values.forEach((g, d) => {
-          const m = g < 0 ? t.invertedColors || t.chartColors || kt : t.chartColors || [];
-          a += "  <c:dPt>", a += `    <c:idx val="${d}"/>`, a += '      <c:invertIfNegative val="0"/>', a += '    <c:bubble3D val="0"/>', a += "    <c:spPr>", t.lineSize === 0 ? a += "<a:ln><a:noFill/></a:ln>" : (a += "<a:solidFill>", a += ' <a:srgbClr val="' + m[d % m.length] + '"/>', a += "</a:solidFill>"), a += st(t.shadow, it), a += "    </c:spPr>", a += "  </c:dPt>";
+        r.length === 1 && t.chartColors !== Ft && o.values.forEach((g, d) => {
+          const m = g < 0 ? t.invertedColors || t.chartColors || Ft : t.chartColors || [];
+          a += "  <c:dPt>", a += `    <c:idx val="${d}"/>`, a += '      <c:invertIfNegative val="0"/>', a += '    <c:bubble3D val="0"/>', a += "    <c:spPr>", t.lineSize === 0 ? a += "<a:ln><a:noFill/></a:ln>" : (a += "<a:solidFill>", a += ' <a:srgbClr val="' + m[d % m.length] + '"/>', a += "</a:solidFill>"), a += lt(t.shadow, st), a += "    </c:spPr>", a += "  </c:dPt>";
         }), a += "<c:xVal>", a += "  <c:numRef>", a += `    <c:f>Sheet1!$A$2:$A$${r[0].values.length + 1}</c:f>`, a += "    <c:numCache>", a += "      <c:formatCode>General</c:formatCode>", a += `      <c:ptCount val="${r[0].values.length}"/>`, r[0].values.forEach((g, d) => {
           a += `<c:pt idx="${d}"><c:v>${g || g === 0 ? g : ""}</c:v></c:pt>`;
         }), a += "    </c:numCache>", a += "  </c:numRef>", a += "</c:xVal>", a += "<c:yVal>", a += "  <c:numRef>", a += `    <c:f>Sheet1!$${_e(f + 2)}$2:$${_e(f + 2)}$${r[0].values.length + 1}</c:f>`, a += "    <c:numCache>", a += "      <c:formatCode>General</c:formatCode>", a += `      <c:ptCount val="${r[0].values.length}"/>`, r[0].values.forEach((g, d) => {
@@ -3360,7 +3360,7 @@ function Ka(e, r, t, i, n, s) {
         {
           a += "<c:spPr>";
           const g = t.chartColors[l % t.chartColors.length];
-          g === "transparent" ? a += "<a:noFill/>" : t.chartColorsOpacity ? a += `<a:solidFill>${be(g, '<a:alpha val="' + Math.round(t.chartColorsOpacity * 1e3).toString() + '"/>')}</a:solidFill>` : a += "<a:solidFill>" + be(g) + "</a:solidFill>", t.lineSize === 0 ? a += "<a:ln><a:noFill/></a:ln>" : t.dataBorder ? a += `<a:ln w="${de(t.dataBorder.pt)}" cap="flat"><a:solidFill>${be(t.dataBorder.color)}</a:solidFill><a:prstDash val="solid"/><a:round/></a:ln>` : (a += `<a:ln w="${de(t.lineSize)}" cap="flat"><a:solidFill>${be(g)}</a:solidFill>`, a += `<a:prstDash val="${t.lineDash || "solid"}"/><a:round/></a:ln>`), a += st(t.shadow, it), a += "</c:spPr>";
+          g === "transparent" ? a += "<a:noFill/>" : t.chartColorsOpacity ? a += `<a:solidFill>${be(g, '<a:alpha val="' + Math.round(t.chartColorsOpacity * 1e3).toString() + '"/>')}</a:solidFill>` : a += "<a:solidFill>" + be(g) + "</a:solidFill>", t.lineSize === 0 ? a += "<a:ln><a:noFill/></a:ln>" : t.dataBorder ? a += `<a:ln w="${de(t.dataBorder.pt)}" cap="flat"><a:solidFill>${be(t.dataBorder.color)}</a:solidFill><a:prstDash val="solid"/><a:round/></a:ln>` : (a += `<a:ln w="${de(t.lineSize)}" cap="flat"><a:solidFill>${be(g)}</a:solidFill>`, a += `<a:prstDash val="${t.lineDash || "solid"}"/><a:round/></a:ln>`), a += lt(t.shadow, st), a += "</c:spPr>";
         }
         a += "<c:xVal>", a += "  <c:numRef>", a += `    <c:f>Sheet1!$A$2:$A$${r[0].values.length + 1}</c:f>`, a += "    <c:numCache>", a += "      <c:formatCode>General</c:formatCode>", a += `      <c:ptCount val="${r[0].values.length}"/>`, r[0].values.forEach((g, d) => {
           a += `<c:pt idx="${d}"><c:v>${g || g === 0 ? g : ""}</c:v></c:pt>`;
@@ -3373,8 +3373,8 @@ function Ka(e, r, t, i, n, s) {
       break;
     case re.DOUGHNUT:
     case re.PIE:
-      A = r[0], a += "<c:" + e + "Chart>", a += '  <c:varyColors val="1"/>', a += "<c:ser>", a += '  <c:idx val="0"/>', a += '  <c:order val="0"/>', a += "  <c:tx>", a += "    <c:strRef>", a += "      <c:f>Sheet1!$B$1</c:f>", a += "      <c:strCache>", a += '        <c:ptCount val="1"/>', a += '        <c:pt idx="0"><c:v>' + fe(A.name) + "</c:v></c:pt>", a += "      </c:strCache>", a += "    </c:strRef>", a += "  </c:tx>", a += "  <c:spPr>", a += '    <a:solidFill><a:schemeClr val="accent1"/></a:solidFill>', a += '    <a:ln w="9525" cap="flat"><a:solidFill><a:srgbClr val="F9F9F9"/></a:solidFill><a:prstDash val="solid"/><a:round/></a:ln>', t.dataNoEffects ? a += "<a:effectLst/>" : a += st(t.shadow, it), a += "  </c:spPr>", A.labels[0].forEach((o, f) => {
-        a += "<c:dPt>", a += ` <c:idx val="${f}"/>`, a += ' <c:bubble3D val="0"/>', a += " <c:spPr>", a += `<a:solidFill>${be(t.chartColors[f + 1 > t.chartColors.length ? Math.floor(Math.random() * t.chartColors.length) : f])}</a:solidFill>`, t.dataBorder && (a += `<a:ln w="${de(t.dataBorder.pt)}" cap="flat"><a:solidFill>${be(t.dataBorder.color)}</a:solidFill><a:prstDash val="solid"/><a:round/></a:ln>`), a += st(t.shadow, it), a += "  </c:spPr>", a += "</c:dPt>";
+      A = r[0], a += "<c:" + e + "Chart>", a += '  <c:varyColors val="1"/>', a += "<c:ser>", a += '  <c:idx val="0"/>', a += '  <c:order val="0"/>', a += "  <c:tx>", a += "    <c:strRef>", a += "      <c:f>Sheet1!$B$1</c:f>", a += "      <c:strCache>", a += '        <c:ptCount val="1"/>', a += '        <c:pt idx="0"><c:v>' + fe(A.name) + "</c:v></c:pt>", a += "      </c:strCache>", a += "    </c:strRef>", a += "  </c:tx>", a += "  <c:spPr>", a += '    <a:solidFill><a:schemeClr val="accent1"/></a:solidFill>', a += '    <a:ln w="9525" cap="flat"><a:solidFill><a:srgbClr val="F9F9F9"/></a:solidFill><a:prstDash val="solid"/><a:round/></a:ln>', t.dataNoEffects ? a += "<a:effectLst/>" : a += lt(t.shadow, st), a += "  </c:spPr>", A.labels[0].forEach((o, f) => {
+        a += "<c:dPt>", a += ` <c:idx val="${f}"/>`, a += ' <c:bubble3D val="0"/>', a += " <c:spPr>", a += `<a:solidFill>${be(t.chartColors[f + 1 > t.chartColors.length ? Math.floor(Math.random() * t.chartColors.length) : f])}</a:solidFill>`, t.dataBorder && (a += `<a:ln w="${de(t.dataBorder.pt)}" cap="flat"><a:solidFill>${be(t.dataBorder.color)}</a:solidFill><a:prstDash val="solid"/><a:round/></a:ln>`), a += lt(t.shadow, st), a += "  </c:spPr>", a += "</c:dPt>";
       }), a += "<c:dLbls>", A.labels[0].forEach((o, f) => {
         a += "<c:dLbl>", a += ` <c:idx val="${f}"/>`, a += `  <c:numFmt formatCode="${fe(t.dataLabelFormatCode) || "General"}" sourceLinked="0"/>`, a += "  <c:spPr/><c:txPr>", a += "   <a:bodyPr/><a:lstStyle/>", a += "   <a:p><a:pPr>", a += `   <a:defRPr sz="${Math.round((t.dataLabelFontSize || Ge) * 100)}" b="${t.dataLabelFontBold ? 1 : 0}" i="${t.dataLabelFontItalic ? 1 : 0}" u="none" strike="noStrike">`, a += "    <a:solidFill>" + be(t.dataLabelColor || Fe) + "</a:solidFill>", a += `    <a:latin typeface="${t.dataLabelFontFace || "Arial"}"/>`, a += "   </a:defRPr>", a += "      </a:pPr></a:p>", a += "    </c:txPr>", e === re.PIE && t.dataLabelPosition && (a += `<c:dLblPos val="${t.dataLabelPosition}"/>`), a += '    <c:showLegendKey val="0"/>', a += '    <c:showVal val="' + (t.showValue ? "1" : "0") + '"/>', a += '    <c:showCatName val="' + (t.showLabel ? "1" : "0") + '"/>', a += '    <c:showSerName val="' + (t.showSerName ? "1" : "0") + '"/>', a += '    <c:showPercent val="' + (t.showPercent ? "1" : "0") + '"/>', a += '    <c:showBubbleSize val="0"/>', a += "  </c:dLbl>";
       }), a += ` <c:numFmt formatCode="${fe(t.dataLabelFormatCode) || "General"}" sourceLinked="0"/>`, a += "    <c:txPr>", a += "      <a:bodyPr/>", a += "      <a:lstStyle/>", a += "      <a:p>", a += "        <a:pPr>", a += `          <a:defRPr sz="1800" b="${t.dataLabelFontBold ? "1" : "0"}" i="${t.dataLabelFontItalic ? "1" : "0"}" u="none" strike="noStrike">`, a += '            <a:solidFill><a:srgbClr val="000000"/></a:solidFill><a:latin typeface="Arial"/>', a += "          </a:defRPr>", a += "        </a:pPr>", a += "      </a:p>", a += "    </c:txPr>", a += e === re.PIE ? '<c:dLblPos val="ctr"/>' : "", a += '    <c:showLegendKey val="0"/>', a += '    <c:showVal val="0"/>', a += '    <c:showCatName val="1"/>', a += '    <c:showSerName val="0"/>', a += '    <c:showPercent val="1"/>', a += '    <c:showBubbleSize val="0"/>', a += ` <c:showLeaderLines val="${t.showLeaderLines ? "1" : "0"}"/>`, a += "</c:dLbls>", a += "<c:cat>", a += "  <c:strRef>", a += `    <c:f>Sheet1!$A$2:$A$${A.labels[0].length + 1}</c:f>`, a += "    <c:strCache>", a += `         <c:ptCount val="${A.labels[0].length}"/>`, A.labels[0].forEach((o, f) => {
@@ -3389,45 +3389,45 @@ function Ka(e, r, t, i, n, s) {
   }
   return a;
 }
-function na(e, r, t) {
+function oa(e, r, t) {
   let i = "";
-  return e._type === re.SCATTER || e._type === re.BUBBLE || e._type === re.BUBBLE3D ? i += "<c:valAx>" : i += "<c:" + (e.catLabelFormatCode ? "dateAx" : "catAx") + ">", i += '  <c:axId val="' + r + '"/>', i += "  <c:scaling>", i += '<c:orientation val="' + (e.catAxisOrientation || (e.barDir === "col", "minMax")) + '"/>', (e.catAxisMaxVal || e.catAxisMaxVal === 0) && (i += `<c:max val="${e.catAxisMaxVal}"/>`), (e.catAxisMinVal || e.catAxisMinVal === 0) && (i += `<c:min val="${e.catAxisMinVal}"/>`), i += "</c:scaling>", i += '  <c:delete val="' + (e.catAxisHidden ? "1" : "0") + '"/>', i += '  <c:axPos val="' + (e.barDir === "col" ? "b" : "l") + '"/>', i += e.catGridLine.style !== "none" ? Fa(e.catGridLine) : "", e.showCatAxisTitle && (i += Vr({
+  return e._type === re.SCATTER || e._type === re.BUBBLE || e._type === re.BUBBLE3D ? i += "<c:valAx>" : i += "<c:" + (e.catLabelFormatCode ? "dateAx" : "catAx") + ">", i += '  <c:axId val="' + r + '"/>', i += "  <c:scaling>", i += '<c:orientation val="' + (e.catAxisOrientation || (e.barDir === "col", "minMax")) + '"/>', (e.catAxisMaxVal || e.catAxisMaxVal === 0) && (i += `<c:max val="${e.catAxisMaxVal}"/>`), (e.catAxisMinVal || e.catAxisMinVal === 0) && (i += `<c:min val="${e.catAxisMinVal}"/>`), i += "</c:scaling>", i += '  <c:delete val="' + (e.catAxisHidden ? "1" : "0") + '"/>', i += '  <c:axPos val="' + (e.barDir === "col" ? "b" : "l") + '"/>', i += e.catGridLine.style !== "none" ? Fa(e.catGridLine) : "", e.showCatAxisTitle && (i += Qr({
     color: e.catAxisTitleColor,
     fontFace: e.catAxisTitleFontFace,
     fontSize: e.catAxisTitleFontSize,
     titleRotate: e.catAxisTitleRotate,
     title: e.catAxisTitle || "Axis Title"
-  })), e._type === re.SCATTER || e._type === re.BUBBLE || e._type === re.BUBBLE3D ? i += '  <c:numFmt formatCode="' + (e.valAxisLabelFormatCode ? fe(e.valAxisLabelFormatCode) : "General") + '" sourceLinked="1"/>' : i += '  <c:numFmt formatCode="' + (fe(e.catLabelFormatCode) || "General") + '" sourceLinked="1"/>', e._type === re.SCATTER ? (i += '  <c:majorTickMark val="none"/>', i += '  <c:minorTickMark val="none"/>', i += '  <c:tickLblPos val="nextTo"/>') : (i += '  <c:majorTickMark val="' + (e.catAxisMajorTickMark || "out") + '"/>', i += '  <c:minorTickMark val="' + (e.catAxisMinorTickMark || "none") + '"/>', i += '  <c:tickLblPos val="' + (e.catAxisLabelPos || (e.barDir === "col" ? "low" : "nextTo")) + '"/>'), i += "  <c:spPr>", i += `    <a:ln w="${e.catAxisLineSize ? de(e.catAxisLineSize) : Xt}" cap="flat">`, i += e.catAxisLineShow ? "<a:solidFill>" + be(e.catAxisLineColor || ft.color) + "</a:solidFill>" : "<a:noFill/>", i += '      <a:prstDash val="' + (e.catAxisLineStyle || "solid") + '"/>', i += "      <a:round/>", i += "    </a:ln>", i += "  </c:spPr>", i += "  <c:txPr>", e.catAxisLabelRotate ? i += `<a:bodyPr rot="${ut(e.catAxisLabelRotate)}"/>` : i += "<a:bodyPr/>", i += "    <a:lstStyle/>", i += "    <a:p>", i += "    <a:pPr>", i += `      <a:defRPr sz="${Math.round((e.catAxisLabelFontSize || Ge) * 100)}" b="${e.catAxisLabelFontBold ? 1 : 0}" i="${e.catAxisLabelFontItalic ? 1 : 0}" u="none" strike="noStrike">`, i += "      <a:solidFill>" + be(e.catAxisLabelColor || Fe) + "</a:solidFill>", i += '      <a:latin typeface="' + (e.catAxisLabelFontFace || "Arial") + '"/>', i += "   </a:defRPr>", i += "  </a:pPr>", i += '  <a:endParaRPr lang="' + (e.lang || "en-US") + '"/>', i += "  </a:p>", i += " </c:txPr>", i += ' <c:crossAx val="' + t + '"/>', i += ` <c:${typeof e.valAxisCrossesAt == "number" ? "crossesAt" : "crosses"} val="${e.valAxisCrossesAt || "autoZero"}"/>`, i += ' <c:auto val="1"/>', i += ' <c:lblAlgn val="ctr"/>', i += ` <c:noMultiLvlLbl val="${e.catAxisMultiLevelLabels ? 0 : 1}"/>`, e.catAxisLabelFrequency && (i += ' <c:tickLblSkip val="' + e.catAxisLabelFrequency + '"/>'), (e.catLabelFormatCode || e._type === re.SCATTER || e._type === re.BUBBLE || e._type === re.BUBBLE3D) && (e.catLabelFormatCode && (["catAxisBaseTimeUnit", "catAxisMajorTimeUnit", "catAxisMinorTimeUnit"].forEach((n) => {
+  })), e._type === re.SCATTER || e._type === re.BUBBLE || e._type === re.BUBBLE3D ? i += '  <c:numFmt formatCode="' + (e.valAxisLabelFormatCode ? fe(e.valAxisLabelFormatCode) : "General") + '" sourceLinked="1"/>' : i += '  <c:numFmt formatCode="' + (fe(e.catLabelFormatCode) || "General") + '" sourceLinked="1"/>', e._type === re.SCATTER ? (i += '  <c:majorTickMark val="none"/>', i += '  <c:minorTickMark val="none"/>', i += '  <c:tickLblPos val="nextTo"/>') : (i += '  <c:majorTickMark val="' + (e.catAxisMajorTickMark || "out") + '"/>', i += '  <c:minorTickMark val="' + (e.catAxisMinorTickMark || "none") + '"/>', i += '  <c:tickLblPos val="' + (e.catAxisLabelPos || (e.barDir === "col" ? "low" : "nextTo")) + '"/>'), i += "  <c:spPr>", i += `    <a:ln w="${e.catAxisLineSize ? de(e.catAxisLineSize) : Wt}" cap="flat">`, i += e.catAxisLineShow ? "<a:solidFill>" + be(e.catAxisLineColor || ut.color) + "</a:solidFill>" : "<a:noFill/>", i += '      <a:prstDash val="' + (e.catAxisLineStyle || "solid") + '"/>', i += "      <a:round/>", i += "    </a:ln>", i += "  </c:spPr>", i += "  <c:txPr>", e.catAxisLabelRotate ? i += `<a:bodyPr rot="${ht(e.catAxisLabelRotate)}"/>` : i += "<a:bodyPr/>", i += "    <a:lstStyle/>", i += "    <a:p>", i += "    <a:pPr>", i += `      <a:defRPr sz="${Math.round((e.catAxisLabelFontSize || Ge) * 100)}" b="${e.catAxisLabelFontBold ? 1 : 0}" i="${e.catAxisLabelFontItalic ? 1 : 0}" u="none" strike="noStrike">`, i += "      <a:solidFill>" + be(e.catAxisLabelColor || Fe) + "</a:solidFill>", i += '      <a:latin typeface="' + (e.catAxisLabelFontFace || "Arial") + '"/>', i += "   </a:defRPr>", i += "  </a:pPr>", i += '  <a:endParaRPr lang="' + (e.lang || "en-US") + '"/>', i += "  </a:p>", i += " </c:txPr>", i += ' <c:crossAx val="' + t + '"/>', i += ` <c:${typeof e.valAxisCrossesAt == "number" ? "crossesAt" : "crosses"} val="${e.valAxisCrossesAt || "autoZero"}"/>`, i += ' <c:auto val="1"/>', i += ' <c:lblAlgn val="ctr"/>', i += ` <c:noMultiLvlLbl val="${e.catAxisMultiLevelLabels ? 0 : 1}"/>`, e.catAxisLabelFrequency && (i += ' <c:tickLblSkip val="' + e.catAxisLabelFrequency + '"/>'), (e.catLabelFormatCode || e._type === re.SCATTER || e._type === re.BUBBLE || e._type === re.BUBBLE3D) && (e.catLabelFormatCode && (["catAxisBaseTimeUnit", "catAxisMajorTimeUnit", "catAxisMinorTimeUnit"].forEach((n) => {
     e[n] && (typeof e[n] != "string" || !["days", "months", "years"].includes(e[n].toLowerCase())) && (console.warn(`"${n}" must be one of: 'days','months','years' !`), e[n] = null);
   }), e.catAxisBaseTimeUnit && (i += '<c:baseTimeUnit val="' + e.catAxisBaseTimeUnit.toLowerCase() + '"/>'), e.catAxisMajorTimeUnit && (i += '<c:majorTimeUnit val="' + e.catAxisMajorTimeUnit.toLowerCase() + '"/>'), e.catAxisMinorTimeUnit && (i += '<c:minorTimeUnit val="' + e.catAxisMinorTimeUnit.toLowerCase() + '"/>')), e.catAxisMajorUnit && (i += `<c:majorUnit val="${e.catAxisMajorUnit}"/>`), e.catAxisMinorUnit && (i += `<c:minorUnit val="${e.catAxisMinorUnit}"/>`)), e._type === re.SCATTER || e._type === re.BUBBLE || e._type === re.BUBBLE3D ? i += "</c:valAx>" : i += "</c:" + (e.catLabelFormatCode ? "dateAx" : "catAx") + ">", i;
 }
-function oa(e, r) {
-  let t = r === Ye ? e.barDir === "col" ? "l" : "b" : e.barDir !== "col" ? "r" : "t";
-  r === Fr && (t = "r");
-  const i = r === Ye ? It : xa;
+function ia(e, r) {
+  let t = r === Ke ? e.barDir === "col" ? "l" : "b" : e.barDir !== "col" ? "r" : "t";
+  r === Mr && (t = "r");
+  const i = r === Ke ? kt : xa;
   let n = "";
-  return n += "<c:valAx>", n += '  <c:axId val="' + r + '"/>', n += "  <c:scaling>", e.valAxisLogScaleBase && (n += `<c:logBase val="${e.valAxisLogScaleBase}"/>`), n += '<c:orientation val="' + (e.valAxisOrientation || (e.barDir === "col", "minMax")) + '"/>', (e.valAxisMaxVal || e.valAxisMaxVal === 0) && (n += `<c:max val="${e.valAxisMaxVal}"/>`), (e.valAxisMinVal || e.valAxisMinVal === 0) && (n += `<c:min val="${e.valAxisMinVal}"/>`), n += "  </c:scaling>", n += `  <c:delete val="${e.valAxisHidden ? 1 : 0}"/>`, n += '  <c:axPos val="' + t + '"/>', e.valGridLine.style !== "none" && (n += Fa(e.valGridLine)), e.showValAxisTitle && (n += Vr({
+  return n += "<c:valAx>", n += '  <c:axId val="' + r + '"/>', n += "  <c:scaling>", e.valAxisLogScaleBase && (n += `<c:logBase val="${e.valAxisLogScaleBase}"/>`), n += '<c:orientation val="' + (e.valAxisOrientation || (e.barDir === "col", "minMax")) + '"/>', (e.valAxisMaxVal || e.valAxisMaxVal === 0) && (n += `<c:max val="${e.valAxisMaxVal}"/>`), (e.valAxisMinVal || e.valAxisMinVal === 0) && (n += `<c:min val="${e.valAxisMinVal}"/>`), n += "  </c:scaling>", n += `  <c:delete val="${e.valAxisHidden ? 1 : 0}"/>`, n += '  <c:axPos val="' + t + '"/>', e.valGridLine.style !== "none" && (n += Fa(e.valGridLine)), e.showValAxisTitle && (n += Qr({
     color: e.valAxisTitleColor,
     fontFace: e.valAxisTitleFontFace,
     fontSize: e.valAxisTitleFontSize,
     titleRotate: e.valAxisTitleRotate,
     title: e.valAxisTitle || "Axis Title"
-  })), n += `<c:numFmt formatCode="${e.valAxisLabelFormatCode ? fe(e.valAxisLabelFormatCode) : "General"}" sourceLinked="0"/>`, e._type === re.SCATTER ? (n += '  <c:majorTickMark val="none"/>', n += '  <c:minorTickMark val="none"/>', n += '  <c:tickLblPos val="nextTo"/>') : (n += ' <c:majorTickMark val="' + (e.valAxisMajorTickMark || "out") + '"/>', n += ' <c:minorTickMark val="' + (e.valAxisMinorTickMark || "none") + '"/>', n += ' <c:tickLblPos val="' + (e.valAxisLabelPos || (e.barDir === "col" ? "nextTo" : "low")) + '"/>'), n += " <c:spPr>", n += `   <a:ln w="${e.valAxisLineSize ? de(e.valAxisLineSize) : Xt}" cap="flat">`, n += e.valAxisLineShow ? "<a:solidFill>" + be(e.valAxisLineColor || ft.color) + "</a:solidFill>" : "<a:noFill/>", n += '     <a:prstDash val="' + (e.valAxisLineStyle || "solid") + '"/>', n += "     <a:round/>", n += "   </a:ln>", n += " </c:spPr>", n += " <c:txPr>", n += `  <a:bodyPr${e.valAxisLabelRotate ? ' rot="' + ut(e.valAxisLabelRotate).toString() + '"' : ""}/>`, n += "  <a:lstStyle/>", n += "  <a:p>", n += "    <a:pPr>", n += `      <a:defRPr sz="${Math.round((e.valAxisLabelFontSize || Ge) * 100)}" b="${e.valAxisLabelFontBold ? 1 : 0}" i="${e.valAxisLabelFontItalic ? 1 : 0}" u="none" strike="noStrike">`, n += "        <a:solidFill>" + be(e.valAxisLabelColor || Fe) + "</a:solidFill>", n += '        <a:latin typeface="' + (e.valAxisLabelFontFace || "Arial") + '"/>', n += "      </a:defRPr>", n += "    </a:pPr>", n += '  <a:endParaRPr lang="' + (e.lang || "en-US") + '"/>', n += "  </a:p>", n += " </c:txPr>", n += ' <c:crossAx val="' + i + '"/>', typeof e.catAxisCrossesAt == "number" ? n += ` <c:crossesAt val="${e.catAxisCrossesAt}"/>` : typeof e.catAxisCrossesAt == "string" ? n += ' <c:crosses val="' + e.catAxisCrossesAt + '"/>' : n += ' <c:crosses val="' + (t === "r" || t === "t" ? "max" : "autoZero") + '"/>', n += ' <c:crossBetween val="' + (e._type === re.SCATTER || Array.isArray(e._type) && e._type.filter((s) => s.type === re.AREA).length > 0 ? "midCat" : "between") + '"/>', e.valAxisMajorUnit && (n += ` <c:majorUnit val="${e.valAxisMajorUnit}"/>`), e.valAxisDisplayUnit && (n += `<c:dispUnits><c:builtInUnit val="${e.valAxisDisplayUnit}"/>${e.valAxisDisplayUnitLabel ? "<c:dispUnitsLbl/>" : ""}</c:dispUnits>`), n += "</c:valAx>", n;
+  })), n += `<c:numFmt formatCode="${e.valAxisLabelFormatCode ? fe(e.valAxisLabelFormatCode) : "General"}" sourceLinked="0"/>`, e._type === re.SCATTER ? (n += '  <c:majorTickMark val="none"/>', n += '  <c:minorTickMark val="none"/>', n += '  <c:tickLblPos val="nextTo"/>') : (n += ' <c:majorTickMark val="' + (e.valAxisMajorTickMark || "out") + '"/>', n += ' <c:minorTickMark val="' + (e.valAxisMinorTickMark || "none") + '"/>', n += ' <c:tickLblPos val="' + (e.valAxisLabelPos || (e.barDir === "col" ? "nextTo" : "low")) + '"/>'), n += " <c:spPr>", n += `   <a:ln w="${e.valAxisLineSize ? de(e.valAxisLineSize) : Wt}" cap="flat">`, n += e.valAxisLineShow ? "<a:solidFill>" + be(e.valAxisLineColor || ut.color) + "</a:solidFill>" : "<a:noFill/>", n += '     <a:prstDash val="' + (e.valAxisLineStyle || "solid") + '"/>', n += "     <a:round/>", n += "   </a:ln>", n += " </c:spPr>", n += " <c:txPr>", n += `  <a:bodyPr${e.valAxisLabelRotate ? ' rot="' + ht(e.valAxisLabelRotate).toString() + '"' : ""}/>`, n += "  <a:lstStyle/>", n += "  <a:p>", n += "    <a:pPr>", n += `      <a:defRPr sz="${Math.round((e.valAxisLabelFontSize || Ge) * 100)}" b="${e.valAxisLabelFontBold ? 1 : 0}" i="${e.valAxisLabelFontItalic ? 1 : 0}" u="none" strike="noStrike">`, n += "        <a:solidFill>" + be(e.valAxisLabelColor || Fe) + "</a:solidFill>", n += '        <a:latin typeface="' + (e.valAxisLabelFontFace || "Arial") + '"/>', n += "      </a:defRPr>", n += "    </a:pPr>", n += '  <a:endParaRPr lang="' + (e.lang || "en-US") + '"/>', n += "  </a:p>", n += " </c:txPr>", n += ' <c:crossAx val="' + i + '"/>', typeof e.catAxisCrossesAt == "number" ? n += ` <c:crossesAt val="${e.catAxisCrossesAt}"/>` : typeof e.catAxisCrossesAt == "string" ? n += ' <c:crosses val="' + e.catAxisCrossesAt + '"/>' : n += ' <c:crosses val="' + (t === "r" || t === "t" ? "max" : "autoZero") + '"/>', n += ' <c:crossBetween val="' + (e._type === re.SCATTER || Array.isArray(e._type) && e._type.filter((s) => s.type === re.AREA).length > 0 ? "midCat" : "between") + '"/>', e.valAxisMajorUnit && (n += ` <c:majorUnit val="${e.valAxisMajorUnit}"/>`), e.valAxisDisplayUnit && (n += `<c:dispUnits><c:builtInUnit val="${e.valAxisDisplayUnit}"/>${e.valAxisDisplayUnitLabel ? "<c:dispUnitsLbl/>" : ""}</c:dispUnits>`), n += "</c:valAx>", n;
 }
-function ki(e, r, t) {
+function Ii(e, r, t) {
   let i = "";
-  return i += "<c:serAx>", i += '  <c:axId val="' + r + '"/>', i += '  <c:scaling><c:orientation val="' + (e.serAxisOrientation || (e.barDir === "col", "minMax")) + '"/></c:scaling>', i += '  <c:delete val="' + (e.serAxisHidden ? "1" : "0") + '"/>', i += '  <c:axPos val="' + (e.barDir === "col" ? "b" : "l") + '"/>', i += e.serGridLine.style !== "none" ? Fa(e.serGridLine) : "", e.showSerAxisTitle && (i += Vr({
+  return i += "<c:serAx>", i += '  <c:axId val="' + r + '"/>', i += '  <c:scaling><c:orientation val="' + (e.serAxisOrientation || (e.barDir === "col", "minMax")) + '"/></c:scaling>', i += '  <c:delete val="' + (e.serAxisHidden ? "1" : "0") + '"/>', i += '  <c:axPos val="' + (e.barDir === "col" ? "b" : "l") + '"/>', i += e.serGridLine.style !== "none" ? Fa(e.serGridLine) : "", e.showSerAxisTitle && (i += Qr({
     color: e.serAxisTitleColor,
     fontFace: e.serAxisTitleFontFace,
     fontSize: e.serAxisTitleFontSize,
     titleRotate: e.serAxisTitleRotate,
     title: e.serAxisTitle || "Axis Title"
-  })), i += `  <c:numFmt formatCode="${fe(e.serLabelFormatCode) || "General"}" sourceLinked="0"/>`, i += '  <c:majorTickMark val="out"/>', i += '  <c:minorTickMark val="none"/>', i += `  <c:tickLblPos val="${e.serAxisLabelPos || e.barDir === "col" ? "low" : "nextTo"}"/>`, i += "  <c:spPr>", i += '    <a:ln w="12700" cap="flat">', i += e.serAxisLineShow ? `<a:solidFill>${be(e.serAxisLineColor || ft.color)}</a:solidFill>` : "<a:noFill/>", i += '      <a:prstDash val="solid"/>', i += "      <a:round/>", i += "    </a:ln>", i += "  </c:spPr>", i += "  <c:txPr>", i += "    <a:bodyPr/>", i += "    <a:lstStyle/>", i += "    <a:p>", i += "    <a:pPr>", i += `    <a:defRPr sz="${Math.round((e.serAxisLabelFontSize || Ge) * 100)}" b="${e.serAxisLabelFontBold ? "1" : "0"}" i="${e.serAxisLabelFontItalic ? "1" : "0"}" u="none" strike="noStrike">`, i += `      <a:solidFill>${be(e.serAxisLabelColor || Fe)}</a:solidFill>`, i += `      <a:latin typeface="${e.serAxisLabelFontFace || "Arial"}"/>`, i += "   </a:defRPr>", i += "  </a:pPr>", i += '  <a:endParaRPr lang="' + (e.lang || "en-US") + '"/>', i += "  </a:p>", i += " </c:txPr>", i += ' <c:crossAx val="' + t + '"/>', i += ' <c:crosses val="autoZero"/>', e.serAxisLabelFrequency && (i += ' <c:tickLblSkip val="' + e.serAxisLabelFrequency + '"/>'), e.serLabelFormatCode && (["serAxisBaseTimeUnit", "serAxisMajorTimeUnit", "serAxisMinorTimeUnit"].forEach((n) => {
+  })), i += `  <c:numFmt formatCode="${fe(e.serLabelFormatCode) || "General"}" sourceLinked="0"/>`, i += '  <c:majorTickMark val="out"/>', i += '  <c:minorTickMark val="none"/>', i += `  <c:tickLblPos val="${e.serAxisLabelPos || e.barDir === "col" ? "low" : "nextTo"}"/>`, i += "  <c:spPr>", i += '    <a:ln w="12700" cap="flat">', i += e.serAxisLineShow ? `<a:solidFill>${be(e.serAxisLineColor || ut.color)}</a:solidFill>` : "<a:noFill/>", i += '      <a:prstDash val="solid"/>', i += "      <a:round/>", i += "    </a:ln>", i += "  </c:spPr>", i += "  <c:txPr>", i += "    <a:bodyPr/>", i += "    <a:lstStyle/>", i += "    <a:p>", i += "    <a:pPr>", i += `    <a:defRPr sz="${Math.round((e.serAxisLabelFontSize || Ge) * 100)}" b="${e.serAxisLabelFontBold ? "1" : "0"}" i="${e.serAxisLabelFontItalic ? "1" : "0"}" u="none" strike="noStrike">`, i += `      <a:solidFill>${be(e.serAxisLabelColor || Fe)}</a:solidFill>`, i += `      <a:latin typeface="${e.serAxisLabelFontFace || "Arial"}"/>`, i += "   </a:defRPr>", i += "  </a:pPr>", i += '  <a:endParaRPr lang="' + (e.lang || "en-US") + '"/>', i += "  </a:p>", i += " </c:txPr>", i += ' <c:crossAx val="' + t + '"/>', i += ' <c:crosses val="autoZero"/>', e.serAxisLabelFrequency && (i += ' <c:tickLblSkip val="' + e.serAxisLabelFrequency + '"/>'), e.serLabelFormatCode && (["serAxisBaseTimeUnit", "serAxisMajorTimeUnit", "serAxisMinorTimeUnit"].forEach((n) => {
     e[n] && (typeof e[n] != "string" || !["days", "months", "years"].includes(n.toLowerCase())) && (console.warn(`"${n}" must be one of: 'days','months','years' !`), e[n] = null);
   }), e.serAxisBaseTimeUnit && (i += ` <c:baseTimeUnit  val="${e.serAxisBaseTimeUnit.toLowerCase()}"/>`), e.serAxisMajorTimeUnit && (i += ` <c:majorTimeUnit val="${e.serAxisMajorTimeUnit.toLowerCase()}"/>`), e.serAxisMinorTimeUnit && (i += ` <c:minorTimeUnit val="${e.serAxisMinorTimeUnit.toLowerCase()}"/>`), e.serAxisMajorUnit && (i += ` <c:majorUnit val="${e.serAxisMajorUnit}"/>`), e.serAxisMinorUnit && (i += ` <c:minorUnit val="${e.serAxisMinorUnit}"/>`)), i += "</c:serAx>", i;
 }
-function Vr(e, r, t) {
-  const i = e.titleAlign === "left" || e.titleAlign === "right" ? `<a:pPr algn="${e.titleAlign.substring(0, 1)}">` : "<a:pPr>", n = e.titleRotate ? `<a:bodyPr rot="${ut(e.titleRotate)}"/>` : "<a:bodyPr/>", s = e.fontSize ? `sz="${Math.round(e.fontSize * 100)}"` : "", l = e.titleBold ? 1 : 0;
+function Qr(e, r, t) {
+  const i = e.titleAlign === "left" || e.titleAlign === "right" ? `<a:pPr algn="${e.titleAlign.substring(0, 1)}">` : "<a:pPr>", n = e.titleRotate ? `<a:bodyPr rot="${ht(e.titleRotate)}"/>` : "<a:bodyPr/>", s = e.fontSize ? `sz="${Math.round(e.fontSize * 100)}"` : "", l = e.titleBold ? 1 : 0;
   let c = "<c:layout/>";
   if (e.titlePos && typeof e.titlePos.x == "number" && typeof e.titlePos.y == "number") {
     const A = e.titlePos.x + r, a = e.titlePos.y + t;
@@ -3465,9 +3465,9 @@ function Vr(e, r, t) {
 function _e(e) {
   let r = "";
   const t = e - 1;
-  return t <= 25 ? r = Pt[t] : r = `${Pt[Math.floor(t / Pt.length - 1)]}${Pt[t % Pt.length]}`, r;
+  return t <= 25 ? r = Bt[t] : r = `${Bt[Math.floor(t / Bt.length - 1)]}${Bt[t % Bt.length]}`, r;
 }
-function st(e, r) {
+function lt(e, r) {
   if (e) {
     if (typeof e != "object")
       return console.warn("`shadow` options must be an object. Ex: `{shadow: {type:'none'}}`"), "<a:effectLst/>";
@@ -3478,9 +3478,9 @@ function st(e, r) {
 }
 function Fa(e) {
   let r = "<c:majorGridlines>";
-  return r += " <c:spPr>", r += `  <a:ln w="${de(e.size || ft.size)}" cap="${Or(e.cap || ft.cap)}">`, r += '  <a:solidFill><a:srgbClr val="' + (e.color || ft.color) + '"/></a:solidFill>', r += '   <a:prstDash val="' + (e.style || ft.style) + '"/><a:round/>', r += "  </a:ln>", r += " </c:spPr>", r += "</c:majorGridlines>", r;
+  return r += " <c:spPr>", r += `  <a:ln w="${de(e.size || ut.size)}" cap="${$r(e.cap || ut.cap)}">`, r += '  <a:solidFill><a:srgbClr val="' + (e.color || ut.color) + '"/></a:solidFill>', r += '   <a:prstDash val="' + (e.style || ut.style) + '"/><a:round/>', r += "  </a:ln>", r += " </c:spPr>", r += "</c:majorGridlines>", r;
 }
-function Or(e) {
+function $r(e) {
   if (!e || e === "flat")
     return "flat";
   if (e === "square")
@@ -3492,7 +3492,7 @@ function Or(e) {
     throw new Error(`Invalid chart line cap: ${r}`);
   }
 }
-function ia(e) {
+function sa(e) {
   var r, t;
   const i = typeof process < "u" && !!(!((r = process.versions) === null || r === void 0) && r.node) && ((t = process.release) === null || t === void 0 ? void 0 : t.name) === "node";
   let n, s;
@@ -3528,7 +3528,7 @@ ${String(f)}`);
         d.onload = () => {
           const m = new FileReader();
           m.onloadend = () => {
-            o.data = m.result, A.filter((u) => u.isDuplicate && u.path === o.path).forEach((u) => u.data = o.data), o.isSvgPng ? Ya(o).then(() => f("done")).catch(g) : f("done");
+            o.data = m.result, A.filter((u) => u.isDuplicate && u.path === o.path).forEach((u) => u.data = o.data), o.isSvgPng ? Za(o).then(() => f("done")).catch(g) : f("done");
           }, m.readAsDataURL(d.response);
         }, d.onerror = () => {
           o.data = xt, A.filter((m) => m.isDuplicate && m.path === o.path).forEach((m) => m.data = o.data), g(new Error(`ERROR! Unable to load image (xhr.onerror): ${o.path}`));
@@ -3537,11 +3537,11 @@ ${String(f)}`);
     }));
   }), e._relsMedia.filter((o) => o.isSvgPng && o.data).forEach((o) => {
     $e(this, void 0, void 0, function* () {
-      i && !n && (yield l()), i && n ? (o.data = xt, c.push(Promise.resolve("done"))) : c.push(Ya(o));
+      i && !n && (yield l()), i && n ? (o.data = xt, c.push(Promise.resolve("done"))) : c.push(Za(o));
     });
   }), c;
 }
-function Ya(e) {
+function Za(e) {
   return $e(this, void 0, void 0, function* () {
     return yield new Promise((r, t) => {
       const i = new Image();
@@ -3562,7 +3562,7 @@ function Ya(e) {
     });
   });
 }
-const Fi = {
+const ki = {
   cover: function(e, r) {
     const t = e.h / e.w, n = r.h / r.w > t, s = n ? r.h / t : r.w, l = n ? r.h : r.w * t, c = Math.round(1e5 * 0.5 * (1 - r.w / s)), A = Math.round(1e5 * 0.5 * (1 - r.h / l));
     return `<a:srcRect l="${c}" r="${c}" t="${A}" b="${A}"/><a:stretch/>`;
@@ -3581,13 +3581,13 @@ function Ma(e) {
   let t = e._name ? '<p:cSld name="' + e._name + '">' : "<p:cSld>", i = 1;
   return e._bkgdImgRid ? t += `<p:bg><p:bgPr><a:blipFill dpi="0" rotWithShape="1"><a:blip r:embed="rId${e._bkgdImgRid}"><a:lum/></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></a:blipFill><a:effectLst/></p:bgPr></p:bg>` : !((r = e.background) === null || r === void 0) && r.color ? t += `<p:bg><p:bgPr>${ze(e.background)}</p:bgPr></p:bg>` : !e.bkgd && e._name && e._name === Ca && (t += '<p:bg><p:bgRef idx="1001"><a:schemeClr val="bg1"/></p:bgRef></p:bg>'), t += "<p:spTree>", t += '<p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr>', t += '<p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/>', t += '<a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>', e._slideObjects.forEach((n, s) => {
     var l, c, A, a, o, f, g, d;
-    let m = 0, u = 0, y = pe("75%", "X", e._presLayout), p = 0, h, _ = "", E = null, v = null, C = 0, x = 0, B = null, R = null;
+    let m = 0, u = 0, y = pe("75%", "X", e._presLayout), p = 0, h, _ = "", T = null, v = null, C = 0, x = 0, B = null, R = null;
     const I = (l = n.options) === null || l === void 0 ? void 0 : l.sizing, O = (c = n.options) === null || c === void 0 ? void 0 : c.rounding;
     e._slideLayout !== void 0 && e._slideLayout._slideObjects !== void 0 && n.options && n.options.placeholder && (h = e._slideLayout._slideObjects.filter((w) => w.options.placeholder === n.options.placeholder)[0]), n.options = n.options || {}, typeof n.options.x < "u" && (m = pe(n.options.x, "X", e._presLayout)), typeof n.options.y < "u" && (u = pe(n.options.y, "Y", e._presLayout)), typeof n.options.w < "u" && (y = pe(n.options.w, "X", e._presLayout)), typeof n.options.h < "u" && (p = pe(n.options.h, "Y", e._presLayout));
-    let T = y, M = p;
-    switch (h && ((h.options.x || h.options.x === 0) && (m = pe(h.options.x, "X", e._presLayout)), (h.options.y || h.options.y === 0) && (u = pe(h.options.y, "Y", e._presLayout)), (h.options.w || h.options.w === 0) && (y = pe(h.options.w, "X", e._presLayout)), (h.options.h || h.options.h === 0) && (p = pe(h.options.h, "Y", e._presLayout))), n.options.flipH && (_ += ' flipH="1"'), n.options.flipV && (_ += ' flipV="1"'), n.options.rotate && (_ += ` rot="${ut(n.options.rotate)}"`), n._type) {
+    let E = y, M = p;
+    switch (h && ((h.options.x || h.options.x === 0) && (m = pe(h.options.x, "X", e._presLayout)), (h.options.y || h.options.y === 0) && (u = pe(h.options.y, "Y", e._presLayout)), (h.options.w || h.options.w === 0) && (y = pe(h.options.w, "X", e._presLayout)), (h.options.h || h.options.h === 0) && (p = pe(h.options.h, "Y", e._presLayout))), n.options.flipH && (_ += ' flipH="1"'), n.options.flipV && (_ += ' flipV="1"'), n.options.rotate && (_ += ` rot="${ht(n.options.rotate)}"`), n._type) {
       case ue.table:
-        if (E = n.arrTabRows, v = n.options, C = 0, x = 0, E[0].forEach((w) => {
+        if (T = n.arrTabRows, v = n.options, C = 0, x = 0, T[0].forEach((w) => {
           B = w.options || null, C += B?.colspan ? Number(B.colspan) : 1;
         }), R = `<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id="${i * e._slideNum + 1}" name="${n.options.objectName}"/>`, R += '<p:cNvGraphicFramePr><a:graphicFrameLocks noGrp="1"/></p:cNvGraphicFramePr>  <p:nvPr><p:extLst><p:ext uri="{D42A27DB-BD31-4B8C-83A1-F6EECF244321}"><p14:modId xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" val="1579011935"/></p:ext></p:extLst></p:nvPr></p:nvGraphicFramePr>', R += `<p:xfrm><a:off x="${m || (m === 0 ? 0 : he)}" y="${u || (u === 0 ? 0 : he)}"/><a:ext cx="${y || (y === 0 ? 0 : he)}" cy="${p || he}"/></p:xfrm>`, R += '<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/table"><a:tbl><a:tblPr/>', Array.isArray(v.colW)) {
           R += "<a:tblGrid>";
@@ -3602,31 +3602,31 @@ function Ma(e) {
             R += `<a:gridCol w="${x}"/>`;
           R += "</a:tblGrid>";
         }
-        E.forEach((w) => {
+        T.forEach((w) => {
           var G, ee;
-          for (let K = 0; K < w.length; ) {
-            const ne = w[K], Z = (G = ne.options) === null || G === void 0 ? void 0 : G.colspan, Q = (ee = ne.options) === null || ee === void 0 ? void 0 : ee.rowspan;
+          for (let Y = 0; Y < w.length; ) {
+            const ne = w[Y], Z = (G = ne.options) === null || G === void 0 ? void 0 : G.colspan, Q = (ee = ne.options) === null || ee === void 0 ? void 0 : ee.rowspan;
             if (Z && Z > 1) {
-              const D = new Array(Z - 1).fill(void 0).map(() => ({ _type: ue.tablecell, options: { rowspan: Q }, _hmerge: !0 }));
-              w.splice(K + 1, 0, ...D), K += Z;
+              const P = new Array(Z - 1).fill(void 0).map(() => ({ _type: ue.tablecell, options: { rowspan: Q }, _hmerge: !0 }));
+              w.splice(Y + 1, 0, ...P), Y += Z;
             } else
-              K += 1;
+              Y += 1;
           }
-        }), E.forEach((w, G) => {
-          const ee = E[G + 1];
-          ee && w.forEach((K, ne) => {
+        }), T.forEach((w, G) => {
+          const ee = T[G + 1];
+          ee && w.forEach((Y, ne) => {
             var Z, Q;
-            const D = K._rowContinue || ((Z = K.options) === null || Z === void 0 ? void 0 : Z.rowspan), F = (Q = K.options) === null || Q === void 0 ? void 0 : Q.colspan, $ = K._hmerge;
-            if (D && D > 1) {
-              const L = { _type: ue.tablecell, options: { colspan: F }, _rowContinue: D - 1, _vmerge: !0, _hmerge: $ };
+            const P = Y._rowContinue || ((Z = Y.options) === null || Z === void 0 ? void 0 : Z.rowspan), F = (Q = Y.options) === null || Q === void 0 ? void 0 : Q.colspan, $ = Y._hmerge;
+            if (P && P > 1) {
+              const L = { _type: ue.tablecell, options: { colspan: F }, _rowContinue: P - 1, _vmerge: !0, _hmerge: $ };
               ee.splice(ne, 0, L);
             }
           });
-        }), E.forEach((w, G) => {
+        }), T.forEach((w, G) => {
           let ee = 0;
-          Array.isArray(v.rowH) && v.rowH[G] ? ee = ve(Number(v.rowH[G])) : v.rowH && !isNaN(Number(v.rowH)) ? ee = ve(Number(v.rowH)) : (n.options.cy || n.options.h) && (ee = Math.round((n.options.h ? ve(n.options.h) : typeof n.options.cy == "number" ? n.options.cy : 1) / E.length)), R += `<a:tr h="${ee}">`, w.forEach((K) => {
-            var ne, Z, Q, D, F;
-            const $ = K, L = {
+          Array.isArray(v.rowH) && v.rowH[G] ? ee = ve(Number(v.rowH[G])) : v.rowH && !isNaN(Number(v.rowH)) ? ee = ve(Number(v.rowH)) : (n.options.cy || n.options.h) && (ee = Math.round((n.options.h ? ve(n.options.h) : typeof n.options.cy == "number" ? n.options.cy : 1) / T.length)), R += `<a:tr h="${ee}">`, w.forEach((Y) => {
+            var ne, Z, Q, P, F;
+            const $ = Y, L = {
               rowSpan: ((ne = $.options) === null || ne === void 0 ? void 0 : ne.rowspan) > 1 ? $.options.rowspan : void 0,
               gridSpan: ((Z = $.options) === null || Z === void 0 ? void 0 : Z.colspan) > 1 ? $.options.colspan : void 0,
               vMerge: $._vmerge ? 1 : void 0,
@@ -3642,13 +3642,13 @@ function Ma(e) {
               v[j] && !H[j] && H[j] !== 0 && (H[j] = v[j]);
             });
             const ie = H.valign ? ` anchor="${H.valign.replace(/^c$/i, "ctr").replace(/^m$/i, "ctr").replace("center", "ctr").replace("middle", "ctr").replace("top", "t").replace("btm", "b").replace("bottom", "b")}"` : "", ae = H.textDirection && H.textDirection !== "horz" ? ` vert="${H.textDirection}"` : "";
-            let le = !((D = (Q = $._optImp) === null || Q === void 0 ? void 0 : Q.fill) === null || D === void 0) && D.color ? $._optImp.fill.color : !((F = $._optImp) === null || F === void 0) && F.fill && typeof $._optImp.fill == "string" ? $._optImp.fill : "";
+            let le = !((P = (Q = $._optImp) === null || Q === void 0 ? void 0 : Q.fill) === null || P === void 0) && P.color ? $._optImp.fill.color : !((F = $._optImp) === null || F === void 0) && F.fill && typeof $._optImp.fill == "string" ? $._optImp.fill : "";
             le = le || H.fill ? H.fill : "";
             const Ae = le ? ze(le) : "";
-            let z = H.margin === 0 || H.margin ? H.margin : Ro;
+            let z = H.margin === 0 || H.margin ? H.margin : Po;
             !Array.isArray(z) && typeof z == "number" && (z = [z, z, z, z]);
             let q = "";
-            z[0] >= 1 ? q = ` marL="${de(z[3])}" marR="${de(z[1])}" marT="${de(z[0])}" marB="${de(z[2])}"` : q = ` marL="${ve(z[3])}" marR="${ve(z[1])}" marT="${ve(z[0])}" marB="${ve(z[2])}"`, R += `<a:tc${N}>${Za($)}<a:tcPr${q}${ie}${ae}>`, H.border && Array.isArray(H.border) && [
+            z[0] >= 1 ? q = ` marL="${de(z[3])}" marR="${de(z[1])}" marT="${de(z[0])}" marB="${de(z[2])}"` : q = ` marL="${ve(z[3])}" marR="${ve(z[1])}" marT="${ve(z[0])}" marB="${ve(z[2])}"`, R += `<a:tc${N}>${tn($)}<a:tcPr${q}${ie}${ae}>`, H.border && Array.isArray(H.border) && [
               { idx: 3, name: "lnL" },
               { idx: 1, name: "lnR" },
               { idx: 0, name: "lnT" },
@@ -3661,12 +3661,12 @@ function Ma(e) {
         break;
       case ue.text:
       case ue.placeholder:
-        if (!n.options.line && p === 0 && (p = he * 0.3), n.options._bodyProp || (n.options._bodyProp = {}), n.options.margin && Array.isArray(n.options.margin) ? (n.options._bodyProp.lIns = de(n.options.margin[0] || 0), n.options._bodyProp.rIns = de(n.options.margin[1] || 0), n.options._bodyProp.bIns = de(n.options.margin[2] || 0), n.options._bodyProp.tIns = de(n.options.margin[3] || 0)) : typeof n.options.margin == "number" && (n.options._bodyProp.lIns = de(n.options.margin), n.options._bodyProp.rIns = de(n.options.margin), n.options._bodyProp.bIns = de(n.options.margin), n.options._bodyProp.tIns = de(n.options.margin)), t += "<p:sp>", t += `<p:nvSpPr><p:cNvPr id="${s + 2}" name="${n.options.objectName}">`, !((A = n.options.hyperlink) === null || A === void 0) && A.url && (t += `<a:hlinkClick r:id="rId${n.options.hyperlink._rId}" tooltip="${n.options.hyperlink.tooltip ? fe(n.options.hyperlink.tooltip) : ""}"/>`), !((a = n.options.hyperlink) === null || a === void 0) && a.slide && (t += `<a:hlinkClick r:id="rId${n.options.hyperlink._rId}" tooltip="${n.options.hyperlink.tooltip ? fe(n.options.hyperlink.tooltip) : ""}" action="ppaction://hlinksldjump"/>`), t += "</p:cNvPr>", t += "<p:cNvSpPr" + (!((o = n.options) === null || o === void 0) && o.isTextBox ? ' txBox="1"/>' : "/>"), t += `<p:nvPr>${n._type === "placeholder" ? jt(n) : jt(h)}</p:nvPr>`, t += "</p:nvSpPr><p:spPr>", t += `<a:xfrm${_}>`, t += `<a:off x="${m}" y="${u}"/>`, t += `<a:ext cx="${y}" cy="${p}"/></a:xfrm>`, n.shape === "custGeom")
+        if (!n.options.line && p === 0 && (p = he * 0.3), n.options._bodyProp || (n.options._bodyProp = {}), n.options.margin && Array.isArray(n.options.margin) ? (n.options._bodyProp.lIns = de(n.options.margin[0] || 0), n.options._bodyProp.rIns = de(n.options.margin[1] || 0), n.options._bodyProp.bIns = de(n.options.margin[2] || 0), n.options._bodyProp.tIns = de(n.options.margin[3] || 0)) : typeof n.options.margin == "number" && (n.options._bodyProp.lIns = de(n.options.margin), n.options._bodyProp.rIns = de(n.options.margin), n.options._bodyProp.bIns = de(n.options.margin), n.options._bodyProp.tIns = de(n.options.margin)), t += "<p:sp>", t += `<p:nvSpPr><p:cNvPr id="${s + 2}" name="${n.options.objectName}">`, !((A = n.options.hyperlink) === null || A === void 0) && A.url && (t += `<a:hlinkClick r:id="rId${n.options.hyperlink._rId}" tooltip="${n.options.hyperlink.tooltip ? fe(n.options.hyperlink.tooltip) : ""}"/>`), !((a = n.options.hyperlink) === null || a === void 0) && a.slide && (t += `<a:hlinkClick r:id="rId${n.options.hyperlink._rId}" tooltip="${n.options.hyperlink.tooltip ? fe(n.options.hyperlink.tooltip) : ""}" action="ppaction://hlinksldjump"/>`), t += "</p:cNvPr>", t += "<p:cNvSpPr" + (!((o = n.options) === null || o === void 0) && o.isTextBox ? ' txBox="1"/>' : "/>"), t += `<p:nvPr>${n._type === "placeholder" ? Yt(n) : Yt(h)}</p:nvPr>`, t += "</p:nvSpPr><p:spPr>", t += `<a:xfrm${_}>`, t += `<a:off x="${m}" y="${u}"/>`, t += `<a:ext cx="${y}" cy="${p}"/></a:xfrm>`, n.shape === "custGeom")
           t += "<a:custGeom><a:avLst />", t += "<a:gdLst>", t += "</a:gdLst>", t += "<a:ahLst />", t += "<a:cxnLst>", t += "</a:cxnLst>", t += '<a:rect l="l" t="t" r="r" b="b" />', t += "<a:pathLst>", t += `<a:path w="${y}" h="${p}">`, (f = n.options.points) === null || f === void 0 || f.forEach((w, G) => {
             if ("curve" in w)
               switch (w.curve.type) {
                 case "arc":
-                  t += `<a:arcTo hR="${pe(w.curve.hR, "Y", e._presLayout)}" wR="${pe(w.curve.wR, "X", e._presLayout)}" stAng="${ut(w.curve.stAng)}" swAng="${ut(w.curve.swAng)}" />`;
+                  t += `<a:arcTo hR="${pe(w.curve.hR, "Y", e._presLayout)}" wR="${pe(w.curve.wR, "X", e._presLayout)}" stAng="${ht(w.curve.stAng)}" swAng="${ht(w.curve.swAng)}" />`;
                   break;
                 case "cubic":
                   t += `<a:cubicBezTo>
@@ -3690,33 +3690,33 @@ function Ma(e) {
           else if (n.options.angleRange) {
             for (let w = 0; w < 2; w++) {
               const G = n.options.angleRange[w];
-              t += `<a:gd name="adj${w + 1}" fmla="val ${ut(G)}" />`;
+              t += `<a:gd name="adj${w + 1}" fmla="val ${ht(G)}" />`;
             }
             n.options.arcThicknessRatio && (t += `<a:gd name="adj3" fmla="val ${Math.round(n.options.arcThicknessRatio * 5e4)}" />`);
           }
           t += "</a:avLst></a:prstGeom>";
         }
-        t += n.options.fill ? ze(n.options.fill) : "<a:noFill/>", n.options.line && (t += n.options.line.width ? `<a:ln w="${de(n.options.line.width)}">` : "<a:ln>", n.options.line.color && (t += ze(n.options.line)), n.options.line.dashType && (t += `<a:prstDash val="${n.options.line.dashType}"/>`), n.options.line.beginArrowType && (t += `<a:headEnd type="${n.options.line.beginArrowType}"/>`), n.options.line.endArrowType && (t += `<a:tailEnd type="${n.options.line.endArrowType}"/>`), t += "</a:ln>"), n.options.shadow && n.options.shadow.type !== "none" && (n.options.shadow.type = n.options.shadow.type || "outer", n.options.shadow.blur = de(n.options.shadow.blur || 8), n.options.shadow.offset = de(n.options.shadow.offset || 4), n.options.shadow.angle = Math.round((n.options.shadow.angle || 270) * 6e4), n.options.shadow.opacity = Math.round((n.options.shadow.opacity || 0.75) * 1e5), n.options.shadow.color = n.options.shadow.color || ja.color, t += "<a:effectLst>", t += ` <a:${n.options.shadow.type}Shdw ${n.options.shadow.type === "outer" ? 'sx="100000" sy="100000" kx="0" ky="0" algn="bl" rotWithShape="0"' : ""} blurRad="${n.options.shadow.blur}" dist="${n.options.shadow.offset}" dir="${n.options.shadow.angle}">`, t += ` <a:srgbClr val="${n.options.shadow.color}">`, t += ` <a:alpha val="${n.options.shadow.opacity}"/></a:srgbClr>`, t += " </a:outerShdw>", t += "</a:effectLst>"), t += "</p:spPr>", t += Za(n), t += "</p:sp>";
+        t += n.options.fill ? ze(n.options.fill) : "<a:noFill/>", n.options.line && (t += n.options.line.width ? `<a:ln w="${de(n.options.line.width)}">` : "<a:ln>", n.options.line.color && (t += ze(n.options.line)), n.options.line.dashType && (t += `<a:prstDash val="${n.options.line.dashType}"/>`), n.options.line.beginArrowType && (t += `<a:headEnd type="${n.options.line.beginArrowType}"/>`), n.options.line.endArrowType && (t += `<a:tailEnd type="${n.options.line.endArrowType}"/>`), t += "</a:ln>"), n.options.shadow && n.options.shadow.type !== "none" && (n.options.shadow.type = n.options.shadow.type || "outer", n.options.shadow.blur = de(n.options.shadow.blur || 8), n.options.shadow.offset = de(n.options.shadow.offset || 4), n.options.shadow.angle = Math.round((n.options.shadow.angle || 270) * 6e4), n.options.shadow.opacity = Math.round((n.options.shadow.opacity || 0.75) * 1e5), n.options.shadow.color = n.options.shadow.color || Ka.color, t += "<a:effectLst>", t += ` <a:${n.options.shadow.type}Shdw ${n.options.shadow.type === "outer" ? 'sx="100000" sy="100000" kx="0" ky="0" algn="bl" rotWithShape="0"' : ""} blurRad="${n.options.shadow.blur}" dist="${n.options.shadow.offset}" dir="${n.options.shadow.angle}">`, t += ` <a:srgbClr val="${n.options.shadow.color}">`, t += ` <a:alpha val="${n.options.shadow.opacity}"/></a:srgbClr>`, t += " </a:outerShdw>", t += "</a:effectLst>"), t += "</p:spPr>", t += tn(n), t += "</p:sp>";
         break;
       case ue.image:
-        if (t += "<p:pic>", t += "  <p:nvPicPr>", t += `<p:cNvPr id="${s + 2}" name="${n.options.objectName}" descr="${fe(n.options.altText || n.image)}">`, !((g = n.hyperlink) === null || g === void 0) && g.url && (t += `<a:hlinkClick r:id="rId${n.hyperlink._rId}" tooltip="${n.hyperlink.tooltip ? fe(n.hyperlink.tooltip) : ""}"/>`), !((d = n.hyperlink) === null || d === void 0) && d.slide && (t += `<a:hlinkClick r:id="rId${n.hyperlink._rId}" tooltip="${n.hyperlink.tooltip ? fe(n.hyperlink.tooltip) : ""}" action="ppaction://hlinksldjump"/>`), t += "    </p:cNvPr>", t += '    <p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr>', t += "    <p:nvPr>" + jt(h) + "</p:nvPr>", t += "  </p:nvPicPr>", t += "<p:blipFill>", (e._relsMedia || []).filter((w) => w.rId === n.imageRid)[0] && (e._relsMedia || []).filter((w) => w.rId === n.imageRid)[0].extn === "svg" ? (t += `<a:blip r:embed="rId${n.imageRid - 1}">`, t += n.options.transparency ? ` <a:alphaModFix amt="${Math.round((100 - n.options.transparency) * 1e3)}"/>` : "", t += " <a:extLst>", t += '  <a:ext uri="{96DAC541-7B7A-43D3-8B79-37D633B846F1}">', t += `   <asvg:svgBlip xmlns:asvg="http://schemas.microsoft.com/office/drawing/2016/SVG/main" r:embed="rId${n.imageRid}"/>`, t += "  </a:ext>", t += " </a:extLst>", t += "</a:blip>") : (t += `<a:blip r:embed="rId${n.imageRid}">`, t += n.options.transparency ? `<a:alphaModFix amt="${Math.round((100 - n.options.transparency) * 1e3)}"/>` : "", t += "</a:blip>"), I?.type) {
-          const w = I.w ? pe(I.w, "X", e._presLayout) : y, G = I.h ? pe(I.h, "Y", e._presLayout) : p, ee = pe(I.x || 0, "X", e._presLayout), K = pe(I.y || 0, "Y", e._presLayout);
-          t += Fi[I.type]({ w: T, h: M }, { w, h: G, x: ee, y: K }), T = w, M = G;
+        if (t += "<p:pic>", t += "  <p:nvPicPr>", t += `<p:cNvPr id="${s + 2}" name="${n.options.objectName}" descr="${fe(n.options.altText || n.image)}">`, !((g = n.hyperlink) === null || g === void 0) && g.url && (t += `<a:hlinkClick r:id="rId${n.hyperlink._rId}" tooltip="${n.hyperlink.tooltip ? fe(n.hyperlink.tooltip) : ""}"/>`), !((d = n.hyperlink) === null || d === void 0) && d.slide && (t += `<a:hlinkClick r:id="rId${n.hyperlink._rId}" tooltip="${n.hyperlink.tooltip ? fe(n.hyperlink.tooltip) : ""}" action="ppaction://hlinksldjump"/>`), t += "    </p:cNvPr>", t += '    <p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr>', t += "    <p:nvPr>" + Yt(h) + "</p:nvPr>", t += "  </p:nvPicPr>", t += "<p:blipFill>", (e._relsMedia || []).filter((w) => w.rId === n.imageRid)[0] && (e._relsMedia || []).filter((w) => w.rId === n.imageRid)[0].extn === "svg" ? (t += `<a:blip r:embed="rId${n.imageRid - 1}">`, t += n.options.transparency ? ` <a:alphaModFix amt="${Math.round((100 - n.options.transparency) * 1e3)}"/>` : "", t += " <a:extLst>", t += '  <a:ext uri="{96DAC541-7B7A-43D3-8B79-37D633B846F1}">', t += `   <asvg:svgBlip xmlns:asvg="http://schemas.microsoft.com/office/drawing/2016/SVG/main" r:embed="rId${n.imageRid}"/>`, t += "  </a:ext>", t += " </a:extLst>", t += "</a:blip>") : (t += `<a:blip r:embed="rId${n.imageRid}">`, t += n.options.transparency ? `<a:alphaModFix amt="${Math.round((100 - n.options.transparency) * 1e3)}"/>` : "", t += "</a:blip>"), I?.type) {
+          const w = I.w ? pe(I.w, "X", e._presLayout) : y, G = I.h ? pe(I.h, "Y", e._presLayout) : p, ee = pe(I.x || 0, "X", e._presLayout), Y = pe(I.y || 0, "Y", e._presLayout);
+          t += ki[I.type]({ w: E, h: M }, { w, h: G, x: ee, y: Y }), E = w, M = G;
         } else
           t += "  <a:stretch><a:fillRect/></a:stretch>";
-        t += "</p:blipFill>", t += "<p:spPr>", t += " <a:xfrm" + _ + ">", t += `  <a:off x="${m}" y="${u}"/>`, t += `  <a:ext cx="${T}" cy="${M}"/>`, t += " </a:xfrm>", t += ` <a:prstGeom prst="${O ? "ellipse" : "rect"}"><a:avLst/></a:prstGeom>`, n.options.shadow && n.options.shadow.type !== "none" && (n.options.shadow.type = n.options.shadow.type || "outer", n.options.shadow.blur = de(n.options.shadow.blur || 8), n.options.shadow.offset = de(n.options.shadow.offset || 4), n.options.shadow.angle = Math.round((n.options.shadow.angle || 270) * 6e4), n.options.shadow.opacity = Math.round((n.options.shadow.opacity || 0.75) * 1e5), n.options.shadow.color = n.options.shadow.color || ja.color, t += "<a:effectLst>", t += `<a:${n.options.shadow.type}Shdw ${n.options.shadow.type === "outer" ? 'sx="100000" sy="100000" kx="0" ky="0" algn="bl" rotWithShape="0"' : ""} blurRad="${n.options.shadow.blur}" dist="${n.options.shadow.offset}" dir="${n.options.shadow.angle}">`, t += `<a:srgbClr val="${n.options.shadow.color}">`, t += `<a:alpha val="${n.options.shadow.opacity}"/></a:srgbClr>`, t += `</a:${n.options.shadow.type}Shdw>`, t += "</a:effectLst>"), t += "</p:spPr>", t += "</p:pic>";
+        t += "</p:blipFill>", t += "<p:spPr>", t += " <a:xfrm" + _ + ">", t += `  <a:off x="${m}" y="${u}"/>`, t += `  <a:ext cx="${E}" cy="${M}"/>`, t += " </a:xfrm>", t += ` <a:prstGeom prst="${O ? "ellipse" : "rect"}"><a:avLst/></a:prstGeom>`, n.options.shadow && n.options.shadow.type !== "none" && (n.options.shadow.type = n.options.shadow.type || "outer", n.options.shadow.blur = de(n.options.shadow.blur || 8), n.options.shadow.offset = de(n.options.shadow.offset || 4), n.options.shadow.angle = Math.round((n.options.shadow.angle || 270) * 6e4), n.options.shadow.opacity = Math.round((n.options.shadow.opacity || 0.75) * 1e5), n.options.shadow.color = n.options.shadow.color || Ka.color, t += "<a:effectLst>", t += `<a:${n.options.shadow.type}Shdw ${n.options.shadow.type === "outer" ? 'sx="100000" sy="100000" kx="0" ky="0" algn="bl" rotWithShape="0"' : ""} blurRad="${n.options.shadow.blur}" dist="${n.options.shadow.offset}" dir="${n.options.shadow.angle}">`, t += `<a:srgbClr val="${n.options.shadow.color}">`, t += `<a:alpha val="${n.options.shadow.opacity}"/></a:srgbClr>`, t += `</a:${n.options.shadow.type}Shdw>`, t += "</a:effectLst>"), t += "</p:spPr>", t += "</p:pic>";
         break;
       case ue.media:
         n.mtype === "online" ? (t += "<p:pic>", t += " <p:nvPicPr>", t += `<p:cNvPr id="${n.mediaRid + 2}" name="${n.options.objectName}"/>`, t += " <p:cNvPicPr/>", t += " <p:nvPr>", t += `  <a:videoFile r:link="rId${n.mediaRid}"/>`, t += " </p:nvPr>", t += " </p:nvPicPr>", t += ` <p:blipFill><a:blip r:embed="rId${n.mediaRid + 1}"/><a:stretch><a:fillRect/></a:stretch></p:blipFill>`, t += " <p:spPr>", t += `  <a:xfrm${_}><a:off x="${m}" y="${u}"/><a:ext cx="${y}" cy="${p}"/></a:xfrm>`, t += '  <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>', t += " </p:spPr>", t += "</p:pic>") : (t += "<p:pic>", t += " <p:nvPicPr>", t += `<p:cNvPr id="${n.mediaRid + 2}" name="${n.options.objectName}"><a:hlinkClick r:id="" action="ppaction://media"/></p:cNvPr>`, t += ' <p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr>', t += " <p:nvPr>", t += `  <a:videoFile r:link="rId${n.mediaRid}"/>`, t += "  <p:extLst>", t += '   <p:ext uri="{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}">', t += `    <p14:media xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" r:embed="rId${n.mediaRid + 1}"/>`, t += "   </p:ext>", t += "  </p:extLst>", t += " </p:nvPr>", t += " </p:nvPicPr>", t += ` <p:blipFill><a:blip r:embed="rId${n.mediaRid + 2}"/><a:stretch><a:fillRect/></a:stretch></p:blipFill>`, t += " <p:spPr>", t += `  <a:xfrm${_}><a:off x="${m}" y="${u}"/><a:ext cx="${y}" cy="${p}"/></a:xfrm>`, t += '  <a:prstGeom prst="rect"><a:avLst/></a:prstGeom>', t += " </p:spPr>", t += "</p:pic>");
         break;
       case ue.chart:
-        t += "<p:graphicFrame>", t += " <p:nvGraphicFramePr>", t += `   <p:cNvPr id="${s + 2}" name="${n.options.objectName}" descr="${fe(n.options.altText || "")}"/>`, t += "   <p:cNvGraphicFramePr/>", t += `   <p:nvPr>${jt(h)}</p:nvPr>`, t += " </p:nvGraphicFramePr>", t += ` <p:xfrm><a:off x="${m}" y="${u}"/><a:ext cx="${y}" cy="${p}"/></p:xfrm>`, t += ' <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">', t += '  <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart">', t += `   <c:chart r:id="rId${n.chartRid}" xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"/>`, t += "  </a:graphicData>", t += " </a:graphic>", t += "</p:graphicFrame>";
+        t += "<p:graphicFrame>", t += " <p:nvGraphicFramePr>", t += `   <p:cNvPr id="${s + 2}" name="${n.options.objectName}" descr="${fe(n.options.altText || "")}"/>`, t += "   <p:cNvGraphicFramePr/>", t += `   <p:nvPr>${Yt(h)}</p:nvPr>`, t += " </p:nvGraphicFramePr>", t += ` <p:xfrm><a:off x="${m}" y="${u}"/><a:ext cx="${y}" cy="${p}"/></p:xfrm>`, t += ' <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">', t += '  <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart">', t += `   <c:chart r:id="rId${n.chartRid}" xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"/>`, t += "  </a:graphicData>", t += " </a:graphic>", t += "</p:graphicFrame>";
         break;
       default:
         t += "";
         break;
     }
-  }), e._slideNumberProps && (e._slideNumberProps.align || (e._slideNumberProps.align = "left"), t += "<p:sp>", t += " <p:nvSpPr>", t += '  <p:cNvPr id="25" name="Slide Number Placeholder 0"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>', t += '  <p:nvPr><p:ph type="sldNum" sz="quarter" idx="4294967295"/></p:nvPr>', t += " </p:nvSpPr>", t += " <p:spPr>", t += `<a:xfrm><a:off x="${pe(e._slideNumberProps.x, "X", e._presLayout)}" y="${pe(e._slideNumberProps.y, "Y", e._presLayout)}"/><a:ext cx="${e._slideNumberProps.w ? pe(e._slideNumberProps.w, "X", e._presLayout) : "800000"}" cy="${e._slideNumberProps.h ? pe(e._slideNumberProps.h, "Y", e._presLayout) : "300000"}"/></a:xfrm> <a:prstGeom prst="rect"><a:avLst/></a:prstGeom> <a:extLst><a:ext uri="{C572A759-6A51-4108-AA02-DFA0A04FC94B}"><ma14:wrappingTextBoxFlag val="0" xmlns:ma14="http://schemas.microsoft.com/office/mac/drawingml/2011/main"/></a:ext></a:extLst></p:spPr>`, t += "<p:txBody>", t += "<a:bodyPr", e._slideNumberProps.margin && Array.isArray(e._slideNumberProps.margin) ? (t += ` lIns="${de(e._slideNumberProps.margin[3] || 0)}"`, t += ` tIns="${de(e._slideNumberProps.margin[0] || 0)}"`, t += ` rIns="${de(e._slideNumberProps.margin[1] || 0)}"`, t += ` bIns="${de(e._slideNumberProps.margin[2] || 0)}"`) : typeof e._slideNumberProps.margin == "number" && (t += ` lIns="${de(e._slideNumberProps.margin || 0)}"`, t += ` tIns="${de(e._slideNumberProps.margin || 0)}"`, t += ` rIns="${de(e._slideNumberProps.margin || 0)}"`, t += ` bIns="${de(e._slideNumberProps.margin || 0)}"`), e._slideNumberProps.valign && (t += ` anchor="${e._slideNumberProps.valign.replace("top", "t").replace("middle", "ctr").replace("bottom", "b")}"`), t += "/>", t += "  <a:lstStyle><a:lvl1pPr>", (e._slideNumberProps.fontFace || e._slideNumberProps.fontSize || e._slideNumberProps.color) && (t += `<a:defRPr sz="${Math.round((e._slideNumberProps.fontSize || 12) * 100)}">`, e._slideNumberProps.color && (t += ze(e._slideNumberProps.color)), e._slideNumberProps.fontFace && (t += `<a:latin typeface="${e._slideNumberProps.fontFace}"/><a:ea typeface="${e._slideNumberProps.fontFace}"/><a:cs typeface="${e._slideNumberProps.fontFace}"/>`), t += "</a:defRPr>"), t += "</a:lvl1pPr></a:lstStyle>", t += "<a:p>", e._slideNumberProps.align.startsWith("l") ? t += '<a:pPr algn="l"/>' : e._slideNumberProps.align.startsWith("c") ? t += '<a:pPr algn="ctr"/>' : e._slideNumberProps.align.startsWith("r") ? t += '<a:pPr algn="r"/>' : t += '<a:pPr algn="l"/>', t += `<a:fld id="${Bo}" type="slidenum"><a:rPr b="${e._slideNumberProps.bold ? 1 : 0}" lang="en-US"/>`, t += `<a:t>${e._slideNum}</a:t></a:fld><a:endParaRPr lang="en-US"/></a:p>`, t += "</p:txBody></p:sp>"), t += "</p:spTree>", t += "</p:cSld>", t;
+  }), e._slideNumberProps && (e._slideNumberProps.align || (e._slideNumberProps.align = "left"), t += "<p:sp>", t += " <p:nvSpPr>", t += '  <p:cNvPr id="25" name="Slide Number Placeholder 0"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr>', t += '  <p:nvPr><p:ph type="sldNum" sz="quarter" idx="4294967295"/></p:nvPr>', t += " </p:nvSpPr>", t += " <p:spPr>", t += `<a:xfrm><a:off x="${pe(e._slideNumberProps.x, "X", e._presLayout)}" y="${pe(e._slideNumberProps.y, "Y", e._presLayout)}"/><a:ext cx="${e._slideNumberProps.w ? pe(e._slideNumberProps.w, "X", e._presLayout) : "800000"}" cy="${e._slideNumberProps.h ? pe(e._slideNumberProps.h, "Y", e._presLayout) : "300000"}"/></a:xfrm> <a:prstGeom prst="rect"><a:avLst/></a:prstGeom> <a:extLst><a:ext uri="{C572A759-6A51-4108-AA02-DFA0A04FC94B}"><ma14:wrappingTextBoxFlag val="0" xmlns:ma14="http://schemas.microsoft.com/office/mac/drawingml/2011/main"/></a:ext></a:extLst></p:spPr>`, t += "<p:txBody>", t += "<a:bodyPr", e._slideNumberProps.margin && Array.isArray(e._slideNumberProps.margin) ? (t += ` lIns="${de(e._slideNumberProps.margin[3] || 0)}"`, t += ` tIns="${de(e._slideNumberProps.margin[0] || 0)}"`, t += ` rIns="${de(e._slideNumberProps.margin[1] || 0)}"`, t += ` bIns="${de(e._slideNumberProps.margin[2] || 0)}"`) : typeof e._slideNumberProps.margin == "number" && (t += ` lIns="${de(e._slideNumberProps.margin || 0)}"`, t += ` tIns="${de(e._slideNumberProps.margin || 0)}"`, t += ` rIns="${de(e._slideNumberProps.margin || 0)}"`, t += ` bIns="${de(e._slideNumberProps.margin || 0)}"`), e._slideNumberProps.valign && (t += ` anchor="${e._slideNumberProps.valign.replace("top", "t").replace("middle", "ctr").replace("bottom", "b")}"`), t += "/>", t += "  <a:lstStyle><a:lvl1pPr>", (e._slideNumberProps.fontFace || e._slideNumberProps.fontSize || e._slideNumberProps.color) && (t += `<a:defRPr sz="${Math.round((e._slideNumberProps.fontSize || 12) * 100)}">`, e._slideNumberProps.color && (t += ze(e._slideNumberProps.color)), e._slideNumberProps.fontFace && (t += `<a:latin typeface="${e._slideNumberProps.fontFace}"/><a:ea typeface="${e._slideNumberProps.fontFace}"/><a:cs typeface="${e._slideNumberProps.fontFace}"/>`), t += "</a:defRPr>"), t += "</a:lvl1pPr></a:lstStyle>", t += "<a:p>", e._slideNumberProps.align.startsWith("l") ? t += '<a:pPr algn="l"/>' : e._slideNumberProps.align.startsWith("c") ? t += '<a:pPr algn="ctr"/>' : e._slideNumberProps.align.startsWith("r") ? t += '<a:pPr algn="r"/>' : t += '<a:pPr algn="l"/>', t += `<a:fld id="${So}" type="slidenum"><a:rPr b="${e._slideNumberProps.bold ? 1 : 0}" lang="en-US"/>`, t += `<a:t>${e._slideNum}</a:t></a:fld><a:endParaRPr lang="en-US"/></a:p>`, t += "</p:txBody></p:sp>"), t += "</p:spTree>", t += "</p:cSld>", t;
 }
 function Oa(e, r) {
   let t = 0, i = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + De + '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
@@ -3731,11 +3731,11 @@ function Oa(e, r) {
     i += `<Relationship Id="rId${t + s + 1}" Type="${n.type}" Target="${n.target}"/>`;
   }), i += "</Relationships>", i;
 }
-function Ja(e, r) {
+function en(e, r) {
   var t, i;
   let n = "", s = "", l = "", c = "";
   const A = r ? "a:lvl1pPr" : "a:pPr";
-  let a = de(yi), o = `<${A}${e.options.rtlMode ? ' rtl="1" ' : ""}`;
+  let a = de(gi), o = `<${A}${e.options.rtlMode ? ' rtl="1" ' : ""}`;
   {
     if (e.options.align)
       switch (e.options.align) {
@@ -3767,15 +3767,15 @@ function Ja(e, r) {
       } else
         o += ` marL="${e.options.indentLevel && e.options.indentLevel > 0 ? a + a * e.options.indentLevel : a}" indent="-${a}"`, n = `<a:buSzPct val="100000"/><a:buChar char="${Ct.DEFAULT}"/>`;
     else e.options.bullet ? (o += ` marL="${e.options.indentLevel && e.options.indentLevel > 0 ? a + a * e.options.indentLevel : a}" indent="-${a}"`, n = `<a:buSzPct val="100000"/><a:buChar char="${Ct.DEFAULT}"/>`) : e.options.bullet || (o += ' indent="0" marL="0"', n = "<a:buNone/>");
-    e.options.tabStops && Array.isArray(e.options.tabStops) && (c = `<a:tabLst>${e.options.tabStops.map((g) => `<a:tab pos="${ve(g.position || 1)}" algn="${g.alignment || "l"}"/>`).join("")}</a:tabLst>`), o += ">" + s + l + n + c, r && (o += Fo(e.options, !0)), o += "</" + A + ">";
+    e.options.tabStops && Array.isArray(e.options.tabStops) && (c = `<a:tabLst>${e.options.tabStops.map((g) => `<a:tab pos="${ve(g.position || 1)}" algn="${g.alignment || "l"}"/>`).join("")}</a:tabLst>`), o += ">" + s + l + n + c, r && (o += Oo(e.options, !0)), o += "</" + A + ">";
   }
   return o;
 }
-function Fo(e, r) {
+function Oo(e, r) {
   var t;
   let i = "";
   const n = r ? "a:defRPr" : "a:rPr";
-  if (i += "<" + n + ' lang="' + (e.lang ? e.lang : "en-US") + '"' + (e.lang ? ' altLang="en-US"' : ""), i += e.fontSize ? ` sz="${Math.round(e.fontSize * 100)}"` : "", i += e?.bold ? ` b="${e.bold ? "1" : "0"}"` : "", i += e?.italic ? ` i="${e.italic ? "1" : "0"}"` : "", i += e?.strike ? ` strike="${typeof e.strike == "string" ? e.strike : "sngStrike"}"` : "", typeof e.underline == "object" && (!((t = e.underline) === null || t === void 0) && t.style) ? i += ` u="${e.underline.style}"` : typeof e.underline == "string" ? i += ` u="${String(e.underline)}"` : e.hyperlink && (i += ' u="sng"'), e.baseline ? i += ` baseline="${Math.round(e.baseline * 50)}"` : e.subscript ? i += ' baseline="-40000"' : e.superscript && (i += ' baseline="30000"'), i += e.charSpacing ? ` spc="${Math.round(e.charSpacing * 100)}" kern="0"` : "", i += ' dirty="0">', (e.color || e.fontFace || e.outline || typeof e.underline == "object" && e.underline.color) && (e.outline && typeof e.outline == "object" && (i += `<a:ln w="${de(e.outline.size || 0.75)}">${ze(e.outline.color || "FFFFFF")}</a:ln>`), e.color && (i += ze({ color: e.color, transparency: e.transparency })), e.highlight && (i += `<a:highlight>${be(e.highlight)}</a:highlight>`), typeof e.underline == "object" && e.underline.color && (i += `<a:uFill>${ze(e.underline.color)}</a:uFill>`), e.glow && (i += `<a:effectLst>${Ci(e.glow, bi)}</a:effectLst>`), e.fontFace && (i += `<a:latin typeface="${e.fontFace}" pitchFamily="34" charset="0"/><a:ea typeface="${e.fontFace}" pitchFamily="34" charset="-122"/><a:cs typeface="${e.fontFace}" pitchFamily="34" charset="-120"/>`)), e.hyperlink) {
+  if (i += "<" + n + ' lang="' + (e.lang ? e.lang : "en-US") + '"' + (e.lang ? ' altLang="en-US"' : ""), i += e.fontSize ? ` sz="${Math.round(e.fontSize * 100)}"` : "", i += e?.bold ? ` b="${e.bold ? "1" : "0"}"` : "", i += e?.italic ? ` i="${e.italic ? "1" : "0"}"` : "", i += e?.strike ? ` strike="${typeof e.strike == "string" ? e.strike : "sngStrike"}"` : "", typeof e.underline == "object" && (!((t = e.underline) === null || t === void 0) && t.style) ? i += ` u="${e.underline.style}"` : typeof e.underline == "string" ? i += ` u="${String(e.underline)}"` : e.hyperlink && (i += ' u="sng"'), e.baseline ? i += ` baseline="${Math.round(e.baseline * 50)}"` : e.subscript ? i += ' baseline="-40000"' : e.superscript && (i += ' baseline="30000"'), i += e.charSpacing ? ` spc="${Math.round(e.charSpacing * 100)}" kern="0"` : "", i += ' dirty="0">', (e.color || e.fontFace || e.outline || typeof e.underline == "object" && e.underline.color) && (e.outline && typeof e.outline == "object" && (i += `<a:ln w="${de(e.outline.size || 0.75)}">${ze(e.outline.color || "FFFFFF")}</a:ln>`), e.color && (i += ze({ color: e.color, transparency: e.transparency })), e.highlight && (i += `<a:highlight>${be(e.highlight)}</a:highlight>`), typeof e.underline == "object" && e.underline.color && (i += `<a:uFill>${ze(e.underline.color)}</a:uFill>`), e.glow && (i += `<a:effectLst>${_i(e.glow, vi)}</a:effectLst>`), e.fontFace && (i += `<a:latin typeface="${e.fontFace}" pitchFamily="34" charset="0"/><a:ea typeface="${e.fontFace}" pitchFamily="34" charset="-122"/><a:cs typeface="${e.fontFace}" pitchFamily="34" charset="-120"/>`)), e.hyperlink) {
     if (typeof e.hyperlink != "object")
       throw new Error("ERROR: text `hyperlink` option should be an object. Ex: `hyperlink:{url:'https://github.com'}` ");
     if (!e.hyperlink.url && !e.hyperlink.slide)
@@ -3784,21 +3784,21 @@ function Fo(e, r) {
   }
   return i += `</${n}>`, i;
 }
-function Mi(e) {
-  return e.text ? `<a:r>${Fo(e.options, !1)}<a:t>${fe(e.text)}</a:t></a:r>` : "";
+function Fi(e) {
+  return e.text ? `<a:r>${Oo(e.options, !1)}<a:t>${fe(e.text)}</a:t></a:r>` : "";
 }
-function Oi(e) {
+function Mi(e) {
   let r = "<a:bodyPr";
   return e && e._type === ue.text && e.options._bodyProp ? (r += e.options._bodyProp.wrap ? ' wrap="square"' : ' wrap="none"', (e.options._bodyProp.lIns || e.options._bodyProp.lIns === 0) && (r += ` lIns="${e.options._bodyProp.lIns}"`), (e.options._bodyProp.tIns || e.options._bodyProp.tIns === 0) && (r += ` tIns="${e.options._bodyProp.tIns}"`), (e.options._bodyProp.rIns || e.options._bodyProp.rIns === 0) && (r += ` rIns="${e.options._bodyProp.rIns}"`), (e.options._bodyProp.bIns || e.options._bodyProp.bIns === 0) && (r += ` bIns="${e.options._bodyProp.bIns}"`), r += ' rtlCol="0"', e.options._bodyProp.anchor && (r += ' anchor="' + e.options._bodyProp.anchor + '"'), e.options._bodyProp.vert && (r += ' vert="' + e.options._bodyProp.vert + '"'), r += ">", e.options.fit && (e.options.fit === "none" ? r += "" : e.options.fit === "shrink" ? r += "<a:normAutofit/>" : e.options.fit === "resize" && (r += "<a:spAutoFit/>")), e.options.shrinkText && (r += "<a:normAutofit/>"), r += e.options._bodyProp.autoFit ? "<a:spAutoFit/>" : "", r += "</a:bodyPr>") : (r += ' wrap="square" rtlCol="0">', r += "</a:bodyPr>"), e._type === ue.tablecell ? "<a:bodyPr/>" : r;
 }
-function Za(e) {
+function tn(e) {
   const r = e.options || {};
   let t = [];
   const i = [];
   if (r && e._type !== ue.tablecell && (typeof e.text > "u" || e.text === null))
     return "";
   let n = e._type === ue.tablecell ? "<a:txBody>" : "<p:txBody>";
-  n += Oi(e), r.h === 0 && r.line && r.align ? n += '<a:lstStyle><a:lvl1pPr algn="l"/></a:lstStyle>' : e._type === "placeholder" ? n += `<a:lstStyle>${Ja(e, !0)}</a:lstStyle>` : n += "<a:lstStyle/>", typeof e.text == "string" || typeof e.text == "number" ? t.push({ text: e.text.toString(), options: r || {} }) : e.text && !Array.isArray(e.text) && typeof e.text == "object" && Object.keys(e.text).includes("text") ? t.push({ text: e.text || "", options: e.options || {} }) : Array.isArray(e.text) && (t = e.text.map((c) => ({ text: c.text, options: c.options }))), t.forEach((c, A) => {
+  n += Mi(e), r.h === 0 && r.line && r.align ? n += '<a:lstStyle><a:lvl1pPr algn="l"/></a:lstStyle>' : e._type === "placeholder" ? n += `<a:lstStyle>${en(e, !0)}</a:lstStyle>` : n += "<a:lstStyle/>", typeof e.text == "string" || typeof e.text == "number" ? t.push({ text: e.text.toString(), options: r || {} }) : e.text && !Array.isArray(e.text) && typeof e.text == "object" && Object.keys(e.text).includes("text") ? t.push({ text: e.text || "", options: e.options || {} }) : Array.isArray(e.text) && (t = e.text.map((c) => ({ text: c.text, options: c.options }))), t.forEach((c, A) => {
     c.text || (c.text = ""), c.options = c.options || r || {}, A === 0 && c.options && !c.options.bullet && r.bullet && (c.options.bullet = r.bullet), (typeof c.text == "string" || typeof c.text == "number") && (c.text = c.text.toString().replace(/\r*\n/g, De)), c.text.includes(De) && c.text.match(/\n$/g) === null ? c.text.split(De).forEach((a) => {
       c.options.breakLine = !0, i.push({ text: a, options: c.options });
     }) : i.push(c);
@@ -3813,24 +3813,24 @@ function Za(e) {
     n += "<a:p>";
     let o = `<a:pPr ${!((A = c[0].options) === null || A === void 0) && A.rtlMode ? ' rtl="1" ' : ""}`;
     c.forEach((f, g) => {
-      f.options._lineIdx = g, g > 0 && f.options.softBreakBefore && (n += "<a:br/>"), f.options.align = f.options.align || r.align, f.options.lineSpacing = f.options.lineSpacing || r.lineSpacing, f.options.lineSpacingMultiple = f.options.lineSpacingMultiple || r.lineSpacingMultiple, f.options.indentLevel = f.options.indentLevel || r.indentLevel, f.options.paraSpaceBefore = f.options.paraSpaceBefore || r.paraSpaceBefore, f.options.paraSpaceAfter = f.options.paraSpaceAfter || r.paraSpaceAfter, o = Ja(f, !1), n += o.replace("<a:pPr></a:pPr>", ""), Object.entries(r).filter(([d]) => !(f.options.hyperlink && d === "color")).forEach(([d, m]) => {
+      f.options._lineIdx = g, g > 0 && f.options.softBreakBefore && (n += "<a:br/>"), f.options.align = f.options.align || r.align, f.options.lineSpacing = f.options.lineSpacing || r.lineSpacing, f.options.lineSpacingMultiple = f.options.lineSpacingMultiple || r.lineSpacingMultiple, f.options.indentLevel = f.options.indentLevel || r.indentLevel, f.options.paraSpaceBefore = f.options.paraSpaceBefore || r.paraSpaceBefore, f.options.paraSpaceAfter = f.options.paraSpaceAfter || r.paraSpaceAfter, o = en(f, !1), n += o.replace("<a:pPr></a:pPr>", ""), Object.entries(r).filter(([d]) => !(f.options.hyperlink && d === "color")).forEach(([d, m]) => {
         d !== "bullet" && !f.options[d] && (f.options[d] = m);
-      }), n += Mi(f), (!f.text && r.fontSize || f.options.fontSize) && (a = !0, r.fontSize = r.fontSize || f.options.fontSize);
+      }), n += Fi(f), (!f.text && r.fontSize || f.options.fontSize) && (a = !0, r.fontSize = r.fontSize || f.options.fontSize);
     }), e._type === ue.tablecell && (r.fontSize || r.fontFace) ? r.fontFace ? (n += `<a:endParaRPr lang="${r.lang || "en-US"}"` + (r.fontSize ? ` sz="${Math.round(r.fontSize * 100)}"` : "") + ' dirty="0">', n += `<a:latin typeface="${r.fontFace}" charset="0"/>`, n += `<a:ea typeface="${r.fontFace}" charset="0"/>`, n += `<a:cs typeface="${r.fontFace}" charset="0"/>`, n += "</a:endParaRPr>") : n += `<a:endParaRPr lang="${r.lang || "en-US"}"` + (r.fontSize ? ` sz="${Math.round(r.fontSize * 100)}"` : "") + ' dirty="0"/>' : a ? n += `<a:endParaRPr lang="${r.lang || "en-US"}"` + (r.fontSize ? ` sz="${Math.round(r.fontSize * 100)}"` : "") + ' dirty="0"/>' : n += `<a:endParaRPr lang="${r.lang || "en-US"}" dirty="0"/>`, n += "</a:p>";
   }), n.indexOf("<a:p>") === -1 && (n += "<a:p><a:endParaRPr/></a:p>"), n += e._type === ue.tablecell ? "</a:txBody>" : "</p:txBody>", n;
 }
-function jt(e) {
+function Yt(e) {
   var r, t;
   if (!e)
     return "";
-  const i = !((r = e.options) === null || r === void 0) && r._placeholderIdx ? e.options._placeholderIdx : "", n = !((t = e.options) === null || t === void 0) && t._placeholderType ? e.options._placeholderType : "", s = n && Mt[n] ? Mt[n].toString() : "";
+  const i = !((r = e.options) === null || r === void 0) && r._placeholderIdx ? e.options._placeholderIdx : "", n = !((t = e.options) === null || t === void 0) && t._placeholderType ? e.options._placeholderType : "", s = n && Ot[n] ? Ot[n].toString() : "";
   return `<p:ph
 		${i ? ' idx="' + i.toString() + '"' : ""}
-		${s && Mt[s] ? ` type="${s}"` : ""}
+		${s && Ot[s] ? ` type="${s}"` : ""}
 		${e.text && e.text.length > 0 ? ' hasCustomPrompt="1"' : ""}
 		/>`;
 }
-function $i(e, r, t) {
+function Oi(e, r, t) {
   let i = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + De;
   return i += '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">', i += '<Default Extension="xml" ContentType="application/xml"/>', i += '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>', i += '<Default Extension="jpeg" ContentType="image/jpeg"/>', i += '<Default Extension="jpg" ContentType="image/jpg"/>', i += '<Default Extension="svg" ContentType="image/svg+xml"/>', i += '<Default Extension="png" ContentType="image/png"/>', i += '<Default Extension="gif" ContentType="image/gif"/>', i += '<Default Extension="m4v" ContentType="video/mp4"/>', i += '<Default Extension="mp4" ContentType="video/mp4"/>', e.forEach((n) => {
     (n._relsMedia || []).forEach((s) => {
@@ -3852,14 +3852,14 @@ function $i(e, r, t) {
     n.type !== "image" && n.type !== "online" && n.type !== "chart" && n.extn !== "m4v" && !i.includes(n.type) && (i += ' <Default Extension="' + n.extn + '" ContentType="' + n.type + '"/>');
   }), i += ' <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>', i += ' <Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>', i += "</Types>", i;
 }
-function zi() {
+function $i() {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>${De}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
 		<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>
 		<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>
 		<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/>
 		</Relationships>`;
 }
-function Ui(e, r) {
+function zi(e, r) {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>${De}<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
 	<TotalTime>0</TotalTime>
 	<Words>0</Words>
@@ -3896,7 +3896,7 @@ function Ui(e, r) {
 	<AppVersion>16.0000</AppVersion>
 	</Properties>`;
 }
-function Gi(e, r, t, i) {
+function Ui(e, r, t, i) {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 	<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<dc:title>${fe(e)}</dc:title>
@@ -3908,40 +3908,40 @@ function Gi(e, r, t, i) {
 		<dcterms:modified xsi:type="dcterms:W3CDTF">${(/* @__PURE__ */ new Date()).toISOString().replace(/\.\d\d\dZ/, "Z")}</dcterms:modified>
 	</cp:coreProperties>`;
 }
-function Xi(e) {
+function Gi(e) {
   let r = 1, t = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + De;
   t += '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">', t += '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster" Target="slideMasters/slideMaster1.xml"/>';
   for (let i = 1; i <= e.length; i++)
     t += `<Relationship Id="rId${++r}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="slides/slide${i}.xml"/>`;
   return r++, t += `<Relationship Id="rId${r + 0}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster" Target="notesMasters/notesMaster1.xml"/><Relationship Id="rId${r + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps" Target="presProps.xml"/><Relationship Id="rId${r + 2}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps" Target="viewProps.xml"/><Relationship Id="rId${r + 3}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/><Relationship Id="rId${r + 4}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/tableStyles" Target="tableStyles.xml"/></Relationships>`, t;
 }
-function Wi(e) {
+function Xi(e) {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>${De}<p:sld xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"${e?.hidden ? ' show="0"' : ""}>${Ma(e)}<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>`;
 }
-function qi(e) {
+function Wi(e) {
   let r = "";
   return e._slideObjects.forEach((t) => {
     t._type === ue.notes && (r += t?.text && t.text[0] ? t.text[0].text : "");
   }), r.replace(/\r*\n/g, De);
 }
-function Hi() {
+function qi() {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>${De}<p:notesMaster xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:bg><p:bgRef idx="1001"><a:schemeClr val="bg1"/></p:bgRef></p:bg><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr><p:sp><p:nvSpPr><p:cNvPr id="2" name="Header Placeholder 1"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph type="hdr" sz="quarter"/></p:nvPr></p:nvSpPr><p:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="2971800" cy="458788"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr><p:txBody><a:bodyPr vert="horz" lIns="91440" tIns="45720" rIns="91440" bIns="45720" rtlCol="0"/><a:lstStyle><a:lvl1pPr algn="l"><a:defRPr sz="1200"/></a:lvl1pPr></a:lstStyle><a:p><a:endParaRPr lang="en-US"/></a:p></p:txBody></p:sp><p:sp><p:nvSpPr><p:cNvPr id="3" name="Date Placeholder 2"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph type="dt" idx="1"/></p:nvPr></p:nvSpPr><p:spPr><a:xfrm><a:off x="3884613" y="0"/><a:ext cx="2971800" cy="458788"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr><p:txBody><a:bodyPr vert="horz" lIns="91440" tIns="45720" rIns="91440" bIns="45720" rtlCol="0"/><a:lstStyle><a:lvl1pPr algn="r"><a:defRPr sz="1200"/></a:lvl1pPr></a:lstStyle><a:p><a:fld id="{5282F153-3F37-0F45-9E97-73ACFA13230C}" type="datetimeFigureOut"><a:rPr lang="en-US"/><a:t>7/23/19</a:t></a:fld><a:endParaRPr lang="en-US"/></a:p></p:txBody></p:sp><p:sp><p:nvSpPr><p:cNvPr id="4" name="Slide Image Placeholder 3"/><p:cNvSpPr><a:spLocks noGrp="1" noRot="1" noChangeAspect="1"/></p:cNvSpPr><p:nvPr><p:ph type="sldImg" idx="2"/></p:nvPr></p:nvSpPr><p:spPr><a:xfrm><a:off x="685800" y="1143000"/><a:ext cx="5486400" cy="3086100"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/><a:ln w="12700"><a:solidFill><a:prstClr val="black"/></a:solidFill></a:ln></p:spPr><p:txBody><a:bodyPr vert="horz" lIns="91440" tIns="45720" rIns="91440" bIns="45720" rtlCol="0" anchor="ctr"/><a:lstStyle/><a:p><a:endParaRPr lang="en-US"/></a:p></p:txBody></p:sp><p:sp><p:nvSpPr><p:cNvPr id="5" name="Notes Placeholder 4"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph type="body" sz="quarter" idx="3"/></p:nvPr></p:nvSpPr><p:spPr><a:xfrm><a:off x="685800" y="4400550"/><a:ext cx="5486400" cy="3600450"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr><p:txBody><a:bodyPr vert="horz" lIns="91440" tIns="45720" rIns="91440" bIns="45720" rtlCol="0"/><a:lstStyle/><a:p><a:pPr lvl="0"/><a:r><a:rPr lang="en-US"/><a:t>Click to edit Master text styles</a:t></a:r></a:p><a:p><a:pPr lvl="1"/><a:r><a:rPr lang="en-US"/><a:t>Second level</a:t></a:r></a:p><a:p><a:pPr lvl="2"/><a:r><a:rPr lang="en-US"/><a:t>Third level</a:t></a:r></a:p><a:p><a:pPr lvl="3"/><a:r><a:rPr lang="en-US"/><a:t>Fourth level</a:t></a:r></a:p><a:p><a:pPr lvl="4"/><a:r><a:rPr lang="en-US"/><a:t>Fifth level</a:t></a:r></a:p></p:txBody></p:sp><p:sp><p:nvSpPr><p:cNvPr id="6" name="Footer Placeholder 5"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph type="ftr" sz="quarter" idx="4"/></p:nvPr></p:nvSpPr><p:spPr><a:xfrm><a:off x="0" y="8685213"/><a:ext cx="2971800" cy="458787"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr><p:txBody><a:bodyPr vert="horz" lIns="91440" tIns="45720" rIns="91440" bIns="45720" rtlCol="0" anchor="b"/><a:lstStyle><a:lvl1pPr algn="l"><a:defRPr sz="1200"/></a:lvl1pPr></a:lstStyle><a:p><a:endParaRPr lang="en-US"/></a:p></p:txBody></p:sp><p:sp><p:nvSpPr><p:cNvPr id="7" name="Slide Number Placeholder 6"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph type="sldNum" sz="quarter" idx="5"/></p:nvPr></p:nvSpPr><p:spPr><a:xfrm><a:off x="3884613" y="8685213"/><a:ext cx="2971800" cy="458787"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr><p:txBody><a:bodyPr vert="horz" lIns="91440" tIns="45720" rIns="91440" bIns="45720" rtlCol="0" anchor="b"/><a:lstStyle><a:lvl1pPr algn="r"><a:defRPr sz="1200"/></a:lvl1pPr></a:lstStyle><a:p><a:fld id="{CE5E9CC1-C706-0F49-92D6-E571CC5EEA8F}" type="slidenum"><a:rPr lang="en-US"/><a:t>‹#›</a:t></a:fld><a:endParaRPr lang="en-US"/></a:p></p:txBody></p:sp></p:spTree><p:extLst><p:ext uri="{BB962C8B-B14F-4D97-AF65-F5344CB8AC3E}"><p14:creationId xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" val="1024086991"/></p:ext></p:extLst></p:cSld><p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/><p:notesStyle><a:lvl1pPr marL="0" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1200" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl1pPr><a:lvl2pPr marL="457200" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1200" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl2pPr><a:lvl3pPr marL="914400" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1200" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl3pPr><a:lvl4pPr marL="1371600" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1200" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl4pPr><a:lvl5pPr marL="1828800" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1200" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl5pPr><a:lvl6pPr marL="2286000" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1200" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl6pPr><a:lvl7pPr marL="2743200" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1200" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl7pPr><a:lvl8pPr marL="3200400" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1200" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl8pPr><a:lvl9pPr marL="3657600" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1200" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl9pPr></p:notesStyle></p:notesMaster>`;
 }
-function Vi(e) {
-  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>${De}<p:notes xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr><p:sp><p:nvSpPr><p:cNvPr id="2" name="Slide Image Placeholder 1"/><p:cNvSpPr><a:spLocks noGrp="1" noRot="1" noChangeAspect="1"/></p:cNvSpPr><p:nvPr><p:ph type="sldImg"/></p:nvPr></p:nvSpPr><p:spPr/></p:sp><p:sp><p:nvSpPr><p:cNvPr id="3" name="Notes Placeholder 2"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph type="body" idx="1"/></p:nvPr></p:nvSpPr><p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" dirty="0"/><a:t>${fe(qi(e))}</a:t></a:r><a:endParaRPr lang="en-US" dirty="0"/></a:p></p:txBody></p:sp><p:sp><p:nvSpPr><p:cNvPr id="4" name="Slide Number Placeholder 3"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph type="sldNum" sz="quarter" idx="10"/></p:nvPr></p:nvSpPr><p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:fld id="${Bo}" type="slidenum"><a:rPr lang="en-US"/><a:t>${e._slideNum}</a:t></a:fld><a:endParaRPr lang="en-US"/></a:p></p:txBody></p:sp></p:spTree><p:extLst><p:ext uri="{BB962C8B-B14F-4D97-AF65-F5344CB8AC3E}"><p14:creationId xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" val="1024086991"/></p:ext></p:extLst></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:notes>`;
+function Hi(e) {
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>${De}<p:notes xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr><p:sp><p:nvSpPr><p:cNvPr id="2" name="Slide Image Placeholder 1"/><p:cNvSpPr><a:spLocks noGrp="1" noRot="1" noChangeAspect="1"/></p:cNvSpPr><p:nvPr><p:ph type="sldImg"/></p:nvPr></p:nvSpPr><p:spPr/></p:sp><p:sp><p:nvSpPr><p:cNvPr id="3" name="Notes Placeholder 2"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph type="body" idx="1"/></p:nvPr></p:nvSpPr><p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr lang="en-US" dirty="0"/><a:t>${fe(Wi(e))}</a:t></a:r><a:endParaRPr lang="en-US" dirty="0"/></a:p></p:txBody></p:sp><p:sp><p:nvSpPr><p:cNvPr id="4" name="Slide Number Placeholder 3"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr><p:ph type="sldNum" sz="quarter" idx="10"/></p:nvPr></p:nvSpPr><p:spPr/><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:fld id="${So}" type="slidenum"><a:rPr lang="en-US"/><a:t>${e._slideNum}</a:t></a:fld><a:endParaRPr lang="en-US"/></a:p></p:txBody></p:sp></p:spTree><p:extLst><p:ext uri="{BB962C8B-B14F-4D97-AF65-F5344CB8AC3E}"><p14:creationId xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" val="1024086991"/></p:ext></p:extLst></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:notes>`;
 }
-function Qi(e) {
+function Vi(e) {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 		<p:sldLayout xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" preserve="1">
 		${Ma(e)}
 		<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>`;
 }
-function ji(e, r) {
-  const t = r.map((n, s) => `<p:sldLayoutId id="${mi + s}" r:id="rId${e._rels.length + s + 1}"/>`);
+function Qi(e, r) {
+  const t = r.map((n, s) => `<p:sldLayoutId id="${pi + s}" r:id="rId${e._rels.length + s + 1}"/>`);
   let i = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' + De;
   return i += '<p:sldMaster xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">', i += Ma(e), i += '<p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/>', i += "<p:sldLayoutIdLst>" + t.join("") + "</p:sldLayoutIdLst>", i += '<p:hf sldNum="0" hdr="0" ftr="0" dt="0"/>', i += '<p:txStyles> <p:titleStyle>  <a:lvl1pPr algn="ctr" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:spcBef><a:spcPct val="0"/></a:spcBef><a:buNone/><a:defRPr sz="4400" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mj-lt"/><a:ea typeface="+mj-ea"/><a:cs typeface="+mj-cs"/></a:defRPr></a:lvl1pPr> </p:titleStyle> <p:bodyStyle>  <a:lvl1pPr marL="342900" indent="-342900" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:spcBef><a:spcPct val="20000"/></a:spcBef><a:buFont typeface="Arial" pitchFamily="34" charset="0"/><a:buChar char="•"/><a:defRPr sz="3200" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl1pPr>  <a:lvl2pPr marL="742950" indent="-285750" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:spcBef><a:spcPct val="20000"/></a:spcBef><a:buFont typeface="Arial" pitchFamily="34" charset="0"/><a:buChar char="–"/><a:defRPr sz="2800" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl2pPr>  <a:lvl3pPr marL="1143000" indent="-228600" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:spcBef><a:spcPct val="20000"/></a:spcBef><a:buFont typeface="Arial" pitchFamily="34" charset="0"/><a:buChar char="•"/><a:defRPr sz="2400" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl3pPr>  <a:lvl4pPr marL="1600200" indent="-228600" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:spcBef><a:spcPct val="20000"/></a:spcBef><a:buFont typeface="Arial" pitchFamily="34" charset="0"/><a:buChar char="–"/><a:defRPr sz="2000" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl4pPr>  <a:lvl5pPr marL="2057400" indent="-228600" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:spcBef><a:spcPct val="20000"/></a:spcBef><a:buFont typeface="Arial" pitchFamily="34" charset="0"/><a:buChar char="»"/><a:defRPr sz="2000" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl5pPr>  <a:lvl6pPr marL="2514600" indent="-228600" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:spcBef><a:spcPct val="20000"/></a:spcBef><a:buFont typeface="Arial" pitchFamily="34" charset="0"/><a:buChar char="•"/><a:defRPr sz="2000" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl6pPr>  <a:lvl7pPr marL="2971800" indent="-228600" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:spcBef><a:spcPct val="20000"/></a:spcBef><a:buFont typeface="Arial" pitchFamily="34" charset="0"/><a:buChar char="•"/><a:defRPr sz="2000" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl7pPr>  <a:lvl8pPr marL="3429000" indent="-228600" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:spcBef><a:spcPct val="20000"/></a:spcBef><a:buFont typeface="Arial" pitchFamily="34" charset="0"/><a:buChar char="•"/><a:defRPr sz="2000" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl8pPr>  <a:lvl9pPr marL="3886200" indent="-228600" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:spcBef><a:spcPct val="20000"/></a:spcBef><a:buFont typeface="Arial" pitchFamily="34" charset="0"/><a:buChar char="•"/><a:defRPr sz="2000" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl9pPr> </p:bodyStyle> <p:otherStyle>  <a:defPPr><a:defRPr lang="en-US"/></a:defPPr>  <a:lvl1pPr marL="0" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1800" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl1pPr>  <a:lvl2pPr marL="457200" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1800" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl2pPr>  <a:lvl3pPr marL="914400" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1800" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl3pPr>  <a:lvl4pPr marL="1371600" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1800" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl4pPr>  <a:lvl5pPr marL="1828800" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1800" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl5pPr>  <a:lvl6pPr marL="2286000" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1800" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl6pPr>  <a:lvl7pPr marL="2743200" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1800" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl7pPr>  <a:lvl8pPr marL="3200400" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1800" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl8pPr>  <a:lvl9pPr marL="3657600" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1800" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl9pPr> </p:otherStyle></p:txStyles>', i += "</p:sldMaster>", i;
 }
-function Ki(e, r) {
+function ji(e, r) {
   return Oa(r[e - 1], [
     {
       target: "../slideMasters/slideMaster1.xml",
@@ -3952,7 +3952,7 @@ function Ki(e, r) {
 function Yi(e, r, t) {
   return Oa(e[t - 1], [
     {
-      target: `../slideLayouts/slideLayout${ts(e, r, t)}.xml`,
+      target: `../slideLayouts/slideLayout${es(e, r, t)}.xml`,
       type: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout"
     },
     {
@@ -3961,56 +3961,56 @@ function Yi(e, r, t) {
     }
   ]);
 }
-function Ji(e) {
+function Ki(e) {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 		<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
 			<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster" Target="../notesMasters/notesMaster1.xml"/>
 			<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide" Target="../slides/slide${e}.xml"/>
 		</Relationships>`;
 }
-function Zi(e, r) {
+function Ji(e, r) {
   const t = r.map((i, n) => ({
     target: `../slideLayouts/slideLayout${n + 1}.xml`,
     type: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout"
   }));
   return t.push({ target: "../theme/theme1.xml", type: "http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" }), Oa(e, t);
 }
-function es() {
+function Zi() {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>${De}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
 		<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="../theme/theme1.xml"/>
 		</Relationships>`;
 }
-function ts(e, r, t) {
+function es(e, r, t) {
   for (let i = 0; i < r.length; i++)
     if (r[i]._name === e[t - 1]._slideLayout._name)
       return i + 1;
   return 1;
 }
-function rs(e) {
+function ts(e) {
   var r, t, i, n;
   const s = !((r = e.theme) === null || r === void 0) && r.headFontFace ? `<a:latin typeface="${(t = e.theme) === null || t === void 0 ? void 0 : t.headFontFace}"/>` : '<a:latin typeface="Calibri Light" panose="020F0302020204030204"/>', l = !((i = e.theme) === null || i === void 0) && i.bodyFontFace ? `<a:latin typeface="${(n = e.theme) === null || n === void 0 ? void 0 : n.bodyFontFace}"/>` : '<a:latin typeface="Calibri" panose="020F0502020204030204"/>';
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Office Theme"><a:themeElements><a:clrScheme name="Office"><a:dk1><a:sysClr val="windowText" lastClr="000000"/></a:dk1><a:lt1><a:sysClr val="window" lastClr="FFFFFF"/></a:lt1><a:dk2><a:srgbClr val="44546A"/></a:dk2><a:lt2><a:srgbClr val="E7E6E6"/></a:lt2><a:accent1><a:srgbClr val="4472C4"/></a:accent1><a:accent2><a:srgbClr val="ED7D31"/></a:accent2><a:accent3><a:srgbClr val="A5A5A5"/></a:accent3><a:accent4><a:srgbClr val="FFC000"/></a:accent4><a:accent5><a:srgbClr val="5B9BD5"/></a:accent5><a:accent6><a:srgbClr val="70AD47"/></a:accent6><a:hlink><a:srgbClr val="0563C1"/></a:hlink><a:folHlink><a:srgbClr val="954F72"/></a:folHlink></a:clrScheme><a:fontScheme name="Office"><a:majorFont>${s}<a:ea typeface=""/><a:cs typeface=""/><a:font script="Jpan" typeface="游ゴシック Light"/><a:font script="Hang" typeface="맑은 고딕"/><a:font script="Hans" typeface="等线 Light"/><a:font script="Hant" typeface="新細明體"/><a:font script="Arab" typeface="Times New Roman"/><a:font script="Hebr" typeface="Times New Roman"/><a:font script="Thai" typeface="Angsana New"/><a:font script="Ethi" typeface="Nyala"/><a:font script="Beng" typeface="Vrinda"/><a:font script="Gujr" typeface="Shruti"/><a:font script="Khmr" typeface="MoolBoran"/><a:font script="Knda" typeface="Tunga"/><a:font script="Guru" typeface="Raavi"/><a:font script="Cans" typeface="Euphemia"/><a:font script="Cher" typeface="Plantagenet Cherokee"/><a:font script="Yiii" typeface="Microsoft Yi Baiti"/><a:font script="Tibt" typeface="Microsoft Himalaya"/><a:font script="Thaa" typeface="MV Boli"/><a:font script="Deva" typeface="Mangal"/><a:font script="Telu" typeface="Gautami"/><a:font script="Taml" typeface="Latha"/><a:font script="Syrc" typeface="Estrangelo Edessa"/><a:font script="Orya" typeface="Kalinga"/><a:font script="Mlym" typeface="Kartika"/><a:font script="Laoo" typeface="DokChampa"/><a:font script="Sinh" typeface="Iskoola Pota"/><a:font script="Mong" typeface="Mongolian Baiti"/><a:font script="Viet" typeface="Times New Roman"/><a:font script="Uigh" typeface="Microsoft Uighur"/><a:font script="Geor" typeface="Sylfaen"/><a:font script="Armn" typeface="Arial"/><a:font script="Bugi" typeface="Leelawadee UI"/><a:font script="Bopo" typeface="Microsoft JhengHei"/><a:font script="Java" typeface="Javanese Text"/><a:font script="Lisu" typeface="Segoe UI"/><a:font script="Mymr" typeface="Myanmar Text"/><a:font script="Nkoo" typeface="Ebrima"/><a:font script="Olck" typeface="Nirmala UI"/><a:font script="Osma" typeface="Ebrima"/><a:font script="Phag" typeface="Phagspa"/><a:font script="Syrn" typeface="Estrangelo Edessa"/><a:font script="Syrj" typeface="Estrangelo Edessa"/><a:font script="Syre" typeface="Estrangelo Edessa"/><a:font script="Sora" typeface="Nirmala UI"/><a:font script="Tale" typeface="Microsoft Tai Le"/><a:font script="Talu" typeface="Microsoft New Tai Lue"/><a:font script="Tfng" typeface="Ebrima"/></a:majorFont><a:minorFont>${l}<a:ea typeface=""/><a:cs typeface=""/><a:font script="Jpan" typeface="游ゴシック"/><a:font script="Hang" typeface="맑은 고딕"/><a:font script="Hans" typeface="等线"/><a:font script="Hant" typeface="新細明體"/><a:font script="Arab" typeface="Arial"/><a:font script="Hebr" typeface="Arial"/><a:font script="Thai" typeface="Cordia New"/><a:font script="Ethi" typeface="Nyala"/><a:font script="Beng" typeface="Vrinda"/><a:font script="Gujr" typeface="Shruti"/><a:font script="Khmr" typeface="DaunPenh"/><a:font script="Knda" typeface="Tunga"/><a:font script="Guru" typeface="Raavi"/><a:font script="Cans" typeface="Euphemia"/><a:font script="Cher" typeface="Plantagenet Cherokee"/><a:font script="Yiii" typeface="Microsoft Yi Baiti"/><a:font script="Tibt" typeface="Microsoft Himalaya"/><a:font script="Thaa" typeface="MV Boli"/><a:font script="Deva" typeface="Mangal"/><a:font script="Telu" typeface="Gautami"/><a:font script="Taml" typeface="Latha"/><a:font script="Syrc" typeface="Estrangelo Edessa"/><a:font script="Orya" typeface="Kalinga"/><a:font script="Mlym" typeface="Kartika"/><a:font script="Laoo" typeface="DokChampa"/><a:font script="Sinh" typeface="Iskoola Pota"/><a:font script="Mong" typeface="Mongolian Baiti"/><a:font script="Viet" typeface="Arial"/><a:font script="Uigh" typeface="Microsoft Uighur"/><a:font script="Geor" typeface="Sylfaen"/><a:font script="Armn" typeface="Arial"/><a:font script="Bugi" typeface="Leelawadee UI"/><a:font script="Bopo" typeface="Microsoft JhengHei"/><a:font script="Java" typeface="Javanese Text"/><a:font script="Lisu" typeface="Segoe UI"/><a:font script="Mymr" typeface="Myanmar Text"/><a:font script="Nkoo" typeface="Ebrima"/><a:font script="Olck" typeface="Nirmala UI"/><a:font script="Osma" typeface="Ebrima"/><a:font script="Phag" typeface="Phagspa"/><a:font script="Syrn" typeface="Estrangelo Edessa"/><a:font script="Syrj" typeface="Estrangelo Edessa"/><a:font script="Syre" typeface="Estrangelo Edessa"/><a:font script="Sora" typeface="Nirmala UI"/><a:font script="Tale" typeface="Microsoft Tai Le"/><a:font script="Talu" typeface="Microsoft New Tai Lue"/><a:font script="Tfng" typeface="Ebrima"/></a:minorFont></a:fontScheme><a:fmtScheme name="Office"><a:fillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:gradFill rotWithShape="1"><a:gsLst><a:gs pos="0"><a:schemeClr val="phClr"><a:lumMod val="110000"/><a:satMod val="105000"/><a:tint val="67000"/></a:schemeClr></a:gs><a:gs pos="50000"><a:schemeClr val="phClr"><a:lumMod val="105000"/><a:satMod val="103000"/><a:tint val="73000"/></a:schemeClr></a:gs><a:gs pos="100000"><a:schemeClr val="phClr"><a:lumMod val="105000"/><a:satMod val="109000"/><a:tint val="81000"/></a:schemeClr></a:gs></a:gsLst><a:lin ang="5400000" scaled="0"/></a:gradFill><a:gradFill rotWithShape="1"><a:gsLst><a:gs pos="0"><a:schemeClr val="phClr"><a:satMod val="103000"/><a:lumMod val="102000"/><a:tint val="94000"/></a:schemeClr></a:gs><a:gs pos="50000"><a:schemeClr val="phClr"><a:satMod val="110000"/><a:lumMod val="100000"/><a:shade val="100000"/></a:schemeClr></a:gs><a:gs pos="100000"><a:schemeClr val="phClr"><a:lumMod val="99000"/><a:satMod val="120000"/><a:shade val="78000"/></a:schemeClr></a:gs></a:gsLst><a:lin ang="5400000" scaled="0"/></a:gradFill></a:fillStyleLst><a:lnStyleLst><a:ln w="6350" cap="flat" cmpd="sng" algn="ctr"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:prstDash val="solid"/><a:miter lim="800000"/></a:ln><a:ln w="12700" cap="flat" cmpd="sng" algn="ctr"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:prstDash val="solid"/><a:miter lim="800000"/></a:ln><a:ln w="19050" cap="flat" cmpd="sng" algn="ctr"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:prstDash val="solid"/><a:miter lim="800000"/></a:ln></a:lnStyleLst><a:effectStyleLst><a:effectStyle><a:effectLst/></a:effectStyle><a:effectStyle><a:effectLst/></a:effectStyle><a:effectStyle><a:effectLst><a:outerShdw blurRad="57150" dist="19050" dir="5400000" algn="ctr" rotWithShape="0"><a:srgbClr val="000000"><a:alpha val="63000"/></a:srgbClr></a:outerShdw></a:effectLst></a:effectStyle></a:effectStyleLst><a:bgFillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:solidFill><a:schemeClr val="phClr"><a:tint val="95000"/><a:satMod val="170000"/></a:schemeClr></a:solidFill><a:gradFill rotWithShape="1"><a:gsLst><a:gs pos="0"><a:schemeClr val="phClr"><a:tint val="93000"/><a:satMod val="150000"/><a:shade val="98000"/><a:lumMod val="102000"/></a:schemeClr></a:gs><a:gs pos="50000"><a:schemeClr val="phClr"><a:tint val="98000"/><a:satMod val="130000"/><a:shade val="90000"/><a:lumMod val="103000"/></a:schemeClr></a:gs><a:gs pos="100000"><a:schemeClr val="phClr"><a:shade val="63000"/><a:satMod val="120000"/></a:schemeClr></a:gs></a:gsLst><a:lin ang="5400000" scaled="0"/></a:gradFill></a:bgFillStyleLst></a:fmtScheme></a:themeElements><a:objectDefaults/><a:extraClrSchemeLst/><a:extLst><a:ext uri="{05A4C25C-085E-4340-85A3-A5531E510DB2}"><thm15:themeFamily xmlns:thm15="http://schemas.microsoft.com/office/thememl/2012/main" name="Office Theme" id="{62F939B6-93AF-4DB8-9C6B-D6C7DFDC589F}" vid="{4A3C46E8-61CC-4603-A589-7422A47A8E4A}"/></a:ext></a:extLst></a:theme>`;
 }
-function as(e) {
+function rs(e) {
   let r = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>${De}<p:presentation xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" ${e.rtlMode ? 'rtl="1"' : ""} saveSubsetFonts="1" autoCompressPictures="0">`;
   r += '<p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst>', r += "<p:sldIdLst>", e.slides.forEach((t) => r += `<p:sldId id="${t._slideId}" r:id="rId${t._rId}"/>`), r += "</p:sldIdLst>", r += `<p:notesMasterIdLst><p:notesMasterId r:id="rId${e.slides.length + 2}"/></p:notesMasterIdLst>`, r += `<p:sldSz cx="${e.presLayout.width}" cy="${e.presLayout.height}"/>`, r += `<p:notesSz cx="${e.presLayout.height}" cy="${e.presLayout.width}"/>`, r += "<p:defaultTextStyle>";
   for (let t = 1; t < 10; t++)
     r += `<a:lvl${t}pPr marL="${(t - 1) * 457200}" algn="l" defTabSz="914400" rtl="0" eaLnBrk="1" latinLnBrk="0" hangingPunct="1"><a:defRPr sz="1800" kern="1200"><a:solidFill><a:schemeClr val="tx1"/></a:solidFill><a:latin typeface="+mn-lt"/><a:ea typeface="+mn-ea"/><a:cs typeface="+mn-cs"/></a:defRPr></a:lvl${t}pPr>`;
   return r += "</p:defaultTextStyle>", e.sections && e.sections.length > 0 && (r += '<p:extLst><p:ext uri="{521415D9-36F7-43E2-AB2F-B90AF26B5E84}">', r += '<p14:sectionLst xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main">', e.sections.forEach((t) => {
-    r += `<p14:section name="${fe(t.title)}" id="{${Mr("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")}}"><p14:sldIdLst>`, t._slides.forEach((i) => r += `<p14:sldId id="${i._slideId}"/>`), r += "</p14:sldIdLst></p14:section>";
+    r += `<p14:section name="${fe(t.title)}" id="{${Or("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")}}"><p14:sldIdLst>`, t._slides.forEach((i) => r += `<p14:sldId id="${i._slideId}"/>`), r += "</p14:sldIdLst></p14:section>";
   }), r += "</p14:sectionLst></p:ext>", r += '<p:ext uri="{EFAFB233-063F-42B5-8137-9DF3F51BA10A}"><p15:sldGuideLst xmlns:p15="http://schemas.microsoft.com/office/powerpoint/2012/main"/></p:ext>', r += "</p:extLst>"), r += "</p:presentation>", r;
 }
-function ns() {
+function as() {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>${De}<p:presentationPr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"/>`;
 }
-function os() {
+function ns() {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>${De}<a:tblStyleLst xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" def="{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}"/>`;
 }
-function is() {
+function os() {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>${De}<p:viewPr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:normalViewPr horzBarState="maximized"><p:restoredLeft sz="15611"/><p:restoredTop sz="94610"/></p:normalViewPr><p:slideViewPr><p:cSldViewPr snapToGrid="0" snapToObjects="1"><p:cViewPr varScale="1"><p:scale><a:sx n="136" d="100"/><a:sy n="136" d="100"/></p:scale><p:origin x="216" y="312"/></p:cViewPr><p:guideLst/></p:cSldViewPr></p:slideViewPr><p:notesTextViewPr><p:cViewPr><p:scale><a:sx n="1" d="1"/><a:sy n="1" d="1"/></p:scale><p:origin x="0" y="0"/></p:cViewPr></p:notesTextViewPr><p:gridSpacing cx="76200" cy="76200"/></p:viewPr>`;
 }
-const ss = "4.0.1";
-class ls {
+const is = "4.0.1";
+class ss {
   set layout(r) {
     const t = this.LAYOUTS[r];
     if (t)
@@ -4109,13 +4109,13 @@ class ls {
     return this._shapes;
   }
   constructor() {
-    this._version = ss, this._alignH = Ra, this._alignV = Da, this._chartType = Ta, this._outputType = Ea, this._schemeColor = Oe, this._shapeType = La, this._charts = re, this._colors = $r, this._shapes = tt, this.addNewSlide = (s) => {
+    this._version = is, this._alignH = Ra, this._alignV = Da, this._chartType = Ea, this._outputType = Ta, this._schemeColor = Oe, this._shapeType = La, this._charts = re, this._colors = zr, this._shapes = rt, this.addNewSlide = (s) => {
       const l = this.sections.length > 0 && this.sections[this.sections.length - 1]._slides.filter((c) => c._slideNum === this.slides[this.slides.length - 1]._slideNum).length > 0;
       return s.sectionTitle = l ? this.sections[this.sections.length - 1].title : null, this.addSlide(s);
     }, this.getSlide = (s) => this.slides.filter((l) => l._slideNum === s)[0], this.setSlideNumber = (s) => {
       this.masterSlide._slideNumberProps = s, this.slideLayouts.filter((l) => l._name === Ca)[0]._slideNumberProps = s;
     }, this.createChartMediaRels = (s, l, c) => {
-      s._relsChart.forEach((A) => c.push(Si(A, l))), s._relsMedia.forEach((A) => {
+      s._relsChart.forEach((A) => c.push(Ni(A, l))), s._relsMedia.forEach((A) => {
         if (A.type !== "online" && A.type !== "hyperlink") {
           let a = A.data && typeof A.data == "string" ? A.data : "";
           !a.includes(",") && !a.includes(";") ? a = "image/png;base64," + a : a.includes(",") ? a.includes(";") || (a = "image/png;" + a) : a = "image/png;base64," + a, l.file(A.Target.replace("..", "ppt"), a.split(",").pop(), { base64: !0 });
@@ -4132,19 +4132,19 @@ class ls {
     }), this.exportPresentation = (s) => $e(this, void 0, void 0, function* () {
       const l = [];
       let c = [];
-      const A = new Lo();
+      const A = new Do();
       return this.slides.forEach((a) => {
-        c = c.concat(ia(a));
+        c = c.concat(sa(a));
       }), this.slideLayouts.forEach((a) => {
-        c = c.concat(ia(a));
-      }), c = c.concat(ia(this.masterSlide)), yield Promise.all(c).then(() => $e(this, void 0, void 0, function* () {
+        c = c.concat(sa(a));
+      }), c = c.concat(sa(this.masterSlide)), yield Promise.all(c).then(() => $e(this, void 0, void 0, function* () {
         return this.slides.forEach((a) => {
-          a._slideLayout && Bi(a);
-        }), A.folder("_rels"), A.folder("docProps"), A.folder("ppt").folder("_rels"), A.folder("ppt/charts").folder("_rels"), A.folder("ppt/embeddings"), A.folder("ppt/media"), A.folder("ppt/slideLayouts").folder("_rels"), A.folder("ppt/slideMasters").folder("_rels"), A.folder("ppt/slides").folder("_rels"), A.folder("ppt/theme"), A.folder("ppt/notesMasters").folder("_rels"), A.folder("ppt/notesSlides").folder("_rels"), A.file("[Content_Types].xml", $i(this.slides, this.slideLayouts, this.masterSlide)), A.file("_rels/.rels", zi()), A.file("docProps/app.xml", Ui(this.slides, this.company)), A.file("docProps/core.xml", Gi(this.title, this.subject, this.author, this.revision)), A.file("ppt/_rels/presentation.xml.rels", Xi(this.slides)), A.file("ppt/theme/theme1.xml", rs(this)), A.file("ppt/presentation.xml", as(this)), A.file("ppt/presProps.xml", ns()), A.file("ppt/tableStyles.xml", os()), A.file("ppt/viewProps.xml", is()), this.slideLayouts.forEach((a, o) => {
-          A.file(`ppt/slideLayouts/slideLayout${o + 1}.xml`, Qi(a)), A.file(`ppt/slideLayouts/_rels/slideLayout${o + 1}.xml.rels`, Ki(o + 1, this.slideLayouts));
+          a._slideLayout && Pi(a);
+        }), A.folder("_rels"), A.folder("docProps"), A.folder("ppt").folder("_rels"), A.folder("ppt/charts").folder("_rels"), A.folder("ppt/embeddings"), A.folder("ppt/media"), A.folder("ppt/slideLayouts").folder("_rels"), A.folder("ppt/slideMasters").folder("_rels"), A.folder("ppt/slides").folder("_rels"), A.folder("ppt/theme"), A.folder("ppt/notesMasters").folder("_rels"), A.folder("ppt/notesSlides").folder("_rels"), A.file("[Content_Types].xml", Oi(this.slides, this.slideLayouts, this.masterSlide)), A.file("_rels/.rels", $i()), A.file("docProps/app.xml", zi(this.slides, this.company)), A.file("docProps/core.xml", Ui(this.title, this.subject, this.author, this.revision)), A.file("ppt/_rels/presentation.xml.rels", Gi(this.slides)), A.file("ppt/theme/theme1.xml", ts(this)), A.file("ppt/presentation.xml", rs(this)), A.file("ppt/presProps.xml", as()), A.file("ppt/tableStyles.xml", ns()), A.file("ppt/viewProps.xml", os()), this.slideLayouts.forEach((a, o) => {
+          A.file(`ppt/slideLayouts/slideLayout${o + 1}.xml`, Vi(a)), A.file(`ppt/slideLayouts/_rels/slideLayout${o + 1}.xml.rels`, ji(o + 1, this.slideLayouts));
         }), this.slides.forEach((a, o) => {
-          A.file(`ppt/slides/slide${o + 1}.xml`, Wi(a)), A.file(`ppt/slides/_rels/slide${o + 1}.xml.rels`, Yi(this.slides, this.slideLayouts, o + 1)), A.file(`ppt/notesSlides/notesSlide${o + 1}.xml`, Vi(a)), A.file(`ppt/notesSlides/_rels/notesSlide${o + 1}.xml.rels`, Ji(o + 1));
-        }), A.file("ppt/slideMasters/slideMaster1.xml", ji(this.masterSlide, this.slideLayouts)), A.file("ppt/slideMasters/_rels/slideMaster1.xml.rels", Zi(this.masterSlide, this.slideLayouts)), A.file("ppt/notesMasters/notesMaster1.xml", Hi()), A.file("ppt/notesMasters/_rels/notesMaster1.xml.rels", es()), this.slideLayouts.forEach((a) => {
+          A.file(`ppt/slides/slide${o + 1}.xml`, Xi(a)), A.file(`ppt/slides/_rels/slide${o + 1}.xml.rels`, Yi(this.slides, this.slideLayouts, o + 1)), A.file(`ppt/notesSlides/notesSlide${o + 1}.xml`, Hi(a)), A.file(`ppt/notesSlides/_rels/notesSlide${o + 1}.xml.rels`, Ki(o + 1));
+        }), A.file("ppt/slideMasters/slideMaster1.xml", Qi(this.masterSlide, this.slideLayouts)), A.file("ppt/slideMasters/_rels/slideMaster1.xml.rels", Ji(this.masterSlide, this.slideLayouts)), A.file("ppt/notesMasters/notesMaster1.xml", qi()), A.file("ppt/notesMasters/_rels/notesMaster1.xml.rels", Zi()), this.slideLayouts.forEach((a) => {
           this.createChartMediaRels(a, A, l);
         }), this.slides.forEach((a) => {
           this.createChartMediaRels(a, A, l);
@@ -4167,7 +4167,7 @@ class ls {
       height: this.LAYOUTS[yt].height
     }, this._rtlMode = !1, this._slideLayouts = [
       {
-        _margin: $t,
+        _margin: zt,
         _name: Ca,
         _presLayout: this._presLayout,
         _rels: [],
@@ -4281,7 +4281,7 @@ class ls {
       const s = this.slideLayouts.filter((l) => l._name === t)[0];
       s && (i = s);
     }
-    const n = new Ni({
+    const n = new Bi({
       addSlide: this.addNewSlide,
       getSlide: this.getSlide,
       presLayout: this.presLayout,
@@ -4327,7 +4327,7 @@ class ls {
     if (!t.title)
       throw new Error("defineSlideMaster() object argument requires a `title` value. (https://gitbrent.github.io/PptxGenJS/docs/masters.html)");
     const i = {
-      _margin: t.margin || $t,
+      _margin: t.margin || zt,
       _name: t.title,
       _presLayout: this.presLayout,
       _rels: [],
@@ -4340,7 +4340,7 @@ class ls {
       background: t.background || null,
       bkgd: t.bkgd || null
     };
-    Li(t, i), this.slideLayouts.push(i), (t.background || t.bkgd) && ko(t.background, i), i._slideNumberProps && !this.masterSlide._slideNumberProps && (this.masterSlide._slideNumberProps = i._slideNumberProps);
+    Ei(t, i), this.slideLayouts.push(i), (t.background || t.bkgd) && Mo(t.background, i), i._slideNumberProps && !this.masterSlide._slideNumberProps && (this.masterSlide._slideNumberProps = i._slideNumberProps);
   }
   // HTML-TO-SLIDES METHODS
   /**
@@ -4349,10 +4349,10 @@ class ls {
    * @param {TableToSlidesProps} options - generation options
    */
   tableToSlides(r, t = {}) {
-    Ei(this, r, t, t?.masterSlideName ? this.slideLayouts.filter((i) => i._name === t.masterSlideName)[0] : null);
+    xi(this, r, t, t?.masterSlideName ? this.slideLayouts.filter((i) => i._name === t.masterSlideName)[0] : null);
   }
 }
-const Mo = {
+const $o = {
   SLIDE_WIDTH: 13.33,
   SLIDE_HEIGHT: 7.5,
   MARGIN: 0.68,
@@ -4459,25 +4459,21 @@ const Mo = {
   TABLE_LARGE_THRESHOLD: 3,
   DIAGRAM_LARGE_THRESHOLD: 4,
   LINE_SPACING: 1.22
-}, P = { ...Mo };
-function cs(e = {}) {
+}, D = { ...$o };
+function ls(e = {}) {
   const r = { ...e };
-  return e.bodyFont !== void 0 && e.FONT === void 0 && (r.FONT = e.bodyFont), e.FONT !== void 0 && e.bodyFont === void 0 && (r.bodyFont = e.FONT), e.bodyFont !== void 0 && e.labelFont === void 0 && (r.labelFont = e.bodyFont), e.headingFont !== void 0 && e.accentFont === void 0 && (r.accentFont = e.headingFont), e.NAVY !== void 0 && e.titleColor === void 0 && (r.titleColor = e.NAVY), e.titleColor !== void 0 && e.NAVY === void 0 && (r.NAVY = e.titleColor), e.GOLD !== void 0 && e.accentColor === void 0 && (r.accentColor = e.GOLD), e.accentColor !== void 0 && e.GOLD === void 0 && (r.GOLD = e.accentColor), e.BODY_TEXT !== void 0 && e.bodyColor === void 0 && (r.bodyColor = e.BODY_TEXT), e.bodyColor !== void 0 && e.BODY_TEXT === void 0 && (r.BODY_TEXT = e.bodyColor), e.MUTED_TEXT !== void 0 && e.mutedColor === void 0 && (r.mutedColor = e.MUTED_TEXT), e.mutedColor !== void 0 && e.MUTED_TEXT === void 0 && (r.MUTED_TEXT = e.mutedColor), Object.assign(P, r), { ...P };
+  return e.bodyFont !== void 0 && e.FONT === void 0 && (r.FONT = e.bodyFont), e.FONT !== void 0 && e.bodyFont === void 0 && (r.bodyFont = e.FONT), e.bodyFont !== void 0 && e.labelFont === void 0 && (r.labelFont = e.bodyFont), e.headingFont !== void 0 && e.accentFont === void 0 && (r.accentFont = e.headingFont), e.NAVY !== void 0 && e.titleColor === void 0 && (r.titleColor = e.NAVY), e.titleColor !== void 0 && e.NAVY === void 0 && (r.NAVY = e.titleColor), e.GOLD !== void 0 && e.accentColor === void 0 && (r.accentColor = e.GOLD), e.accentColor !== void 0 && e.GOLD === void 0 && (r.GOLD = e.accentColor), e.BODY_TEXT !== void 0 && e.bodyColor === void 0 && (r.bodyColor = e.BODY_TEXT), e.bodyColor !== void 0 && e.BODY_TEXT === void 0 && (r.BODY_TEXT = e.bodyColor), e.MUTED_TEXT !== void 0 && e.mutedColor === void 0 && (r.mutedColor = e.MUTED_TEXT), e.mutedColor !== void 0 && e.MUTED_TEXT === void 0 && (r.MUTED_TEXT = e.mutedColor), Object.assign(D, r), { ...D };
 }
-function en() {
-  return Object.assign(P, Mo), { ...P };
+function rn() {
+  return Object.assign(D, $o), { ...D };
 }
-const Se = P.SLIDE_WIDTH - 2 * P.MARGIN, Ce = P.MARGIN, Lt = P.MARGIN + P.SECTION_HEADER_HEIGHT + P.SECTION_HEADER_GAP, Ne = 6.62, As = Ne - Lt, Oo = P.TITLE_HEIGHT + P.DIVIDER_HEIGHT + P.DIVIDER_GAP, $o = P.SUBTITLE_HEIGHT + P.SUBTITLE_GAP;
-P.SLIDE_WIDTH / 2;
-P.SLIDE_HEIGHT / 2;
-const ds = P.SLIDE_WIDTH - P.MARGIN - 0.55, fs = P.SLIDE_HEIGHT - 0.48, zo = 0.4, Ft = 3.95, $a = Math.max(3, Se - Ft - zo), Kt = Ce + $a + zo;
-function sa(e, r) {
-  let t = Lt;
-  return e && (t += Oo), r && (t += $o), t;
-}
-function Uo(e, r) {
-  let t = As;
-  return e && (t -= Oo), r && (t -= $o), t;
+const Ne = D.SLIDE_WIDTH - 2 * D.MARGIN, Ce = D.MARGIN, Lt = D.MARGIN + D.SECTION_HEADER_HEIGHT + D.SECTION_HEADER_GAP, Be = 6.62, cs = Be - Lt, As = D.TITLE_HEIGHT + D.DIVIDER_HEIGHT + D.DIVIDER_GAP, ds = D.SUBTITLE_HEIGHT + D.SUBTITLE_GAP;
+D.SLIDE_WIDTH / 2;
+D.SLIDE_HEIGHT / 2;
+const fs = D.SLIDE_WIDTH - D.MARGIN - 0.55, us = D.SLIDE_HEIGHT - 0.48, zo = 0.4, Mt = 3.95, $a = Math.max(3, Ne - Mt - zo), Kt = Ce + $a + zo;
+function hs(e, r) {
+  let t = cs;
+  return t -= As, t -= ds, t;
 }
 const Ue = {
   TITLE_X: Ce,
@@ -4486,8 +4482,8 @@ const Ue = {
   TITLE_H: 1.55,
   STRIP_X: 8.24,
   STRIP_Y: 0,
-  STRIP_W: P.SLIDE_WIDTH - 8.24,
-  STRIP_H: P.SLIDE_HEIGHT
+  STRIP_W: D.SLIDE_WIDTH - 8.24,
+  STRIP_H: D.SLIDE_HEIGHT
 }, Re = {
   TITLE_X: Ce,
   TITLE_Y: 1.18,
@@ -4497,29 +4493,27 @@ const Ue = {
   LEFT_COL_W: 7.25,
   RIGHT_COL_X: 8.72,
   RIGHT_COL_W: 3.9,
-  INTRO_Y: 2.05,
   INTRO_H: 0.7,
   TOC_LABEL_Y: 2.05,
   TOC_CARD_Y: 1.9,
   TOC_Y: 2.52,
   TOC_H: 3.55,
   TOC_CARD_H: 4.45
-}, Ve = {
+}, He = {
   BAND_X: 8.68,
   BAND_Y: 0,
-  BAND_W: P.SLIDE_WIDTH - 8.68,
-  BAND_H: P.SLIDE_HEIGHT,
+  BAND_W: D.SLIDE_WIDTH - 8.68,
+  BAND_H: D.SLIDE_HEIGHT,
   NUMBER_Y: 1,
   NUMBER_H: 0.85,
   TITLE_Y: 1.55,
   TITLE_H: 1.25
 }, la = {
   TEXT_Y: 1.55,
-  TEXT_H: 1.45,
-  UNDERLINE_Y: 3.1
+  TEXT_H: 1.45
 };
-function rt(e, r, t = "", i = !1) {
-  const n = i ? P.WHITE : P.DARK_TEXT, s = i ? P.MUTED_ON_DARK : P.MUTED_TEXT;
+function at(e, r, t = "", i = !1) {
+  const n = i ? D.WHITE : D.DARK_TEXT, s = i ? D.MUTED_ON_DARK : D.MUTED_TEXT;
   e.addShape("line", {
     x: Ce,
     y: 0.48,
@@ -4531,8 +4525,8 @@ function rt(e, r, t = "", i = !1) {
     y: 0.62,
     w: 5.6,
     h: 0.18,
-    fontFace: P.labelFont,
-    fontSize: P.FONT_SECTION_HEADER,
+    fontFace: D.labelFont,
+    fontSize: D.FONT_SECTION_HEADER,
     bold: !0,
     charSpacing: 1.8,
     color: n,
@@ -4544,8 +4538,8 @@ function rt(e, r, t = "", i = !1) {
     y: 0.62,
     w: 4.55,
     h: 0.18,
-    fontFace: P.labelFont,
-    fontSize: P.FONT_SECTION_HEADER,
+    fontFace: D.labelFont,
+    fontSize: D.FONT_SECTION_HEADER,
     bold: !0,
     charSpacing: 1.2,
     color: s,
@@ -4555,12 +4549,12 @@ function rt(e, r, t = "", i = !1) {
     fit: "shrink"
   });
 }
-function at(e, r, t = !1) {
-  const i = t ? P.MUTED_ON_DARK : P.DARK_TEXT, n = t ? P.DARK_RULE : P.DIVIDER_COLOR;
+function nt(e, r, t = !1) {
+  const i = t ? D.MUTED_ON_DARK : D.DARK_TEXT, n = t ? D.DARK_RULE : D.DIVIDER_COLOR;
   e.addShape("line", {
     x: Ce,
     y: 6.87,
-    w: Se,
+    w: Ne,
     h: 0,
     line: { color: n, width: 0.5 }
   }), e.addText(r.toUpperCase(), {
@@ -4568,8 +4562,8 @@ function at(e, r, t = !1) {
     y: 7.01,
     w: 4.6,
     h: 0.14,
-    fontFace: P.labelFont,
-    fontSize: P.FONT_SLIDE_NUMBER,
+    fontFace: D.labelFont,
+    fontSize: D.FONT_SLIDE_NUMBER,
     bold: !0,
     charSpacing: 1.35,
     color: i,
@@ -4578,12 +4572,12 @@ function at(e, r, t = !1) {
     valign: "top",
     fit: "shrink"
   }), e.slideNumber = {
-    x: ds,
-    y: fs,
+    x: fs,
+    y: us,
     w: 0.55,
     h: 0.16,
-    fontFace: P.labelFont,
-    fontSize: P.FONT_SLIDE_NUMBER,
+    fontFace: D.labelFont,
+    fontSize: D.FONT_SLIDE_NUMBER,
     bold: !0,
     color: i,
     align: "right",
@@ -4599,82 +4593,82 @@ function za(e, r, t, i, n) {
       y: l - f / 2,
       w: o,
       h: f,
-      fill: { color: P.GRAPHITE, transparency: 100 },
-      line: { color: a === 1 ? P.MID_GRAY : P.DARK_RULE, width: a === 1 ? 1.2 : 0.8, transparency: 18 }
+      fill: { color: D.GRAPHITE, transparency: 100 },
+      line: { color: a === 1 ? D.MID_GRAY : D.DARK_RULE, width: a === 1 ? 1.2 : 0.8, transparency: 18 }
     });
   }), e.addShape("line", {
     x: r + i * 0.12,
     y: l,
     w: i * 0.78,
     h: 0,
-    line: { color: P.DARK_RULE, width: 0.8, transparency: 15 }
+    line: { color: D.DARK_RULE, width: 0.8, transparency: 15 }
   }), e.addShape("line", {
     x: s,
     y: t + n * 0.1,
     w: 0,
     h: n * 0.76,
-    line: { color: P.DARK_RULE, width: 0.8, transparency: 15 }
+    line: { color: D.DARK_RULE, width: 0.8, transparency: 15 }
   }), e.addShape("ellipse", {
     x: s - 0.16,
     y: l - 0.16,
     w: 0.32,
     h: 0.32,
-    fill: { color: P.WHITE },
-    line: { color: P.WHITE, transparency: 100 }
+    fill: { color: D.WHITE },
+    line: { color: D.WHITE, transparency: 100 }
   }), e.addShape("ellipse", {
     x: r + i * 0.19,
     y: t + n * 0.22,
     w: 0.16,
     h: 0.16,
-    fill: { color: P.MID_GRAY },
-    line: { color: P.MID_GRAY, transparency: 100 }
+    fill: { color: D.MID_GRAY },
+    line: { color: D.MID_GRAY, transparency: 100 }
   }), e.addShape("ellipse", {
     x: r + i * 0.76,
     y: t + n * 0.69,
     w: 0.12,
     h: 0.12,
-    fill: { color: P.MUTED_ON_DARK },
-    line: { color: P.MUTED_ON_DARK, transparency: 100 }
+    fill: { color: D.MUTED_ON_DARK },
+    line: { color: D.MUTED_ON_DARK, transparency: 100 }
   });
 }
-function Wt(e) {
+function qt(e) {
   return e == null ? [] : typeof e == "string" ? e ? [{ text: e, emphasis: "none" }] : [] : e.filter((r) => r.text.length > 0).map((r) => ({ text: r.text, emphasis: r.emphasis ?? "none" }));
 }
-function Te(e) {
-  return Wt(e).map((r) => r.text).join("");
+function Ee(e) {
+  return qt(e).map((r) => r.text).join("");
 }
 function Ua(e) {
   return typeof e == "string" ? e : e.text;
 }
-function Qr(e) {
+function jr(e) {
   return typeof e == "string" ? 0 : e.level ?? 0;
 }
-function Go(e) {
+function Uo(e) {
   switch (e) {
     case "bold":
       return { bold: !0 };
     case "italic":
       return { italic: !0 };
     case "accent":
-      return { color: P.accentColor };
+      return { color: D.accentColor };
     case "highlight":
-      return { highlight: P.highlightColor };
+      return { highlight: D.highlightColor };
     default:
       return {};
   }
 }
-function Be(e) {
-  return Wt(e).map((r) => ({ text: r.text, options: Go(r.emphasis) }));
+function Se(e) {
+  return qt(e).map((r) => ({ text: r.text, options: Uo(r.emphasis) }));
 }
 function Ba(e, r, t = 1) {
   const i = [];
   return e.forEach((n, s) => {
-    const l = Wt(Ua(n)), c = Math.max(0, Qr(n)), A = typeof n != "string" && n.__continued === !0, a = e.slice(0, s).filter(
+    const l = qt(Ua(n)), c = Math.max(0, jr(n)), A = typeof n != "string" && n.__continued === !0, a = e.slice(0, s).filter(
       (f) => !(typeof f != "string" && f.__continued === !0)
     ).length, o = l.length ? l : [{ text: " ", emphasis: "none" }];
     o.forEach((f, g) => {
       const d = {
-        ...Go(f.emphasis),
+        ...Uo(f.emphasis),
         breakLine: s < e.length - 1 && g === o.length - 1,
         indentLevel: g === 0 ? c : void 0
       };
@@ -4691,11 +4685,11 @@ function Ba(e, r, t = 1) {
     });
   }), i;
 }
-function us(e, r, t = Number.POSITIVE_INFINITY) {
+function ps(e, r, t = Number.POSITIVE_INFINITY) {
   const i = Math.max(r, t);
   let n = 0;
   const s = [];
-  for (const l of Wt(e)) {
+  for (const l of qt(e)) {
     const c = n, A = n + l.text.length;
     if (n = A, A <= r || c >= i) continue;
     const a = Math.max(0, r - c), o = Math.min(l.text.length, i - c), f = l.text.slice(a, o);
@@ -4703,7 +4697,7 @@ function us(e, r, t = Number.POSITIVE_INFINITY) {
   }
   return typeof e == "string" ? s.map((l) => l.text).join("") : s;
 }
-function hs(e, r, t) {
+function ms(e, r, t) {
   if (t >= e.length) return e.length;
   const i = Math.max(r + 1, r + Math.floor((t - r) * 0.55)), n = [`
 
@@ -4716,100 +4710,100 @@ function hs(e, r, t) {
   return t;
 }
 function Ga(e, r) {
-  const t = Te(e);
+  const t = Ee(e);
   if (!t || t.length <= r) return [e];
   const i = Math.max(1, Math.floor(r)), n = [];
   let s = 0;
   for (; s < t.length; ) {
-    const l = hs(t, s, Math.min(t.length, s + i));
-    n.push(us(e, s, l)), s = l;
+    const l = ms(t, s, Math.min(t.length, s + i));
+    n.push(ps(e, s, l)), s = l;
   }
   return n;
 }
-function pt(e, r, t) {
-  const i = 8.5 * (13 / t), n = Math.max(1, Math.floor(r * i)), s = Math.max(1, Math.ceil(Te(e).length / n)), l = t / 72 * P.LINE_SPACING * 1.2;
+function tt(e, r, t) {
+  const i = 8.5 * (13 / t), n = Math.max(1, Math.floor(r * i)), s = Math.max(1, Math.ceil(Ee(e).length / n)), l = t / 72 * D.LINE_SPACING * 1.2;
   return s * l;
 }
-function ps(e) {
-  return e === "note" ? P.CALLOUT_NOTE_BORDER : e === "warning" ? P.CALLOUT_WARNING_BORDER : P.CALLOUT_INFO_BORDER;
-}
-function ms(e) {
-  return e === "note" ? P.CALLOUT_NOTE_LABEL : e === "warning" ? P.CALLOUT_WARNING_LABEL : P.CALLOUT_INFO_LABEL;
-}
 function gs(e) {
+  return e === "note" ? D.CALLOUT_NOTE_BORDER : e === "warning" ? D.CALLOUT_WARNING_BORDER : D.CALLOUT_INFO_BORDER;
+}
+function ys(e) {
+  return e === "note" ? D.CALLOUT_NOTE_LABEL : e === "warning" ? D.CALLOUT_WARNING_LABEL : D.CALLOUT_INFO_LABEL;
+}
+function vs(e) {
   return e === "note" ? "NOTE" : e === "warning" ? "WARNING" : "INFO";
 }
-function zt(e) {
-  return e.type === "image" ? e.preferredAspect === "full" : e.type === "table" ? e.headers.length > P.TABLE_LARGE_THRESHOLD : e.type === "diagram" ? e.diagramRows.reduce((t, i) => t + i.length, 0) > P.DIAGRAM_LARGE_THRESHOLD : !1;
+function Ut(e) {
+  return e.type === "image" ? e.preferredAspect === "full" : e.type === "table" ? e.headers.length > D.TABLE_LARGE_THRESHOLD : e.type === "diagram" ? e.diagramRows.reduce((t, i) => t + i.length, 0) > D.DIAGRAM_LARGE_THRESHOLD : !1;
 }
-function Ur(e, r, t = Se) {
-  const i = Qr(e), n = Math.max(1, t - 0.2 - i * 0.25);
+function Gr(e, r, t = Ne) {
+  const i = jr(e), n = Math.max(1, t - 0.2 - i * 0.25);
   return Math.max(
-    r === P.FONT_NUMBERED ? P.H_NUMBERED_ITEM : P.H_BULLET_ITEM,
-    pt(Ua(e), n, r) + 0.04
+    r === D.FONT_NUMBERED ? D.H_NUMBERED_ITEM : D.H_BULLET_ITEM,
+    tt(Ua(e), n, r) + 0.04
   );
 }
-function Xo(e, r = Se) {
-  const t = P.BLOCK_GAP;
+function Go(e, r = Ne) {
+  const t = D.BLOCK_GAP;
   switch (e.type) {
     case "subtitle":
-      return Math.max(P.H_SUBTITLE_BLOCK, pt(e.text, r, P.FONT_SUBTITLE_BLOCK)) + t;
+      return Math.max(D.H_SUBTITLE_BLOCK, tt(e.text, r, D.FONT_SUBTITLE_BLOCK)) + t;
     case "paragraph":
-      return Math.max(0.3, pt(e.text, r, P.FONT_PARAGRAPH) + 0.08) + t;
+      return Math.max(0.3, tt(e.text, r, D.FONT_PARAGRAPH) + 0.08) + t;
     case "bullets":
-      return e.items.reduce((i, n) => i + Ur(n, P.FONT_BULLET, r), 0) + 0.08 + t;
+      return e.items.reduce((i, n) => i + Gr(n, D.FONT_BULLET, r), 0) + 0.08 + t;
     case "numbered":
-      return e.items.reduce((i, n) => i + Ur(n, P.FONT_NUMBERED, r), 0) + 0.08 + t;
+      return e.items.reduce((i, n) => i + Gr(n, D.FONT_NUMBERED, r), 0) + 0.08 + t;
     case "callout":
       return Math.max(
-        P.H_CALLOUT_MIN,
-        pt(e.text, Math.max(1, r - 0.3), P.FONT_CALLOUT_TEXT) + 0.36
+        D.H_CALLOUT_MIN,
+        tt(e.text, Math.max(1, r - 0.3), D.FONT_CALLOUT_TEXT) + 0.36
       ) + t;
     case "table":
-      return P.H_TABLE_LABEL + 0.04 + P.H_TABLE_HEADER_ROW + e.rows.length * P.H_TABLE_BODY_ROW + t;
+      return D.H_TABLE_LABEL + 0.04 + D.H_TABLE_HEADER_ROW + e.rows.length * D.H_TABLE_BODY_ROW + t;
     case "diagram":
-      return P.H_DIAGRAM_LABEL + 0.06 + e.diagramRows.length * P.DIAGRAM_NODE_HEIGHT + Math.max(0, e.diagramRows.length - 1) * P.DIAGRAM_ROW_V_GAP + t;
+      return D.H_DIAGRAM_LABEL + 0.06 + e.diagramRows.length * D.DIAGRAM_NODE_HEIGHT + Math.max(0, e.diagramRows.length - 1) * D.DIAGRAM_ROW_V_GAP + t;
     case "image":
       return 0;
   }
 }
-const ys = 0.85;
-function vs() {
-  return Math.max(0.5, Uo(!0, !0) - 0.55) * ys;
+const bs = 0.85;
+function ws() {
+  return Math.max(0.5, hs() - 0.55) * bs;
 }
-function tn(e) {
-  return e.reduce((r, t) => r + (zt(t) ? 0 : Xo(t)), 0);
+function an(e) {
+  return e.reduce((r, t) => r + (Ut(t) ? 0 : Go(t)), 0);
 }
-function bs(e) {
+function _s(e) {
   if (e.slideTitle.trim())
     return { blockId: `${e.slideId}--heading`, type: "subtitle", text: e.slideTitle, sourceReferences: [...e.sourceReferences] };
 }
-function ws(e) {
-  if (Te(e.slideSubtitle).trim())
+function Cs(e) {
+  if (Ee(e.slideSubtitle).trim())
     return { blockId: `${e.slideId}--subtitle`, type: "paragraph", text: e.slideSubtitle, sourceReferences: [...e.sourceReferences] };
 }
-function Wo(e) {
-  const r = vs(), t = [];
+function Xo(e) {
+  const r = ws(), t = [];
   let i, n = 0;
   for (const s of e) {
     if (i) {
-      const l = bs(s), c = ws(s), A = [l, c, ...s.blocks].filter(
+      const l = _s(s), c = Cs(s), A = [l, c, ...s.blocks].filter(
         (d) => !!d
-      ), a = tn(A), o = i.blocks.filter(
-        (d) => d.type === "image" && !zt(d)
+      ), a = an(A), o = i.blocks.filter(
+        (d) => d.type === "image" && !Ut(d)
       ).length, f = A.filter(
-        (d) => d.type === "image" && !zt(d)
+        (d) => d.type === "image" && !Ut(d)
       ).length;
       if (!(o > 0 && f > 0) && n + a <= r) {
         i.blocks.push(...A), i.sourceReferences = [.../* @__PURE__ */ new Set([...i.sourceReferences, ...s.sourceReferences])], n += a;
         continue;
       }
     }
-    i && t.push(i), i = { ...s, blocks: [...s.blocks], sourceReferences: [...s.sourceReferences] }, n = tn(i.blocks);
+    i && t.push(i), i = { ...s, blocks: [...s.blocks], sourceReferences: [...s.sourceReferences] }, n = an(i.blocks);
   }
   return i && t.push(i), t;
 }
-function _s(e, r) {
+function xs(e, r) {
   const t = [], i = new Set(e.flatMap((a) => a.blocks.map((o) => o.blockId))), n = new Set(r.flatMap((a) => a.blocks.map((o) => o.blockId)));
   for (const a of i)
     n.has(a) || t.push(`Block "${a}" was lost during compaction.`);
@@ -4824,14 +4818,21 @@ function _s(e, r) {
     l.has(a) || t.push(`Source reference "${a}" was lost during compaction.`);
   const c = e.map((a) => a.slideTitle.trim()).filter(Boolean), A = r.flatMap((a) => [
     a.slideTitle,
-    ...a.blocks.map((o) => "text" in o ? Te(o.text) : "")
+    ...a.blocks.map((o) => "text" in o ? Ee(o.text) : "")
   ]).join(` 
  `);
   for (const a of c)
     A.includes(a) || t.push(`Slide title "${a}" was lost during compaction.`);
   return t;
 }
-class Ot extends Error {
+function Rt(e, r, t, i, n, s = 0.04) {
+  const l = tt(e, r, t) + s;
+  return Math.max(i, Math.min(n, l));
+}
+function Xa(e, r, t = 0.12) {
+  return e + r + t;
+}
+class $t extends Error {
   violations;
   constructor(r) {
     super(`Slide render plan is invalid:
@@ -4839,60 +4840,88 @@ ${r.map((t) => `- ${t}`).join(`
 `)}`), this.name = "SlideRenderPlanError", this.violations = r;
   }
 }
-function Gr(e) {
+function Xr(e) {
   return e.x + e.w;
 }
-function Ut(e) {
+function Gt(e) {
   return e.y + e.h;
 }
-function Cs(e, r, t = 1e-3) {
-  return e.x < Gr(r) - t && Gr(e) > r.x + t && e.y < Ut(r) - t && Ut(e) > r.y + t;
+function Ts(e, r, t = 1e-3) {
+  return e.x < Xr(r) - t && Xr(e) > r.x + t && e.y < Gt(r) - t && Gt(e) > r.y + t;
 }
-function xs(e, r, t, i = P.SLIDE_HEIGHT) {
+function Es(e, r, t, i = D.SLIDE_HEIGHT) {
   if (![e.x, e.y, e.w, e.h].every(Number.isFinite)) {
     t.push(`${r} contains a non-finite coordinate.`);
     return;
   }
-  (e.w < 0 || e.h < 0) && t.push(`${r} has a negative size.`), e.x < -1e-3 && t.push(`${r} crosses the left slide edge.`), e.y < -1e-3 && t.push(`${r} crosses the top slide edge.`), Gr(e) > P.SLIDE_WIDTH + 1e-3 && t.push(`${r} right=${Gr(e).toFixed(3)} exceeds slide width ${P.SLIDE_WIDTH}.`), Ut(e) > i + 1e-3 && t.push(`${r} bottom=${Ut(e).toFixed(3)} exceeds safe bottom ${i}.`);
+  (e.w < 0 || e.h < 0) && t.push(`${r} has a negative size.`), e.x < -1e-3 && t.push(`${r} crosses the left slide edge.`), e.y < -1e-3 && t.push(`${r} crosses the top slide edge.`), Xr(e) > D.SLIDE_WIDTH + 1e-3 && t.push(`${r} right=${Xr(e).toFixed(3)} exceeds slide width ${D.SLIDE_WIDTH}.`), Gt(e) > i + 1e-3 && t.push(`${r} bottom=${Gt(e).toFixed(3)} exceeds safe bottom ${i}.`);
 }
-function Es(e) {
+function Ls(e) {
   const r = [
-    { label: "content bounds", box: e.contentBounds, safeBottom: Ne }
+    { label: "content bounds", box: e.contentBounds, safeBottom: Be }
   ];
-  return e.title && r.push({ label: "title", box: e.title.box, safeBottom: Ne }), e.titleRule && r.push({ label: "title rule", box: e.titleRule.box, safeBottom: Ne }), e.subtitle && r.push({ label: "subtitle", box: e.subtitle.box, safeBottom: Ne }), e.blocks.forEach((t, i) => r.push({
+  return e.title && r.push({ label: "title", box: e.title.box, safeBottom: Be }), e.titleRule && r.push({ label: "title rule", box: e.titleRule.box, safeBottom: Be }), e.subtitle && r.push({ label: "subtitle", box: e.subtitle.box, safeBottom: Be }), e.blocks.forEach((t, i) => r.push({
     label: `block ${i + 1} (${t.block.type}:${t.block.blockId})`,
     box: t.box,
-    safeBottom: Ne
-  })), e.image && (r.push({ label: `image (${e.image.block.slotId})`, box: e.image.box, safeBottom: Ne }), e.image.label && r.push({ label: "image label", box: e.image.label.box, safeBottom: Ne }), e.image.description && r.push({ label: "image description", box: e.image.description.box, safeBottom: Ne }), e.image.source && r.push({ label: "image source", box: e.image.source.box, safeBottom: Ne })), e.imageCompanionLabel && r.push({
+    safeBottom: Be
+  })), e.image && (r.push({ label: `image (${e.image.block.slotId})`, box: e.image.box, safeBottom: Be }), e.image.label && r.push({ label: "image label", box: e.image.label.box, safeBottom: Be }), e.image.description && r.push({ label: "image description", box: e.image.description.box, safeBottom: Be }), e.image.source && r.push({ label: "image source", box: e.image.source.box, safeBottom: Be })), e.imageCompanionLabel && r.push({
     label: "image companion label",
     box: e.imageCompanionLabel.box,
-    safeBottom: Ne
+    safeBottom: Be
   }), e.imageCompanionDescription && r.push({
     label: "image companion description",
     box: e.imageCompanionDescription.box,
-    safeBottom: Ne
+    safeBottom: Be
   }), r;
 }
-function Ts(e) {
+function Rs(e) {
   const r = [];
-  for (const t of Es(e)) xs(t.box, t.label, r, t.safeBottom);
+  for (const t of Ls(e)) Es(t.box, t.label, r, t.safeBottom);
   for (let t = 1; t < e.blocks.length; t += 1) {
     const i = e.blocks[t - 1].box;
-    e.blocks[t].box.y + 1e-3 < Ut(i) && r.push(`Content blocks ${t} and ${t + 1} overlap or are out of order.`);
+    e.blocks[t].box.y + 1e-3 < Gt(i) && r.push(`Content blocks ${t} and ${t + 1} overlap or are out of order.`);
   }
   if (e.layout === "text-image" && e.image)
     for (const t of e.blocks)
-      Cs(t.box, e.image.box) && r.push(`Block ${t.block.blockId} overlaps the image column.`);
+      Ts(t.box, e.image.box) && r.push(`Block ${t.block.blockId} overlaps the image column.`);
   return r;
 }
-function Ls(e) {
-  const r = Ts(e);
-  if (r.length > 0) throw new Ot(r);
+function Ds(e) {
+  const r = Rs(e);
+  if (r.length > 0) throw new $t(r);
 }
-function ht(e, r, t) {
+function pt(e, r, t) {
   return { role: e, text: r, box: t };
 }
-function Rs(e, r, t, i) {
+function Wo(e, r) {
+  const t = e.isFirstPage && !!e.slideTitle.trim(), i = e.isFirstPage && !!Ee(e.slideSubtitle).trim(), n = Lt, s = Math.min(Ne, 8.5), l = t ? Rt(
+    e.slideTitle,
+    s,
+    D.FONT_SLIDE_TITLE,
+    D.TITLE_HEIGHT,
+    1.34,
+    0.05
+  ) : 0, c = t ? Xa(n, l, 0.06) : n, A = t ? c + 0.17 : n, a = A, o = i ? Rt(
+    e.slideSubtitle,
+    Math.min(r, 8.4),
+    D.FONT_SLIDE_SUBTITLE,
+    D.SUBTITLE_HEIGHT,
+    0.72,
+    0.03
+  ) : 0, f = i ? a + o + D.SUBTITLE_GAP : A;
+  return {
+    hasTitle: t,
+    hasSubtitle: i,
+    titleY: n,
+    titleWidth: s,
+    titleHeight: l,
+    titleRuleY: c,
+    subtitleY: a,
+    subtitleHeight: o,
+    contentStartY: f
+  };
+}
+function Ps(e, r, t, i) {
   switch (e.type) {
     case "subtitle":
       return { x: Ce, y: r, w: Math.min(t, 8.8), h: i };
@@ -4907,7 +4936,7 @@ function Rs(e, r, t, i) {
       return {
         x: Ce,
         y: r,
-        w: e.headers.length <= P.TABLE_LARGE_THRESHOLD ? t * 0.82 : t,
+        w: e.headers.length <= D.TABLE_LARGE_THRESHOLD ? t * 0.82 : t,
         h: i
       };
     case "diagram": {
@@ -4915,7 +4944,7 @@ function Rs(e, r, t, i) {
       return {
         x: Ce,
         y: r,
-        w: n <= P.DIAGRAM_LARGE_THRESHOLD ? t * 0.82 : t,
+        w: n <= D.DIAGRAM_LARGE_THRESHOLD ? t * 0.82 : t,
         h: i
       };
     }
@@ -4923,31 +4952,31 @@ function Rs(e, r, t, i) {
       throw new Error("Image blocks are planned in the image column, not the vertical text flow.");
   }
 }
-function Ds(e, r, t) {
-  const i = Te(e.label).trim(), n = Te(e.description).trim(), s = e.sourceReference.trim(), l = t && i ? 0.34 : 0, c = t && n ? 0.48 : 0, A = s ? 0.2 : 0, a = !!(l || c || A), o = l + c + A + (a ? 0.16 : 0), f = Math.max(1.2, Ne - r - o), g = {
+function Bs(e, r, t) {
+  const i = Ee(e.label).trim(), n = Ee(e.description).trim(), s = e.sourceReference.trim(), l = t && i ? 0.34 : 0, c = t && n ? 0.48 : 0, A = s ? 0.2 : 0, a = !!(l || c || A), o = l + c + A + (a ? 0.16 : 0), f = Math.max(1.2, Be - r - o), g = {
     block: e,
-    box: { x: Kt, y: r, w: Ft, h: f }
+    box: { x: Kt, y: r, w: Mt, h: f }
   };
   let d = r + f + 0.08;
-  return l && (g.label = ht("image-label", e.label, {
+  return l && (g.label = pt("image-label", e.label, {
     x: Kt,
     y: d,
-    w: Ft,
+    w: Mt,
     h: l
-  }), d += l), c && (g.description = ht("image-description", e.description, {
+  }), d += l), c && (g.description = pt("image-description", e.description, {
     x: Kt,
     y: d,
-    w: Ft,
+    w: Mt,
     h: c
-  }), d += c), A && (g.source = ht("image-source", `Source: ${s}`, {
+  }), d += c), A && (g.source = pt("image-source", `Source: ${s}`, {
     x: Kt,
     y: d,
-    w: Ft,
+    w: Mt,
     h: A
   })), g;
 }
 function qo(e, r) {
-  const t = e.find((o) => o.type === "image"), i = e.filter((o) => o.type !== "image"), n = t ? $a : Se, s = r.isFirstPage && !!r.slideTitle.trim(), l = r.isFirstPage && !!Te(r.slideSubtitle).trim(), c = sa(s, l), A = {
+  const t = e.find((a) => a.type === "image"), i = e.filter((a) => a.type !== "image"), n = t ? $a : Ne, s = Wo(r, n), l = s.contentStartY, c = {
     kind: "content",
     sourceSlideId: r.sourceSlideId,
     pageIndex: r.pageIndex,
@@ -4956,76 +4985,72 @@ function qo(e, r) {
     layout: t ? "text-image" : "text",
     contentBounds: {
       x: Ce,
-      y: c,
-      w: Se,
-      h: Ne - c
+      y: l,
+      w: Ne,
+      h: Be - l
     },
     blocks: []
   };
-  if (s) {
-    const o = sa(!1, !1);
-    A.title = ht("title", r.slideTitle, {
-      x: Ce,
-      y: o,
-      w: Math.min(Se, 8.5),
-      h: P.TITLE_HEIGHT
-    }), A.titleRule = {
-      role: "title-rule",
-      box: { x: Ce, y: o + P.TITLE_HEIGHT + 0.03, w: 1.12, h: 0 }
-    };
-  }
-  l && (A.subtitle = ht("subtitle", r.slideSubtitle, {
+  s.hasTitle && (c.title = pt("title", r.slideTitle, {
     x: Ce,
-    y: sa(s, !1),
+    y: s.titleY,
+    w: s.titleWidth,
+    h: s.titleHeight
+  }), c.titleRule = {
+    role: "title-rule",
+    box: { x: Ce, y: s.titleRuleY, w: 1.12, h: 0 }
+  }), s.hasSubtitle && (c.subtitle = pt("subtitle", r.slideSubtitle, {
+    x: Ce,
+    y: s.subtitleY,
     w: Math.min(n, 8.4),
-    h: P.SUBTITLE_HEIGHT
-  })), t && (A.image = Ds(t, c, i.length > 0));
-  let a = c;
+    h: s.subtitleHeight
+  })), t && (c.image = Bs(t, l, i.length > 0));
+  let A = l;
   if (t && i.length === 0) {
-    const o = Te(t.label).trim(), f = Te(t.description).trim();
-    o && (A.imageCompanionLabel = ht("image-companion-label", t.label, {
+    const a = Ee(t.label).trim(), o = Ee(t.description).trim();
+    a && (c.imageCompanionLabel = pt("image-companion-label", t.label, {
       x: Ce,
-      y: a,
+      y: A,
       w: n,
       h: 0.72
-    }), a += 0.9), f && (A.imageCompanionDescription = ht("image-companion-description", t.description, {
+    }), A += 0.9), o && (c.imageCompanionDescription = pt("image-companion-description", t.description, {
       x: Ce,
-      y: a,
+      y: A,
       w: n,
       h: 1.5
     }));
   }
-  for (const o of i) {
-    const f = Math.max(0.1, Xo(o, n) - P.BLOCK_GAP), g = {
-      block: o,
-      box: Rs(o, a, n, f)
+  for (const a of i) {
+    const o = Math.max(0.1, Go(a, n) - D.BLOCK_GAP), f = {
+      block: a,
+      box: Ps(a, A, n, o)
     };
-    A.blocks.push(g), a += f + P.BLOCK_GAP;
+    c.blocks.push(f), A += o + D.BLOCK_GAP;
   }
-  return Ls(A), A;
+  return Ds(c), c;
 }
-function Ps(e, r = P.DIAGRAM_MAX_NODES_PER_ROW) {
+function Ns(e, r = D.DIAGRAM_MAX_NODES_PER_ROW) {
   const t = Math.max(1, Math.floor(r)), i = [];
   for (const n of e)
     for (let s = 0; s < n.length; s += t)
       i.push(n.slice(s, s + t));
   return i;
 }
-function Bs(e, r, t) {
+function Ss(e, r, t) {
   if (r === 0) return e.label;
   const i = ` (continued ${r + 1}/${t})`;
   return typeof e.label == "string" ? `${e.label}${i}` : [...e.label, { text: i, emphasis: "italic" }];
 }
-function Ns(e, r) {
+function Is(e, r) {
   const t = {
     x: Ce,
     y: Lt,
-    w: Math.min(Se, 9.5),
+    w: Math.min(Ne, 9.5),
     h: 0.54
-  }, i = Lt + 0.72, n = Ne - i, s = P.DIAGRAM_NODE_HEIGHT + P.DIAGRAM_ROW_V_GAP, l = Math.max(
+  }, i = Lt + 0.72, n = Be - i, s = D.DIAGRAM_NODE_HEIGHT + D.DIAGRAM_ROW_V_GAP, l = Math.max(
     1,
-    Math.floor((n + P.DIAGRAM_ROW_V_GAP) / s)
-  ), c = Ps(e.diagramRows), A = [];
+    Math.floor((n + D.DIAGRAM_ROW_V_GAP) / s)
+  ), c = Ns(e.diagramRows), A = [];
   c.length === 0 && A.push([]);
   for (let a = 0; a < c.length; a += l)
     A.push(c.slice(a, a + l));
@@ -5035,47 +5060,47 @@ function Ns(e, r) {
     return a.forEach((m, u) => {
       if (!m.length) return;
       const y = Math.min(
-        P.DIAGRAM_NODE_WIDTH,
-        Math.max(0.82, (Se - (m.length - 1) * P.DIAGRAM_NODE_H_GAP) / m.length)
-      ), p = m.length * y + (m.length - 1) * P.DIAGRAM_NODE_H_GAP, h = Ce + Math.max(0, (Se - p) / 2);
-      m.forEach((_, E) => {
-        const v = h + E * (y + P.DIAGRAM_NODE_H_GAP);
+        D.DIAGRAM_NODE_WIDTH,
+        Math.max(0.82, (Ne - (m.length - 1) * D.DIAGRAM_NODE_H_GAP) / m.length)
+      ), p = m.length * y + (m.length - 1) * D.DIAGRAM_NODE_H_GAP, h = Ce + Math.max(0, (Ne - p) / 2);
+      m.forEach((_, T) => {
+        const v = h + T * (y + D.DIAGRAM_NODE_H_GAP);
         f.push({
           text: _,
-          box: { x: v, y: d, w: y, h: P.DIAGRAM_NODE_HEIGHT },
-          emphasized: E === m.length - 1 && u === a.length - 1
-        }), E < m.length - 1 && g.push({
+          box: { x: v, y: d, w: y, h: D.DIAGRAM_NODE_HEIGHT },
+          emphasized: T === m.length - 1 && u === a.length - 1
+        }), T < m.length - 1 && g.push({
           orientation: "horizontal",
           box: {
             x: v + y + 0.04,
-            y: d + P.DIAGRAM_NODE_HEIGHT / 2,
-            w: P.DIAGRAM_NODE_H_GAP - 0.08,
+            y: d + D.DIAGRAM_NODE_HEIGHT / 2,
+            w: D.DIAGRAM_NODE_H_GAP - 0.08,
             h: 0
           }
         });
-      }), d += P.DIAGRAM_NODE_HEIGHT, u < a.length - 1 && (g.push({
+      }), d += D.DIAGRAM_NODE_HEIGHT, u < a.length - 1 && (g.push({
         orientation: "vertical",
         box: {
-          x: Ce + Se / 2,
+          x: Ce + Ne / 2,
           y: d + 0.04,
           w: 0,
-          h: P.DIAGRAM_ROW_V_GAP - 0.08
+          h: D.DIAGRAM_ROW_V_GAP - 0.08
         }
-      }), d += P.DIAGRAM_ROW_V_GAP);
+      }), d += D.DIAGRAM_ROW_V_GAP);
     }), {
       kind: "dedicated-diagram",
       sectionTitle: r,
       pageIndex: o,
       pageCount: A.length,
       block: e,
-      label: Bs(e, o, A.length),
+      label: Ss(e, o, A.length),
       labelBox: t,
       nodes: f,
       connectors: g
     };
   });
 }
-function Ss(e, r) {
+function ks(e, r) {
   const t = { x: 0.68, y: 1.55, w: 6.15, h: 4.72 }, i = { x: 7.32, y: 1.62, w: 4.7 };
   return {
     kind: "dedicated-image",
@@ -5091,61 +5116,61 @@ function Ss(e, r) {
     eyebrowBox: { x: i.x, y: i.y, w: i.w, h: 0.18 },
     labelBox: { x: i.x, y: i.y + 0.45, w: i.w, h: 0.82 },
     titleRuleBox: { x: i.x, y: i.y + 1.5, w: 1.05, h: 0 },
-    descriptionBox: Te(e.description).trim() ? { x: i.x, y: i.y + 1.82, w: i.w, h: 1.55 } : void 0,
+    descriptionBox: Ee(e.description).trim() ? { x: i.x, y: i.y + 1.82, w: i.w, h: 1.55 } : void 0,
     fitLabelBox: { x: i.x, y: i.y + 3.72, w: i.w, h: 0.18 },
     sourceBox: e.sourceReference ? { x: i.x, y: i.y + 4.06, w: i.w, h: 0.22 } : void 0
   };
 }
-function Is(e, r, t) {
+function Fs(e, r, t) {
   if (r === 0) return e.label;
   const i = ` (continued ${r + 1}/${t})`;
   return typeof e.label == "string" ? `${e.label}${i}` : [...e.label, { text: i, emphasis: "italic" }];
 }
-function ks(e, r, t, i) {
+function Ms(e, r, t, i) {
   const n = Math.max(0.35, r - 0.18);
-  return Math.max(i, pt(e, n, t) + 0.14);
+  return Math.max(i, tt(e, n, t) + 0.14);
 }
-function rn(e, r, t, i) {
+function nn(e, r, t, i) {
   return e.reduce(
-    (n, s, l) => Math.max(n, ks(s, r[l] ?? r[0], t, i)),
+    (n, s, l) => Math.max(n, Ms(s, r[l] ?? r[0], t, i)),
     i
   );
 }
-function Fs(e, r) {
+function Os(e, r) {
   const t = {
     x: Ce,
     y: Lt,
-    w: Math.min(Se, 9.5),
-    h: P.H_TABLE_LABEL + 0.25
-  }, i = Lt + 0.62, n = Ne - i, s = Math.max(
-    P.FONT_MIN_TABLE,
-    e.headers.length > 6 ? P.FONT_TABLE_BODY - 1 : P.FONT_TABLE_BODY
+    w: Math.min(Ne, 9.5),
+    h: D.H_TABLE_LABEL + 0.25
+  }, i = Lt + 0.62, n = Be - i, s = Math.max(
+    D.FONT_MIN_TABLE,
+    e.headers.length > 6 ? D.FONT_TABLE_BODY - 1 : D.FONT_TABLE_BODY
   ), l = Array(Math.max(1, e.headers.length)).fill(
-    Se / Math.max(1, e.headers.length)
-  ), c = rn(
+    Ne / Math.max(1, e.headers.length)
+  ), c = nn(
     e.headers,
     l,
     s,
-    P.H_TABLE_HEADER_ROW
-  ), A = e.rows.map((d) => rn(
+    D.H_TABLE_HEADER_ROW
+  ), A = e.rows.map((d) => nn(
     d,
     l,
     s,
-    P.H_TABLE_BODY_ROW
+    D.H_TABLE_BODY_ROW
   )), a = [];
   let o = 0;
   for (; o < e.rows.length || e.rows.length === 0 && a.length === 0; ) {
     let d = c, m = o;
     const u = [];
     for (; m < e.rows.length; ) {
-      const y = Math.max(0.25, n - d), p = A[m], h = Math.min(p, Math.max(P.H_TABLE_BODY_ROW, y));
+      const y = Math.max(0.25, n - d), p = A[m], h = Math.min(p, Math.max(D.H_TABLE_BODY_ROW, y));
       if (u.length > 0 && d + p > n + 1e-3 || (u.push(h), d += h, m += 1, d >= n - 1e-3)) break;
     }
     if (e.rows.length === 0) {
       a.push({ start: 0, end: 0, heights: [] });
       break;
     }
-    m === o && (u.push(Math.max(P.H_TABLE_BODY_ROW, n - c)), m += 1), a.push({ start: o, end: m, heights: u }), o = m;
+    m === o && (u.push(Math.max(D.H_TABLE_BODY_ROW, n - c)), m += 1), a.push({ start: o, end: m, heights: u }), o = m;
   }
   const f = a.length, g = e.__rowOffset ?? 0;
   return a.map((d, m) => {
@@ -5156,9 +5181,9 @@ function Fs(e, r) {
       pageIndex: m,
       pageCount: f,
       block: e,
-      label: Is(e, m, f),
+      label: Fs(e, m, f),
       labelBox: t,
-      tableBox: { x: Ce, y: i, w: Se, h: y },
+      tableBox: { x: Ce, y: i, w: Ne, h: y },
       rows: u,
       rowOffset: g + d.start,
       headerHeight: c,
@@ -5171,20 +5196,20 @@ function Fs(e, r) {
 function Ho(e, r, t, i) {
   switch (e.type) {
     case "paragraph":
-      return Ms(e, r, t, i);
+      return $s(e, r, t, i);
     case "bullets":
     case "numbered":
-      return $s(e, r, t, i);
+      return Us(e, r, t, i);
     case "callout":
-      return Os(e, r, t, i);
+      return zs(e, r, t, i);
     case "table":
-      return Us(e, r, t);
+      return Xs(e, r, t);
     default:
       return { head: e };
   }
 }
-function Ms(e, r, t, i) {
-  const n = Math.max(0.2, r - P.BLOCK_GAP - 0.08), s = pt(e.text, i, P.FONT_PARAGRAPH), l = Te(e.text).length, c = Math.max(
+function $s(e, r, t, i) {
+  const n = Math.max(0.2, r - D.BLOCK_GAP - 0.08), s = tt(e.text, i, D.FONT_PARAGRAPH), l = Ee(e.text).length, c = Math.max(
     24,
     Math.floor(l * Math.min(0.9, n / Math.max(s, 0.01)))
   ), [A, ...a] = Ga(e.text, c);
@@ -5192,17 +5217,17 @@ function Ms(e, r, t, i) {
     head: { ...e, text: A },
     tail: {
       ...e,
-      blockId: Gt(e.blockId, t),
+      blockId: Xt(e.blockId, t),
       text: Qo(a)
     }
   };
 }
-function Os(e, r, t, i) {
-  const n = Math.max(0.2, r - P.BLOCK_GAP - 0.36), s = pt(
+function zs(e, r, t, i) {
+  const n = Math.max(0.2, r - D.BLOCK_GAP - 0.36), s = tt(
     e.text,
     Math.max(1, i - 0.3),
-    P.FONT_CALLOUT_TEXT
-  ), l = Te(e.text).length, c = Math.max(
+    D.FONT_CALLOUT_TEXT
+  ), l = Ee(e.text).length, c = Math.max(
     24,
     Math.floor(l * Math.min(0.9, n / Math.max(s, 0.01)))
   ), [A, ...a] = Ga(e.text, c);
@@ -5210,29 +5235,29 @@ function Os(e, r, t, i) {
     head: { ...e, text: A },
     tail: {
       ...e,
-      blockId: Gt(e.blockId, t),
+      blockId: Xt(e.blockId, t),
       label: Vo(e.label, " (continued)"),
       text: Qo(a)
     }
   };
 }
-function $s(e, r, t, i) {
-  const n = e.type === "bullets" ? P.FONT_BULLET : P.FONT_NUMBERED, s = Math.max(0.15, r - P.BLOCK_GAP - 0.08), l = zs(e.items, s, n, i), c = [];
+function Us(e, r, t, i) {
+  const n = e.type === "bullets" ? D.FONT_BULLET : D.FONT_NUMBERED, s = Math.max(0.15, r - D.BLOCK_GAP - 0.08), l = Gs(e.items, s, n, i), c = [];
   let A = 0;
   for (const o of l) {
-    const f = Ur(o, n, i);
+    const f = Gr(o, n, i);
     if (c.length > 0 && A + f > s) break;
     c.push(o), A += f;
   }
   if (c.length === l.length) return { head: { ...e, items: l } };
   const a = l.slice(c.length);
   if (e.type === "numbered") {
-    const o = e.startAt ?? 1, f = c.filter((g) => !Gs(g)).length;
+    const o = e.startAt ?? 1, f = c.filter((g) => !Ws(g)).length;
     return {
       head: { ...e, items: c, startAt: o },
       tail: {
         ...e,
-        blockId: Gt(e.blockId, t),
+        blockId: Xt(e.blockId, t),
         items: a,
         startAt: o + f
       }
@@ -5242,23 +5267,23 @@ function $s(e, r, t, i) {
     head: { ...e, items: c },
     tail: {
       ...e,
-      blockId: Gt(e.blockId, t),
+      blockId: Xt(e.blockId, t),
       items: a
     }
   };
 }
-function zs(e, r, t, i) {
+function Gs(e, r, t, i) {
   const n = [];
   for (const s of e) {
-    const l = Ur(s, t, i);
+    const l = Gr(s, t, i);
     if (l <= r) {
       n.push(s);
       continue;
     }
-    const c = Ua(s), A = Te(c).length, a = Math.max(
+    const c = Ua(s), A = Ee(c).length, a = Math.max(
       20,
       Math.floor(A * Math.min(0.85, r / Math.max(l, 0.01)))
-    ), o = Ga(c, a), f = Qr(s);
+    ), o = Ga(c, a), f = jr(s);
     o.forEach((g, d) => {
       d === 0 && typeof s == "string" && f === 0 ? n.push(g) : n.push({
         text: g,
@@ -5269,15 +5294,15 @@ function zs(e, r, t, i) {
   }
   return n;
 }
-function Us(e, r, t) {
-  const i = P.H_TABLE_LABEL + 0.04 + P.H_TABLE_HEADER_ROW + P.BLOCK_GAP, n = Math.max(1, Math.floor((r - i) / P.H_TABLE_BODY_ROW));
+function Xs(e, r, t) {
+  const i = D.H_TABLE_LABEL + 0.04 + D.H_TABLE_HEADER_ROW + D.BLOCK_GAP, n = Math.max(1, Math.floor((r - i) / D.H_TABLE_BODY_ROW));
   if (e.rows.length <= n) return { head: e };
   const s = e.rows.slice(0, n), l = e.rows.slice(n), c = e, A = c.__continued === !0, a = c.__rowOffset ?? 0;
   return {
     head: { ...e, rows: s, __rowOffset: a },
     tail: {
       ...e,
-      blockId: Gt(e.blockId, t),
+      blockId: Xt(e.blockId, t),
       label: A ? e.label : Vo(e.label, " (continued)"),
       rows: l,
       __continued: !0,
@@ -5285,7 +5310,7 @@ function Us(e, r, t) {
     }
   };
 }
-function Gt(e, r) {
+function Xt(e, r) {
   return `${e}--continuation-${r}`;
 }
 function Vo(e, r) {
@@ -5297,10 +5322,10 @@ function Qo(e) {
   );
   return r.length === 1 && r[0].emphasis === "none" ? r[0].text : r;
 }
-function Gs(e) {
+function Ws(e) {
   return typeof e != "string" && e.__continued === !0;
 }
-function jo(e, r, t) {
+function Wa(e, r, t) {
   const i = t === 0;
   return {
     sourceSlideId: e.slideId,
@@ -5311,45 +5336,48 @@ function jo(e, r, t) {
     sectionTitle: r
   };
 }
-function Xr(e, r, t, i) {
+function Wr(e, r, t, i) {
   try {
-    return qo(i, jo(e, r, t));
+    return qo(i, Wa(e, r, t));
   } catch (n) {
-    if (n instanceof Ot) return;
+    if (n instanceof $t) return;
     throw n;
   }
 }
-function Ko(e, r) {
-  const t = r === 0, i = t && e.slideTitle.trim().length > 0, n = t && Te(e.slideSubtitle).trim().length > 0;
-  return Math.max(0.25, Uo(i, n));
+function jo(e, r, t, i) {
+  const n = Wo(
+    Wa(e, r, t),
+    i
+  );
+  return Math.max(0.25, Be - n.contentStartY);
 }
 function Na(e) {
   return e.some((r) => r.type === "image");
 }
-function Xs(e) {
+function qs(e) {
   return e.length === 1 && e[0].type === "image";
 }
-function an(e) {
+function on(e) {
   return e.blocks.reduce((r, t) => r + t.box.h, 0);
 }
-function Ws(e, r, t, i, n, s) {
+function Hs(e, r, t, i, n, s) {
   if (i.length === 0 || Na(i)) return;
   const l = i.slice(0, -1), c = i[i.length - 1];
   if (!["paragraph", "bullets", "numbered", "callout", "table"].includes(c.type))
     return;
-  const A = Ko(e, t), a = [0.82, 0.72, 0.62, 0.52, 0.42, 0.32, 0.24];
+  const A = jo(e, r, t, Ne), a = [0.82, 0.72, 0.62, 0.52, 0.42, 0.32, 0.24];
   let o;
   for (const f of a) {
     const g = Ho(
       c,
       Math.max(0.35, A * f),
       s,
-      Se
+      Ne
     );
     if (!g.tail) continue;
-    const d = [...l, g.head], m = Xr(e, r, t, d), u = Xr(e, r, t + 1, [g.tail, n]);
+    const d = [...l, g.head], m = Wr(e, r, t, d), u = Wr(e, r, t + 1, [g.tail, n]);
     if (!m || !u) continue;
-    const y = an(m), p = an(u);
+    const y = on(m), p = on(u);
     if (y < 0.8 || p < 0.75) continue;
     const h = Math.min(y, p) + p * 0.2;
     (!o || h > o.score) && (o = { currentBlocks: d, tail: g.tail, score: h });
@@ -5360,12 +5388,12 @@ function Yo(e, r) {
   const t = [], i = [...e.blocks];
   let n = 0, s = 1;
   for (; i.length > 0; ) {
-    if (zt(i[0])) {
+    if (Ut(i[0])) {
       const c = i.shift();
-      c.type === "image" ? t.push({ type: "image", plan: Ss(c, r) }) : c.type === "table" ? t.push(...Fs(c, r).map((A) => ({
+      c.type === "image" ? t.push({ type: "image", plan: ks(c, r) }) : c.type === "table" ? t.push(...Os(c, r).map((A) => ({
         type: "dedicated-table",
         plan: A
-      }))) : c.type === "diagram" && t.push(...Ns(c, r).map((A) => ({
+      }))) : c.type === "diagram" && t.push(...Is(c, r).map((A) => ({
         type: "dedicated-diagram",
         plan: A
       })));
@@ -5374,14 +5402,14 @@ function Yo(e, r) {
     const l = [];
     for (; i.length > 0; ) {
       const c = i[0];
-      if (zt(c) || c.type === "image" && Na(l)) break;
+      if (Ut(c) || c.type === "image" && Na(l)) break;
       const A = [...l, c];
-      if (Xr(e, r, n, A)) {
+      if (Wr(e, r, n, A)) {
         l.push(i.shift());
         continue;
       }
       if (c.type === "image" && l.length > 0) {
-        const m = Ws(
+        const m = Hs(
           e,
           r,
           n,
@@ -5394,19 +5422,19 @@ function Yo(e, r) {
           break;
         }
       }
-      if (!(l.length === 0 || Xs(l))) break;
+      if (!(l.length === 0 || qs(l))) break;
       if (c.type === "image")
-        throw new Ot([
+        throw new $t([
           `Image block ${c.blockId} cannot fit its planned image and caption boxes on an empty content page.`
         ]);
-      const o = Na(l) ? $a : Se, f = Ho(
+      const o = Na(l) ? $a : Ne, f = Ho(
         c,
-        Ko(e, n),
+        jo(e, r, n, o),
         s++,
         o
       ), g = [...l, f.head];
-      if (!Xr(e, r, n, g))
-        throw new Ot([
+      if (!Wr(e, r, n, g))
+        throw new $t([
           `Block ${c.blockId} (${c.type}) could not be split into a valid physical page.`
         ]);
       i.shift(), f.tail && i.unshift(f.tail), l.push(f.head);
@@ -5414,7 +5442,7 @@ function Yo(e, r) {
     }
     if (l.length === 0) {
       const c = i[0];
-      throw new Ot([
+      throw new $t([
         `Planner made no progress at block ${c?.blockId ?? "unknown"}.`
       ]);
     }
@@ -5422,13 +5450,13 @@ function Yo(e, r) {
       type: "content",
       plan: qo(
         l,
-        jo(e, r, n)
+        Wa(e, r, n)
       )
     }), n += 1;
   }
   return t;
 }
-function qs(e) {
+function Vs(e) {
   const r = [
     { type: "cover", lecture: e },
     { type: "overview", lecture: e }
@@ -5436,7 +5464,7 @@ function qs(e) {
   let t = 0, i = 0, n = 0;
   return e.sections.forEach((s, l) => {
     r.push({ type: "section", section: s, sectionIndex: l }), t += s.slides.length, n += s.slides.reduce((A, a) => A + a.blocks.length, 0);
-    const c = Wo(s.slides);
+    const c = Xo(s.slides);
     i += c.length;
     for (const A of c)
       r.push(...Yo(A, s.sectionTitle));
@@ -5447,30 +5475,30 @@ function qs(e) {
     semanticBlockCount: n
   };
 }
-function Hs(e, r) {
+function Qs(e, r) {
   const t = e.addSlide();
-  t.background = { color: P.NAVY }, t.addShape("rect", {
+  t.background = { color: D.NAVY }, t.addShape("rect", {
     x: Ue.STRIP_X,
     y: Ue.STRIP_Y,
     w: Ue.STRIP_W,
     h: Ue.STRIP_H,
-    fill: { color: P.GRAPHITE },
-    line: { color: P.GRAPHITE, width: 0 }
+    fill: { color: D.GRAPHITE },
+    line: { color: D.GRAPHITE, width: 0 }
   }), t.addShape("line", {
     x: Ue.STRIP_X + 1.42,
     y: 0,
     w: 0,
-    h: P.SLIDE_HEIGHT,
-    line: { color: P.DARK_RULE, width: 0.8, transparency: 20 }
-  }), za(t, 8.42, 1, 4.15, 4.55), rt(t, "Jang lecture / editable PowerPoint", "", !0), t.addText(r.documentTitle, {
+    h: D.SLIDE_HEIGHT,
+    line: { color: D.DARK_RULE, width: 0.8, transparency: 20 }
+  }), za(t, 8.42, 1, 4.15, 4.55), at(t, "Jang lecture / editable PowerPoint", "", !0), t.addText(r.documentTitle, {
     x: Ue.TITLE_X,
     y: Ue.TITLE_Y,
     w: Ue.TITLE_W,
     h: Ue.TITLE_H,
-    fontFace: P.headingFont,
-    fontSize: P.FONT_COVER_TITLE,
+    fontFace: D.headingFont,
+    fontSize: D.FONT_COVER_TITLE,
     bold: !0,
-    color: P.WHITE,
+    color: D.WHITE,
     margin: 0,
     align: "left",
     valign: "top",
@@ -5481,15 +5509,15 @@ function Hs(e, r) {
     y: 3.37,
     w: 1.12,
     h: 0,
-    line: { color: P.WHITE, width: 2 }
+    line: { color: D.WHITE, width: 2 }
   }), t.addText(r.overview.title || "Structured lecture", {
     x: Ue.TITLE_X,
     y: 3.72,
     w: 5.75,
     h: 0.48,
-    fontFace: P.bodyFont,
+    fontFace: D.bodyFont,
     fontSize: 15,
-    color: P.MUTED_ON_DARK,
+    color: D.MUTED_ON_DARK,
     margin: 0,
     align: "left",
     valign: "top",
@@ -5500,74 +5528,92 @@ function Hs(e, r) {
     y: 5.45,
     w: 5.8,
     h: 0.18,
-    fontFace: P.labelFont,
-    fontSize: P.FONT_COVER_LABEL,
+    fontFace: D.labelFont,
+    fontSize: D.FONT_COVER_LABEL,
     bold: !0,
     charSpacing: 1.5,
-    color: P.MUTED_ON_DARK,
+    color: D.MUTED_ON_DARK,
     margin: 0
-  }), at(t, r.documentTitle, !0);
+  }), nt(t, r.documentTitle, !0);
 }
-function Vs(e, r) {
+function js(e, r) {
   const t = e.addSlide();
-  t.background = { color: P.SLIDE_BG }, rt(t, "Lecture overview", "Reading sequence"), t.addText(r.overview.title || "A sequence for learning", {
+  t.background = { color: D.SLIDE_BG }, at(t, "Lecture overview", "Reading sequence");
+  const i = r.overview.title || "A sequence for learning", n = Rt(
+    i,
+    Re.TITLE_W,
+    D.FONT_SLIDE_TITLE,
+    Re.TITLE_H,
+    1.02,
+    0.04
+  ), s = Re.TITLE_Y + n + 0.18, l = r.overview.introduction, c = !!Ee(l).trim(), A = c ? Rt(
+    l,
+    Re.LEFT_COL_W,
+    D.FONT_OVERVIEW_INTRO,
+    Re.INTRO_H,
+    0.92,
+    0.03
+  ) : 0;
+  t.addText(i, {
     x: Re.TITLE_X,
     y: Re.TITLE_Y,
     w: Re.TITLE_W,
-    h: Re.TITLE_H,
-    fontFace: P.headingFont,
-    fontSize: P.FONT_SLIDE_TITLE,
+    h: n,
+    fontFace: D.headingFont,
+    fontSize: D.FONT_SLIDE_TITLE,
     bold: !0,
-    color: P.DARK_TEXT,
+    color: D.DARK_TEXT,
     margin: 0,
     align: "left",
     valign: "top",
+    wrap: !0,
     fit: "shrink"
-  }), Te(r.overview.introduction) && t.addText(Be(r.overview.introduction), {
+  }), c && t.addText(Se(l), {
     x: Re.LEFT_COL_X,
-    y: Re.INTRO_Y,
+    y: s,
     w: Re.LEFT_COL_W,
-    h: Re.INTRO_H,
-    fontFace: P.bodyFont,
-    fontSize: P.FONT_OVERVIEW_INTRO,
-    color: P.MUTED_TEXT,
+    h: A,
+    fontFace: D.bodyFont,
+    fontSize: D.FONT_OVERVIEW_INTRO,
+    color: D.MUTED_TEXT,
     margin: 0,
     align: "left",
     valign: "top",
     wrap: !0,
     fit: "shrink"
   });
-  const i = Math.max(1, r.sections.length), n = Math.min(0.68, 3.55 / i);
-  r.sections.forEach((s, l) => {
-    const c = 2.82 + l * n;
-    t.addText(String(l + 1).padStart(2, "0"), {
+  const a = Math.max(1, r.sections.length), o = Math.max(2.82, s + A + 0.18), f = Math.max(0.9, 6.18 - o), g = Math.min(0.68, Math.max(0.34, f / a));
+  r.sections.forEach((d, m) => {
+    const u = o + m * g;
+    t.addText(String(m + 1).padStart(2, "0"), {
       x: Ce,
-      y: c,
+      y: u,
       w: 0.42,
       h: 0.18,
-      fontFace: P.labelFont,
+      fontFace: D.labelFont,
       fontSize: 9,
       bold: !0,
-      color: l === 0 ? P.DARK_TEXT : P.MUTED_TEXT,
+      color: m === 0 ? D.DARK_TEXT : D.MUTED_TEXT,
       margin: 0
     }), t.addShape("line", {
       x: 1.18,
-      y: c + 0.09,
+      y: u + 0.09,
       w: 0.48,
       h: 0,
-      line: { color: P.DIVIDER_COLOR, width: 0.7 }
-    }), t.addText(s.sectionTitle, {
+      line: { color: D.DIVIDER_COLOR, width: 0.7 }
+    }), t.addText(d.sectionTitle, {
       x: 1.82,
-      y: c - 0.05,
+      y: u - 0.05,
       w: 5.95,
-      h: 0.28,
-      fontFace: P.headingFont,
-      fontSize: P.FONT_OVERVIEW_TOC,
+      h: Math.max(0.28, g - 0.05),
+      fontFace: D.headingFont,
+      fontSize: D.FONT_OVERVIEW_TOC,
       bold: !0,
-      color: P.DARK_TEXT,
+      color: D.DARK_TEXT,
       margin: 0,
       align: "left",
       valign: "top",
+      wrap: !0,
       fit: "shrink"
     });
   }), t.addShape("rect", {
@@ -5575,71 +5621,80 @@ function Vs(e, r) {
     y: Re.TOC_CARD_Y,
     w: Re.RIGHT_COL_W,
     h: Re.TOC_CARD_H,
-    fill: { color: P.PAGE_BG },
-    line: { color: P.PAGE_BG, width: 0 }
+    fill: { color: D.PAGE_BG },
+    line: { color: D.PAGE_BG, width: 0 }
   }), t.addText("KEY IDEAS", {
     x: Re.RIGHT_COL_X + 0.36,
     y: Re.TOC_LABEL_Y,
     w: Re.RIGHT_COL_W - 0.72,
     h: 0.18,
-    fontFace: P.labelFont,
+    fontFace: D.labelFont,
     fontSize: 8,
     bold: !0,
     charSpacing: 1.5,
-    color: P.MUTED_TEXT,
+    color: D.MUTED_TEXT,
     margin: 0
-  }), r.overview.keyPoints.length > 0 && t.addText(Ba(r.overview.keyPoints.map((s) => ({ text: s })), "bullet"), {
+  }), r.overview.keyPoints.length > 0 && t.addText(Ba(r.overview.keyPoints.map((d) => ({ text: d })), "bullet"), {
     x: Re.RIGHT_COL_X + 0.34,
     y: Re.TOC_Y,
     w: Re.RIGHT_COL_W - 0.68,
     h: Re.TOC_H,
-    fontFace: P.bodyFont,
-    fontSize: P.FONT_OVERVIEW_KEYPOINT,
-    color: P.BODY_TEXT,
+    fontFace: D.bodyFont,
+    fontSize: D.FONT_OVERVIEW_KEYPOINT,
+    color: D.BODY_TEXT,
     margin: 0.02,
     align: "left",
     valign: "top",
     wrap: !0,
     paraSpaceAfter: 9,
     fit: "shrink"
-  }), at(t, r.documentTitle);
+  }), nt(t, r.documentTitle);
 }
-function Qs(e, r, t) {
+function Ys(e, r, t) {
   const i = e.addSlide();
-  i.background = { color: P.NAVY }, i.addShape("rect", {
-    x: Ve.BAND_X,
-    y: Ve.BAND_Y,
-    w: Ve.BAND_W,
-    h: Ve.BAND_H,
-    fill: { color: P.GRAPHITE },
-    line: { color: P.GRAPHITE, width: 0 }
+  i.background = { color: D.NAVY }, i.addShape("rect", {
+    x: He.BAND_X,
+    y: He.BAND_Y,
+    w: He.BAND_W,
+    h: He.BAND_H,
+    fill: { color: D.GRAPHITE },
+    line: { color: D.GRAPHITE, width: 0 }
   }), i.addShape("line", {
-    x: Ve.BAND_X,
+    x: He.BAND_X,
     y: 0,
     w: 0,
-    h: P.SLIDE_HEIGHT,
-    line: { color: P.DARK_RULE, width: 1 }
-  }), za(i, 9.15, 2.2, 3.4, 3.4), rt(i, `Section ${String(t + 1).padStart(2, "0")}`, r.sectionTitle, !0), i.addText(String(t + 1).padStart(2, "0"), {
+    h: D.SLIDE_HEIGHT,
+    line: { color: D.DARK_RULE, width: 1 }
+  }), za(i, 9.15, 2.2, 3.4, 3.4), at(i, `Section ${String(t + 1).padStart(2, "0")}`, r.sectionTitle, !0), i.addText(String(t + 1).padStart(2, "0"), {
     x: 10.05,
-    y: Ve.NUMBER_Y,
+    y: He.NUMBER_Y,
     w: 1.45,
-    h: Ve.NUMBER_H,
-    fontFace: P.headingFont,
+    h: He.NUMBER_H,
+    fontFace: D.headingFont,
     fontSize: 40,
     bold: !0,
-    color: P.DEEP_GRAY,
+    color: D.DEEP_GRAY,
     margin: 0,
     align: "right",
     valign: "top"
-  }), i.addText(r.sectionTitle, {
+  });
+  const n = 6.4, s = Rt(
+    r.sectionTitle,
+    n,
+    D.FONT_SECTION_TITLE_SLIDE,
+    He.TITLE_H,
+    2.05,
+    0.06
+  ), l = Xa(He.TITLE_Y, s, 0.18);
+  i.addText(r.sectionTitle, {
     x: Ce,
-    y: Ve.TITLE_Y,
-    w: 6.4,
-    h: Ve.TITLE_H,
-    fontFace: P.headingFont,
-    fontSize: P.FONT_SECTION_TITLE_SLIDE,
+    y: He.TITLE_Y,
+    w: n,
+    h: s,
+    fontFace: D.headingFont,
+    fontSize: D.FONT_SECTION_TITLE_SLIDE,
     bold: !0,
-    color: P.WHITE,
+    color: D.WHITE,
     margin: 0,
     align: "left",
     valign: "top",
@@ -5647,115 +5702,115 @@ function Qs(e, r, t) {
     fit: "shrink"
   }), i.addShape("line", {
     x: Ce,
-    y: 3.22,
+    y: l,
     w: 1.12,
     h: 0,
-    line: { color: P.WHITE, width: 2 }
-  }), at(i, r.sectionTitle, !0);
+    line: { color: D.WHITE, width: 2 }
+  }), nt(i, r.sectionTitle, !0);
 }
-function nn(e) {
+function sn(e) {
   return [parseInt(e.slice(0, 2), 16), parseInt(e.slice(2, 4), 16), parseInt(e.slice(4, 6), 16)];
 }
-function js(e) {
+function Ks(e) {
   return e.map((r) => Math.max(0, Math.min(255, Math.round(r))).toString(16).padStart(2, "0")).join("").toUpperCase();
 }
-function Ks(e, r, t) {
-  const i = nn(e), n = nn(r), s = Math.max(0, Math.min(1, t));
-  return js([i[0] + (n[0] - i[0]) * s, i[1] + (n[1] - i[1]) * s, i[2] + (n[2] - i[2]) * s]);
+function Js(e, r, t) {
+  const i = sn(e), n = sn(r), s = Math.max(0, Math.min(1, t));
+  return Ks([i[0] + (n[0] - i[0]) * s, i[1] + (n[1] - i[1]) * s, i[2] + (n[2] - i[2]) * s]);
 }
-function Ys(e, r, t, i) {
+function Zs(e, r, t, i) {
   if (e.tableType === "heatmap" && e.heatmap) {
     const n = e.heatmap.values[r]?.[t];
     if (typeof n == "number") {
       const s = e.heatmap.max - e.heatmap.min, l = s > 0 ? (n - e.heatmap.min) / s : 0;
-      return Ks("FFFFFF", "B8B8B5", l);
+      return Js("FFFFFF", "B8B8B5", l);
     }
   }
-  return e.tableType === "highlight" ? i % 2 === 0 ? "E6E6E4" : P.TABLE_ROW_EVEN_BG : i % 2 === 0 ? P.TABLE_ROW_ODD_BG : P.TABLE_ROW_EVEN_BG;
+  return e.tableType === "highlight" ? i % 2 === 0 ? "E6E6E4" : D.TABLE_ROW_EVEN_BG : i % 2 === 0 ? D.TABLE_ROW_ODD_BG : D.TABLE_ROW_EVEN_BG;
 }
-function on(e) {
-  return typeof e == "string" ? e : Be(e);
+function ln(e) {
+  return typeof e == "string" ? e : Se(e);
 }
-function Jo(e, r, t, i = 0) {
+function Ko(e, r, t, i = 0) {
   const n = e.headers.map((l) => ({
-    text: on(l),
+    text: ln(l),
     options: {
       bold: !0,
-      color: P.TABLE_HEADER_TEXT,
-      fill: { color: P.TABLE_HEADER_BG },
+      color: D.TABLE_HEADER_TEXT,
+      fill: { color: D.TABLE_HEADER_BG },
       valign: "middle",
       align: "left",
       fontSize: t,
       margin: 0.07
     }
   })), s = r.map((l, c) => l.map((A, a) => ({
-    text: on(A),
+    text: ln(A),
     options: {
-      fill: { color: Ys(e, i + c, a, c) },
+      fill: { color: Zs(e, i + c, a, c) },
       valign: "middle",
       align: "left",
-      color: P.BODY_TEXT,
+      color: D.BODY_TEXT,
       fontSize: t,
       margin: 0.07
     }
   })));
   return [n, ...s];
 }
-function Js(e, r, t, i, n, s) {
+function el(e, r, t, i, n, s) {
   let l = i;
-  e.addText(Be(r.label), {
+  e.addText(Se(r.label), {
     x: t,
     y: l,
     w: n,
-    h: P.H_TABLE_LABEL,
-    fontFace: P.headingFont,
-    fontSize: P.FONT_TABLE_BODY + 2,
+    h: D.H_TABLE_LABEL,
+    fontFace: D.headingFont,
+    fontSize: D.FONT_TABLE_BODY + 2,
     bold: !0,
-    color: P.DARK_TEXT,
+    color: D.DARK_TEXT,
     margin: 0,
     align: "left",
     valign: "top",
     fit: "shrink"
-  }), l += P.H_TABLE_LABEL + 0.12;
-  const c = r.__rowOffset ?? 0, A = Jo(r, r.rows, P.FONT_TABLE_BODY, c), a = Array(r.headers.length).fill(n / r.headers.length);
+  }), l += D.H_TABLE_LABEL + 0.12;
+  const c = r.__rowOffset ?? 0, A = Ko(r, r.rows, D.FONT_TABLE_BODY, c), a = Array(r.headers.length).fill(n / r.headers.length);
   return e.addTable(A, {
     x: t,
     y: l,
     w: n,
-    rowH: [P.H_TABLE_HEADER_ROW, ...Array(r.rows.length).fill(P.H_TABLE_BODY_ROW)],
-    fontFace: P.bodyFont,
-    fontSize: P.FONT_TABLE_BODY,
-    border: { type: "solid", color: P.TABLE_BORDER, pt: 0.4 },
+    rowH: [D.H_TABLE_HEADER_ROW, ...Array(r.rows.length).fill(D.H_TABLE_BODY_ROW)],
+    fontFace: D.bodyFont,
+    fontSize: D.FONT_TABLE_BODY,
+    border: { type: "solid", color: D.TABLE_BORDER, pt: 0.4 },
     colW: a,
     margin: 0.06
-  }), l += P.H_TABLE_HEADER_ROW + r.rows.length * P.H_TABLE_BODY_ROW, l - i;
+  }), l += D.H_TABLE_HEADER_ROW + r.rows.length * D.H_TABLE_BODY_ROW, l - i;
 }
-function Zs(e, r) {
+function tl(e, r) {
   const t = e.addSlide();
-  t.background = { color: P.SLIDE_BG }, rt(t, "Editable table", r.sectionTitle), t.addText(Be(r.label), {
+  t.background = { color: D.SLIDE_BG }, at(t, "Editable table", r.sectionTitle), t.addText(Se(r.label), {
     ...r.labelBox,
-    fontFace: P.headingFont,
+    fontFace: D.headingFont,
     fontSize: 22,
     bold: r.pageIndex === 0,
     italic: r.pageIndex > 0,
-    color: r.pageIndex === 0 ? P.DARK_TEXT : P.MUTED_TEXT,
+    color: r.pageIndex === 0 ? D.DARK_TEXT : D.MUTED_TEXT,
     margin: 0,
     align: "left",
     valign: "top",
     fit: "shrink"
-  }), t.addTable(Jo(r.block, r.rows, r.fontSize, r.rowOffset), {
+  }), t.addTable(Ko(r.block, r.rows, r.fontSize, r.rowOffset), {
     x: r.tableBox.x,
     y: r.tableBox.y,
     w: r.tableBox.w,
     rowH: [r.headerHeight, ...r.rowHeights],
-    fontFace: P.bodyFont,
+    fontFace: D.bodyFont,
     fontSize: r.fontSize,
-    border: { type: "solid", color: P.TABLE_BORDER, pt: 0.4 },
+    border: { type: "solid", color: D.TABLE_BORDER, pt: 0.4 },
     colW: r.colWidths,
     margin: 0.06
-  }), at(t, r.sectionTitle);
+  }), nt(t, r.sectionTitle);
 }
-function el(e, r = P.DIAGRAM_MAX_NODES_PER_ROW) {
+function rl(e, r = D.DIAGRAM_MAX_NODES_PER_ROW) {
   const t = Math.max(1, Math.floor(r)), i = [];
   for (const n of e)
     for (let s = 0; s < n.length; s += t) i.push(n.slice(s, s + t));
@@ -5767,30 +5822,30 @@ function Sa(e, r, t, i, n) {
     y: t,
     w: i,
     h: n,
-    line: { color: P.DIAGRAM_CONNECTOR, width: 1.15, endArrowType: "triangle" }
+    line: { color: D.DIAGRAM_CONNECTOR, width: 1.15, endArrowType: "triangle" }
   });
 }
-function tl(e, r, t, i, n, s) {
+function al(e, r, t, i, n, s) {
   let l = i;
-  e.addText(Be(r.label), {
+  e.addText(Se(r.label), {
     x: t,
     y: l,
     w: n,
-    h: P.H_DIAGRAM_LABEL,
-    fontFace: P.headingFont,
-    fontSize: P.FONT_DIAGRAM_NODE + 2,
+    h: D.H_DIAGRAM_LABEL,
+    fontFace: D.headingFont,
+    fontSize: D.FONT_DIAGRAM_NODE + 2,
     bold: !0,
-    color: P.DARK_TEXT,
+    color: D.DARK_TEXT,
     margin: 0,
     align: "left",
     valign: "top",
     fit: "shrink"
-  }), l += P.H_DIAGRAM_LABEL + 0.12;
-  const c = el(r.diagramRows), A = P.DIAGRAM_NODE_HEIGHT, a = P.DIAGRAM_NODE_H_GAP, o = P.DIAGRAM_ROW_V_GAP;
+  }), l += D.H_DIAGRAM_LABEL + 0.12;
+  const c = rl(r.diagramRows), A = D.DIAGRAM_NODE_HEIGHT, a = D.DIAGRAM_NODE_H_GAP, o = D.DIAGRAM_ROW_V_GAP;
   return c.forEach((f, g) => {
     if (!f.length) return;
     const d = Math.min(
-      P.DIAGRAM_NODE_WIDTH,
+      D.DIAGRAM_NODE_WIDTH,
       Math.max(0.82, (n - (f.length - 1) * a) / f.length)
     ), m = f.length * d + (f.length - 1) * a, u = t + Math.max(0, (n - m) / 2);
     f.forEach((y, p) => {
@@ -5801,17 +5856,17 @@ function tl(e, r, t, i, n, s) {
         w: d,
         h: A,
         rectRadius: 0.06,
-        fill: { color: _ ? P.NAVY : P.DIAGRAM_NODE_BG },
-        line: { color: P.DIAGRAM_NODE_BORDER, width: 0.8 }
-      }), e.addText(Be(y), {
+        fill: { color: _ ? D.NAVY : D.DIAGRAM_NODE_BG },
+        line: { color: D.DIAGRAM_NODE_BORDER, width: 0.8 }
+      }), e.addText(Se(y), {
         x: h + 0.08,
         y: l + 0.05,
         w: d - 0.16,
         h: A - 0.1,
-        fontFace: P.bodyFont,
-        fontSize: P.FONT_DIAGRAM_NODE,
+        fontFace: D.bodyFont,
+        fontSize: D.FONT_DIAGRAM_NODE,
         bold: !0,
-        color: _ ? P.WHITE : P.DIAGRAM_NODE_TEXT,
+        color: _ ? D.WHITE : D.DIAGRAM_NODE_TEXT,
         margin: 0,
         align: "center",
         valign: "middle",
@@ -5821,15 +5876,15 @@ function tl(e, r, t, i, n, s) {
     }), l += A, g < c.length - 1 && (Sa(e, t + n / 2, l + 0.04, 0, o - 0.08), l += o);
   }), l - i;
 }
-function rl(e, r) {
+function nl(e, r) {
   const t = e.addSlide();
-  t.background = { color: P.SLIDE_BG }, rt(t, "Editable diagram", r.sectionTitle), t.addText(Be(r.label), {
+  t.background = { color: D.SLIDE_BG }, at(t, "Editable diagram", r.sectionTitle), t.addText(Se(r.label), {
     ...r.labelBox,
-    fontFace: P.headingFont,
+    fontFace: D.headingFont,
     fontSize: 22,
     bold: r.pageIndex === 0,
     italic: r.pageIndex > 0,
-    color: r.pageIndex === 0 ? P.DARK_TEXT : P.MUTED_TEXT,
+    color: r.pageIndex === 0 ? D.DARK_TEXT : D.MUTED_TEXT,
     margin: 0,
     align: "left",
     valign: "top",
@@ -5847,78 +5902,78 @@ function rl(e, r) {
     t.addShape("roundRect", {
       ...i.box,
       rectRadius: 0.06,
-      fill: { color: i.emphasized ? P.NAVY : P.DIAGRAM_NODE_BG },
-      line: { color: P.DIAGRAM_NODE_BORDER, width: 0.8 }
-    }), t.addText(Be(i.text), {
+      fill: { color: i.emphasized ? D.NAVY : D.DIAGRAM_NODE_BG },
+      line: { color: D.DIAGRAM_NODE_BORDER, width: 0.8 }
+    }), t.addText(Se(i.text), {
       x: i.box.x + 0.08,
       y: i.box.y + 0.05,
       w: i.box.w - 0.16,
       h: i.box.h - 0.1,
-      fontFace: P.bodyFont,
-      fontSize: P.FONT_DIAGRAM_NODE,
+      fontFace: D.bodyFont,
+      fontSize: D.FONT_DIAGRAM_NODE,
       bold: !0,
-      color: i.emphasized ? P.WHITE : P.DIAGRAM_NODE_TEXT,
+      color: i.emphasized ? D.WHITE : D.DIAGRAM_NODE_TEXT,
       margin: 0,
       align: "center",
       valign: "middle",
       wrap: !0,
       fit: "shrink"
     });
-  at(t, r.sectionTitle);
+  nt(t, r.sectionTitle);
 }
-function al(e, r, t, i, n) {
+function ol(e, r, t, i, n) {
   if (!n || !Number.isFinite(n) || n <= 0) return { x: e, y: r, w: t, h: i };
   const s = t / i, l = n >= s ? t : i * n, c = n >= s ? t / n : i;
   return { x: e + (t - l) / 2, y: r + (i - c) / 2, w: l, h: c };
 }
-function nl(e, r, t, i) {
+function il(e, r, t, i) {
   return { x: e, y: r, w: t, h: i };
 }
-function ol(e) {
+function sl(e) {
   if (typeof atob == "function") {
     const r = atob(e.replace(/\s/g, ""));
     return Uint8Array.from(r, (t) => t.charCodeAt(0));
   }
   return new Uint8Array(Buffer.from(e, "base64"));
 }
-function Et(e) {
+function Tt(e) {
   return new TextDecoder().decode(e);
 }
-function Zo(e) {
+function Jo(e) {
   const r = /^data:([^;,]+)(;base64)?,(.*)$/is.exec(e.trim());
   if (!(!r || !r[1].toLowerCase().startsWith("image/")))
     try {
-      const t = r[2] ? ol(r[3]) : new TextEncoder().encode(decodeURIComponent(r[3]));
-      return { mimeType: r[1].toLowerCase(), bytes: t, ...r[1].toLowerCase() === "image/svg+xml" ? { text: Et(t) } : {} };
+      const t = r[2] ? sl(r[3]) : new TextEncoder().encode(decodeURIComponent(r[3]));
+      return { mimeType: r[1].toLowerCase(), bytes: t, ...r[1].toLowerCase() === "image/svg+xml" ? { text: Tt(t) } : {} };
     } catch {
       return;
     }
 }
-function il(e) {
-  const r = Zo(e);
+function ll(e) {
+  const r = Jo(e);
   return !!(r && ["image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp", "image/svg+xml"].includes(r.mimeType));
 }
 function ca(e, r) {
   return e[r] * 256 + e[r + 1];
 }
-function sn(e, r) {
+function cn(e, r) {
   return e[r] * 16777216 + e[r + 1] * 65536 + e[r + 2] * 256 + e[r + 3];
 }
-function Wr(e, r) {
+function qr(e, r) {
   return e[r] + e[r + 1] * 256;
 }
-function ln(e, r) {
+function An(e, r) {
   return e[r] + e[r + 1] * 256 + e[r + 2] * 65536;
 }
-function sl(e) {
-  if (!(e.length < 24 || e[0] !== 137 || e[1] !== 80 || e[2] !== 78 || e[3] !== 71))
-    return [sn(e, 16), sn(e, 20)];
-}
-function ll(e) {
-  if (!(e.length < 10 || Et(e.slice(0, 3)) !== "GIF"))
-    return [Wr(e, 6), Wr(e, 8)];
-}
 function cl(e) {
+  if (!(e.length < 24 || e[0] !== 137 || e[1] !== 80 || e[2] !== 78 || e[3] !== 71))
+    return [cn(e, 16), cn(e, 20)];
+}
+function Al(e) {
+  if (!(e.length < 10 || Tt(e.slice(0, 3)) !== "GIF"))
+    return [qr(e, 6), qr(e, 8)];
+}
+function dl(e) {
   if (e.length < 4 || e[0] !== 255 || e[1] !== 216) return;
   let r = 2;
   const t = /* @__PURE__ */ new Set([192, 193, 194, 195, 197, 198, 199, 201, 202, 203, 205, 206, 207]);
@@ -5936,17 +5991,17 @@ function cl(e) {
     r += n;
   }
 }
-function Al(e) {
-  if (e.length < 30 || Et(e.slice(0, 4)) !== "RIFF" || Et(e.slice(8, 12)) !== "WEBP") return;
-  const r = Et(e.slice(12, 16));
-  if (r === "VP8X") return [1 + ln(e, 24), 1 + ln(e, 27)];
+function fl(e) {
+  if (e.length < 30 || Tt(e.slice(0, 4)) !== "RIFF" || Tt(e.slice(8, 12)) !== "WEBP") return;
+  const r = Tt(e.slice(12, 16));
+  if (r === "VP8X") return [1 + An(e, 24), 1 + An(e, 27)];
   if (r === "VP8L" && e[20] === 47) {
     const t = e[21] | e[22] << 8 | e[23] << 16 | e[24] << 24;
     return [(t & 16383) + 1, (t >> 14 & 16383) + 1];
   }
-  if (r === "VP8 " && e.length >= 30) return [Wr(e, 26) & 16383, Wr(e, 28) & 16383];
+  if (r === "VP8 " && e.length >= 30) return [qr(e, 26) & 16383, qr(e, 28) & 16383];
 }
-function dl(e) {
+function ul(e) {
   const r = /<svg\b[^>]*>/i.exec(e)?.[0];
   if (!r) return;
   const t = (l) => {
@@ -5957,70 +6012,70 @@ function dl(e) {
   const s = /viewBox\s*=\s*["']\s*[-0-9.]+\s+[-0-9.]+\s+([0-9.]+)\s+([0-9.]+)/i.exec(r);
   return s ? [Number(s[1]), Number(s[2])] : void 0;
 }
-function fl(e) {
-  const r = Zo(e);
+function hl(e) {
+  const r = Jo(e);
   if (!r) return;
   let t;
   switch (r.mimeType) {
     case "image/png":
-      t = sl(r.bytes);
+      t = cl(r.bytes);
       break;
     case "image/jpeg":
     case "image/jpg":
-      t = cl(r.bytes);
+      t = dl(r.bytes);
       break;
     case "image/gif":
-      t = ll(r.bytes);
-      break;
-    case "image/webp":
       t = Al(r.bytes);
       break;
+    case "image/webp":
+      t = fl(r.bytes);
+      break;
     case "image/svg+xml":
-      t = dl(r.text ?? Et(r.bytes));
+      t = ul(r.text ?? Tt(r.bytes));
       break;
   }
   if (!(!t || t[0] <= 0 || t[1] <= 0))
     return { width: t[0], height: t[1], mimeType: r.mimeType, aspect: t[0] / t[1] };
 }
-function ei(e, r, t, i, n, s, l) {
+function Zo(e, r, t, i, n, s, l) {
   const c = [], A = t[r.slotId];
   let a = !1;
   if (!A?.dataUrl)
-    c.push(`Image slot "${r.slotId}" (${Te(r.label)}) has no imported image — placeholder shown.`);
-  else if (!il(A.dataUrl))
+    c.push(`Image slot "${r.slotId}" (${Ee(r.label)}) has no imported image — placeholder shown.`);
+  else if (!ll(A.dataUrl))
     c.push(`Image slot "${r.slotId}" is not a supported PNG, JPEG, GIF, WebP, or SVG data URL — placeholder shown.`);
   else {
-    const o = fl(A.dataUrl);
+    const o = hl(A.dataUrl);
     if (!o)
       c.push(`Image slot "${r.slotId}" could not be decoded safely — placeholder shown.`);
     else
       try {
         if (r.fit === "cover") {
-          const f = nl(i, n, s, l);
+          const f = il(i, n, s, l);
           e.addImage({
             data: A.dataUrl,
             ...f,
             sizing: { type: "cover", w: f.w, h: f.h }
           });
         } else
-          e.addImage({ data: A.dataUrl, ...al(i, n, s, l, o.aspect) });
+          e.addImage({ data: A.dataUrl, ...ol(i, n, s, l, o.aspect) });
         a = !0;
       } catch (f) {
         const g = f instanceof Error ? f.message : String(f);
         c.push(`Image slot "${r.slotId}" failed to embed (${g}) — placeholder shown.`);
       }
   }
-  return a || hl(e, r, i, n, s, l), { rendered: a, warnings: c };
+  return a || ml(e, r, i, n, s, l), { rendered: a, warnings: c };
 }
-function ul(e, r, t) {
+function pl(e, r, t) {
   const i = e.addSlide();
-  i.background = { color: P.SLIDE_BG }, rt(i, "Image evidence", r.sectionTitle), i.addShape("roundRect", {
+  i.background = { color: D.SLIDE_BG }, at(i, "Image evidence", r.sectionTitle), i.addShape("roundRect", {
     ...r.frameBox,
     rectRadius: 0.06,
-    fill: { color: P.WHITE },
-    line: { color: P.DIVIDER_COLOR, width: 0.6 }
+    fill: { color: D.WHITE },
+    line: { color: D.DIVIDER_COLOR, width: 0.6 }
   });
-  const n = ei(
+  const n = Zo(
     i,
     r.block,
     t,
@@ -6031,18 +6086,18 @@ function ul(e, r, t) {
   );
   return i.addText("IMAGE / EDITABLE OBJECT", {
     ...r.eyebrowBox,
-    fontFace: P.labelFont,
+    fontFace: D.labelFont,
     fontSize: 8,
     bold: !0,
     charSpacing: 1.5,
-    color: P.MUTED_TEXT,
+    color: D.MUTED_TEXT,
     margin: 0
-  }), i.addText(Be(r.block.label), {
+  }), i.addText(Se(r.block.label), {
     ...r.labelBox,
-    fontFace: P.headingFont,
+    fontFace: D.headingFont,
     fontSize: 23,
     bold: !0,
-    color: P.DARK_TEXT,
+    color: D.DARK_TEXT,
     margin: 0,
     align: "left",
     valign: "top",
@@ -6050,12 +6105,12 @@ function ul(e, r, t) {
     fit: "shrink"
   }), i.addShape("line", {
     ...r.titleRuleBox,
-    line: { color: P.DARK_TEXT, width: 1.4 }
-  }), r.descriptionBox && i.addText(Be(r.block.description), {
+    line: { color: D.DARK_TEXT, width: 1.4 }
+  }), r.descriptionBox && i.addText(Se(r.block.description), {
     ...r.descriptionBox,
-    fontFace: P.bodyFont,
+    fontFace: D.bodyFont,
     fontSize: 15,
-    color: P.BODY_TEXT,
+    color: D.BODY_TEXT,
     margin: 0,
     align: "left",
     valign: "top",
@@ -6063,53 +6118,53 @@ function ul(e, r, t) {
     fit: "shrink"
   }), i.addText(r.block.fit === "cover" ? "COVER CROP" : "CONTAIN / FULL IMAGE", {
     ...r.fitLabelBox,
-    fontFace: P.labelFont,
+    fontFace: D.labelFont,
     fontSize: 8,
     bold: !0,
     charSpacing: 1.2,
-    color: P.MUTED_TEXT,
+    color: D.MUTED_TEXT,
     margin: 0
   }), r.sourceBox && i.addText(`Source: ${r.block.sourceReference}`, {
     ...r.sourceBox,
-    fontFace: P.bodyFont,
-    fontSize: P.FONT_CAPTION,
+    fontFace: D.bodyFont,
+    fontSize: D.FONT_CAPTION,
     italic: !0,
-    color: P.CAPTION_COLOR,
+    color: D.CAPTION_COLOR,
     margin: 0,
     align: "left",
     valign: "top",
     fit: "shrink"
-  }), at(i, r.sectionTitle), n;
+  }), nt(i, r.sectionTitle), n;
 }
-function hl(e, r, t, i, n, s) {
+function ml(e, r, t, i, n, s) {
   e.addShape("rect", {
     x: t,
     y: i,
     w: n,
     h: s,
-    fill: { color: P.PLACEHOLDER_BG },
-    line: { color: P.PLACEHOLDER_BORDER, width: 1, dashType: "dash" }
+    fill: { color: D.PLACEHOLDER_BG },
+    line: { color: D.PLACEHOLDER_BORDER, width: 1, dashType: "dash" }
   }), e.addText("[Image not imported]", {
     x: t + Math.min(0.4, n * 0.1),
     y: i + s / 2 - 0.2,
     w: Math.max(0.2, n - Math.min(0.8, n * 0.2)),
     h: 0.22,
-    fontFace: P.labelFont,
+    fontFace: D.labelFont,
     fontSize: 9,
     bold: !0,
     charSpacing: 1.2,
-    color: P.PLACEHOLDER_TEXT,
+    color: D.PLACEHOLDER_TEXT,
     margin: 0,
     align: "center",
     valign: "middle"
-  }), e.addText(Be(r.label), {
+  }), e.addText(Se(r.label), {
     x: t + Math.min(0.5, n * 0.12),
     y: i + s / 2 + 0.12,
     w: Math.max(0.2, n - Math.min(1, n * 0.24)),
     h: 0.48,
-    fontFace: P.bodyFont,
+    fontFace: D.bodyFont,
     fontSize: 12,
-    color: P.BODY_TEXT,
+    color: D.BODY_TEXT,
     margin: 0,
     align: "center",
     valign: "top",
@@ -6117,16 +6172,16 @@ function hl(e, r, t, i, n, s) {
     fit: "shrink"
   });
 }
-function lt(e, r, t) {
-  e.addText(Be(r.text), { ...r.box, ...t });
+function ct(e, r, t) {
+  e.addText(Se(r.text), { ...r.box, ...t });
 }
-function pl(e, r, t = {}, i = []) {
+function gl(e, r, t = {}, i = []) {
   const n = e.addSlide();
-  if (n.background = { color: P.SLIDE_BG }, rt(n, "Lecture content", r.sectionTitle), r.title && lt(n, r.title, {
-    fontFace: P.headingFont,
-    fontSize: P.FONT_SLIDE_TITLE,
+  if (n.background = { color: D.SLIDE_BG }, at(n, "Lecture content", r.sectionTitle), r.title && ct(n, r.title, {
+    fontFace: D.headingFont,
+    fontSize: D.FONT_SLIDE_TITLE,
     bold: !0,
-    color: P.DARK_TEXT,
+    color: D.DARK_TEXT,
     margin: 0,
     align: "left",
     valign: "top",
@@ -6134,18 +6189,18 @@ function pl(e, r, t = {}, i = []) {
     fit: "shrink"
   }), r.titleRule && n.addShape("line", {
     ...r.titleRule.box,
-    line: { color: P.DARK_TEXT, width: 1.4 }
-  }), r.subtitle && lt(n, r.subtitle, {
-    fontFace: P.bodyFont,
-    fontSize: P.FONT_SLIDE_SUBTITLE,
-    color: P.MUTED_TEXT,
+    line: { color: D.DARK_TEXT, width: 1.4 }
+  }), r.subtitle && ct(n, r.subtitle, {
+    fontFace: D.bodyFont,
+    fontSize: D.FONT_SLIDE_SUBTITLE,
+    color: D.MUTED_TEXT,
     margin: 0,
     align: "left",
     valign: "top",
     wrap: !0,
     fit: "shrink"
   }), r.image) {
-    const s = ei(
+    const s = Zo(
       n,
       r.image.block,
       t,
@@ -6154,50 +6209,50 @@ function pl(e, r, t = {}, i = []) {
       r.image.box.w,
       r.image.box.h
     );
-    i.push(...s.warnings), r.image.label && lt(n, r.image.label, {
-      fontFace: P.headingFont,
+    i.push(...s.warnings), r.image.label && ct(n, r.image.label, {
+      fontFace: D.headingFont,
       fontSize: 10,
       bold: !0,
-      color: P.DARK_TEXT,
+      color: D.DARK_TEXT,
       margin: 0,
       align: "left",
       valign: "top",
       wrap: !0,
       fit: "shrink"
-    }), r.image.description && lt(n, r.image.description, {
-      fontFace: P.bodyFont,
+    }), r.image.description && ct(n, r.image.description, {
+      fontFace: D.bodyFont,
       fontSize: 9,
-      color: P.BODY_TEXT,
+      color: D.BODY_TEXT,
       margin: 0,
       align: "left",
       valign: "top",
       wrap: !0,
       fit: "shrink"
-    }), r.image.source && lt(n, r.image.source, {
-      fontFace: P.bodyFont,
-      fontSize: P.FONT_CAPTION,
+    }), r.image.source && ct(n, r.image.source, {
+      fontFace: D.bodyFont,
+      fontSize: D.FONT_CAPTION,
       italic: !0,
-      color: P.CAPTION_COLOR,
+      color: D.CAPTION_COLOR,
       margin: 0,
       align: "left",
       valign: "top",
       fit: "shrink"
     });
   }
-  r.imageCompanionLabel && lt(n, r.imageCompanionLabel, {
-    fontFace: P.headingFont,
-    fontSize: P.FONT_SUBTITLE_BLOCK,
+  r.imageCompanionLabel && ct(n, r.imageCompanionLabel, {
+    fontFace: D.headingFont,
+    fontSize: D.FONT_SUBTITLE_BLOCK,
     bold: !0,
-    color: P.DARK_TEXT,
+    color: D.DARK_TEXT,
     margin: 0,
     align: "left",
     valign: "top",
     wrap: !0,
     fit: "shrink"
-  }), r.imageCompanionDescription && lt(n, r.imageCompanionDescription, {
-    fontFace: P.bodyFont,
-    fontSize: P.FONT_PARAGRAPH,
-    color: P.BODY_TEXT,
+  }), r.imageCompanionDescription && ct(n, r.imageCompanionDescription, {
+    fontFace: D.bodyFont,
+    fontSize: D.FONT_PARAGRAPH,
+    color: D.BODY_TEXT,
     margin: 0,
     align: "left",
     valign: "top",
@@ -6208,12 +6263,12 @@ function pl(e, r, t = {}, i = []) {
     const { block: l, box: c } = s;
     switch (l.type) {
       case "subtitle":
-        n.addText(Be(l.text), {
+        n.addText(Se(l.text), {
           ...c,
-          fontFace: P.headingFont,
-          fontSize: P.FONT_SUBTITLE_BLOCK,
+          fontFace: D.headingFont,
+          fontSize: D.FONT_SUBTITLE_BLOCK,
           bold: !0,
-          color: P.DARK_TEXT,
+          color: D.DARK_TEXT,
           margin: 0,
           align: "left",
           valign: "top",
@@ -6222,11 +6277,11 @@ function pl(e, r, t = {}, i = []) {
         });
         break;
       case "paragraph":
-        n.addText(Be(l.text), {
+        n.addText(Se(l.text), {
           ...c,
-          fontFace: P.bodyFont,
-          fontSize: P.FONT_PARAGRAPH,
-          color: P.BODY_TEXT,
+          fontFace: D.bodyFont,
+          fontSize: D.FONT_PARAGRAPH,
+          color: D.BODY_TEXT,
           margin: 0,
           align: "left",
           valign: "top",
@@ -6239,9 +6294,9 @@ function pl(e, r, t = {}, i = []) {
       case "bullets":
         n.addText(Ba(l.items, "bullet"), {
           ...c,
-          fontFace: P.bodyFont,
-          fontSize: P.FONT_BULLET,
-          color: P.BODY_TEXT,
+          fontFace: D.bodyFont,
+          fontSize: D.FONT_BULLET,
+          color: D.BODY_TEXT,
           margin: 0.01,
           align: "left",
           valign: "top",
@@ -6253,9 +6308,9 @@ function pl(e, r, t = {}, i = []) {
       case "numbered":
         n.addText(Ba(l.items, "number", l.startAt ?? 1), {
           ...c,
-          fontFace: P.bodyFont,
-          fontSize: P.FONT_NUMBERED,
-          color: P.BODY_TEXT,
+          fontFace: D.bodyFont,
+          fontSize: D.FONT_NUMBERED,
+          color: D.BODY_TEXT,
           margin: 0.01,
           align: "left",
           valign: "top",
@@ -6265,7 +6320,7 @@ function pl(e, r, t = {}, i = []) {
         });
         break;
       case "callout": {
-        const A = ps(l.tone), a = ms(l.tone);
+        const A = gs(l.tone), a = ys(l.tone);
         n.addShape("line", {
           x: c.x,
           y: c.y,
@@ -6273,15 +6328,15 @@ function pl(e, r, t = {}, i = []) {
           h: c.h,
           line: { color: A, width: 1.6 }
         }), n.addText([
-          { text: `${gs(l.tone)} / `, options: { bold: !0, color: a } },
-          ...Be(l.label)
+          { text: `${vs(l.tone)} / `, options: { bold: !0, color: a } },
+          ...Se(l.label)
         ], {
           x: c.x + 0.2,
           y: c.y + 0.02,
           w: c.w - 0.2,
           h: 0.22,
-          fontFace: P.labelFont,
-          fontSize: P.FONT_CALLOUT_LABEL,
+          fontFace: D.labelFont,
+          fontSize: D.FONT_CALLOUT_LABEL,
           bold: !0,
           charSpacing: 1.1,
           color: a,
@@ -6289,14 +6344,14 @@ function pl(e, r, t = {}, i = []) {
           align: "left",
           valign: "top",
           fit: "shrink"
-        }), n.addText(Be(l.text), {
+        }), n.addText(Se(l.text), {
           x: c.x + 0.2,
           y: c.y + 0.3,
           w: c.w - 0.2,
           h: Math.max(0.18, c.h - 0.32),
-          fontFace: P.bodyFont,
-          fontSize: P.FONT_CALLOUT_TEXT,
-          color: P.BODY_TEXT,
+          fontFace: D.bodyFont,
+          fontSize: D.FONT_CALLOUT_TEXT,
+          color: D.BODY_TEXT,
           margin: 0,
           align: "left",
           valign: "top",
@@ -6306,41 +6361,50 @@ function pl(e, r, t = {}, i = []) {
         break;
       }
       case "table":
-        Js(n, l, c.x, c.y, c.w, c.h);
+        el(n, l, c.x, c.y, c.w, c.h);
         break;
       case "diagram":
-        tl(n, l, c.x, c.y, c.w, c.h);
+        al(n, l, c.x, c.y, c.w, c.h);
         break;
       case "image":
         throw new Error("Image blocks must be represented by plan.image, not plan.blocks.");
     }
   }
-  at(n, r.sectionTitle);
+  nt(n, r.sectionTitle);
 }
-function ml(e, r) {
+function yl(e, r) {
   const t = e.addSlide();
-  t.background = { color: P.NAVY }, t.addShape("rect", {
+  t.background = { color: D.NAVY }, t.addShape("rect", {
     x: 8.68,
     y: 0,
-    w: P.SLIDE_WIDTH - 8.68,
-    h: P.SLIDE_HEIGHT,
-    fill: { color: P.GRAPHITE },
-    line: { color: P.GRAPHITE, width: 0 }
+    w: D.SLIDE_WIDTH - 8.68,
+    h: D.SLIDE_HEIGHT,
+    fill: { color: D.GRAPHITE },
+    line: { color: D.GRAPHITE, width: 0 }
   }), t.addShape("line", {
     x: 8.68,
     y: 0,
     w: 0,
-    h: P.SLIDE_HEIGHT,
-    line: { color: P.DARK_RULE, width: 1 }
-  }), za(t, 9.12, 1.85, 3.55, 3.85), rt(t, "Discussion / next step", "", !0), t.addText(Be(Te(r.endNote) ? r.endNote : "Questions and discussion"), {
+    h: D.SLIDE_HEIGHT,
+    line: { color: D.DARK_RULE, width: 1 }
+  }), za(t, 9.12, 1.85, 3.55, 3.85), at(t, "Discussion / next step", "", !0);
+  const i = Ee(r.endNote) ? r.endNote : "Questions and discussion", n = Rt(
+    i,
+    6.45,
+    30,
+    la.TEXT_H,
+    2.45,
+    0.05
+  ), s = Xa(la.TEXT_Y, n, 0.16);
+  t.addText(Se(i), {
     x: Ce,
     y: la.TEXT_Y,
     w: 6.45,
-    h: la.TEXT_H,
-    fontFace: P.headingFont,
+    h: n,
+    fontFace: D.headingFont,
     fontSize: 30,
     bold: !0,
-    color: P.WHITE,
+    color: D.WHITE,
     margin: 0,
     align: "left",
     valign: "top",
@@ -6348,57 +6412,57 @@ function ml(e, r) {
     fit: "shrink"
   }), t.addShape("line", {
     x: Ce,
-    y: la.UNDERLINE_Y,
+    y: s,
     w: 1.12,
     h: 0,
-    line: { color: P.WHITE, width: 2 }
+    line: { color: D.WHITE, width: 2 }
   }), t.addText(r.documentTitle, {
     x: Ce,
     y: 5.9,
     w: 6.4,
     h: 0.3,
-    fontFace: P.bodyFont,
+    fontFace: D.bodyFont,
     fontSize: 11,
-    color: P.MUTED_ON_DARK,
+    color: D.MUTED_ON_DARK,
     margin: 0,
     align: "left",
     valign: "top",
     fit: "shrink"
-  }), at(t, r.documentTitle, !0);
+  }), nt(t, r.documentTitle, !0);
 }
-function gl(e, r, t, i) {
-  const n = qs(r);
+function vl(e, r, t, i) {
+  const n = Vs(r);
   for (const s of n.slides)
     switch (s.type) {
       case "cover":
-        Hs(e, s.lecture);
+        Qs(e, s.lecture);
         break;
       case "overview":
-        Vs(e, s.lecture);
+        js(e, s.lecture);
         break;
       case "section":
-        Qs(e, s.section, s.sectionIndex);
+        Ys(e, s.section, s.sectionIndex);
         break;
       case "content":
-        pl(e, s.plan, t, i);
+        gl(e, s.plan, t, i);
         break;
       case "image": {
-        const l = ul(e, s.plan, t);
+        const l = pl(e, s.plan, t);
         i.push(...l.warnings);
         break;
       }
       case "dedicated-table":
-        Zs(e, s.plan);
+        tl(e, s.plan);
         break;
       case "dedicated-diagram":
-        rl(e, s.plan);
+        nl(e, s.plan);
         break;
       case "ending":
-        ml(e, s.lecture);
+        yl(e, s.lecture);
         break;
     }
 }
-function yl(e) {
+function bl(e) {
   const r = [];
   for (const t of e) {
     const i = t.x + t.w, n = t.y + t.h, s = t.label ?? "Object";
@@ -6406,31 +6470,31 @@ function yl(e) {
       r.push(`${s}: geometry contains a non-finite value`);
       continue;
     }
-    (t.w < -1e-3 || t.h < -1e-3) && r.push(`${s}: width and height must be non-negative`), t.x < -1e-3 && r.push(`${s}: x=${t.x.toFixed(3)} is past left edge`), t.y < -1e-3 && r.push(`${s}: y=${t.y.toFixed(3)} is past top edge`), i > P.SLIDE_WIDTH + 1e-3 && r.push(`${s}: right=${i.toFixed(3)} exceeds slide width ${P.SLIDE_WIDTH}`), n > P.SLIDE_HEIGHT + 1e-3 && r.push(`${s}: bottom=${n.toFixed(3)} exceeds slide height ${P.SLIDE_HEIGHT}`);
+    (t.w < -1e-3 || t.h < -1e-3) && r.push(`${s}: width and height must be non-negative`), t.x < -1e-3 && r.push(`${s}: x=${t.x.toFixed(3)} is past left edge`), t.y < -1e-3 && r.push(`${s}: y=${t.y.toFixed(3)} is past top edge`), i > D.SLIDE_WIDTH + 1e-3 && r.push(`${s}: right=${i.toFixed(3)} exceeds slide width ${D.SLIDE_WIDTH}`), n > D.SLIDE_HEIGHT + 1e-3 && r.push(`${s}: bottom=${n.toFixed(3)} exceeds slide height ${D.SLIDE_HEIGHT}`);
   }
   return { valid: r.length === 0, violations: r };
 }
-function vl(e, r) {
+function wl(e, r) {
   if (!e || typeof e != "object") return;
   const t = e, i = t.options ?? t._options ?? t, n = i.x, s = i.y, l = i.w, c = i.h;
   if ([n, s, l, c].every((A) => typeof A == "number"))
     return { x: n, y: s, w: l, h: c, label: r };
 }
-function bl(e) {
+function _l(e) {
   const r = e, t = r.slides ?? r._slides ?? [], i = [];
   let n = 0;
   return t.forEach((s, l) => {
-    const A = (s._slideObjects ?? s.slideObjects ?? []).map((a, o) => vl(a, `slide ${l + 1} object ${o + 1}`)).filter((a) => !!a);
-    n += A.length, i.push(...yl(A).violations);
+    const A = (s._slideObjects ?? s.slideObjects ?? []).map((a, o) => wl(a, `slide ${l + 1} object ${o + 1}`)).filter((a) => !!a);
+    n += A.length, i.push(...bl(A).violations);
   }), { valid: i.length === 0, violations: i, checkedObjects: n };
 }
-const wl = 1.15, _l = 1.6;
-function Cl(e, r = {}) {
+const Cl = 1.15, xl = 1.6;
+function Tl(e, r = {}) {
   const t = [];
   let i = 0, n = 0;
   for (const A of e.sections) {
     n += A.slides.reduce((f, g) => f + g.blocks.length, 0);
-    const a = Wo(A.slides), o = _s(A.slides, a);
+    const a = Xo(A.slides), o = xs(A.slides, a);
     for (const f of o)
       t.push({ code: "content-lost-in-compaction", message: `${A.sectionTitle}: ${f}` });
     for (const f of a) {
@@ -6439,7 +6503,7 @@ function Cl(e, r = {}) {
       for (const d of g) {
         if (d.type === "content") {
           const m = d.plan, u = m.blocks.reduce((y, p) => y + p.box.h, 0);
-          m.pageIndex > 0 && m.blocks.length <= 1 && u < wl && t.push({
+          m.pageIndex > 0 && m.blocks.length <= 1 && u < Cl && t.push({
             code: "low-density-continuation",
             message: `Avoidable low-density continuation slide for "${f.slideTitle}" in section "${A.sectionTitle}".`
           }), m.image && !r[m.image.block.slotId]?.dataUrl && t.push({
@@ -6449,7 +6513,7 @@ function Cl(e, r = {}) {
           continue;
         }
         if (d.type === "image") {
-          const m = d.plan.block, u = Te(m.label).trim().length > 0, y = Te(m.description).trim().length > 0;
+          const m = d.plan.block, u = Ee(m.label).trim().length > 0, y = Ee(m.description).trim().length > 0;
           r[m.slotId]?.dataUrl || (t.push({
             code: "unfilled-image-slot",
             message: `Image slot "${m.slotId}" has no imported image.`
@@ -6461,18 +6525,18 @@ function Cl(e, r = {}) {
       }
     }
   }
-  const s = 3 + e.sections.length, l = s + i, c = s + n * _l;
+  const s = 3 + e.sections.length, l = s + i, c = s + n * xl;
   return l > c && n > 0 && t.push({
     code: "disproportionate-slide-count",
     message: `Generated ${l} slides for ${n} semantic content blocks (expected at most ~${Math.ceil(c)}).`
-  }), { estimatedSlideCount: l, semanticBlockCount: n, issues: t, valid: !t.some(xl) };
+  }), { estimatedSlideCount: l, semanticBlockCount: n, issues: t, valid: !t.some(El) };
 }
-function xl(e) {
+function El(e) {
   return e.code !== "unfilled-image-slot";
 }
-var Yt = { exports: {} }, Aa = {}, Qe = {}, ct = {}, da = {}, fa = {}, ua = {}, cn;
-function qr() {
-  return cn || (cn = 1, (function(e) {
+var Jt = { exports: {} }, Aa = {}, Qe = {}, At = {}, da = {}, fa = {}, ua = {}, dn;
+function Hr() {
+  return dn || (dn = 1, (function(e) {
     Object.defineProperty(e, "__esModule", { value: !0 }), e.regexpCode = e.getEsmExportName = e.getProperty = e.safeStringify = e.stringify = e.strConcat = e.addCodeArg = e.str = e._ = e.nil = e._Code = e.Name = e.IDENTIFIER = e._CodeOrName = void 0;
     class r {
     }
@@ -6509,28 +6573,28 @@ function qr() {
       }
       get str() {
         var h;
-        return (h = this._str) !== null && h !== void 0 ? h : this._str = this._items.reduce((_, E) => `${_}${E}`, "");
+        return (h = this._str) !== null && h !== void 0 ? h : this._str = this._items.reduce((_, T) => `${_}${T}`, "");
       }
       get names() {
         var h;
-        return (h = this._names) !== null && h !== void 0 ? h : this._names = this._items.reduce((_, E) => (E instanceof t && (_[E.str] = (_[E.str] || 0) + 1), _), {});
+        return (h = this._names) !== null && h !== void 0 ? h : this._names = this._items.reduce((_, T) => (T instanceof t && (_[T.str] = (_[T.str] || 0) + 1), _), {});
       }
     }
     e._Code = i, e.nil = new i("");
     function n(p, ...h) {
       const _ = [p[0]];
-      let E = 0;
-      for (; E < h.length; )
-        c(_, h[E]), _.push(p[++E]);
+      let T = 0;
+      for (; T < h.length; )
+        c(_, h[T]), _.push(p[++T]);
       return new i(_);
     }
     e._ = n;
     const s = new i("+");
     function l(p, ...h) {
       const _ = [d(p[0])];
-      let E = 0;
-      for (; E < h.length; )
-        _.push(s), c(_, h[E]), _.push(s, d(p[++E]));
+      let T = 0;
+      for (; T < h.length; )
+        _.push(s), c(_, h[T]), _.push(s, d(p[++T]));
       return A(_), new i(_);
     }
     e.str = l;
@@ -6593,11 +6657,11 @@ function qr() {
     e.regexpCode = y;
   })(ua)), ua;
 }
-var ha = {}, An;
-function dn() {
-  return An || (An = 1, (function(e) {
+var ha = {}, fn;
+function un() {
+  return fn || (fn = 1, (function(e) {
     Object.defineProperty(e, "__esModule", { value: !0 }), e.ValueScope = e.ValueScopeName = e.Scope = e.varKinds = e.UsedValueState = void 0;
-    const r = /* @__PURE__ */ qr();
+    const r = /* @__PURE__ */ Hr();
     class t extends Error {
       constructor(a) {
         super(`CodeGen: "code" for ${a} not defined`), this.value = a.value;
@@ -6716,12 +6780,12 @@ function dn() {
     e.ValueScope = c;
   })(ha)), ha;
 }
-var fn;
+var hn;
 function ge() {
-  return fn || (fn = 1, (function(e) {
+  return hn || (hn = 1, (function(e) {
     Object.defineProperty(e, "__esModule", { value: !0 }), e.or = e.and = e.not = e.CodeGen = e.operators = e.varKinds = e.ValueScopeName = e.ValueScope = e.Scope = e.Name = e.regexpCode = e.stringify = e.getProperty = e.nil = e.strConcat = e.str = e._ = void 0;
-    const r = /* @__PURE__ */ qr(), t = /* @__PURE__ */ dn();
-    var i = /* @__PURE__ */ qr();
+    const r = /* @__PURE__ */ Hr(), t = /* @__PURE__ */ un();
+    var i = /* @__PURE__ */ Hr();
     Object.defineProperty(e, "_", { enumerable: !0, get: function() {
       return i._;
     } }), Object.defineProperty(e, "str", { enumerable: !0, get: function() {
@@ -6739,7 +6803,7 @@ function ge() {
     } }), Object.defineProperty(e, "Name", { enumerable: !0, get: function() {
       return i.Name;
     } });
-    var n = /* @__PURE__ */ dn();
+    var n = /* @__PURE__ */ un();
     Object.defineProperty(e, "Scope", { enumerable: !0, get: function() {
       return n.Scope;
     } }), Object.defineProperty(e, "ValueScope", { enumerable: !0, get: function() {
@@ -6878,7 +6942,7 @@ function ge() {
         return H.length > 0 ? this : void 0;
       }
       get names() {
-        return this.nodes.reduce((L, N) => T(L, N.names), {});
+        return this.nodes.reduce((L, N) => E(L, N.names), {});
       }
     }
     class m extends d {
@@ -6921,7 +6985,7 @@ function ge() {
       }
       get names() {
         const L = super.names;
-        return M(L, this.condition), this.else && T(L, this.else.names), L;
+        return M(L, this.condition), this.else && E(L, this.else.names), L;
       }
     }
     p.kind = "if";
@@ -6940,10 +7004,10 @@ function ge() {
           return this.iteration = w(this.iteration, L, N), this;
       }
       get names() {
-        return T(super.names, this.iteration.names);
+        return E(super.names, this.iteration.names);
       }
     }
-    class E extends h {
+    class T extends h {
       constructor(L, N, H, ie) {
         super(), this.varKind = L, this.name = N, this.from = H, this.to = ie;
       }
@@ -6968,7 +7032,7 @@ function ge() {
           return this.iterable = w(this.iterable, L, N), this;
       }
       get names() {
-        return T(super.names, this.iterable.names);
+        return E(super.names, this.iterable.names);
       }
     }
     class C extends m {
@@ -7001,7 +7065,7 @@ function ge() {
       }
       get names() {
         const L = super.names;
-        return this.catch && T(L, this.catch.names), this.finally && T(L, this.finally.names), L;
+        return this.catch && E(L, this.catch.names), this.finally && E(L, this.finally.names), L;
       }
     }
     class R extends m {
@@ -7118,7 +7182,7 @@ function ge() {
       // `for` statement for a range of values
       forRange(L, N, H, ie, ae = this.opts.es5 ? t.varKinds.var : t.varKinds.let) {
         const le = this._scope.toName(L);
-        return this._for(new E(ae, le, N, H), () => ie(le));
+        return this._for(new T(ae, le, N, H), () => ie(le));
       }
       // `for-of` statement (in es5 mode replace with a normal for loop)
       forOf(L, N, H, ie = t.varKinds.const) {
@@ -7230,13 +7294,13 @@ function ge() {
       }
     }
     e.CodeGen = O;
-    function T($, L) {
+    function E($, L) {
       for (const N in L)
         $[N] = ($[N] || 0) + (L[N] || 0);
       return $;
     }
     function M($, L) {
-      return L instanceof r._CodeOrName ? T($, L.names) : $;
+      return L instanceof r._CodeOrName ? E($, L.names) : $;
     }
     function w($, L, N) {
       if ($ instanceof r.Name)
@@ -7260,17 +7324,17 @@ function ge() {
       return typeof $ == "boolean" || typeof $ == "number" || $ === null ? !$ : (0, r._)`!${F($)}`;
     }
     e.not = ee;
-    const K = D(e.operators.AND);
+    const Y = P(e.operators.AND);
     function ne(...$) {
-      return $.reduce(K);
+      return $.reduce(Y);
     }
     e.and = ne;
-    const Z = D(e.operators.OR);
+    const Z = P(e.operators.OR);
     function Q(...$) {
       return $.reduce(Z);
     }
     e.or = Q;
-    function D($) {
+    function P($) {
       return (L, N) => L === r.nil ? N : N === r.nil ? L : (0, r._)`${F(L)} ${$} ${F(N)}`;
     }
     function F($) {
@@ -7278,11 +7342,11 @@ function ge() {
     }
   })(fa)), fa;
 }
-var me = {}, un;
+var me = {}, pn;
 function we() {
-  if (un) return me;
-  un = 1, Object.defineProperty(me, "__esModule", { value: !0 }), me.checkStrictMode = me.getErrorPath = me.Type = me.useFunc = me.setEvaluated = me.evaluatedPropsToName = me.mergeEvaluated = me.eachItem = me.unescapeJsonPointer = me.escapeJsonPointer = me.escapeFragment = me.unescapeFragment = me.schemaRefOrVal = me.schemaHasRulesButRef = me.schemaHasRules = me.checkUnknownRules = me.alwaysValidSchema = me.toHash = void 0;
-  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ qr();
+  if (pn) return me;
+  pn = 1, Object.defineProperty(me, "__esModule", { value: !0 }), me.checkStrictMode = me.getErrorPath = me.Type = me.useFunc = me.setEvaluated = me.evaluatedPropsToName = me.mergeEvaluated = me.eachItem = me.unescapeJsonPointer = me.escapeJsonPointer = me.escapeFragment = me.unescapeFragment = me.schemaRefOrVal = me.schemaHasRulesButRef = me.schemaHasRules = me.checkUnknownRules = me.alwaysValidSchema = me.toHash = void 0;
+  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ Hr();
   function t(v) {
     const C = {};
     for (const x of v)
@@ -7300,7 +7364,7 @@ function we() {
       return;
     const R = B.RULES.keywords;
     for (const I in C)
-      R[I] || E(v, `unknown keyword: "${I}"`);
+      R[I] || T(v, `unknown keyword: "${I}"`);
   }
   me.checkUnknownRules = n;
   function s(v, C) {
@@ -7356,9 +7420,9 @@ function we() {
   }
   me.eachItem = g;
   function d({ mergeNames: v, mergeToName: C, mergeValues: x, resultToName: B }) {
-    return (R, I, O, T) => {
+    return (R, I, O, E) => {
       const M = O === void 0 ? I : O instanceof e.Name ? (I instanceof e.Name ? v(R, I, O) : C(R, I, O), O) : I instanceof e.Name ? (C(R, O, I), I) : x(I, O);
-      return T === e.Name && !(M instanceof e.Name) ? B(R, M) : M;
+      return E === e.Name && !(M instanceof e.Name) ? B(R, M) : M;
     };
   }
   me.mergeEvaluated = {
@@ -7410,19 +7474,19 @@ function we() {
     return x ? (0, e.getProperty)(v).toString() : "/" + o(v);
   }
   me.getErrorPath = _;
-  function E(v, C, x = v.opts.strictSchema) {
+  function T(v, C, x = v.opts.strictSchema) {
     if (x) {
       if (C = `strict mode: ${C}`, x === !0)
         throw new Error(C);
       v.self.logger.warn(C);
     }
   }
-  return me.checkStrictMode = E, me;
+  return me.checkStrictMode = T, me;
 }
-var Jt = {}, hn;
-function nt() {
-  if (hn) return Jt;
-  hn = 1, Object.defineProperty(Jt, "__esModule", { value: !0 });
+var Zt = {}, mn;
+function ot() {
+  if (mn) return Zt;
+  mn = 1, Object.defineProperty(Zt, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ ge(), r = {
     // validation function arguments
     data: new e.Name("data"),
@@ -7452,37 +7516,37 @@ function nt() {
     jsonLen: new e.Name("jsonLen"),
     jsonPart: new e.Name("jsonPart")
   };
-  return Jt.default = r, Jt;
+  return Zt.default = r, Zt;
 }
-var pn;
-function jr() {
-  return pn || (pn = 1, (function(e) {
+var gn;
+function Yr() {
+  return gn || (gn = 1, (function(e) {
     Object.defineProperty(e, "__esModule", { value: !0 }), e.extendErrors = e.resetErrorsCount = e.reportExtraError = e.reportError = e.keyword$DataError = e.keywordError = void 0;
-    const r = /* @__PURE__ */ ge(), t = /* @__PURE__ */ we(), i = /* @__PURE__ */ nt();
+    const r = /* @__PURE__ */ ge(), t = /* @__PURE__ */ we(), i = /* @__PURE__ */ ot();
     e.keywordError = {
       message: ({ keyword: y }) => (0, r.str)`must pass "${y}" keyword validation`
     }, e.keyword$DataError = {
       message: ({ keyword: y, schemaType: p }) => p ? (0, r.str)`"${y}" keyword must be ${p} ($data)` : (0, r.str)`"${y}" keyword is invalid ($data)`
     };
     function n(y, p = e.keywordError, h, _) {
-      const { it: E } = y, { gen: v, compositeRule: C, allErrors: x } = E, B = f(y, p, h);
-      _ ?? (C || x) ? A(v, B) : a(E, (0, r._)`[${B}]`);
+      const { it: T } = y, { gen: v, compositeRule: C, allErrors: x } = T, B = f(y, p, h);
+      _ ?? (C || x) ? A(v, B) : a(T, (0, r._)`[${B}]`);
     }
     e.reportError = n;
     function s(y, p = e.keywordError, h) {
-      const { it: _ } = y, { gen: E, compositeRule: v, allErrors: C } = _, x = f(y, p, h);
-      A(E, x), v || C || a(_, i.default.vErrors);
+      const { it: _ } = y, { gen: T, compositeRule: v, allErrors: C } = _, x = f(y, p, h);
+      A(T, x), v || C || a(_, i.default.vErrors);
     }
     e.reportExtraError = s;
     function l(y, p) {
       y.assign(i.default.errors, p), y.if((0, r._)`${i.default.vErrors} !== null`, () => y.if(p, () => y.assign((0, r._)`${i.default.vErrors}.length`, p), () => y.assign(i.default.vErrors, null)));
     }
     e.resetErrorsCount = l;
-    function c({ gen: y, keyword: p, schemaValue: h, data: _, errsCount: E, it: v }) {
-      if (E === void 0)
+    function c({ gen: y, keyword: p, schemaValue: h, data: _, errsCount: T, it: v }) {
+      if (T === void 0)
         throw new Error("ajv implementation error");
       const C = y.name("err");
-      y.forRange("i", E, i.default.errors, (x) => {
+      y.forRange("i", T, i.default.errors, (x) => {
         y.const(C, (0, r._)`${i.default.vErrors}[${x}]`), y.if((0, r._)`${C}.instancePath === undefined`, () => y.assign((0, r._)`${C}.instancePath`, (0, r.strConcat)(i.default.instancePath, v.errorPath))), y.assign((0, r._)`${C}.schemaPath`, (0, r.str)`${v.errSchemaPath}/${p}`), v.opts.verbose && (y.assign((0, r._)`${C}.schema`, h), y.assign((0, r._)`${C}.data`, _));
       });
     }
@@ -7492,8 +7556,8 @@ function jr() {
       y.if((0, r._)`${i.default.vErrors} === null`, () => y.assign(i.default.vErrors, (0, r._)`[${h}]`), (0, r._)`${i.default.vErrors}.push(${h})`), y.code((0, r._)`${i.default.errors}++`);
     }
     function a(y, p) {
-      const { gen: h, validateName: _, schemaEnv: E } = y;
-      E.$async ? h.throw((0, r._)`new ${y.ValidationError}(${p})`) : (h.assign((0, r._)`${_}.errors`, p), h.return(!1));
+      const { gen: h, validateName: _, schemaEnv: T } = y;
+      T.$async ? h.throw((0, r._)`new ${y.ValidationError}(${p})`) : (h.assign((0, r._)`${_}.errors`, p), h.return(!1));
     }
     const o = {
       keyword: new r.Name("keyword"),
@@ -7510,8 +7574,8 @@ function jr() {
       return _ === !1 ? (0, r._)`{}` : g(y, p, h);
     }
     function g(y, p, h = {}) {
-      const { gen: _, it: E } = y, v = [
-        d(E, h),
+      const { gen: _, it: T } = y, v = [
+        d(T, h),
         m(y, h)
       ];
       return u(y, p, v), _.object(...v);
@@ -7521,32 +7585,32 @@ function jr() {
       return [i.default.instancePath, (0, r.strConcat)(i.default.instancePath, h)];
     }
     function m({ keyword: y, it: { errSchemaPath: p } }, { schemaPath: h, parentSchema: _ }) {
-      let E = _ ? p : (0, r.str)`${p}/${y}`;
-      return h && (E = (0, r.str)`${E}${(0, t.getErrorPath)(h, t.Type.Str)}`), [o.schemaPath, E];
+      let T = _ ? p : (0, r.str)`${p}/${y}`;
+      return h && (T = (0, r.str)`${T}${(0, t.getErrorPath)(h, t.Type.Str)}`), [o.schemaPath, T];
     }
     function u(y, { params: p, message: h }, _) {
-      const { keyword: E, data: v, schemaValue: C, it: x } = y, { opts: B, propertyName: R, topSchemaRef: I, schemaPath: O } = x;
-      _.push([o.keyword, E], [o.params, typeof p == "function" ? p(y) : p || (0, r._)`{}`]), B.messages && _.push([o.message, typeof h == "function" ? h(y) : h]), B.verbose && _.push([o.schema, C], [o.parentSchema, (0, r._)`${I}${O}`], [i.default.data, v]), R && _.push([o.propertyName, R]);
+      const { keyword: T, data: v, schemaValue: C, it: x } = y, { opts: B, propertyName: R, topSchemaRef: I, schemaPath: O } = x;
+      _.push([o.keyword, T], [o.params, typeof p == "function" ? p(y) : p || (0, r._)`{}`]), B.messages && _.push([o.message, typeof h == "function" ? h(y) : h]), B.verbose && _.push([o.schema, C], [o.parentSchema, (0, r._)`${I}${O}`], [i.default.data, v]), R && _.push([o.propertyName, R]);
     }
   })(da)), da;
 }
-var mn;
-function El() {
-  if (mn) return ct;
-  mn = 1, Object.defineProperty(ct, "__esModule", { value: !0 }), ct.boolOrEmptySchema = ct.topBoolOrEmptySchema = void 0;
-  const e = /* @__PURE__ */ jr(), r = /* @__PURE__ */ ge(), t = /* @__PURE__ */ nt(), i = {
+var yn;
+function Ll() {
+  if (yn) return At;
+  yn = 1, Object.defineProperty(At, "__esModule", { value: !0 }), At.boolOrEmptySchema = At.topBoolOrEmptySchema = void 0;
+  const e = /* @__PURE__ */ Yr(), r = /* @__PURE__ */ ge(), t = /* @__PURE__ */ ot(), i = {
     message: "boolean schema is false"
   };
   function n(c) {
     const { gen: A, schema: a, validateName: o } = c;
     a === !1 ? l(c, !1) : typeof a == "object" && a.$async === !0 ? A.return(t.default.data) : (A.assign((0, r._)`${o}.errors`, null), A.return(!0));
   }
-  ct.topBoolOrEmptySchema = n;
+  At.topBoolOrEmptySchema = n;
   function s(c, A) {
     const { gen: a, schema: o } = c;
     o === !1 ? (a.var(A, !1), l(c)) : a.var(A, !0);
   }
-  ct.boolOrEmptySchema = s;
+  At.boolOrEmptySchema = s;
   function l(c, A) {
     const { gen: a, data: o } = c, f = {
       gen: a,
@@ -7560,17 +7624,17 @@ function El() {
     };
     (0, e.reportError)(f, i, void 0, A);
   }
-  return ct;
+  return At;
 }
-var Pe = {}, At = {}, gn;
-function ti() {
-  if (gn) return At;
-  gn = 1, Object.defineProperty(At, "__esModule", { value: !0 }), At.getRules = At.isJSONType = void 0;
+var Pe = {}, dt = {}, vn;
+function ei() {
+  if (vn) return dt;
+  vn = 1, Object.defineProperty(dt, "__esModule", { value: !0 }), dt.getRules = dt.isJSONType = void 0;
   const e = ["string", "number", "integer", "boolean", "null", "object", "array"], r = new Set(e);
   function t(n) {
     return typeof n == "string" && r.has(n);
   }
-  At.isJSONType = t;
+  dt.isJSONType = t;
   function i() {
     const n = {
       number: { type: "number", rules: [] },
@@ -7586,12 +7650,12 @@ function ti() {
       keywords: {}
     };
   }
-  return At.getRules = i, At;
+  return dt.getRules = i, dt;
 }
-var je = {}, yn;
-function ri() {
-  if (yn) return je;
-  yn = 1, Object.defineProperty(je, "__esModule", { value: !0 }), je.shouldUseRule = je.shouldUseGroup = je.schemaHasRulesForType = void 0;
+var je = {}, bn;
+function ti() {
+  if (bn) return je;
+  bn = 1, Object.defineProperty(je, "__esModule", { value: !0 }), je.shouldUseRule = je.shouldUseGroup = je.schemaHasRulesForType = void 0;
   function e({ schema: i, self: n }, s) {
     const l = n.RULES.types[s];
     return l && l !== !0 && r(i, l);
@@ -7607,11 +7671,11 @@ function ri() {
   }
   return je.shouldUseRule = t, je;
 }
-var vn;
-function Hr() {
-  if (vn) return Pe;
-  vn = 1, Object.defineProperty(Pe, "__esModule", { value: !0 }), Pe.reportTypeError = Pe.checkDataTypes = Pe.checkDataType = Pe.coerceAndCheckDataType = Pe.getJSONTypes = Pe.getSchemaTypes = Pe.DataType = void 0;
-  const e = /* @__PURE__ */ ti(), r = /* @__PURE__ */ ri(), t = /* @__PURE__ */ jr(), i = /* @__PURE__ */ ge(), n = /* @__PURE__ */ we();
+var wn;
+function Vr() {
+  if (wn) return Pe;
+  wn = 1, Object.defineProperty(Pe, "__esModule", { value: !0 }), Pe.reportTypeError = Pe.checkDataTypes = Pe.checkDataType = Pe.coerceAndCheckDataType = Pe.getJSONTypes = Pe.getSchemaTypes = Pe.DataType = void 0;
+  const e = /* @__PURE__ */ ei(), r = /* @__PURE__ */ ti(), t = /* @__PURE__ */ Yr(), i = /* @__PURE__ */ ge(), n = /* @__PURE__ */ we();
   var s;
   (function(h) {
     h[h.Correct = 0] = "Correct", h[h.Wrong = 1] = "Wrong";
@@ -7637,10 +7701,10 @@ function Hr() {
   }
   Pe.getJSONTypes = c;
   function A(h, _) {
-    const { gen: E, data: v, opts: C } = h, x = o(_, C.coerceTypes), B = _.length > 0 && !(x.length === 0 && _.length === 1 && (0, r.schemaHasRulesForType)(h, _[0]));
+    const { gen: T, data: v, opts: C } = h, x = o(_, C.coerceTypes), B = _.length > 0 && !(x.length === 0 && _.length === 1 && (0, r.schemaHasRulesForType)(h, _[0]));
     if (B) {
       const R = m(_, v, C.strictNumbers, s.Wrong);
-      E.if(R, () => {
+      T.if(R, () => {
         x.length ? f(h, _, x) : y(h);
       });
     }
@@ -7649,12 +7713,12 @@ function Hr() {
   Pe.coerceAndCheckDataType = A;
   const a = /* @__PURE__ */ new Set(["string", "number", "integer", "boolean", "null"]);
   function o(h, _) {
-    return _ ? h.filter((E) => a.has(E) || _ === "array" && E === "array") : [];
+    return _ ? h.filter((T) => a.has(T) || _ === "array" && T === "array") : [];
   }
-  function f(h, _, E) {
+  function f(h, _, T) {
     const { gen: v, data: C, opts: x } = h, B = v.let("dataType", (0, i._)`typeof ${C}`), R = v.let("coerced", (0, i._)`undefined`);
     x.coerceTypes === "array" && v.if((0, i._)`${B} == 'object' && Array.isArray(${C}) && ${C}.length == 1`, () => v.assign(C, (0, i._)`${C}[0]`).assign(B, (0, i._)`typeof ${C}`).if(m(_, C, x.strictNumbers), () => v.assign(R, C))), v.if((0, i._)`${R} !== undefined`);
-    for (const O of E)
+    for (const O of T)
       (a.has(O) || O === "array" && x.coerceTypes === "array") && I(O);
     v.else(), y(h), v.endIf(), v.if((0, i._)`${R} !== undefined`, () => {
       v.assign(C, R), g(h, R);
@@ -7684,10 +7748,10 @@ function Hr() {
       }
     }
   }
-  function g({ gen: h, parentData: _, parentDataProperty: E }, v) {
-    h.if((0, i._)`${_} !== undefined`, () => h.assign((0, i._)`${_}[${E}]`, v));
+  function g({ gen: h, parentData: _, parentDataProperty: T }, v) {
+    h.if((0, i._)`${_} !== undefined`, () => h.assign((0, i._)`${_}[${T}]`, v));
   }
-  function d(h, _, E, v = s.Correct) {
+  function d(h, _, T, v = s.Correct) {
     const C = v === s.Correct ? i.operators.EQ : i.operators.NEQ;
     let x;
     switch (h) {
@@ -7710,13 +7774,13 @@ function Hr() {
     }
     return v === s.Correct ? x : (0, i.not)(x);
     function B(R = i.nil) {
-      return (0, i.and)((0, i._)`typeof ${_} == "number"`, R, E ? (0, i._)`isFinite(${_})` : i.nil);
+      return (0, i.and)((0, i._)`typeof ${_} == "number"`, R, T ? (0, i._)`isFinite(${_})` : i.nil);
     }
   }
   Pe.checkDataType = d;
-  function m(h, _, E, v) {
+  function m(h, _, T, v) {
     if (h.length === 1)
-      return d(h[0], _, E, v);
+      return d(h[0], _, T, v);
     let C;
     const x = (0, n.toHash)(h);
     if (x.array && x.object) {
@@ -7726,7 +7790,7 @@ function Hr() {
       C = i.nil;
     x.number && delete x.integer;
     for (const B in x)
-      C = (0, i.and)(C, d(B, _, E, v));
+      C = (0, i.and)(C, d(B, _, T, v));
     return C;
   }
   Pe.checkDataTypes = m;
@@ -7740,11 +7804,11 @@ function Hr() {
   }
   Pe.reportTypeError = y;
   function p(h) {
-    const { gen: _, data: E, schema: v } = h, C = (0, n.schemaRefOrVal)(h, v, "type");
+    const { gen: _, data: T, schema: v } = h, C = (0, n.schemaRefOrVal)(h, v, "type");
     return {
       gen: _,
       keyword: "type",
-      data: E,
+      data: T,
       schema: v.type,
       schemaCode: C,
       schemaValue: C,
@@ -7755,10 +7819,10 @@ function Hr() {
   }
   return Pe;
 }
-var Bt = {}, bn;
-function Tl() {
-  if (bn) return Bt;
-  bn = 1, Object.defineProperty(Bt, "__esModule", { value: !0 }), Bt.assignDefaults = void 0;
+var Nt = {}, _n;
+function Rl() {
+  if (_n) return Nt;
+  _n = 1, Object.defineProperty(Nt, "__esModule", { value: !0 }), Nt.assignDefaults = void 0;
   const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we();
   function t(n, s) {
     const { properties: l, items: c } = n.schema;
@@ -7767,7 +7831,7 @@ function Tl() {
         i(n, A, l[A].default);
     else s === "array" && Array.isArray(c) && c.forEach((A, a) => i(n, a, A.default));
   }
-  Bt.assignDefaults = t;
+  Nt.assignDefaults = t;
   function i(n, s, l) {
     const { gen: c, compositeRule: A, data: a, opts: o } = n;
     if (l === void 0)
@@ -7780,28 +7844,28 @@ function Tl() {
     let g = (0, e._)`${f} === undefined`;
     o.useDefaults === "empty" && (g = (0, e._)`${g} || ${f} === null || ${f} === ""`), c.if(g, (0, e._)`${f} = ${(0, e.stringify)(l)}`);
   }
-  return Bt;
+  return Nt;
 }
-var Xe = {}, Ee = {}, wn;
+var Xe = {}, Te = {}, Cn;
 function We() {
-  if (wn) return Ee;
-  wn = 1, Object.defineProperty(Ee, "__esModule", { value: !0 }), Ee.validateUnion = Ee.validateArray = Ee.usePattern = Ee.callValidateCode = Ee.schemaProperties = Ee.allSchemaProperties = Ee.noPropertyInData = Ee.propertyInData = Ee.isOwnProperty = Ee.hasPropFunc = Ee.reportMissingProp = Ee.checkMissingProp = Ee.checkReportMissingProp = void 0;
-  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), t = /* @__PURE__ */ nt(), i = /* @__PURE__ */ we();
+  if (Cn) return Te;
+  Cn = 1, Object.defineProperty(Te, "__esModule", { value: !0 }), Te.validateUnion = Te.validateArray = Te.usePattern = Te.callValidateCode = Te.schemaProperties = Te.allSchemaProperties = Te.noPropertyInData = Te.propertyInData = Te.isOwnProperty = Te.hasPropFunc = Te.reportMissingProp = Te.checkMissingProp = Te.checkReportMissingProp = void 0;
+  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), t = /* @__PURE__ */ ot(), i = /* @__PURE__ */ we();
   function n(h, _) {
-    const { gen: E, data: v, it: C } = h;
-    E.if(o(E, v, _, C.opts.ownProperties), () => {
+    const { gen: T, data: v, it: C } = h;
+    T.if(o(T, v, _, C.opts.ownProperties), () => {
       h.setParams({ missingProperty: (0, e._)`${_}` }, !0), h.error();
     });
   }
-  Ee.checkReportMissingProp = n;
-  function s({ gen: h, data: _, it: { opts: E } }, v, C) {
-    return (0, e.or)(...v.map((x) => (0, e.and)(o(h, _, x, E.ownProperties), (0, e._)`${C} = ${x}`)));
+  Te.checkReportMissingProp = n;
+  function s({ gen: h, data: _, it: { opts: T } }, v, C) {
+    return (0, e.or)(...v.map((x) => (0, e.and)(o(h, _, x, T.ownProperties), (0, e._)`${C} = ${x}`)));
   }
-  Ee.checkMissingProp = s;
+  Te.checkMissingProp = s;
   function l(h, _) {
     h.setParams({ missingProperty: _ }, !0), h.error();
   }
-  Ee.reportMissingProp = l;
+  Te.reportMissingProp = l;
   function c(h) {
     return h.scopeValue("func", {
       // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -7809,60 +7873,60 @@ function We() {
       code: (0, e._)`Object.prototype.hasOwnProperty`
     });
   }
-  Ee.hasPropFunc = c;
-  function A(h, _, E) {
-    return (0, e._)`${c(h)}.call(${_}, ${E})`;
+  Te.hasPropFunc = c;
+  function A(h, _, T) {
+    return (0, e._)`${c(h)}.call(${_}, ${T})`;
   }
-  Ee.isOwnProperty = A;
-  function a(h, _, E, v) {
-    const C = (0, e._)`${_}${(0, e.getProperty)(E)} !== undefined`;
-    return v ? (0, e._)`${C} && ${A(h, _, E)}` : C;
+  Te.isOwnProperty = A;
+  function a(h, _, T, v) {
+    const C = (0, e._)`${_}${(0, e.getProperty)(T)} !== undefined`;
+    return v ? (0, e._)`${C} && ${A(h, _, T)}` : C;
   }
-  Ee.propertyInData = a;
-  function o(h, _, E, v) {
-    const C = (0, e._)`${_}${(0, e.getProperty)(E)} === undefined`;
-    return v ? (0, e.or)(C, (0, e.not)(A(h, _, E))) : C;
+  Te.propertyInData = a;
+  function o(h, _, T, v) {
+    const C = (0, e._)`${_}${(0, e.getProperty)(T)} === undefined`;
+    return v ? (0, e.or)(C, (0, e.not)(A(h, _, T))) : C;
   }
-  Ee.noPropertyInData = o;
+  Te.noPropertyInData = o;
   function f(h) {
     return h ? Object.keys(h).filter((_) => _ !== "__proto__") : [];
   }
-  Ee.allSchemaProperties = f;
+  Te.allSchemaProperties = f;
   function g(h, _) {
-    return f(_).filter((E) => !(0, r.alwaysValidSchema)(h, _[E]));
+    return f(_).filter((T) => !(0, r.alwaysValidSchema)(h, _[T]));
   }
-  Ee.schemaProperties = g;
-  function d({ schemaCode: h, data: _, it: { gen: E, topSchemaRef: v, schemaPath: C, errorPath: x }, it: B }, R, I, O) {
-    const T = O ? (0, e._)`${h}, ${_}, ${v}${C}` : _, M = [
+  Te.schemaProperties = g;
+  function d({ schemaCode: h, data: _, it: { gen: T, topSchemaRef: v, schemaPath: C, errorPath: x }, it: B }, R, I, O) {
+    const E = O ? (0, e._)`${h}, ${_}, ${v}${C}` : _, M = [
       [t.default.instancePath, (0, e.strConcat)(t.default.instancePath, x)],
       [t.default.parentData, B.parentData],
       [t.default.parentDataProperty, B.parentDataProperty],
       [t.default.rootData, t.default.rootData]
     ];
     B.opts.dynamicRef && M.push([t.default.dynamicAnchors, t.default.dynamicAnchors]);
-    const w = (0, e._)`${T}, ${E.object(...M)}`;
+    const w = (0, e._)`${E}, ${T.object(...M)}`;
     return I !== e.nil ? (0, e._)`${R}.call(${I}, ${w})` : (0, e._)`${R}(${w})`;
   }
-  Ee.callValidateCode = d;
+  Te.callValidateCode = d;
   const m = (0, e._)`new RegExp`;
-  function u({ gen: h, it: { opts: _ } }, E) {
-    const v = _.unicodeRegExp ? "u" : "", { regExp: C } = _.code, x = C(E, v);
+  function u({ gen: h, it: { opts: _ } }, T) {
+    const v = _.unicodeRegExp ? "u" : "", { regExp: C } = _.code, x = C(T, v);
     return h.scopeValue("pattern", {
       key: x.toString(),
       ref: x,
-      code: (0, e._)`${C.code === "new RegExp" ? m : (0, i.useFunc)(h, C)}(${E}, ${v})`
+      code: (0, e._)`${C.code === "new RegExp" ? m : (0, i.useFunc)(h, C)}(${T}, ${v})`
     });
   }
-  Ee.usePattern = u;
+  Te.usePattern = u;
   function y(h) {
-    const { gen: _, data: E, keyword: v, it: C } = h, x = _.name("valid");
+    const { gen: _, data: T, keyword: v, it: C } = h, x = _.name("valid");
     if (C.allErrors) {
       const R = _.let("valid", !0);
       return B(() => _.assign(R, !1)), R;
     }
     return _.var(x, !0), B(() => _.break()), x;
     function B(R) {
-      const I = _.const("len", (0, e._)`${E}.length`);
+      const I = _.const("len", (0, e._)`${T}.length`);
       _.forRange("i", 0, I, (O) => {
         h.subschema({
           keyword: v,
@@ -7872,70 +7936,70 @@ function We() {
       });
     }
   }
-  Ee.validateArray = y;
+  Te.validateArray = y;
   function p(h) {
-    const { gen: _, schema: E, keyword: v, it: C } = h;
-    if (!Array.isArray(E))
+    const { gen: _, schema: T, keyword: v, it: C } = h;
+    if (!Array.isArray(T))
       throw new Error("ajv implementation error");
-    if (E.some((I) => (0, r.alwaysValidSchema)(C, I)) && !C.opts.unevaluated)
+    if (T.some((I) => (0, r.alwaysValidSchema)(C, I)) && !C.opts.unevaluated)
       return;
     const B = _.let("valid", !1), R = _.name("_valid");
-    _.block(() => E.forEach((I, O) => {
-      const T = h.subschema({
+    _.block(() => T.forEach((I, O) => {
+      const E = h.subschema({
         keyword: v,
         schemaProp: O,
         compositeRule: !0
       }, R);
-      _.assign(B, (0, e._)`${B} || ${R}`), h.mergeValidEvaluated(T, R) || _.if((0, e.not)(B));
+      _.assign(B, (0, e._)`${B} || ${R}`), h.mergeValidEvaluated(E, R) || _.if((0, e.not)(B));
     })), h.result(B, () => h.reset(), () => h.error(!0));
   }
-  return Ee.validateUnion = p, Ee;
+  return Te.validateUnion = p, Te;
 }
-var _n;
-function Ll() {
-  if (_n) return Xe;
-  _n = 1, Object.defineProperty(Xe, "__esModule", { value: !0 }), Xe.validateKeywordUsage = Xe.validSchemaType = Xe.funcKeywordCode = Xe.macroKeywordCode = void 0;
-  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ nt(), t = /* @__PURE__ */ We(), i = /* @__PURE__ */ jr();
+var xn;
+function Dl() {
+  if (xn) return Xe;
+  xn = 1, Object.defineProperty(Xe, "__esModule", { value: !0 }), Xe.validateKeywordUsage = Xe.validSchemaType = Xe.funcKeywordCode = Xe.macroKeywordCode = void 0;
+  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ ot(), t = /* @__PURE__ */ We(), i = /* @__PURE__ */ Yr();
   function n(g, d) {
-    const { gen: m, keyword: u, schema: y, parentSchema: p, it: h } = g, _ = d.macro.call(h.self, y, p, h), E = a(m, u, _);
+    const { gen: m, keyword: u, schema: y, parentSchema: p, it: h } = g, _ = d.macro.call(h.self, y, p, h), T = a(m, u, _);
     h.opts.validateSchema !== !1 && h.self.validateSchema(_, !0);
     const v = m.name("valid");
     g.subschema({
       schema: _,
       schemaPath: e.nil,
       errSchemaPath: `${h.errSchemaPath}/${u}`,
-      topSchemaRef: E,
+      topSchemaRef: T,
       compositeRule: !0
     }, v), g.pass(v, () => g.error(!0));
   }
   Xe.macroKeywordCode = n;
   function s(g, d) {
     var m;
-    const { gen: u, keyword: y, schema: p, parentSchema: h, $data: _, it: E } = g;
-    A(E, d);
-    const v = !_ && d.compile ? d.compile.call(E.self, p, h, E) : d.validate, C = a(u, y, v), x = u.let("valid");
+    const { gen: u, keyword: y, schema: p, parentSchema: h, $data: _, it: T } = g;
+    A(T, d);
+    const v = !_ && d.compile ? d.compile.call(T.self, p, h, T) : d.validate, C = a(u, y, v), x = u.let("valid");
     g.block$data(x, B), g.ok((m = d.valid) !== null && m !== void 0 ? m : x);
     function B() {
       if (d.errors === !1)
-        O(), d.modifying && l(g), T(() => g.error());
+        O(), d.modifying && l(g), E(() => g.error());
       else {
         const M = d.async ? R() : I();
-        d.modifying && l(g), T(() => c(g, M));
+        d.modifying && l(g), E(() => c(g, M));
       }
     }
     function R() {
       const M = u.let("ruleErrs", null);
-      return u.try(() => O((0, e._)`await `), (w) => u.assign(x, !1).if((0, e._)`${w} instanceof ${E.ValidationError}`, () => u.assign(M, (0, e._)`${w}.errors`), () => u.throw(w))), M;
+      return u.try(() => O((0, e._)`await `), (w) => u.assign(x, !1).if((0, e._)`${w} instanceof ${T.ValidationError}`, () => u.assign(M, (0, e._)`${w}.errors`), () => u.throw(w))), M;
     }
     function I() {
       const M = (0, e._)`${C}.errors`;
       return u.assign(M, null), O(e.nil), M;
     }
     function O(M = d.async ? (0, e._)`await ` : e.nil) {
-      const w = E.opts.passContext ? r.default.this : r.default.self, G = !("compile" in d && !_ || d.schema === !1);
+      const w = T.opts.passContext ? r.default.this : r.default.self, G = !("compile" in d && !_ || d.schema === !1);
       u.assign(x, (0, e._)`${M}${(0, t.callValidateCode)(g, C, w, G)}`, d.modifying);
     }
-    function T(M) {
+    function E(M) {
       var w;
       u.if((0, e.not)((w = d.valid) !== null && w !== void 0 ? w : x), M);
     }
@@ -7971,19 +8035,19 @@ function Ll() {
     if (h?.some((_) => !Object.prototype.hasOwnProperty.call(g, _)))
       throw new Error(`parent schema must have dependencies of ${p}: ${h.join(",")}`);
     if (y.validateSchema && !y.validateSchema(g[p])) {
-      const E = `keyword "${p}" value is invalid at path "${u}": ` + m.errorsText(y.validateSchema.errors);
+      const T = `keyword "${p}" value is invalid at path "${u}": ` + m.errorsText(y.validateSchema.errors);
       if (d.validateSchema === "log")
-        m.logger.error(E);
+        m.logger.error(T);
       else
-        throw new Error(E);
+        throw new Error(T);
     }
   }
   return Xe.validateKeywordUsage = f, Xe;
 }
-var Ke = {}, Cn;
-function Rl() {
-  if (Cn) return Ke;
-  Cn = 1, Object.defineProperty(Ke, "__esModule", { value: !0 }), Ke.extendSubschemaMode = Ke.extendSubschemaData = Ke.getSubschema = void 0;
+var Ye = {}, Tn;
+function Pl() {
+  if (Tn) return Ye;
+  Tn = 1, Object.defineProperty(Ye, "__esModule", { value: !0 }), Ye.extendSubschemaMode = Ye.extendSubschemaData = Ye.getSubschema = void 0;
   const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we();
   function t(s, { keyword: l, schemaProp: c, schema: A, schemaPath: a, errSchemaPath: o, topSchemaRef: f }) {
     if (l !== void 0 && A !== void 0)
@@ -8012,7 +8076,7 @@ function Rl() {
     }
     throw new Error('either "keyword" or "schema" must be passed');
   }
-  Ke.getSubschema = t;
+  Ye.getSubschema = t;
   function i(s, l, { dataProp: c, dataPropType: A, data: a, dataTypes: o, propertyName: f }) {
     if (a !== void 0 && c !== void 0)
       throw new Error('both "data" and "dataProp" passed, only one allowed');
@@ -8030,15 +8094,15 @@ function Rl() {
       s.data = m, s.dataLevel = l.dataLevel + 1, s.dataTypes = [], l.definedProperties = /* @__PURE__ */ new Set(), s.parentData = l.data, s.dataNames = [...l.dataNames, m];
     }
   }
-  Ke.extendSubschemaData = i;
+  Ye.extendSubschemaData = i;
   function n(s, { jtdDiscriminator: l, jtdMetadata: c, compositeRule: A, createErrors: a, allErrors: o }) {
     A !== void 0 && (s.compositeRule = A), a !== void 0 && (s.createErrors = a), o !== void 0 && (s.allErrors = o), s.jtdDiscriminator = l, s.jtdMetadata = c;
   }
-  return Ke.extendSubschemaMode = n, Ke;
+  return Ye.extendSubschemaMode = n, Ye;
 }
-var ke = {}, pa, xn;
-function ai() {
-  return xn || (xn = 1, pa = function e(r, t) {
+var ke = {}, pa, En;
+function ri() {
+  return En || (En = 1, pa = function e(r, t) {
     if (r === t) return !0;
     if (r && t && typeof r == "object" && typeof t == "object") {
       if (r.constructor !== t.constructor) return !1;
@@ -8064,10 +8128,10 @@ function ai() {
     return r !== r && t !== t;
   }), pa;
 }
-var ma = { exports: {} }, En;
-function Dl() {
-  if (En) return ma.exports;
-  En = 1;
+var ma = { exports: {} }, Ln;
+function Bl() {
+  if (Ln) return ma.exports;
+  Ln = 1;
   var e = ma.exports = function(i, n, s) {
     typeof n == "function" && (s = n, n = {}), s = n.cb || s;
     var l = typeof s == "function" ? s : s.pre || function() {
@@ -8139,11 +8203,11 @@ function Dl() {
   }
   return ma.exports;
 }
-var Tn;
+var Rn;
 function Kr() {
-  if (Tn) return ke;
-  Tn = 1, Object.defineProperty(ke, "__esModule", { value: !0 }), ke.getSchemaRefs = ke.resolveUrl = ke.normalizeId = ke._getFullPath = ke.getFullPath = ke.inlineRef = void 0;
-  const e = /* @__PURE__ */ we(), r = ai(), t = Dl(), i = /* @__PURE__ */ new Set([
+  if (Rn) return ke;
+  Rn = 1, Object.defineProperty(ke, "__esModule", { value: !0 }), ke.getSchemaRefs = ke.resolveUrl = ke.normalizeId = ke._getFullPath = ke.getFullPath = ke.inlineRef = void 0;
+  const e = /* @__PURE__ */ we(), r = ri(), t = Bl(), i = /* @__PURE__ */ new Set([
     "type",
     "format",
     "pattern",
@@ -8215,13 +8279,13 @@ function Kr() {
   function m(u, y) {
     if (typeof u == "boolean")
       return {};
-    const { schemaId: p, uriResolver: h } = this.opts, _ = f(u[p] || y), E = { "": _ }, v = A(h, _, !1), C = {}, x = /* @__PURE__ */ new Set();
-    return t(u, { allKeys: !0 }, (I, O, T, M) => {
+    const { schemaId: p, uriResolver: h } = this.opts, _ = f(u[p] || y), T = { "": _ }, v = A(h, _, !1), C = {}, x = /* @__PURE__ */ new Set();
+    return t(u, { allKeys: !0 }, (I, O, E, M) => {
       if (M === void 0)
         return;
       const w = v + O;
-      let G = E[M];
-      typeof I[p] == "string" && (G = ee.call(this, I[p])), K.call(this, I.$anchor), K.call(this, I.$dynamicAnchor), E[O] = G;
+      let G = T[M];
+      typeof I[p] == "string" && (G = ee.call(this, I[p])), Y.call(this, I.$anchor), Y.call(this, I.$dynamicAnchor), T[O] = G;
       function ee(ne) {
         const Z = this.opts.uriResolver.resolve;
         if (ne = f(G ? Z(G, ne) : ne), x.has(ne))
@@ -8230,7 +8294,7 @@ function Kr() {
         let Q = this.refs[ne];
         return typeof Q == "string" && (Q = this.refs[Q]), typeof Q == "object" ? B(I, Q.schema, ne) : ne !== f(w) && (ne[0] === "#" ? (B(I, C[ne], ne), C[ne] = I) : this.refs[ne] = w), ne;
       }
-      function K(ne) {
+      function Y(ne) {
         if (typeof ne == "string") {
           if (!d.test(ne))
             throw new Error(`invalid anchor "${ne}"`);
@@ -8238,9 +8302,9 @@ function Kr() {
         }
       }
     }), C;
-    function B(I, O, T) {
+    function B(I, O, E) {
       if (O !== void 0 && !r(I, O))
-        throw R(T);
+        throw R(E);
     }
     function R(I) {
       return new Error(`reference "${I}" resolves to more than one schema`);
@@ -8248,13 +8312,13 @@ function Kr() {
   }
   return ke.getSchemaRefs = m, ke;
 }
-var Ln;
-function Yr() {
-  if (Ln) return Qe;
-  Ln = 1, Object.defineProperty(Qe, "__esModule", { value: !0 }), Qe.getData = Qe.KeywordCxt = Qe.validateFunctionCode = void 0;
-  const e = /* @__PURE__ */ El(), r = /* @__PURE__ */ Hr(), t = /* @__PURE__ */ ri(), i = /* @__PURE__ */ Hr(), n = /* @__PURE__ */ Tl(), s = /* @__PURE__ */ Ll(), l = /* @__PURE__ */ Rl(), c = /* @__PURE__ */ ge(), A = /* @__PURE__ */ nt(), a = /* @__PURE__ */ Kr(), o = /* @__PURE__ */ we(), f = /* @__PURE__ */ jr();
+var Dn;
+function Jr() {
+  if (Dn) return Qe;
+  Dn = 1, Object.defineProperty(Qe, "__esModule", { value: !0 }), Qe.getData = Qe.KeywordCxt = Qe.validateFunctionCode = void 0;
+  const e = /* @__PURE__ */ Ll(), r = /* @__PURE__ */ Vr(), t = /* @__PURE__ */ ti(), i = /* @__PURE__ */ Vr(), n = /* @__PURE__ */ Rl(), s = /* @__PURE__ */ Dl(), l = /* @__PURE__ */ Pl(), c = /* @__PURE__ */ ge(), A = /* @__PURE__ */ ot(), a = /* @__PURE__ */ Kr(), o = /* @__PURE__ */ we(), f = /* @__PURE__ */ Yr();
   function g(z) {
-    if (v(z) && (x(z), E(z))) {
+    if (v(z) && (x(z), T(z))) {
       y(z);
       return;
     }
@@ -8291,13 +8355,13 @@ function Yr() {
     return j && (q.code.source || q.code.process) ? (0, c._)`/*# sourceURL=${j} */` : c.nil;
   }
   function _(z, q) {
-    if (v(z) && (x(z), E(z))) {
+    if (v(z) && (x(z), T(z))) {
       C(z, q);
       return;
     }
     (0, e.boolOrEmptySchema)(z, q);
   }
-  function E({ schema: z, self: q }) {
+  function T({ schema: z, self: q }) {
     if (typeof z == "boolean")
       return !z;
     for (const j in z)
@@ -8310,7 +8374,7 @@ function Yr() {
   }
   function C(z, q) {
     const { schema: j, gen: b, opts: X } = z;
-    X.$comment && j.$comment && M(z), O(z), T(z);
+    X.$comment && j.$comment && M(z), O(z), E(z);
     const W = b.const("_errs", A.default.errors);
     B(z, W), b.var(q, (0, c._)`${W} === ${A.default.errors}`);
   }
@@ -8335,7 +8399,7 @@ function Yr() {
     const q = z.schema[z.opts.schemaId];
     q && (z.baseId = (0, a.resolveUrl)(z.opts.uriResolver, z.baseId, q));
   }
-  function T(z) {
+  function E(z) {
     if (z.schema.$async && !z.schemaEnv.$async)
       throw new Error("async schema in sync schema");
   }
@@ -8356,7 +8420,7 @@ function Yr() {
     j instanceof c.Name && z.assign((0, c._)`${q}.props`, j), b instanceof c.Name && z.assign((0, c._)`${q}.items`, b);
   }
   function ee(z, q, j, b) {
-    const { gen: X, schema: W, data: k, allErrors: S, opts: U, self: Y } = z, { RULES: J } = Y;
+    const { gen: X, schema: W, data: k, allErrors: S, opts: U, self: K } = z, { RULES: J } = K;
     if (W.$ref && (U.ignoreKeywordsWithRef || !(0, o.schemaHasRulesButRef)(W, J))) {
       X.block(() => ie(z, "$ref", J.all.$ref.definition));
       return;
@@ -8367,10 +8431,10 @@ function Yr() {
       V(J.post);
     });
     function V(te) {
-      (0, t.shouldUseGroup)(W, te) && (te.type ? (X.if((0, i.checkDataType)(te.type, k, U.strictNumbers)), K(z, te), q.length === 1 && q[0] === te.type && j && (X.else(), (0, i.reportTypeError)(z)), X.endIf()) : K(z, te), S || X.if((0, c._)`${A.default.errors} === ${b || 0}`));
+      (0, t.shouldUseGroup)(W, te) && (te.type ? (X.if((0, i.checkDataType)(te.type, k, U.strictNumbers)), Y(z, te), q.length === 1 && q[0] === te.type && j && (X.else(), (0, i.reportTypeError)(z)), X.endIf()) : Y(z, te), S || X.if((0, c._)`${A.default.errors} === ${b || 0}`));
     }
   }
-  function K(z, q) {
+  function Y(z, q) {
     const { gen: j, schema: b, opts: { useDefaults: X } } = z;
     X && (0, n.assignDefaults)(z, q.type), j.block(() => {
       for (const W of q.rules)
@@ -8378,7 +8442,7 @@ function Yr() {
     });
   }
   function ne(z, q) {
-    z.schemaEnv.meta || !z.opts.strictTypes || (Z(z, q), z.opts.allowUnionTypes || Q(z, q), D(z, z.dataTypes));
+    z.schemaEnv.meta || !z.opts.strictTypes || (Z(z, q), z.opts.allowUnionTypes || Q(z, q), P(z, z.dataTypes));
   }
   function Z(z, q) {
     if (q.length) {
@@ -8394,7 +8458,7 @@ function Yr() {
   function Q(z, q) {
     q.length > 1 && !(q.length === 2 && q.includes("null")) && N(z, "use allowUnionTypes to allow union type keyword");
   }
-  function D(z, q) {
+  function P(z, q) {
     const j = z.self.RULES.all;
     for (const b in j) {
       const X = j[b];
@@ -8536,11 +8600,11 @@ function Yr() {
         throw new Error(`Invalid JSON-pointer: ${z}`);
       X = z, W = A.default.rootData;
     } else {
-      const Y = le.exec(z);
-      if (!Y)
+      const K = le.exec(z);
+      if (!K)
         throw new Error(`Invalid JSON-pointer: ${z}`);
-      const J = +Y[1];
-      if (X = Y[2], X === "#") {
+      const J = +K[1];
+      if (X = K[2], X === "#") {
         if (J >= q)
           throw new Error(U("property/index", J));
         return b[q - J];
@@ -8552,43 +8616,43 @@ function Yr() {
     }
     let k = W;
     const S = X.split("/");
-    for (const Y of S)
-      Y && (W = (0, c._)`${W}${(0, c.getProperty)((0, o.unescapeJsonPointer)(Y))}`, k = (0, c._)`${k} && ${W}`);
+    for (const K of S)
+      K && (W = (0, c._)`${W}${(0, c.getProperty)((0, o.unescapeJsonPointer)(K))}`, k = (0, c._)`${k} && ${W}`);
     return k;
-    function U(Y, J) {
-      return `Cannot access ${Y} ${J} levels up, current level is ${q}`;
+    function U(K, J) {
+      return `Cannot access ${K} ${J} levels up, current level is ${q}`;
     }
   }
   return Qe.getData = Ae, Qe;
 }
-var Zt = {}, Rn;
-function Xa() {
-  if (Rn) return Zt;
-  Rn = 1, Object.defineProperty(Zt, "__esModule", { value: !0 });
+var er = {}, Pn;
+function qa() {
+  if (Pn) return er;
+  Pn = 1, Object.defineProperty(er, "__esModule", { value: !0 });
   class e extends Error {
     constructor(t) {
       super("validation failed"), this.errors = t, this.ajv = this.validation = !0;
     }
   }
-  return Zt.default = e, Zt;
+  return er.default = e, er;
 }
-var er = {}, Dn;
-function Jr() {
-  if (Dn) return er;
-  Dn = 1, Object.defineProperty(er, "__esModule", { value: !0 });
+var tr = {}, Bn;
+function Zr() {
+  if (Bn) return tr;
+  Bn = 1, Object.defineProperty(tr, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ Kr();
   class r extends Error {
     constructor(i, n, s, l) {
       super(l || `can't resolve reference ${s} from id ${n}`), this.missingRef = (0, e.resolveUrl)(i, n, s), this.missingSchema = (0, e.normalizeId)((0, e.getFullPath)(i, this.missingRef));
     }
   }
-  return er.default = r, er;
+  return tr.default = r, tr;
 }
-var Me = {}, Pn;
-function Wa() {
-  if (Pn) return Me;
-  Pn = 1, Object.defineProperty(Me, "__esModule", { value: !0 }), Me.resolveSchema = Me.getCompilingSchema = Me.resolveRef = Me.compileSchema = Me.SchemaEnv = void 0;
-  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ Xa(), t = /* @__PURE__ */ nt(), i = /* @__PURE__ */ Kr(), n = /* @__PURE__ */ we(), s = /* @__PURE__ */ Yr();
+var Me = {}, Nn;
+function Ha() {
+  if (Nn) return Me;
+  Nn = 1, Object.defineProperty(Me, "__esModule", { value: !0 }), Me.resolveSchema = Me.getCompilingSchema = Me.resolveRef = Me.compileSchema = Me.SchemaEnv = void 0;
+  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ qa(), t = /* @__PURE__ */ ot(), i = /* @__PURE__ */ Kr(), n = /* @__PURE__ */ we(), s = /* @__PURE__ */ Jr();
   class l {
     constructor(p) {
       var h;
@@ -8602,7 +8666,7 @@ function Wa() {
     const p = o.call(this, y);
     if (p)
       return p;
-    const h = (0, i.getFullPath)(this.opts.uriResolver, y.root.baseId), { es5: _, lines: E } = this.opts.code, { ownProperties: v } = this.opts, C = new e.CodeGen(this.scope, { es5: _, lines: E, ownProperties: v });
+    const h = (0, i.getFullPath)(this.opts.uriResolver, y.root.baseId), { es5: _, lines: T } = this.opts.code, { ownProperties: v } = this.opts, C = new e.CodeGen(this.scope, { es5: _, lines: T, ownProperties: v });
     let x;
     y.$async && (x = C.scopeValue("Error", {
       ref: r.default,
@@ -8661,9 +8725,9 @@ function Wa() {
   function A(y, p, h) {
     var _;
     h = (0, i.resolveUrl)(this.opts.uriResolver, p, h);
-    const E = y.refs[h];
-    if (E)
-      return E;
+    const T = y.refs[h];
+    if (T)
+      return T;
     let v = g.call(this, y, h);
     if (v === void 0) {
       const C = (_ = y.localRefs) === null || _ === void 0 ? void 0 : _[h], { schemaId: x } = this.opts;
@@ -8693,8 +8757,8 @@ function Wa() {
   }
   function d(y, p) {
     const h = this.opts.uriResolver.parse(p), _ = (0, i._getFullPath)(this.opts.uriResolver, h);
-    let E = (0, i.getFullPath)(this.opts.uriResolver, y.baseId, void 0);
-    if (Object.keys(y.schema).length > 0 && _ === E)
+    let T = (0, i.getFullPath)(this.opts.uriResolver, y.baseId, void 0);
+    if (Object.keys(y.schema).length > 0 && _ === T)
       return u.call(this, h, y);
     const v = (0, i.normalizeId)(_), C = this.refs[v] || this.schemas[v];
     if (typeof C == "string") {
@@ -8704,7 +8768,7 @@ function Wa() {
     if (typeof C?.schema == "object") {
       if (C.validate || c.call(this, C), v === (0, i.normalizeId)(p)) {
         const { schema: x } = C, { schemaId: B } = this.opts, R = x[B];
-        return R && (E = (0, i.resolveUrl)(this.opts.uriResolver, E, R)), new l({ schema: x, schemaId: B, root: y, baseId: E });
+        return R && (T = (0, i.resolveUrl)(this.opts.uriResolver, T, R)), new l({ schema: x, schemaId: B, root: y, baseId: T });
       }
       return u.call(this, h, C);
     }
@@ -8718,8 +8782,8 @@ function Wa() {
     "definitions"
   ]);
   function u(y, { baseId: p, schema: h, root: _ }) {
-    var E;
-    if (((E = y.fragment) === null || E === void 0 ? void 0 : E[0]) !== "/")
+    var T;
+    if (((T = y.fragment) === null || T === void 0 ? void 0 : T[0]) !== "/")
       return;
     for (const x of y.fragment.slice(1).split("/")) {
       if (typeof h == "boolean")
@@ -8742,18 +8806,18 @@ function Wa() {
   }
   return Me;
 }
-const Pl = "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#", Bl = "Meta-schema for $data reference (JSON AnySchema extension proposal)", Nl = "object", Sl = ["$data"], Il = { $data: { type: "string", anyOf: [{ format: "relative-json-pointer" }, { format: "json-pointer" }] } }, kl = !1, Fl = {
-  $id: Pl,
-  description: Bl,
-  type: Nl,
-  required: Sl,
-  properties: Il,
-  additionalProperties: kl
+const Nl = "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#", Sl = "Meta-schema for $data reference (JSON AnySchema extension proposal)", Il = "object", kl = ["$data"], Fl = { $data: { type: "string", anyOf: [{ format: "relative-json-pointer" }, { format: "json-pointer" }] } }, Ml = !1, Ol = {
+  $id: Nl,
+  description: Sl,
+  type: Il,
+  required: kl,
+  properties: Fl,
+  additionalProperties: Ml
 };
-var tr = {}, Nt = { exports: {} }, ga, Bn;
-function ni() {
-  if (Bn) return ga;
-  Bn = 1;
+var rr = {}, St = { exports: {} }, ga, Sn;
+function ai() {
+  if (Sn) return ga;
+  Sn = 1;
   const e = RegExp.prototype.test.bind(/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/iu), r = RegExp.prototype.test.bind(/^(?:(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d{2}|[1-9]\d|\d)$/u), t = RegExp.prototype.test.bind(/^[\da-f]{2}$/iu), i = RegExp.prototype.test.bind(/^[\da-z\-._~]$/iu), n = RegExp.prototype.test.bind(/^[\da-z\-._~!$&'()*+,;=:@/]$/iu);
   function s(v) {
     let C = "", x = 0, B = 0;
@@ -8789,12 +8853,12 @@ function ni() {
   function a(v) {
     let C = 0;
     const x = { error: !1, address: "", zone: "" }, B = [], R = [];
-    let I = !1, O = !1, T = A;
+    let I = !1, O = !1, E = A;
     for (let M = 0; M < v.length; M++) {
       const w = v[M];
       if (!(w === "[" || w === "]"))
         if (w === ":") {
-          if (I === !0 && (O = !0), !T(R, B, x))
+          if (I === !0 && (O = !0), !E(R, B, x))
             break;
           if (++C > 7) {
             x.error = !0;
@@ -8803,15 +8867,15 @@ function ni() {
           M > 0 && v[M - 1] === ":" && (I = !0), B.push(":");
           continue;
         } else if (w === "%") {
-          if (!T(R, B, x))
+          if (!E(R, B, x))
             break;
-          T = c;
+          E = c;
         } else {
           R.push(w);
           continue;
         }
     }
-    return R.length && (T === c ? x.zone = R.join("") : O ? B.push(R.join("")) : B.push(s(R))), x.address = B.join(""), x;
+    return R.length && (E === c ? x.zone = R.join("") : O ? B.push(R.join("")) : B.push(s(R))), x.address = B.join(""), x;
   }
   function o(v) {
     if (f(v, ":") < 2)
@@ -8939,7 +9003,7 @@ function ni() {
     }
     return C;
   }
-  function E(v) {
+  function T(v) {
     const C = [];
     if (v.userinfo !== void 0 && (C.push(v.userinfo), C.push("@")), v.host !== void 0) {
       let x = unescape(v.host);
@@ -8953,7 +9017,7 @@ function ni() {
   }
   return ga = {
     nonSimpleDomain: l,
-    recomposeAuthority: E,
+    recomposeAuthority: T,
     reescapeHostDelimiters: y,
     normalizePercentEncoding: p,
     normalizePathEncoding: h,
@@ -8965,11 +9029,11 @@ function ni() {
     stringArrayToHexStripped: s
   }, ga;
 }
-var ya, Nn;
-function Ml() {
-  if (Nn) return ya;
-  Nn = 1;
-  const { isUUID: e } = ni(), r = /([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-.:;=@]|%[\da-f]{2})+)/iu, t = (
+var ya, In;
+function $l() {
+  if (In) return ya;
+  In = 1;
+  const { isUUID: e } = ai(), r = /([\da-z][\d\-a-z]{0,31}):((?:[\w!$'()*+,\-.:;=@]|%[\da-f]{2})+)/iu, t = (
     /** @type {const} */
     [
       "http",
@@ -9013,7 +9077,7 @@ function Ml() {
     if (x) {
       const B = C.scheme || v.scheme || "urn";
       v.nid = x[1].toLowerCase(), v.nss = x[2];
-      const R = `${B}:${C.nid || v.nid}`, I = E(R);
+      const R = `${B}:${C.nid || v.nid}`, I = T(R);
       v.path = void 0, I && (v = I.parse(v, C));
     } else
       v.error = v.error || "URN can not be parsed.";
@@ -9022,10 +9086,10 @@ function Ml() {
   function o(v, C) {
     if (v.nid === void 0)
       throw new Error("URN without nid cannot be serialized");
-    const x = C.scheme || v.scheme || "urn", B = v.nid.toLowerCase(), R = `${x}:${C.nid || B}`, I = E(R);
+    const x = C.scheme || v.scheme || "urn", B = v.nid.toLowerCase(), R = `${x}:${C.nid || B}`, I = T(R);
     I && (v = I.serialize(v, C));
-    const O = v, T = v.nss;
-    return O.path = `${B || C.nid}:${T}`, C.skipEscape = !0, O;
+    const O = v, E = v.nss;
+    return O.path = `${B || C.nid}:${E}`, C.skipEscape = !0, O;
   }
   function f(v, C) {
     const x = v;
@@ -9095,7 +9159,7 @@ function Ml() {
     }
   );
   Object.setPrototypeOf(_, null);
-  function E(v) {
+  function T(v) {
     return v && (_[
       /** @type {SchemeName} */
       v
@@ -9108,30 +9172,30 @@ function Ml() {
     wsIsSecure: n,
     SCHEMES: _,
     isValidSchemeName: i,
-    getSchemeHandler: E
+    getSchemeHandler: T
   }, ya;
 }
-var Sn;
-function Ol() {
-  if (Sn) return Nt.exports;
-  Sn = 1;
-  const { normalizeIPv6: e, removeDotSegments: r, recomposeAuthority: t, normalizePercentEncoding: i, normalizePathEncoding: n, escapePreservingEscapes: s, reescapeHostDelimiters: l, isIPv4: c, nonSimpleDomain: A } = ni(), { SCHEMES: a, getSchemeHandler: o } = Ml();
+var kn;
+function zl() {
+  if (kn) return St.exports;
+  kn = 1;
+  const { normalizeIPv6: e, removeDotSegments: r, recomposeAuthority: t, normalizePercentEncoding: i, normalizePathEncoding: n, escapePreservingEscapes: s, reescapeHostDelimiters: l, isIPv4: c, nonSimpleDomain: A } = ai(), { SCHEMES: a, getSchemeHandler: o } = $l();
   function f(R, I) {
     return typeof R == "string" ? R = /** @type {T} */
     v(R, I) : typeof R == "object" && (R = /** @type {T} */
-    E(u(R, I), I)), R;
+    T(u(R, I), I)), R;
   }
   function g(R, I, O) {
-    const T = O ? Object.assign({ scheme: "null" }, O) : { scheme: "null" }, M = d(E(R, T), E(I, T), T, !0);
-    return T.skipEscape = !0, u(M, T);
+    const E = O ? Object.assign({ scheme: "null" }, O) : { scheme: "null" }, M = d(T(R, E), T(I, E), E, !0);
+    return E.skipEscape = !0, u(M, E);
   }
-  function d(R, I, O, T) {
+  function d(R, I, O, E) {
     const M = {};
-    return T || (R = E(u(R, O), O), I = E(u(I, O), O)), O = O || {}, !O.tolerant && I.scheme ? (M.scheme = I.scheme, M.userinfo = I.userinfo, M.host = I.host, M.port = I.port, M.path = r(I.path || ""), M.query = I.query) : (I.userinfo !== void 0 || I.host !== void 0 || I.port !== void 0 ? (M.userinfo = I.userinfo, M.host = I.host, M.port = I.port, M.path = r(I.path || ""), M.query = I.query) : (I.path ? (I.path[0] === "/" ? M.path = r(I.path) : ((R.userinfo !== void 0 || R.host !== void 0 || R.port !== void 0) && !R.path ? M.path = "/" + I.path : R.path ? M.path = R.path.slice(0, R.path.lastIndexOf("/") + 1) + I.path : M.path = I.path, M.path = r(M.path)), M.query = I.query) : (M.path = R.path, I.query !== void 0 ? M.query = I.query : M.query = R.query), M.userinfo = R.userinfo, M.host = R.host, M.port = R.port), M.scheme = R.scheme), M.fragment = I.fragment, M;
+    return E || (R = T(u(R, O), O), I = T(u(I, O), O)), O = O || {}, !O.tolerant && I.scheme ? (M.scheme = I.scheme, M.userinfo = I.userinfo, M.host = I.host, M.port = I.port, M.path = r(I.path || ""), M.query = I.query) : (I.userinfo !== void 0 || I.host !== void 0 || I.port !== void 0 ? (M.userinfo = I.userinfo, M.host = I.host, M.port = I.port, M.path = r(I.path || ""), M.query = I.query) : (I.path ? (I.path[0] === "/" ? M.path = r(I.path) : ((R.userinfo !== void 0 || R.host !== void 0 || R.port !== void 0) && !R.path ? M.path = "/" + I.path : R.path ? M.path = R.path.slice(0, R.path.lastIndexOf("/") + 1) + I.path : M.path = I.path, M.path = r(M.path)), M.query = I.query) : (M.path = R.path, I.query !== void 0 ? M.query = I.query : M.query = R.query), M.userinfo = R.userinfo, M.host = R.host, M.port = R.port), M.scheme = R.scheme), M.fragment = I.fragment, M;
   }
   function m(R, I, O) {
-    const T = x(R, O), M = x(I, O);
-    return T !== void 0 && M !== void 0 && T.toLowerCase() === M.toLowerCase();
+    const E = x(R, O), M = x(I, O);
+    return E !== void 0 && M !== void 0 && E.toLowerCase() === M.toLowerCase();
   }
   function u(R, I) {
     const O = {
@@ -9149,12 +9213,12 @@ function Ol() {
       resourceName: R.resourceName,
       secure: R.secure,
       error: ""
-    }, T = Object.assign({}, I), M = [], w = o(T.scheme || O.scheme);
-    w && w.serialize && w.serialize(O, T), O.path !== void 0 && (T.skipEscape ? O.path = i(O.path) : (O.path = s(O.path), O.scheme !== void 0 && (O.path = O.path.split("%3A").join(":")))), T.reference !== "suffix" && O.scheme && M.push(O.scheme, ":");
+    }, E = Object.assign({}, I), M = [], w = o(E.scheme || O.scheme);
+    w && w.serialize && w.serialize(O, E), O.path !== void 0 && (E.skipEscape ? O.path = i(O.path) : (O.path = s(O.path), O.scheme !== void 0 && (O.path = O.path.split("%3A").join(":")))), E.reference !== "suffix" && O.scheme && M.push(O.scheme, ":");
     const G = t(O);
-    if (G !== void 0 && (T.reference !== "suffix" && M.push("//"), M.push(G), O.path && O.path[0] !== "/" && M.push("/")), O.path !== void 0) {
+    if (G !== void 0 && (E.reference !== "suffix" && M.push("//"), M.push(G), O.path && O.path[0] !== "/" && M.push("/")), O.path !== void 0) {
       let ee = O.path;
-      !T.absolutePath && (!w || !w.absolutePath) && (ee = r(ee)), G === void 0 && ee[0] === "/" && ee[1] === "/" && (ee = "/%2F" + ee.slice(2)), M.push(ee);
+      !E.absolutePath && (!w || !w.absolutePath) && (ee = r(ee)), G === void 0 && ee[0] === "/" && ee[1] === "/" && (ee = "/%2F" + ee.slice(2)), M.push(ee);
     }
     return O.query !== void 0 && M.push("?", O.query), O.fragment !== void 0 && M.push("#", O.fragment), M.join("");
   }
@@ -9166,7 +9230,7 @@ function Ol() {
       return "URI port is malformed.";
   }
   function _(R, I) {
-    const O = Object.assign({}, I), T = {
+    const O = Object.assign({}, I), E = {
       scheme: void 0,
       userinfo: void 0,
       host: "",
@@ -9178,53 +9242,53 @@ function Ol() {
     let M = !1, w = !1;
     O.reference === "suffix" && (O.scheme ? R = O.scheme + ":" + R : R = "//" + R);
     const G = R.match(p);
-    G !== null && G[1].indexOf("\\") !== -1 && (T.error = "URI authority must not contain a literal backslash.", M = !0);
+    G !== null && G[1].indexOf("\\") !== -1 && (E.error = "URI authority must not contain a literal backslash.", M = !0);
     const ee = R.match(y);
     if (ee) {
-      T.scheme = ee[1], T.userinfo = ee[3], T.host = ee[4], T.port = parseInt(ee[5], 10), T.path = ee[6] || "", T.query = ee[7], T.fragment = ee[8], isNaN(T.port) && (T.port = ee[5]);
-      const K = h(T, ee);
-      if (K !== void 0 && (T.error = T.error || K, M = !0), T.host)
-        if (c(T.host) === !1) {
-          const Q = e(T.host);
-          T.host = Q.host.toLowerCase(), w = Q.isIPV6;
+      E.scheme = ee[1], E.userinfo = ee[3], E.host = ee[4], E.port = parseInt(ee[5], 10), E.path = ee[6] || "", E.query = ee[7], E.fragment = ee[8], isNaN(E.port) && (E.port = ee[5]);
+      const Y = h(E, ee);
+      if (Y !== void 0 && (E.error = E.error || Y, M = !0), E.host)
+        if (c(E.host) === !1) {
+          const Q = e(E.host);
+          E.host = Q.host.toLowerCase(), w = Q.isIPV6;
         } else
           w = !0;
-      T.scheme === void 0 && T.userinfo === void 0 && T.host === void 0 && T.port === void 0 && T.query === void 0 && !T.path ? T.reference = "same-document" : T.scheme === void 0 ? T.reference = "relative" : T.fragment === void 0 ? T.reference = "absolute" : T.reference = "uri", O.reference && O.reference !== "suffix" && O.reference !== T.reference && (T.error = T.error || "URI is not a " + O.reference + " reference.");
-      const ne = o(O.scheme || T.scheme);
-      if (!O.unicodeSupport && (!ne || !ne.unicodeSupport) && T.host && (O.domainHost || ne && ne.domainHost) && w === !1 && A(T.host))
+      E.scheme === void 0 && E.userinfo === void 0 && E.host === void 0 && E.port === void 0 && E.query === void 0 && !E.path ? E.reference = "same-document" : E.scheme === void 0 ? E.reference = "relative" : E.fragment === void 0 ? E.reference = "absolute" : E.reference = "uri", O.reference && O.reference !== "suffix" && O.reference !== E.reference && (E.error = E.error || "URI is not a " + O.reference + " reference.");
+      const ne = o(O.scheme || E.scheme);
+      if (!O.unicodeSupport && (!ne || !ne.unicodeSupport) && E.host && (O.domainHost || ne && ne.domainHost) && w === !1 && A(E.host))
         try {
-          T.host = new URL("http://" + T.host).hostname;
+          E.host = new URL("http://" + E.host).hostname;
         } catch (Z) {
-          T.error = T.error || "Host's domain name can not be converted to ASCII: " + Z;
+          E.error = E.error || "Host's domain name can not be converted to ASCII: " + Z;
         }
-      if ((!ne || ne && !ne.skipNormalize) && (R.indexOf("%") !== -1 && (T.scheme !== void 0 && (T.scheme = unescape(T.scheme)), T.host !== void 0 && (T.host = l(unescape(T.host), w))), T.path && (T.path = n(T.path)), T.fragment))
+      if ((!ne || ne && !ne.skipNormalize) && (R.indexOf("%") !== -1 && (E.scheme !== void 0 && (E.scheme = unescape(E.scheme)), E.host !== void 0 && (E.host = l(unescape(E.host), w))), E.path && (E.path = n(E.path)), E.fragment))
         try {
-          T.fragment = encodeURI(decodeURIComponent(T.fragment));
+          E.fragment = encodeURI(decodeURIComponent(E.fragment));
         } catch {
-          T.error = T.error || "URI malformed";
+          E.error = E.error || "URI malformed";
         }
-      ne && ne.parse && ne.parse(T, O);
+      ne && ne.parse && ne.parse(E, O);
     } else
-      T.error = T.error || "URI can not be parsed.";
-    return { parsed: T, malformedAuthorityOrPort: M };
+      E.error = E.error || "URI can not be parsed.";
+    return { parsed: E, malformedAuthorityOrPort: M };
   }
-  function E(R, I) {
+  function T(R, I) {
     return _(R, I).parsed;
   }
   function v(R, I) {
     return C(R, I).normalized;
   }
   function C(R, I) {
-    const { parsed: O, malformedAuthorityOrPort: T } = _(R, I);
+    const { parsed: O, malformedAuthorityOrPort: E } = _(R, I);
     return {
-      normalized: T ? R : u(O, I),
-      malformedAuthorityOrPort: T
+      normalized: E ? R : u(O, I),
+      malformedAuthorityOrPort: E
     };
   }
   function x(R, I) {
     if (typeof R == "string") {
-      const { normalized: O, malformedAuthorityOrPort: T } = C(R, I);
-      return T ? void 0 : O;
+      const { normalized: O, malformedAuthorityOrPort: E } = C(R, I);
+      return E ? void 0 : O;
     }
     if (typeof R == "object")
       return u(R, I);
@@ -9236,22 +9300,22 @@ function Ol() {
     resolveComponent: d,
     equal: m,
     serialize: u,
-    parse: E
+    parse: T
   };
-  return Nt.exports = B, Nt.exports.default = B, Nt.exports.fastUri = B, Nt.exports;
+  return St.exports = B, St.exports.default = B, St.exports.fastUri = B, St.exports;
 }
-var In;
-function $l() {
-  if (In) return tr;
-  In = 1, Object.defineProperty(tr, "__esModule", { value: !0 });
-  const e = Ol();
-  return e.code = 'require("ajv/dist/runtime/uri").default', tr.default = e, tr;
+var Fn;
+function Ul() {
+  if (Fn) return rr;
+  Fn = 1, Object.defineProperty(rr, "__esModule", { value: !0 });
+  const e = zl();
+  return e.code = 'require("ajv/dist/runtime/uri").default', rr.default = e, rr;
 }
-var kn;
-function zl() {
-  return kn || (kn = 1, (function(e) {
+var Mn;
+function Gl() {
+  return Mn || (Mn = 1, (function(e) {
     Object.defineProperty(e, "__esModule", { value: !0 }), e.CodeGen = e.Name = e.nil = e.stringify = e.str = e._ = e.KeywordCxt = void 0;
-    var r = /* @__PURE__ */ Yr();
+    var r = /* @__PURE__ */ Jr();
     Object.defineProperty(e, "KeywordCxt", { enumerable: !0, get: function() {
       return r.KeywordCxt;
     } });
@@ -9269,7 +9333,7 @@ function zl() {
     } }), Object.defineProperty(e, "CodeGen", { enumerable: !0, get: function() {
       return t.CodeGen;
     } });
-    const i = /* @__PURE__ */ Xa(), n = /* @__PURE__ */ Jr(), s = /* @__PURE__ */ ti(), l = /* @__PURE__ */ Wa(), c = /* @__PURE__ */ ge(), A = /* @__PURE__ */ Kr(), a = /* @__PURE__ */ Hr(), o = /* @__PURE__ */ we(), f = Fl, g = /* @__PURE__ */ $l(), d = (Q, D) => new RegExp(Q, D);
+    const i = /* @__PURE__ */ qa(), n = /* @__PURE__ */ Zr(), s = /* @__PURE__ */ ei(), l = /* @__PURE__ */ Ha(), c = /* @__PURE__ */ ge(), A = /* @__PURE__ */ Kr(), a = /* @__PURE__ */ Vr(), o = /* @__PURE__ */ we(), f = Ol, g = /* @__PURE__ */ Ul(), d = (Q, P) => new RegExp(Q, P);
     d.code = "new RegExp";
     const m = ["removeAdditional", "useDefaults", "coerceTypes"], u = /* @__PURE__ */ new Set([
       "validate",
@@ -9307,8 +9371,8 @@ function zl() {
       unicode: '"minLength"/"maxLength" account for unicode characters by default.'
     }, h = 200;
     function _(Q) {
-      var D, F, $, L, N, H, ie, ae, le, Ae, z, q, j, b, X, W, k, S, U, Y, J, V, te, se, oe;
-      const ce = Q.strict, xe = (D = Q.code) === null || D === void 0 ? void 0 : D.optimize, ye = xe === !0 || xe === void 0 ? 1 : xe || 0, Ie = ($ = (F = Q.code) === null || F === void 0 ? void 0 : F.regExp) !== null && $ !== void 0 ? $ : d, ot = (L = Q.uriResolver) !== null && L !== void 0 ? L : g.default;
+      var P, F, $, L, N, H, ie, ae, le, Ae, z, q, j, b, X, W, k, S, U, K, J, V, te, se, oe;
+      const ce = Q.strict, xe = (P = Q.code) === null || P === void 0 ? void 0 : P.optimize, ye = xe === !0 || xe === void 0 ? 1 : xe || 0, Ie = ($ = (F = Q.code) === null || F === void 0 ? void 0 : F.regExp) !== null && $ !== void 0 ? $ : d, it = (L = Q.uriResolver) !== null && L !== void 0 ? L : g.default;
       return {
         strictSchema: (H = (N = Q.strictSchema) !== null && N !== void 0 ? N : ce) !== null && H !== void 0 ? H : !0,
         strictNumbers: (ae = (ie = Q.strictNumbers) !== null && ie !== void 0 ? ie : ce) !== null && ae !== void 0 ? ae : !0,
@@ -9321,54 +9385,54 @@ function zl() {
         meta: (k = Q.meta) !== null && k !== void 0 ? k : !0,
         messages: (S = Q.messages) !== null && S !== void 0 ? S : !0,
         inlineRefs: (U = Q.inlineRefs) !== null && U !== void 0 ? U : !0,
-        schemaId: (Y = Q.schemaId) !== null && Y !== void 0 ? Y : "$id",
+        schemaId: (K = Q.schemaId) !== null && K !== void 0 ? K : "$id",
         addUsedSchema: (J = Q.addUsedSchema) !== null && J !== void 0 ? J : !0,
         validateSchema: (V = Q.validateSchema) !== null && V !== void 0 ? V : !0,
         validateFormats: (te = Q.validateFormats) !== null && te !== void 0 ? te : !0,
         unicodeRegExp: (se = Q.unicodeRegExp) !== null && se !== void 0 ? se : !0,
         int32range: (oe = Q.int32range) !== null && oe !== void 0 ? oe : !0,
-        uriResolver: ot
+        uriResolver: it
       };
     }
-    class E {
-      constructor(D = {}) {
-        this.schemas = {}, this.refs = {}, this.formats = /* @__PURE__ */ Object.create(null), this._compilations = /* @__PURE__ */ new Set(), this._loading = {}, this._cache = /* @__PURE__ */ new Map(), D = this.opts = { ...D, ..._(D) };
+    class T {
+      constructor(P = {}) {
+        this.schemas = {}, this.refs = {}, this.formats = /* @__PURE__ */ Object.create(null), this._compilations = /* @__PURE__ */ new Set(), this._loading = {}, this._cache = /* @__PURE__ */ new Map(), P = this.opts = { ...P, ..._(P) };
         const { es5: F, lines: $ } = this.opts.code;
-        this.scope = new c.ValueScope({ scope: {}, prefixes: u, es5: F, lines: $ }), this.logger = T(D.logger);
-        const L = D.validateFormats;
-        D.validateFormats = !1, this.RULES = (0, s.getRules)(), v.call(this, y, D, "NOT SUPPORTED"), v.call(this, p, D, "DEPRECATED", "warn"), this._metaOpts = I.call(this), D.formats && B.call(this), this._addVocabularies(), this._addDefaultMetaSchema(), D.keywords && R.call(this, D.keywords), typeof D.meta == "object" && this.addMetaSchema(D.meta), x.call(this), D.validateFormats = L;
+        this.scope = new c.ValueScope({ scope: {}, prefixes: u, es5: F, lines: $ }), this.logger = E(P.logger);
+        const L = P.validateFormats;
+        P.validateFormats = !1, this.RULES = (0, s.getRules)(), v.call(this, y, P, "NOT SUPPORTED"), v.call(this, p, P, "DEPRECATED", "warn"), this._metaOpts = I.call(this), P.formats && B.call(this), this._addVocabularies(), this._addDefaultMetaSchema(), P.keywords && R.call(this, P.keywords), typeof P.meta == "object" && this.addMetaSchema(P.meta), x.call(this), P.validateFormats = L;
       }
       _addVocabularies() {
         this.addKeyword("$async");
       }
       _addDefaultMetaSchema() {
-        const { $data: D, meta: F, schemaId: $ } = this.opts;
+        const { $data: P, meta: F, schemaId: $ } = this.opts;
         let L = f;
-        $ === "id" && (L = { ...f }, L.id = L.$id, delete L.$id), F && D && this.addMetaSchema(L, L[$], !1);
+        $ === "id" && (L = { ...f }, L.id = L.$id, delete L.$id), F && P && this.addMetaSchema(L, L[$], !1);
       }
       defaultMeta() {
-        const { meta: D, schemaId: F } = this.opts;
-        return this.opts.defaultMeta = typeof D == "object" ? D[F] || D : void 0;
+        const { meta: P, schemaId: F } = this.opts;
+        return this.opts.defaultMeta = typeof P == "object" ? P[F] || P : void 0;
       }
-      validate(D, F) {
+      validate(P, F) {
         let $;
-        if (typeof D == "string") {
-          if ($ = this.getSchema(D), !$)
-            throw new Error(`no schema with key or ref "${D}"`);
+        if (typeof P == "string") {
+          if ($ = this.getSchema(P), !$)
+            throw new Error(`no schema with key or ref "${P}"`);
         } else
-          $ = this.compile(D);
+          $ = this.compile(P);
         const L = $(F);
         return "$async" in $ || (this.errors = $.errors), L;
       }
-      compile(D, F) {
-        const $ = this._addSchema(D, F);
+      compile(P, F) {
+        const $ = this._addSchema(P, F);
         return $.validate || this._compileSchemaEnv($);
       }
-      compileAsync(D, F) {
+      compileAsync(P, F) {
         if (typeof this.opts.loadSchema != "function")
           throw new Error("options.loadSchema should be a function");
         const { loadSchema: $ } = this.opts;
-        return L.call(this, D, F);
+        return L.call(this, P, F);
         async function L(Ae, z) {
           await N.call(this, Ae.$schema);
           const q = this._addSchema(Ae, z);
@@ -9406,35 +9470,35 @@ function zl() {
         }
       }
       // Adds schema to the instance
-      addSchema(D, F, $, L = this.opts.validateSchema) {
-        if (Array.isArray(D)) {
-          for (const H of D)
+      addSchema(P, F, $, L = this.opts.validateSchema) {
+        if (Array.isArray(P)) {
+          for (const H of P)
             this.addSchema(H, void 0, $, L);
           return this;
         }
         let N;
-        if (typeof D == "object") {
+        if (typeof P == "object") {
           const { schemaId: H } = this.opts;
-          if (N = D[H], N !== void 0 && typeof N != "string")
+          if (N = P[H], N !== void 0 && typeof N != "string")
             throw new Error(`schema ${H} must be string`);
         }
-        return F = (0, A.normalizeId)(F || N), this._checkUnique(F), this.schemas[F] = this._addSchema(D, $, F, L, !0), this;
+        return F = (0, A.normalizeId)(F || N), this._checkUnique(F), this.schemas[F] = this._addSchema(P, $, F, L, !0), this;
       }
       // Add schema that will be used to validate other schemas
       // options in META_IGNORE_OPTIONS are alway set to false
-      addMetaSchema(D, F, $ = this.opts.validateSchema) {
-        return this.addSchema(D, F, !0, $), this;
+      addMetaSchema(P, F, $ = this.opts.validateSchema) {
+        return this.addSchema(P, F, !0, $), this;
       }
       //  Validate schema against its meta-schema
-      validateSchema(D, F) {
-        if (typeof D == "boolean")
+      validateSchema(P, F) {
+        if (typeof P == "boolean")
           return !0;
         let $;
-        if ($ = D.$schema, $ !== void 0 && typeof $ != "string")
+        if ($ = P.$schema, $ !== void 0 && typeof $ != "string")
           throw new Error("$schema must be a string");
         if ($ = $ || this.opts.defaultMeta || this.defaultMeta(), !$)
           return this.logger.warn("meta-schema not available"), this.errors = null, !0;
-        const L = this.validate($, D);
+        const L = this.validate($, P);
         if (!L && F) {
           const N = "schema is invalid: " + this.errorsText();
           if (this.opts.validateSchema === "log")
@@ -9446,15 +9510,15 @@ function zl() {
       }
       // Get compiled schema by `key` or `ref`.
       // (`key` that was passed to `addSchema` or full schema reference - `schema.$id` or resolved id)
-      getSchema(D) {
+      getSchema(P) {
         let F;
-        for (; typeof (F = C.call(this, D)) == "string"; )
-          D = F;
+        for (; typeof (F = C.call(this, P)) == "string"; )
+          P = F;
         if (F === void 0) {
           const { schemaId: $ } = this.opts, L = new l.SchemaEnv({ schema: {}, schemaId: $ });
-          if (F = l.resolveSchema.call(this, L, D), !F)
+          if (F = l.resolveSchema.call(this, L, P), !F)
             return;
-          this.refs[D] = F;
+          this.refs[P] = F;
         }
         return F.validate || this._compileSchemaEnv(F);
       }
@@ -9462,20 +9526,20 @@ function zl() {
       // If no parameter is passed all schemas but meta-schemas are removed.
       // If RegExp is passed all schemas with key/id matching pattern but meta-schemas are removed.
       // Even if schema is referenced by other schemas it still can be removed as other schemas have local references.
-      removeSchema(D) {
-        if (D instanceof RegExp)
-          return this._removeAllSchemas(this.schemas, D), this._removeAllSchemas(this.refs, D), this;
-        switch (typeof D) {
+      removeSchema(P) {
+        if (P instanceof RegExp)
+          return this._removeAllSchemas(this.schemas, P), this._removeAllSchemas(this.refs, P), this;
+        switch (typeof P) {
           case "undefined":
             return this._removeAllSchemas(this.schemas), this._removeAllSchemas(this.refs), this._cache.clear(), this;
           case "string": {
-            const F = C.call(this, D);
-            return typeof F == "object" && this._cache.delete(F.schema), delete this.schemas[D], delete this.refs[D], this;
+            const F = C.call(this, P);
+            return typeof F == "object" && this._cache.delete(F.schema), delete this.schemas[P], delete this.refs[P], this;
           }
           case "object": {
-            const F = D;
+            const F = P;
             this._cache.delete(F);
-            let $ = D[this.opts.schemaId];
+            let $ = P[this.opts.schemaId];
             return $ && ($ = (0, A.normalizeId)($), delete this.schemas[$], delete this.refs[$]), this;
           }
           default:
@@ -9483,23 +9547,23 @@ function zl() {
         }
       }
       // add "vocabulary" - a collection of keywords
-      addVocabulary(D) {
-        for (const F of D)
+      addVocabulary(P) {
+        for (const F of P)
           this.addKeyword(F);
         return this;
       }
-      addKeyword(D, F) {
+      addKeyword(P, F) {
         let $;
-        if (typeof D == "string")
-          $ = D, typeof F == "object" && (this.logger.warn("these parameters are deprecated, see docs for addKeyword"), F.keyword = $);
-        else if (typeof D == "object" && F === void 0) {
-          if (F = D, $ = F.keyword, Array.isArray($) && !$.length)
+        if (typeof P == "string")
+          $ = P, typeof F == "object" && (this.logger.warn("these parameters are deprecated, see docs for addKeyword"), F.keyword = $);
+        else if (typeof P == "object" && F === void 0) {
+          if (F = P, $ = F.keyword, Array.isArray($) && !$.length)
             throw new Error("addKeywords: keyword must be string or non-empty array");
         } else
           throw new Error("invalid addKeywords parameters");
         if (w.call(this, $, F), !F)
           return (0, o.eachItem)($, (N) => G.call(this, N)), this;
-        K.call(this, F);
+        Y.call(this, F);
         const L = {
           ...F,
           type: (0, a.getJSONTypes)(F.type),
@@ -9507,33 +9571,33 @@ function zl() {
         };
         return (0, o.eachItem)($, L.type.length === 0 ? (N) => G.call(this, N, L) : (N) => L.type.forEach((H) => G.call(this, N, L, H))), this;
       }
-      getKeyword(D) {
-        const F = this.RULES.all[D];
+      getKeyword(P) {
+        const F = this.RULES.all[P];
         return typeof F == "object" ? F.definition : !!F;
       }
       // Remove keyword
-      removeKeyword(D) {
+      removeKeyword(P) {
         const { RULES: F } = this;
-        delete F.keywords[D], delete F.all[D];
+        delete F.keywords[P], delete F.all[P];
         for (const $ of F.rules) {
-          const L = $.rules.findIndex((N) => N.keyword === D);
+          const L = $.rules.findIndex((N) => N.keyword === P);
           L >= 0 && $.rules.splice(L, 1);
         }
         return this;
       }
       // Add format
-      addFormat(D, F) {
-        return typeof F == "string" && (F = new RegExp(F)), this.formats[D] = F, this;
+      addFormat(P, F) {
+        return typeof F == "string" && (F = new RegExp(F)), this.formats[P] = F, this;
       }
-      errorsText(D = this.errors, { separator: F = ", ", dataVar: $ = "data" } = {}) {
-        return !D || D.length === 0 ? "No errors" : D.map((L) => `${$}${L.instancePath} ${L.message}`).reduce((L, N) => L + F + N);
+      errorsText(P = this.errors, { separator: F = ", ", dataVar: $ = "data" } = {}) {
+        return !P || P.length === 0 ? "No errors" : P.map((L) => `${$}${L.instancePath} ${L.message}`).reduce((L, N) => L + F + N);
       }
-      $dataMetaSchema(D, F) {
+      $dataMetaSchema(P, F) {
         const $ = this.RULES.all;
-        D = JSON.parse(JSON.stringify(D));
+        P = JSON.parse(JSON.stringify(P));
         for (const L of F) {
           const N = L.split("/").slice(1);
-          let H = D;
+          let H = P;
           for (const ie of N)
             H = H[ie];
           for (const ie in $) {
@@ -9544,56 +9608,56 @@ function zl() {
             le && Ae && (H[ie] = Z(Ae));
           }
         }
-        return D;
+        return P;
       }
-      _removeAllSchemas(D, F) {
-        for (const $ in D) {
-          const L = D[$];
-          (!F || F.test($)) && (typeof L == "string" ? delete D[$] : L && !L.meta && (this._cache.delete(L.schema), delete D[$]));
+      _removeAllSchemas(P, F) {
+        for (const $ in P) {
+          const L = P[$];
+          (!F || F.test($)) && (typeof L == "string" ? delete P[$] : L && !L.meta && (this._cache.delete(L.schema), delete P[$]));
         }
       }
-      _addSchema(D, F, $, L = this.opts.validateSchema, N = this.opts.addUsedSchema) {
+      _addSchema(P, F, $, L = this.opts.validateSchema, N = this.opts.addUsedSchema) {
         let H;
         const { schemaId: ie } = this.opts;
-        if (typeof D == "object")
-          H = D[ie];
+        if (typeof P == "object")
+          H = P[ie];
         else {
           if (this.opts.jtd)
             throw new Error("schema must be object");
-          if (typeof D != "boolean")
+          if (typeof P != "boolean")
             throw new Error("schema must be object or boolean");
         }
-        let ae = this._cache.get(D);
+        let ae = this._cache.get(P);
         if (ae !== void 0)
           return ae;
         $ = (0, A.normalizeId)(H || $);
-        const le = A.getSchemaRefs.call(this, D, $);
-        return ae = new l.SchemaEnv({ schema: D, schemaId: ie, meta: F, baseId: $, localRefs: le }), this._cache.set(ae.schema, ae), N && !$.startsWith("#") && ($ && this._checkUnique($), this.refs[$] = ae), L && this.validateSchema(D, !0), ae;
+        const le = A.getSchemaRefs.call(this, P, $);
+        return ae = new l.SchemaEnv({ schema: P, schemaId: ie, meta: F, baseId: $, localRefs: le }), this._cache.set(ae.schema, ae), N && !$.startsWith("#") && ($ && this._checkUnique($), this.refs[$] = ae), L && this.validateSchema(P, !0), ae;
       }
-      _checkUnique(D) {
-        if (this.schemas[D] || this.refs[D])
-          throw new Error(`schema with key or id "${D}" already exists`);
+      _checkUnique(P) {
+        if (this.schemas[P] || this.refs[P])
+          throw new Error(`schema with key or id "${P}" already exists`);
       }
-      _compileSchemaEnv(D) {
-        if (D.meta ? this._compileMetaSchema(D) : l.compileSchema.call(this, D), !D.validate)
+      _compileSchemaEnv(P) {
+        if (P.meta ? this._compileMetaSchema(P) : l.compileSchema.call(this, P), !P.validate)
           throw new Error("ajv implementation error");
-        return D.validate;
+        return P.validate;
       }
-      _compileMetaSchema(D) {
+      _compileMetaSchema(P) {
         const F = this.opts;
         this.opts = this._metaOpts;
         try {
-          l.compileSchema.call(this, D);
+          l.compileSchema.call(this, P);
         } finally {
           this.opts = F;
         }
       }
     }
-    E.ValidationError = i.default, E.MissingRefError = n.default, e.default = E;
-    function v(Q, D, F, $ = "error") {
+    T.ValidationError = i.default, T.MissingRefError = n.default, e.default = T;
+    function v(Q, P, F, $ = "error") {
       for (const L in Q) {
         const N = L;
-        N in D && this.logger[$](`${F}: option ${L}. ${Q[N]}`);
+        N in P && this.logger[$](`${F}: option ${L}. ${Q[N]}`);
       }
     }
     function C(Q) {
@@ -9605,13 +9669,13 @@ function zl() {
         if (Array.isArray(Q))
           this.addSchema(Q);
         else
-          for (const D in Q)
-            this.addSchema(Q[D], D);
+          for (const P in Q)
+            this.addSchema(Q[P], P);
     }
     function B() {
       for (const Q in this.opts.formats) {
-        const D = this.opts.formats[Q];
-        D && this.addFormat(Q, D);
+        const P = this.opts.formats[Q];
+        P && this.addFormat(Q, P);
       }
     }
     function R(Q) {
@@ -9620,22 +9684,22 @@ function zl() {
         return;
       }
       this.logger.warn("keywords option as map is deprecated, pass array");
-      for (const D in Q) {
-        const F = Q[D];
-        F.keyword || (F.keyword = D), this.addKeyword(F);
+      for (const P in Q) {
+        const F = Q[P];
+        F.keyword || (F.keyword = P), this.addKeyword(F);
       }
     }
     function I() {
       const Q = { ...this.opts };
-      for (const D of m)
-        delete Q[D];
+      for (const P of m)
+        delete Q[P];
       return Q;
     }
     const O = { log() {
     }, warn() {
     }, error() {
     } };
-    function T(Q) {
+    function E(Q) {
       if (Q === !1)
         return O;
       if (Q === void 0)
@@ -9645,42 +9709,42 @@ function zl() {
       throw new Error("logger must implement log, warn and error methods");
     }
     const M = /^[a-z_$][a-z0-9_$:-]*$/i;
-    function w(Q, D) {
+    function w(Q, P) {
       const { RULES: F } = this;
       if ((0, o.eachItem)(Q, ($) => {
         if (F.keywords[$])
           throw new Error(`Keyword ${$} is already defined`);
         if (!M.test($))
           throw new Error(`Keyword ${$} has invalid name`);
-      }), !!D && D.$data && !("code" in D || "validate" in D))
+      }), !!P && P.$data && !("code" in P || "validate" in P))
         throw new Error('$data keyword must have "code" or "validate" function');
     }
-    function G(Q, D, F) {
+    function G(Q, P, F) {
       var $;
-      const L = D?.post;
+      const L = P?.post;
       if (F && L)
         throw new Error('keyword with "post" flag cannot have "type"');
       const { RULES: N } = this;
       let H = L ? N.post : N.rules.find(({ type: ae }) => ae === F);
-      if (H || (H = { type: F, rules: [] }, N.rules.push(H)), N.keywords[Q] = !0, !D)
+      if (H || (H = { type: F, rules: [] }, N.rules.push(H)), N.keywords[Q] = !0, !P)
         return;
       const ie = {
         keyword: Q,
         definition: {
-          ...D,
-          type: (0, a.getJSONTypes)(D.type),
-          schemaType: (0, a.getJSONTypes)(D.schemaType)
+          ...P,
+          type: (0, a.getJSONTypes)(P.type),
+          schemaType: (0, a.getJSONTypes)(P.schemaType)
         }
       };
-      D.before ? ee.call(this, H, ie, D.before) : H.rules.push(ie), N.all[Q] = ie, ($ = D.implements) === null || $ === void 0 || $.forEach((ae) => this.addKeyword(ae));
+      P.before ? ee.call(this, H, ie, P.before) : H.rules.push(ie), N.all[Q] = ie, ($ = P.implements) === null || $ === void 0 || $.forEach((ae) => this.addKeyword(ae));
     }
-    function ee(Q, D, F) {
+    function ee(Q, P, F) {
       const $ = Q.rules.findIndex((L) => L.keyword === F);
-      $ >= 0 ? Q.rules.splice($, 0, D) : (Q.rules.push(D), this.logger.warn(`rule ${F} is not defined`));
+      $ >= 0 ? Q.rules.splice($, 0, P) : (Q.rules.push(P), this.logger.warn(`rule ${F} is not defined`));
     }
-    function K(Q) {
-      let { metaSchema: D } = Q;
-      D !== void 0 && (Q.$data && this.opts.$data && (D = Z(D)), Q.validateSchema = this.compile(D, !0));
+    function Y(Q) {
+      let { metaSchema: P } = Q;
+      P !== void 0 && (Q.$data && this.opts.$data && (P = Z(P)), Q.validateSchema = this.compile(P, !0));
     }
     const ne = {
       $ref: "https://raw.githubusercontent.com/ajv-validator/ajv/master/lib/refs/data.json#"
@@ -9690,36 +9754,36 @@ function zl() {
     }
   })(Aa)), Aa;
 }
-var rr = {}, ar = {}, nr = {}, Fn;
-function Ul() {
-  if (Fn) return nr;
-  Fn = 1, Object.defineProperty(nr, "__esModule", { value: !0 });
+var ar = {}, nr = {}, or = {}, On;
+function Xl() {
+  if (On) return or;
+  On = 1, Object.defineProperty(or, "__esModule", { value: !0 });
   const e = {
     keyword: "id",
     code() {
       throw new Error('NOT SUPPORTED: keyword "id", use "$id" for schema ID');
     }
   };
-  return nr.default = e, nr;
+  return or.default = e, or;
 }
-var Ze = {}, Mn;
-function Gl() {
-  if (Mn) return Ze;
-  Mn = 1, Object.defineProperty(Ze, "__esModule", { value: !0 }), Ze.callRef = Ze.getValidate = void 0;
-  const e = /* @__PURE__ */ Jr(), r = /* @__PURE__ */ We(), t = /* @__PURE__ */ ge(), i = /* @__PURE__ */ nt(), n = /* @__PURE__ */ Wa(), s = /* @__PURE__ */ we(), l = {
+var Ze = {}, $n;
+function Wl() {
+  if ($n) return Ze;
+  $n = 1, Object.defineProperty(Ze, "__esModule", { value: !0 }), Ze.callRef = Ze.getValidate = void 0;
+  const e = /* @__PURE__ */ Zr(), r = /* @__PURE__ */ We(), t = /* @__PURE__ */ ge(), i = /* @__PURE__ */ ot(), n = /* @__PURE__ */ Ha(), s = /* @__PURE__ */ we(), l = {
     keyword: "$ref",
     schemaType: "string",
     code(a) {
       const { gen: o, schema: f, it: g } = a, { baseId: d, schemaEnv: m, validateName: u, opts: y, self: p } = g, { root: h } = m;
       if ((f === "#" || f === "#/") && d === h.baseId)
-        return E();
+        return T();
       const _ = n.resolveRef.call(p, h, d, f);
       if (_ === void 0)
         throw new e.default(g.opts.uriResolver, d, f);
       if (_ instanceof n.SchemaEnv)
         return v(_);
       return C(_);
-      function E() {
+      function T() {
         if (m === h)
           return A(a, u, m, m.$async);
         const x = o.scopeValue("root", { ref: h });
@@ -9748,7 +9812,7 @@ function Gl() {
   Ze.getValidate = c;
   function A(a, o, f, g) {
     const { gen: d, it: m } = a, { allErrors: u, schemaEnv: y, opts: p } = m, h = p.passContext ? i.default.this : t.nil;
-    g ? _() : E();
+    g ? _() : T();
     function _() {
       if (!y.$async)
         throw new Error("async schema referenced by sync schema");
@@ -9759,7 +9823,7 @@ function Gl() {
         d.if((0, t._)`!(${B} instanceof ${m.ValidationError})`, () => d.throw(B)), v(B), u || d.assign(x, !1);
       }), a.ok(x);
     }
-    function E() {
+    function T() {
       a.result((0, r.callValidateCode)(a, o, h), () => C(o), () => v(o));
     }
     function v(x) {
@@ -9789,11 +9853,11 @@ function Gl() {
   }
   return Ze.callRef = A, Ze.default = l, Ze;
 }
-var On;
-function Xl() {
-  if (On) return ar;
-  On = 1, Object.defineProperty(ar, "__esModule", { value: !0 });
-  const e = /* @__PURE__ */ Ul(), r = /* @__PURE__ */ Gl(), t = [
+var zn;
+function ql() {
+  if (zn) return nr;
+  zn = 1, Object.defineProperty(nr, "__esModule", { value: !0 });
+  const e = /* @__PURE__ */ Xl(), r = /* @__PURE__ */ Wl(), t = [
     "$schema",
     "$id",
     "$defs",
@@ -9803,12 +9867,12 @@ function Xl() {
     e.default,
     r.default
   ];
-  return ar.default = t, ar;
+  return nr.default = t, nr;
 }
-var or = {}, ir = {}, $n;
-function Wl() {
-  if ($n) return ir;
-  $n = 1, Object.defineProperty(ir, "__esModule", { value: !0 });
+var ir = {}, sr = {}, Un;
+function Hl() {
+  if (Un) return sr;
+  Un = 1, Object.defineProperty(sr, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ ge(), r = e.operators, t = {
     maximum: { okStr: "<=", ok: r.LTE, fail: r.GT },
     minimum: { okStr: ">=", ok: r.GTE, fail: r.LT },
@@ -9828,12 +9892,12 @@ function Wl() {
       s.fail$data((0, e._)`${c} ${t[l].fail} ${A} || isNaN(${c})`);
     }
   };
-  return ir.default = n, ir;
+  return sr.default = n, sr;
 }
-var sr = {}, zn;
-function ql() {
-  if (zn) return sr;
-  zn = 1, Object.defineProperty(sr, "__esModule", { value: !0 });
+var lr = {}, Gn;
+function Vl() {
+  if (Gn) return lr;
+  Gn = 1, Object.defineProperty(lr, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ ge(), t = {
     keyword: "multipleOf",
     type: "number",
@@ -9848,12 +9912,12 @@ function ql() {
       i.fail$data((0, e._)`(${l} === 0 || (${a} = ${s}/${l}, ${o}))`);
     }
   };
-  return sr.default = t, sr;
+  return lr.default = t, lr;
 }
-var lr = {}, cr = {}, Un;
-function Hl() {
-  if (Un) return cr;
-  Un = 1, Object.defineProperty(cr, "__esModule", { value: !0 });
+var cr = {}, Ar = {}, Xn;
+function Ql() {
+  if (Xn) return Ar;
+  Xn = 1, Object.defineProperty(Ar, "__esModule", { value: !0 });
   function e(r) {
     const t = r.length;
     let i = 0, n = 0, s;
@@ -9861,13 +9925,13 @@ function Hl() {
       i++, s = r.charCodeAt(n++), s >= 55296 && s <= 56319 && n < t && (s = r.charCodeAt(n), (s & 64512) === 56320 && n++);
     return i;
   }
-  return cr.default = e, e.code = 'require("ajv/dist/runtime/ucs2length").default', cr;
+  return Ar.default = e, e.code = 'require("ajv/dist/runtime/ucs2length").default', Ar;
 }
-var Gn;
-function Vl() {
-  if (Gn) return lr;
-  Gn = 1, Object.defineProperty(lr, "__esModule", { value: !0 });
-  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), t = /* @__PURE__ */ Hl(), n = {
+var Wn;
+function jl() {
+  if (Wn) return cr;
+  Wn = 1, Object.defineProperty(cr, "__esModule", { value: !0 });
+  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), t = /* @__PURE__ */ Ql(), n = {
     keyword: ["maxLength", "minLength"],
     type: "string",
     schemaType: "number",
@@ -9884,12 +9948,12 @@ function Vl() {
       s.fail$data((0, e._)`${f} ${o} ${A}`);
     }
   };
-  return lr.default = n, lr;
+  return cr.default = n, cr;
 }
-var Ar = {}, Xn;
-function Ql() {
-  if (Xn) return Ar;
-  Xn = 1, Object.defineProperty(Ar, "__esModule", { value: !0 });
+var dr = {}, qn;
+function Yl() {
+  if (qn) return dr;
+  qn = 1, Object.defineProperty(dr, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ We(), r = /* @__PURE__ */ we(), t = /* @__PURE__ */ ge(), n = {
     keyword: "pattern",
     type: "string",
@@ -9910,12 +9974,12 @@ function Ql() {
       }
     }
   };
-  return Ar.default = n, Ar;
+  return dr.default = n, dr;
 }
-var dr = {}, Wn;
-function jl() {
-  if (Wn) return dr;
-  Wn = 1, Object.defineProperty(dr, "__esModule", { value: !0 });
+var fr = {}, Hn;
+function Kl() {
+  if (Hn) return fr;
+  Hn = 1, Object.defineProperty(fr, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ ge(), t = {
     keyword: ["maxProperties", "minProperties"],
     type: "object",
@@ -9933,12 +9997,12 @@ function jl() {
       i.fail$data((0, e._)`Object.keys(${s}).length ${c} ${l}`);
     }
   };
-  return dr.default = t, dr;
+  return fr.default = t, fr;
 }
-var fr = {}, qn;
-function Kl() {
-  if (qn) return fr;
-  qn = 1, Object.defineProperty(fr, "__esModule", { value: !0 });
+var ur = {}, Vn;
+function Jl() {
+  if (Vn) return ur;
+  Vn = 1, Object.defineProperty(ur, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ We(), r = /* @__PURE__ */ ge(), t = /* @__PURE__ */ we(), n = {
     keyword: "required",
     type: "object",
@@ -9955,9 +10019,9 @@ function Kl() {
       const d = c.length >= g.loopRequired;
       if (f.allErrors ? m() : u(), g.strictRequired) {
         const h = s.parentSchema.properties, { definedProperties: _ } = s.it;
-        for (const E of c)
-          if (h?.[E] === void 0 && !_.has(E)) {
-            const v = f.schemaEnv.baseId + f.errSchemaPath, C = `required property "${E}" is not defined at "${v}" (strictRequired)`;
+        for (const T of c)
+          if (h?.[T] === void 0 && !_.has(T)) {
+            const v = f.schemaEnv.baseId + f.errSchemaPath, C = `required property "${T}" is not defined at "${v}" (strictRequired)`;
             (0, t.checkStrictMode)(f, C, f.opts.strictRequired);
           }
       }
@@ -9990,12 +10054,12 @@ function Kl() {
       }
     }
   };
-  return fr.default = n, fr;
+  return ur.default = n, ur;
 }
-var ur = {}, Hn;
-function Yl() {
-  if (Hn) return ur;
-  Hn = 1, Object.defineProperty(ur, "__esModule", { value: !0 });
+var hr = {}, Qn;
+function Zl() {
+  if (Qn) return hr;
+  Qn = 1, Object.defineProperty(hr, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ ge(), t = {
     keyword: ["maxItems", "minItems"],
     type: "array",
@@ -10013,20 +10077,20 @@ function Yl() {
       i.fail$data((0, e._)`${s}.length ${c} ${l}`);
     }
   };
-  return ur.default = t, ur;
+  return hr.default = t, hr;
 }
-var hr = {}, pr = {}, Vn;
-function qa() {
-  if (Vn) return pr;
-  Vn = 1, Object.defineProperty(pr, "__esModule", { value: !0 });
-  const e = ai();
-  return e.code = 'require("ajv/dist/runtime/equal").default', pr.default = e, pr;
+var pr = {}, mr = {}, jn;
+function Va() {
+  if (jn) return mr;
+  jn = 1, Object.defineProperty(mr, "__esModule", { value: !0 });
+  const e = ri();
+  return e.code = 'require("ajv/dist/runtime/equal").default', mr.default = e, mr;
 }
-var Qn;
-function Jl() {
-  if (Qn) return hr;
-  Qn = 1, Object.defineProperty(hr, "__esModule", { value: !0 });
-  const e = /* @__PURE__ */ Hr(), r = /* @__PURE__ */ ge(), t = /* @__PURE__ */ we(), i = /* @__PURE__ */ qa(), s = {
+var Yn;
+function ec() {
+  if (Yn) return pr;
+  Yn = 1, Object.defineProperty(pr, "__esModule", { value: !0 });
+  const e = /* @__PURE__ */ Vr(), r = /* @__PURE__ */ ge(), t = /* @__PURE__ */ we(), i = /* @__PURE__ */ Va(), s = {
     keyword: "uniqueItems",
     type: "array",
     schemaType: "boolean",
@@ -10042,35 +10106,35 @@ function Jl() {
       const m = c.let("valid"), u = f.items ? (0, e.getSchemaTypes)(f.items) : [];
       l.block$data(m, y, (0, r._)`${g} === false`), l.ok(m);
       function y() {
-        const E = c.let("i", (0, r._)`${A}.length`), v = c.let("j");
-        l.setParams({ i: E, j: v }), c.assign(m, !0), c.if((0, r._)`${E} > 1`, () => (p() ? h : _)(E, v));
+        const T = c.let("i", (0, r._)`${A}.length`), v = c.let("j");
+        l.setParams({ i: T, j: v }), c.assign(m, !0), c.if((0, r._)`${T} > 1`, () => (p() ? h : _)(T, v));
       }
       function p() {
-        return u.length > 0 && !u.some((E) => E === "object" || E === "array");
+        return u.length > 0 && !u.some((T) => T === "object" || T === "array");
       }
-      function h(E, v) {
+      function h(T, v) {
         const C = c.name("item"), x = (0, e.checkDataTypes)(u, C, d.opts.strictNumbers, e.DataType.Wrong), B = c.const("indices", (0, r._)`{}`);
-        c.for((0, r._)`;${E}--;`, () => {
-          c.let(C, (0, r._)`${A}[${E}]`), c.if(x, (0, r._)`continue`), u.length > 1 && c.if((0, r._)`typeof ${C} == "string"`, (0, r._)`${C} += "_"`), c.if((0, r._)`typeof ${B}[${C}] == "number"`, () => {
+        c.for((0, r._)`;${T}--;`, () => {
+          c.let(C, (0, r._)`${A}[${T}]`), c.if(x, (0, r._)`continue`), u.length > 1 && c.if((0, r._)`typeof ${C} == "string"`, (0, r._)`${C} += "_"`), c.if((0, r._)`typeof ${B}[${C}] == "number"`, () => {
             c.assign(v, (0, r._)`${B}[${C}]`), l.error(), c.assign(m, !1).break();
-          }).code((0, r._)`${B}[${C}] = ${E}`);
+          }).code((0, r._)`${B}[${C}] = ${T}`);
         });
       }
-      function _(E, v) {
+      function _(T, v) {
         const C = (0, t.useFunc)(c, i.default), x = c.name("outer");
-        c.label(x).for((0, r._)`;${E}--;`, () => c.for((0, r._)`${v} = ${E}; ${v}--;`, () => c.if((0, r._)`${C}(${A}[${E}], ${A}[${v}])`, () => {
+        c.label(x).for((0, r._)`;${T}--;`, () => c.for((0, r._)`${v} = ${T}; ${v}--;`, () => c.if((0, r._)`${C}(${A}[${T}], ${A}[${v}])`, () => {
           l.error(), c.assign(m, !1).break(x);
         })));
       }
     }
   };
-  return hr.default = s, hr;
+  return pr.default = s, pr;
 }
-var mr = {}, jn;
-function Zl() {
-  if (jn) return mr;
-  jn = 1, Object.defineProperty(mr, "__esModule", { value: !0 });
-  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), t = /* @__PURE__ */ qa(), n = {
+var gr = {}, Kn;
+function tc() {
+  if (Kn) return gr;
+  Kn = 1, Object.defineProperty(gr, "__esModule", { value: !0 });
+  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), t = /* @__PURE__ */ Va(), n = {
     keyword: "const",
     $data: !0,
     error: {
@@ -10082,13 +10146,13 @@ function Zl() {
       A || o && typeof o == "object" ? s.fail$data((0, e._)`!${(0, r.useFunc)(l, t.default)}(${c}, ${a})`) : s.fail((0, e._)`${o} !== ${c}`);
     }
   };
-  return mr.default = n, mr;
+  return gr.default = n, gr;
 }
-var gr = {}, Kn;
-function ec() {
-  if (Kn) return gr;
-  Kn = 1, Object.defineProperty(gr, "__esModule", { value: !0 });
-  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), t = /* @__PURE__ */ qa(), n = {
+var yr = {}, Jn;
+function rc() {
+  if (Jn) return yr;
+  Jn = 1, Object.defineProperty(yr, "__esModule", { value: !0 });
+  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), t = /* @__PURE__ */ Va(), n = {
     keyword: "enum",
     schemaType: "array",
     $data: !0,
@@ -10110,25 +10174,25 @@ function ec() {
         if (!Array.isArray(a))
           throw new Error("ajv implementation error");
         const h = l.const("vSchema", o);
-        u = (0, e.or)(...a.map((_, E) => p(h, E)));
+        u = (0, e.or)(...a.map((_, T) => p(h, T)));
       }
       s.pass(u);
       function y() {
         l.assign(u, !1), l.forOf("v", o, (h) => l.if((0, e._)`${m()}(${c}, ${h})`, () => l.assign(u, !0).break()));
       }
       function p(h, _) {
-        const E = a[_];
-        return typeof E == "object" && E !== null ? (0, e._)`${m()}(${c}, ${h}[${_}])` : (0, e._)`${c} === ${E}`;
+        const T = a[_];
+        return typeof T == "object" && T !== null ? (0, e._)`${m()}(${c}, ${h}[${_}])` : (0, e._)`${c} === ${T}`;
       }
     }
   };
-  return gr.default = n, gr;
+  return yr.default = n, yr;
 }
-var Yn;
-function tc() {
-  if (Yn) return or;
-  Yn = 1, Object.defineProperty(or, "__esModule", { value: !0 });
-  const e = /* @__PURE__ */ Wl(), r = /* @__PURE__ */ ql(), t = /* @__PURE__ */ Vl(), i = /* @__PURE__ */ Ql(), n = /* @__PURE__ */ jl(), s = /* @__PURE__ */ Kl(), l = /* @__PURE__ */ Yl(), c = /* @__PURE__ */ Jl(), A = /* @__PURE__ */ Zl(), a = /* @__PURE__ */ ec(), o = [
+var Zn;
+function ac() {
+  if (Zn) return ir;
+  Zn = 1, Object.defineProperty(ir, "__esModule", { value: !0 });
+  const e = /* @__PURE__ */ Hl(), r = /* @__PURE__ */ Vl(), t = /* @__PURE__ */ jl(), i = /* @__PURE__ */ Yl(), n = /* @__PURE__ */ Kl(), s = /* @__PURE__ */ Jl(), l = /* @__PURE__ */ Zl(), c = /* @__PURE__ */ ec(), A = /* @__PURE__ */ tc(), a = /* @__PURE__ */ rc(), o = [
     // number
     e.default,
     r.default,
@@ -10147,12 +10211,12 @@ function tc() {
     A.default,
     a.default
   ];
-  return or.default = o, or;
+  return ir.default = o, ir;
 }
-var yr = {}, vt = {}, Jn;
-function oi() {
-  if (Jn) return vt;
-  Jn = 1, Object.defineProperty(vt, "__esModule", { value: !0 }), vt.validateAdditionalItems = void 0;
+var vr = {}, vt = {}, eo;
+function ni() {
+  if (eo) return vt;
+  eo = 1, Object.defineProperty(vt, "__esModule", { value: !0 }), vt.validateAdditionalItems = void 0;
   const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), i = {
     keyword: "additionalItems",
     type: "array",
@@ -10189,10 +10253,10 @@ function oi() {
   }
   return vt.validateAdditionalItems = n, vt.default = i, vt;
 }
-var vr = {}, bt = {}, Zn;
-function ii() {
-  if (Zn) return bt;
-  Zn = 1, Object.defineProperty(bt, "__esModule", { value: !0 }), bt.validateTuple = void 0;
+var br = {}, bt = {}, to;
+function oi() {
+  if (to) return bt;
+  to = 1, Object.defineProperty(bt, "__esModule", { value: !0 }), bt.validateTuple = void 0;
   const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), t = /* @__PURE__ */ We(), i = {
     keyword: "items",
     type: "array",
@@ -10217,8 +10281,8 @@ function ii() {
       }, d)), s.ok(d));
     });
     function u(y) {
-      const { opts: p, errSchemaPath: h } = g, _ = c.length, E = _ === y.minItems && (_ === y.maxItems || y[l] === !1);
-      if (p.strictTuples && !E) {
+      const { opts: p, errSchemaPath: h } = g, _ = c.length, T = _ === y.minItems && (_ === y.maxItems || y[l] === !1);
+      if (p.strictTuples && !T) {
         const v = `"${f}" is ${_}-tuple, but minItems or maxItems/${l} are not specified or different at path "${h}"`;
         (0, r.checkStrictMode)(g, v, p.strictTuples);
       }
@@ -10226,24 +10290,24 @@ function ii() {
   }
   return bt.validateTuple = n, bt.default = i, bt;
 }
-var eo;
-function rc() {
-  if (eo) return vr;
-  eo = 1, Object.defineProperty(vr, "__esModule", { value: !0 });
-  const e = /* @__PURE__ */ ii(), r = {
+var ro;
+function nc() {
+  if (ro) return br;
+  ro = 1, Object.defineProperty(br, "__esModule", { value: !0 });
+  const e = /* @__PURE__ */ oi(), r = {
     keyword: "prefixItems",
     type: "array",
     schemaType: ["array"],
     before: "uniqueItems",
     code: (t) => (0, e.validateTuple)(t, "items")
   };
-  return vr.default = r, vr;
+  return br.default = r, br;
 }
-var br = {}, to;
-function ac() {
-  if (to) return br;
-  to = 1, Object.defineProperty(br, "__esModule", { value: !0 });
-  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), t = /* @__PURE__ */ We(), i = /* @__PURE__ */ oi(), s = {
+var wr = {}, ao;
+function oc() {
+  if (ao) return wr;
+  ao = 1, Object.defineProperty(wr, "__esModule", { value: !0 });
+  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), t = /* @__PURE__ */ We(), i = /* @__PURE__ */ ni(), s = {
     keyword: "items",
     type: "array",
     schemaType: ["object", "boolean"],
@@ -10257,12 +10321,12 @@ function ac() {
       a.items = !0, !(0, r.alwaysValidSchema)(a, c) && (o ? (0, i.validateAdditionalItems)(l, o) : l.ok((0, t.validateArray)(l)));
     }
   };
-  return br.default = s, br;
+  return wr.default = s, wr;
 }
-var wr = {}, ro;
-function nc() {
-  if (ro) return wr;
-  ro = 1, Object.defineProperty(wr, "__esModule", { value: !0 });
+var _r = {}, no;
+function ic() {
+  if (no) return _r;
+  no = 1, Object.defineProperty(_r, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), i = {
     keyword: "contains",
     type: "array",
@@ -10296,17 +10360,17 @@ function nc() {
       const u = s.name("valid");
       f === void 0 && o === 1 ? p(u, () => s.if(u, () => s.break())) : o === 0 ? (s.let(u, !0), f !== void 0 && s.if((0, e._)`${A}.length > 0`, y)) : (s.let(u, !1), y()), n.result(u, () => n.reset());
       function y() {
-        const _ = s.name("_valid"), E = s.let("count", 0);
-        p(_, () => s.if(_, () => h(E)));
+        const _ = s.name("_valid"), T = s.let("count", 0);
+        p(_, () => s.if(_, () => h(T)));
       }
-      function p(_, E) {
+      function p(_, T) {
         s.forRange("i", 0, m, (v) => {
           n.subschema({
             keyword: "contains",
             dataProp: v,
             dataPropType: r.Type.Num,
             compositeRule: !0
-          }, _), E();
+          }, _), T();
         });
       }
       function h(_) {
@@ -10314,11 +10378,11 @@ function nc() {
       }
     }
   };
-  return wr.default = i, wr;
+  return _r.default = i, _r;
 }
-var va = {}, ao;
-function oc() {
-  return ao || (ao = 1, (function(e) {
+var va = {}, oo;
+function sc() {
+  return oo || (oo = 1, (function(e) {
     Object.defineProperty(e, "__esModule", { value: !0 }), e.validateSchemaDeps = e.validatePropertyDeps = e.error = void 0;
     const r = /* @__PURE__ */ ge(), t = /* @__PURE__ */ we(), i = /* @__PURE__ */ We();
     e.error = {
@@ -10389,10 +10453,10 @@ function oc() {
     e.validateSchemaDeps = c, e.default = n;
   })(va)), va;
 }
-var _r = {}, no;
-function ic() {
-  if (no) return _r;
-  no = 1, Object.defineProperty(_r, "__esModule", { value: !0 });
+var Cr = {}, io;
+function lc() {
+  if (io) return Cr;
+  io = 1, Object.defineProperty(Cr, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), i = {
     keyword: "propertyNames",
     type: "object",
@@ -10419,13 +10483,13 @@ function ic() {
       }), n.ok(a);
     }
   };
-  return _r.default = i, _r;
+  return Cr.default = i, Cr;
 }
-var Cr = {}, oo;
-function si() {
-  if (oo) return Cr;
-  oo = 1, Object.defineProperty(Cr, "__esModule", { value: !0 });
-  const e = /* @__PURE__ */ We(), r = /* @__PURE__ */ ge(), t = /* @__PURE__ */ nt(), i = /* @__PURE__ */ we(), s = {
+var xr = {}, so;
+function ii() {
+  if (so) return xr;
+  so = 1, Object.defineProperty(xr, "__esModule", { value: !0 });
+  const e = /* @__PURE__ */ We(), r = /* @__PURE__ */ ge(), t = /* @__PURE__ */ ot(), i = /* @__PURE__ */ we(), s = {
     keyword: "additionalProperties",
     type: ["object"],
     schemaType: ["boolean", "object"],
@@ -10446,7 +10510,7 @@ function si() {
       p(), l.ok((0, r._)`${f} === ${t.default.errors}`);
       function p() {
         c.forIn("key", o, (C) => {
-          !u.length && !y.length ? E(C) : c.if(h(C), () => E(C));
+          !u.length && !y.length ? T(C) : c.if(h(C), () => T(C));
         });
       }
       function h(C) {
@@ -10460,7 +10524,7 @@ function si() {
       function _(C) {
         c.code((0, r._)`delete ${o}[${C}]`);
       }
-      function E(C) {
+      function T(C) {
         if (m.removeAdditional === "all" || m.removeAdditional && A === !1) {
           _(C);
           return;
@@ -10490,13 +10554,13 @@ function si() {
       }
     }
   };
-  return Cr.default = s, Cr;
+  return xr.default = s, xr;
 }
-var xr = {}, io;
-function sc() {
-  if (io) return xr;
-  io = 1, Object.defineProperty(xr, "__esModule", { value: !0 });
-  const e = /* @__PURE__ */ Yr(), r = /* @__PURE__ */ We(), t = /* @__PURE__ */ we(), i = /* @__PURE__ */ si(), n = {
+var Tr = {}, lo;
+function cc() {
+  if (lo) return Tr;
+  lo = 1, Object.defineProperty(Tr, "__esModule", { value: !0 });
+  const e = /* @__PURE__ */ Jr(), r = /* @__PURE__ */ We(), t = /* @__PURE__ */ we(), i = /* @__PURE__ */ ii(), n = {
     keyword: "properties",
     type: "object",
     schemaType: "object",
@@ -10525,18 +10589,18 @@ function sc() {
       }
     }
   };
-  return xr.default = n, xr;
+  return Tr.default = n, Tr;
 }
-var Er = {}, so;
-function lc() {
-  if (so) return Er;
-  so = 1, Object.defineProperty(Er, "__esModule", { value: !0 });
+var Er = {}, co;
+function Ac() {
+  if (co) return Er;
+  co = 1, Object.defineProperty(Er, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ We(), r = /* @__PURE__ */ ge(), t = /* @__PURE__ */ we(), i = /* @__PURE__ */ we(), n = {
     keyword: "patternProperties",
     type: "object",
     schemaType: "object",
     code(s) {
-      const { gen: l, schema: c, data: A, parentSchema: a, it: o } = s, { opts: f } = o, g = (0, e.allSchemaProperties)(c), d = g.filter((E) => (0, t.alwaysValidSchema)(o, c[E]));
+      const { gen: l, schema: c, data: A, parentSchema: a, it: o } = s, { opts: f } = o, g = (0, e.allSchemaProperties)(c), d = g.filter((T) => (0, t.alwaysValidSchema)(o, c[T]));
       if (g.length === 0 || d.length === g.length && (!o.opts.unevaluated || o.props === !0))
         return;
       const m = f.strictSchema && !f.allowMatchingProperties && a.properties, u = l.name("valid");
@@ -10544,20 +10608,20 @@ function lc() {
       const { props: y } = o;
       p();
       function p() {
-        for (const E of g)
-          m && h(E), o.allErrors ? _(E) : (l.var(u, !0), _(E), l.if(u));
+        for (const T of g)
+          m && h(T), o.allErrors ? _(T) : (l.var(u, !0), _(T), l.if(u));
       }
-      function h(E) {
+      function h(T) {
         for (const v in m)
-          new RegExp(E).test(v) && (0, t.checkStrictMode)(o, `property ${v} matches pattern ${E} (use allowMatchingProperties)`);
+          new RegExp(T).test(v) && (0, t.checkStrictMode)(o, `property ${v} matches pattern ${T} (use allowMatchingProperties)`);
       }
-      function _(E) {
+      function _(T) {
         l.forIn("key", A, (v) => {
-          l.if((0, r._)`${(0, e.usePattern)(s, E)}.test(${v})`, () => {
-            const C = d.includes(E);
+          l.if((0, r._)`${(0, e.usePattern)(s, T)}.test(${v})`, () => {
+            const C = d.includes(T);
             C || s.subschema({
               keyword: "patternProperties",
-              schemaProp: E,
+              schemaProp: T,
               dataProp: v,
               dataPropType: i.Type.Str
             }, u), o.opts.unevaluated && y !== !0 ? l.assign((0, r._)`${y}[${v}]`, !0) : !C && !o.allErrors && l.if((0, r.not)(u), () => l.break());
@@ -10568,10 +10632,10 @@ function lc() {
   };
   return Er.default = n, Er;
 }
-var Tr = {}, lo;
-function cc() {
-  if (lo) return Tr;
-  lo = 1, Object.defineProperty(Tr, "__esModule", { value: !0 });
+var Lr = {}, Ao;
+function dc() {
+  if (Ao) return Lr;
+  Ao = 1, Object.defineProperty(Lr, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ we(), r = {
     keyword: "not",
     schemaType: ["object", "boolean"],
@@ -10592,12 +10656,12 @@ function cc() {
     },
     error: { message: "must NOT be valid" }
   };
-  return Tr.default = r, Tr;
+  return Lr.default = r, Lr;
 }
-var Lr = {}, co;
-function Ac() {
-  if (co) return Lr;
-  co = 1, Object.defineProperty(Lr, "__esModule", { value: !0 });
+var Rr = {}, fo;
+function fc() {
+  if (fo) return Rr;
+  fo = 1, Object.defineProperty(Rr, "__esModule", { value: !0 });
   const r = {
     keyword: "anyOf",
     schemaType: "array",
@@ -10605,12 +10669,12 @@ function Ac() {
     code: (/* @__PURE__ */ We()).validateUnion,
     error: { message: "must match a schema in anyOf" }
   };
-  return Lr.default = r, Lr;
+  return Rr.default = r, Rr;
 }
-var Rr = {}, Ao;
-function dc() {
-  if (Ao) return Rr;
-  Ao = 1, Object.defineProperty(Rr, "__esModule", { value: !0 });
+var Dr = {}, uo;
+function uc() {
+  if (uo) return Dr;
+  uo = 1, Object.defineProperty(Dr, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), i = {
     keyword: "oneOf",
     schemaType: "array",
@@ -10641,12 +10705,12 @@ function dc() {
       }
     }
   };
-  return Rr.default = i, Rr;
+  return Dr.default = i, Dr;
 }
-var Dr = {}, fo;
-function fc() {
-  if (fo) return Dr;
-  fo = 1, Object.defineProperty(Dr, "__esModule", { value: !0 });
+var Pr = {}, ho;
+function hc() {
+  if (ho) return Pr;
+  ho = 1, Object.defineProperty(Pr, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ we(), r = {
     keyword: "allOf",
     schemaType: "array",
@@ -10663,12 +10727,12 @@ function fc() {
       });
     }
   };
-  return Dr.default = r, Dr;
+  return Pr.default = r, Pr;
 }
-var Pr = {}, uo;
-function uc() {
-  if (uo) return Pr;
-  uo = 1, Object.defineProperty(Pr, "__esModule", { value: !0 });
+var Br = {}, po;
+function pc() {
+  if (po) return Br;
+  po = 1, Object.defineProperty(Br, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ we(), i = {
     keyword: "if",
     schemaType: ["object", "boolean"],
@@ -10710,12 +10774,12 @@ function uc() {
     const c = s.schema[l];
     return c !== void 0 && !(0, r.alwaysValidSchema)(s, c);
   }
-  return Pr.default = i, Pr;
+  return Br.default = i, Br;
 }
-var Br = {}, ho;
-function hc() {
-  if (ho) return Br;
-  ho = 1, Object.defineProperty(Br, "__esModule", { value: !0 });
+var Nr = {}, mo;
+function mc() {
+  if (mo) return Nr;
+  mo = 1, Object.defineProperty(Nr, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ we(), r = {
     keyword: ["then", "else"],
     schemaType: ["object", "boolean"],
@@ -10723,13 +10787,13 @@ function hc() {
       i.if === void 0 && (0, e.checkStrictMode)(n, `"${t}" without "if" is ignored`);
     }
   };
-  return Br.default = r, Br;
+  return Nr.default = r, Nr;
 }
-var po;
-function pc() {
-  if (po) return yr;
-  po = 1, Object.defineProperty(yr, "__esModule", { value: !0 });
-  const e = /* @__PURE__ */ oi(), r = /* @__PURE__ */ rc(), t = /* @__PURE__ */ ii(), i = /* @__PURE__ */ ac(), n = /* @__PURE__ */ nc(), s = /* @__PURE__ */ oc(), l = /* @__PURE__ */ ic(), c = /* @__PURE__ */ si(), A = /* @__PURE__ */ sc(), a = /* @__PURE__ */ lc(), o = /* @__PURE__ */ cc(), f = /* @__PURE__ */ Ac(), g = /* @__PURE__ */ dc(), d = /* @__PURE__ */ fc(), m = /* @__PURE__ */ uc(), u = /* @__PURE__ */ hc();
+var go;
+function gc() {
+  if (go) return vr;
+  go = 1, Object.defineProperty(vr, "__esModule", { value: !0 });
+  const e = /* @__PURE__ */ ni(), r = /* @__PURE__ */ nc(), t = /* @__PURE__ */ oi(), i = /* @__PURE__ */ oc(), n = /* @__PURE__ */ ic(), s = /* @__PURE__ */ sc(), l = /* @__PURE__ */ lc(), c = /* @__PURE__ */ ii(), A = /* @__PURE__ */ cc(), a = /* @__PURE__ */ Ac(), o = /* @__PURE__ */ dc(), f = /* @__PURE__ */ fc(), g = /* @__PURE__ */ uc(), d = /* @__PURE__ */ hc(), m = /* @__PURE__ */ pc(), u = /* @__PURE__ */ mc();
   function y(p = !1) {
     const h = [
       // any
@@ -10748,12 +10812,12 @@ function pc() {
     ];
     return p ? h.push(r.default, i.default) : h.push(e.default, t.default), h.push(n.default), h;
   }
-  return yr.default = y, yr;
+  return vr.default = y, vr;
 }
-var Nr = {}, Sr = {}, mo;
-function mc() {
-  if (mo) return Sr;
-  mo = 1, Object.defineProperty(Sr, "__esModule", { value: !0 });
+var Sr = {}, Ir = {}, yo;
+function yc() {
+  if (yo) return Ir;
+  yo = 1, Object.defineProperty(Ir, "__esModule", { value: !0 });
   const e = /* @__PURE__ */ ge(), t = {
     keyword: "format",
     type: ["number", "string"],
@@ -10772,14 +10836,14 @@ function mc() {
         const p = s.scopeValue("formats", {
           ref: m.formats,
           code: f.code.formats
-        }), h = s.const("fDef", (0, e._)`${p}[${a}]`), _ = s.let("fType"), E = s.let("format");
-        s.if((0, e._)`typeof ${h} == "object" && !(${h} instanceof RegExp)`, () => s.assign(_, (0, e._)`${h}.type || "string"`).assign(E, (0, e._)`${h}.validate`), () => s.assign(_, (0, e._)`"string"`).assign(E, h)), i.fail$data((0, e.or)(v(), C()));
+        }), h = s.const("fDef", (0, e._)`${p}[${a}]`), _ = s.let("fType"), T = s.let("format");
+        s.if((0, e._)`typeof ${h} == "object" && !(${h} instanceof RegExp)`, () => s.assign(_, (0, e._)`${h}.type || "string"`).assign(T, (0, e._)`${h}.validate`), () => s.assign(_, (0, e._)`"string"`).assign(T, h)), i.fail$data((0, e.or)(v(), C()));
         function v() {
-          return f.strictSchema === !1 ? e.nil : (0, e._)`${a} && !${E}`;
+          return f.strictSchema === !1 ? e.nil : (0, e._)`${a} && !${T}`;
         }
         function C() {
-          const x = d.$async ? (0, e._)`(${h}.async ? await ${E}(${l}) : ${E}(${l}))` : (0, e._)`${E}(${l})`, B = (0, e._)`(typeof ${E} == "function" ? ${x} : ${E}.test(${l}))`;
-          return (0, e._)`${E} && ${E} !== true && ${_} === ${n} && !${B}`;
+          const x = d.$async ? (0, e._)`(${h}.async ? await ${T}(${l}) : ${T}(${l}))` : (0, e._)`${T}(${l})`, B = (0, e._)`(typeof ${T} == "function" ? ${x} : ${T}.test(${l}))`;
+          return (0, e._)`${T} && ${T} !== true && ${_} === ${n} && !${B}`;
         }
       }
       function y() {
@@ -10790,7 +10854,7 @@ function mc() {
         }
         if (p === !0)
           return;
-        const [h, _, E] = C(p);
+        const [h, _, T] = C(p);
         h === n && i.pass(x());
         function v() {
           if (f.strictSchema === !1) {
@@ -10810,25 +10874,25 @@ function mc() {
           if (typeof p == "object" && !(p instanceof RegExp) && p.async) {
             if (!d.$async)
               throw new Error("async format in sync schema");
-            return (0, e._)`await ${E}(${l})`;
+            return (0, e._)`await ${T}(${l})`;
           }
-          return typeof _ == "function" ? (0, e._)`${E}(${l})` : (0, e._)`${E}.test(${l})`;
+          return typeof _ == "function" ? (0, e._)`${T}(${l})` : (0, e._)`${T}.test(${l})`;
         }
       }
     }
   };
-  return Sr.default = t, Sr;
+  return Ir.default = t, Ir;
 }
-var go;
-function gc() {
-  if (go) return Nr;
-  go = 1, Object.defineProperty(Nr, "__esModule", { value: !0 });
-  const r = [(/* @__PURE__ */ mc()).default];
-  return Nr.default = r, Nr;
+var vo;
+function vc() {
+  if (vo) return Sr;
+  vo = 1, Object.defineProperty(Sr, "__esModule", { value: !0 });
+  const r = [(/* @__PURE__ */ yc()).default];
+  return Sr.default = r, Sr;
 }
-var dt = {}, yo;
-function yc() {
-  return yo || (yo = 1, Object.defineProperty(dt, "__esModule", { value: !0 }), dt.contentVocabulary = dt.metadataVocabulary = void 0, dt.metadataVocabulary = [
+var ft = {}, bo;
+function bc() {
+  return bo || (bo = 1, Object.defineProperty(ft, "__esModule", { value: !0 }), ft.contentVocabulary = ft.metadataVocabulary = void 0, ft.metadataVocabulary = [
     "title",
     "description",
     "default",
@@ -10836,17 +10900,17 @@ function yc() {
     "readOnly",
     "writeOnly",
     "examples"
-  ], dt.contentVocabulary = [
+  ], ft.contentVocabulary = [
     "contentMediaType",
     "contentEncoding",
     "contentSchema"
-  ]), dt;
+  ]), ft;
 }
-var vo;
-function vc() {
-  if (vo) return rr;
-  vo = 1, Object.defineProperty(rr, "__esModule", { value: !0 });
-  const e = /* @__PURE__ */ Xl(), r = /* @__PURE__ */ tc(), t = /* @__PURE__ */ pc(), i = /* @__PURE__ */ gc(), n = /* @__PURE__ */ yc(), s = [
+var wo;
+function wc() {
+  if (wo) return ar;
+  wo = 1, Object.defineProperty(ar, "__esModule", { value: !0 });
+  const e = /* @__PURE__ */ ql(), r = /* @__PURE__ */ ac(), t = /* @__PURE__ */ gc(), i = /* @__PURE__ */ vc(), n = /* @__PURE__ */ bc(), s = [
     e.default,
     r.default,
     (0, t.default)(),
@@ -10854,22 +10918,22 @@ function vc() {
     n.metadataVocabulary,
     n.contentVocabulary
   ];
-  return rr.default = s, rr;
+  return ar.default = s, ar;
 }
-var Ir = {}, St = {}, bo;
-function bc() {
-  if (bo) return St;
-  bo = 1, Object.defineProperty(St, "__esModule", { value: !0 }), St.DiscrError = void 0;
+var kr = {}, It = {}, _o;
+function _c() {
+  if (_o) return It;
+  _o = 1, Object.defineProperty(It, "__esModule", { value: !0 }), It.DiscrError = void 0;
   var e;
   return (function(r) {
     r.Tag = "tag", r.Mapping = "mapping";
-  })(e || (St.DiscrError = e = {})), St;
+  })(e || (It.DiscrError = e = {})), It;
 }
-var wo;
-function wc() {
-  if (wo) return Ir;
-  wo = 1, Object.defineProperty(Ir, "__esModule", { value: !0 });
-  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ bc(), t = /* @__PURE__ */ Wa(), i = /* @__PURE__ */ Jr(), n = /* @__PURE__ */ we(), l = {
+var Co;
+function Cc() {
+  if (Co) return kr;
+  Co = 1, Object.defineProperty(kr, "__esModule", { value: !0 });
+  const e = /* @__PURE__ */ ge(), r = /* @__PURE__ */ _c(), t = /* @__PURE__ */ Ha(), i = /* @__PURE__ */ Zr(), n = /* @__PURE__ */ we(), l = {
     keyword: "discriminator",
     type: "object",
     schemaType: "object",
@@ -10891,31 +10955,31 @@ function wc() {
       const u = A.let("valid", !1), y = A.const("tag", (0, e._)`${a}${(0, e.getProperty)(m)}`);
       A.if((0, e._)`typeof ${y} == "string"`, () => p(), () => c.error(!1, { discrError: r.DiscrError.Tag, tag: y, tagName: m })), c.ok(u);
       function p() {
-        const E = _();
+        const T = _();
         A.if(!1);
-        for (const v in E)
-          A.elseIf((0, e._)`${y} === ${v}`), A.assign(u, h(E[v]));
+        for (const v in T)
+          A.elseIf((0, e._)`${y} === ${v}`), A.assign(u, h(T[v]));
         A.else(), c.error(!1, { discrError: r.DiscrError.Mapping, tag: y, tagName: m }), A.endIf();
       }
-      function h(E) {
-        const v = A.name("valid"), C = c.subschema({ keyword: "oneOf", schemaProp: E }, v);
+      function h(T) {
+        const v = A.name("valid"), C = c.subschema({ keyword: "oneOf", schemaProp: T }, v);
         return c.mergeEvaluated(C, e.Name), v;
       }
       function _() {
-        var E;
+        var T;
         const v = {}, C = B(f);
         let x = !0;
         for (let O = 0; O < d.length; O++) {
-          let T = d[O];
-          if (T?.$ref && !(0, n.schemaHasRulesButRef)(T, g.self.RULES)) {
-            const w = T.$ref;
-            if (T = t.resolveRef.call(g.self, g.schemaEnv.root, g.baseId, w), T instanceof t.SchemaEnv && (T = T.schema), T === void 0)
+          let E = d[O];
+          if (E?.$ref && !(0, n.schemaHasRulesButRef)(E, g.self.RULES)) {
+            const w = E.$ref;
+            if (E = t.resolveRef.call(g.self, g.schemaEnv.root, g.baseId, w), E instanceof t.SchemaEnv && (E = E.schema), E === void 0)
               throw new i.default(g.opts.uriResolver, g.baseId, w);
           }
-          const M = (E = T?.properties) === null || E === void 0 ? void 0 : E[m];
+          const M = (T = E?.properties) === null || T === void 0 ? void 0 : T[m];
           if (typeof M != "object")
             throw new Error(`discriminator: oneOf subschemas (or referenced schemas) must have "properties/${m}"`);
-          x = x && (C || B(T)), R(M, O);
+          x = x && (C || B(E)), R(M, O);
         }
         if (!x)
           throw new Error(`discriminator: "${m}" must be required`);
@@ -10923,39 +10987,39 @@ function wc() {
         function B({ required: O }) {
           return Array.isArray(O) && O.includes(m);
         }
-        function R(O, T) {
+        function R(O, E) {
           if (O.const)
-            I(O.const, T);
+            I(O.const, E);
           else if (O.enum)
             for (const M of O.enum)
-              I(M, T);
+              I(M, E);
           else
             throw new Error(`discriminator: "properties/${m}" must have "const" or "enum"`);
         }
-        function I(O, T) {
+        function I(O, E) {
           if (typeof O != "string" || O in v)
             throw new Error(`discriminator: "${m}" values must be unique strings`);
-          v[O] = T;
+          v[O] = E;
         }
       }
     }
   };
-  return Ir.default = l, Ir;
+  return kr.default = l, kr;
 }
-const _c = "http://json-schema.org/draft-07/schema#", Cc = "http://json-schema.org/draft-07/schema#", xc = "Core schema meta-schema", Ec = { schemaArray: { type: "array", minItems: 1, items: { $ref: "#" } }, nonNegativeInteger: { type: "integer", minimum: 0 }, nonNegativeIntegerDefault0: { allOf: [{ $ref: "#/definitions/nonNegativeInteger" }, { default: 0 }] }, simpleTypes: { enum: ["array", "boolean", "integer", "null", "number", "object", "string"] }, stringArray: { type: "array", items: { type: "string" }, uniqueItems: !0, default: [] } }, Tc = ["object", "boolean"], Lc = { $id: { type: "string", format: "uri-reference" }, $schema: { type: "string", format: "uri" }, $ref: { type: "string", format: "uri-reference" }, $comment: { type: "string" }, title: { type: "string" }, description: { type: "string" }, default: !0, readOnly: { type: "boolean", default: !1 }, examples: { type: "array", items: !0 }, multipleOf: { type: "number", exclusiveMinimum: 0 }, maximum: { type: "number" }, exclusiveMaximum: { type: "number" }, minimum: { type: "number" }, exclusiveMinimum: { type: "number" }, maxLength: { $ref: "#/definitions/nonNegativeInteger" }, minLength: { $ref: "#/definitions/nonNegativeIntegerDefault0" }, pattern: { type: "string", format: "regex" }, additionalItems: { $ref: "#" }, items: { anyOf: [{ $ref: "#" }, { $ref: "#/definitions/schemaArray" }], default: !0 }, maxItems: { $ref: "#/definitions/nonNegativeInteger" }, minItems: { $ref: "#/definitions/nonNegativeIntegerDefault0" }, uniqueItems: { type: "boolean", default: !1 }, contains: { $ref: "#" }, maxProperties: { $ref: "#/definitions/nonNegativeInteger" }, minProperties: { $ref: "#/definitions/nonNegativeIntegerDefault0" }, required: { $ref: "#/definitions/stringArray" }, additionalProperties: { $ref: "#" }, definitions: { type: "object", additionalProperties: { $ref: "#" }, default: {} }, properties: { type: "object", additionalProperties: { $ref: "#" }, default: {} }, patternProperties: { type: "object", additionalProperties: { $ref: "#" }, propertyNames: { format: "regex" }, default: {} }, dependencies: { type: "object", additionalProperties: { anyOf: [{ $ref: "#" }, { $ref: "#/definitions/stringArray" }] } }, propertyNames: { $ref: "#" }, const: !0, enum: { type: "array", items: !0, minItems: 1, uniqueItems: !0 }, type: { anyOf: [{ $ref: "#/definitions/simpleTypes" }, { type: "array", items: { $ref: "#/definitions/simpleTypes" }, minItems: 1, uniqueItems: !0 }] }, format: { type: "string" }, contentMediaType: { type: "string" }, contentEncoding: { type: "string" }, if: { $ref: "#" }, then: { $ref: "#" }, else: { $ref: "#" }, allOf: { $ref: "#/definitions/schemaArray" }, anyOf: { $ref: "#/definitions/schemaArray" }, oneOf: { $ref: "#/definitions/schemaArray" }, not: { $ref: "#" } }, Rc = {
-  $schema: _c,
-  $id: Cc,
-  title: xc,
-  definitions: Ec,
-  type: Tc,
-  properties: Lc,
+const xc = "http://json-schema.org/draft-07/schema#", Tc = "http://json-schema.org/draft-07/schema#", Ec = "Core schema meta-schema", Lc = { schemaArray: { type: "array", minItems: 1, items: { $ref: "#" } }, nonNegativeInteger: { type: "integer", minimum: 0 }, nonNegativeIntegerDefault0: { allOf: [{ $ref: "#/definitions/nonNegativeInteger" }, { default: 0 }] }, simpleTypes: { enum: ["array", "boolean", "integer", "null", "number", "object", "string"] }, stringArray: { type: "array", items: { type: "string" }, uniqueItems: !0, default: [] } }, Rc = ["object", "boolean"], Dc = { $id: { type: "string", format: "uri-reference" }, $schema: { type: "string", format: "uri" }, $ref: { type: "string", format: "uri-reference" }, $comment: { type: "string" }, title: { type: "string" }, description: { type: "string" }, default: !0, readOnly: { type: "boolean", default: !1 }, examples: { type: "array", items: !0 }, multipleOf: { type: "number", exclusiveMinimum: 0 }, maximum: { type: "number" }, exclusiveMaximum: { type: "number" }, minimum: { type: "number" }, exclusiveMinimum: { type: "number" }, maxLength: { $ref: "#/definitions/nonNegativeInteger" }, minLength: { $ref: "#/definitions/nonNegativeIntegerDefault0" }, pattern: { type: "string", format: "regex" }, additionalItems: { $ref: "#" }, items: { anyOf: [{ $ref: "#" }, { $ref: "#/definitions/schemaArray" }], default: !0 }, maxItems: { $ref: "#/definitions/nonNegativeInteger" }, minItems: { $ref: "#/definitions/nonNegativeIntegerDefault0" }, uniqueItems: { type: "boolean", default: !1 }, contains: { $ref: "#" }, maxProperties: { $ref: "#/definitions/nonNegativeInteger" }, minProperties: { $ref: "#/definitions/nonNegativeIntegerDefault0" }, required: { $ref: "#/definitions/stringArray" }, additionalProperties: { $ref: "#" }, definitions: { type: "object", additionalProperties: { $ref: "#" }, default: {} }, properties: { type: "object", additionalProperties: { $ref: "#" }, default: {} }, patternProperties: { type: "object", additionalProperties: { $ref: "#" }, propertyNames: { format: "regex" }, default: {} }, dependencies: { type: "object", additionalProperties: { anyOf: [{ $ref: "#" }, { $ref: "#/definitions/stringArray" }] } }, propertyNames: { $ref: "#" }, const: !0, enum: { type: "array", items: !0, minItems: 1, uniqueItems: !0 }, type: { anyOf: [{ $ref: "#/definitions/simpleTypes" }, { type: "array", items: { $ref: "#/definitions/simpleTypes" }, minItems: 1, uniqueItems: !0 }] }, format: { type: "string" }, contentMediaType: { type: "string" }, contentEncoding: { type: "string" }, if: { $ref: "#" }, then: { $ref: "#" }, else: { $ref: "#" }, allOf: { $ref: "#/definitions/schemaArray" }, anyOf: { $ref: "#/definitions/schemaArray" }, oneOf: { $ref: "#/definitions/schemaArray" }, not: { $ref: "#" } }, Pc = {
+  $schema: xc,
+  $id: Tc,
+  title: Ec,
+  definitions: Lc,
+  type: Rc,
+  properties: Dc,
   default: !0
 };
-var _o;
-function li() {
-  return _o || (_o = 1, (function(e, r) {
+var xo;
+function si() {
+  return xo || (xo = 1, (function(e, r) {
     Object.defineProperty(r, "__esModule", { value: !0 }), r.MissingRefError = r.ValidationError = r.CodeGen = r.Name = r.nil = r.stringify = r.str = r._ = r.KeywordCxt = r.Ajv = void 0;
-    const t = /* @__PURE__ */ zl(), i = /* @__PURE__ */ vc(), n = /* @__PURE__ */ wc(), s = Rc, l = ["/properties"], c = "http://json-schema.org/draft-07/schema";
+    const t = /* @__PURE__ */ Gl(), i = /* @__PURE__ */ wc(), n = /* @__PURE__ */ Cc(), s = Pc, l = ["/properties"], c = "http://json-schema.org/draft-07/schema";
     class A extends t.default {
       _addVocabularies() {
         super._addVocabularies(), i.default.forEach((m) => this.addVocabulary(m)), this.opts.discriminator && this.addKeyword(n.default);
@@ -10971,7 +11035,7 @@ function li() {
       }
     }
     r.Ajv = A, e.exports = r = A, e.exports.Ajv = A, Object.defineProperty(r, "__esModule", { value: !0 }), r.default = A;
-    var a = /* @__PURE__ */ Yr();
+    var a = /* @__PURE__ */ Jr();
     Object.defineProperty(r, "KeywordCxt", { enumerable: !0, get: function() {
       return a.KeywordCxt;
     } });
@@ -10989,24 +11053,24 @@ function li() {
     } }), Object.defineProperty(r, "CodeGen", { enumerable: !0, get: function() {
       return o.CodeGen;
     } });
-    var f = /* @__PURE__ */ Xa();
+    var f = /* @__PURE__ */ qa();
     Object.defineProperty(r, "ValidationError", { enumerable: !0, get: function() {
       return f.default;
     } });
-    var g = /* @__PURE__ */ Jr();
+    var g = /* @__PURE__ */ Zr();
     Object.defineProperty(r, "MissingRefError", { enumerable: !0, get: function() {
       return g.default;
     } });
-  })(Yt, Yt.exports)), Yt.exports;
+  })(Jt, Jt.exports)), Jt.exports;
 }
-var Dc = /* @__PURE__ */ li();
-const Pc = /* @__PURE__ */ Ia(Dc);
-var kr = { exports: {} }, ba = {}, Co;
-function Bc() {
-  return Co || (Co = 1, (function(e) {
+var Bc = /* @__PURE__ */ si();
+const Nc = /* @__PURE__ */ Ia(Bc);
+var Fr = { exports: {} }, ba = {}, To;
+function Sc() {
+  return To || (To = 1, (function(e) {
     Object.defineProperty(e, "__esModule", { value: !0 }), e.formatNames = e.fastFormats = e.fullFormats = void 0;
-    function r(O, T) {
-      return { validate: O, compare: T };
+    function r(O, E) {
+      return { validate: O, compare: E };
     }
     e.fullFormats = {
       // date: http://tools.ietf.org/html/rfc3339#section-5.6
@@ -11074,15 +11138,15 @@ function Bc() {
     }
     const i = /^(\d\d\d\d)-(\d\d)-(\d\d)$/, n = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     function s(O) {
-      const T = i.exec(O);
-      if (!T)
+      const E = i.exec(O);
+      if (!E)
         return !1;
-      const M = +T[1], w = +T[2], G = +T[3];
+      const M = +E[1], w = +E[2], G = +E[3];
       return w >= 1 && w <= 12 && G >= 1 && G <= (w === 2 && t(M) ? 29 : n[w]);
     }
-    function l(O, T) {
-      if (O && T)
-        return O > T ? 1 : O < T ? -1 : 0;
+    function l(O, E) {
+      if (O && E)
+        return O > E ? 1 : O < E ? -1 : 0;
     }
     const c = /^(\d\d):(\d\d):(\d\d(?:\.\d+)?)(z|([+-])(\d\d)(?::?(\d\d))?)?$/i;
     function A(O) {
@@ -11090,50 +11154,50 @@ function Bc() {
         const w = c.exec(M);
         if (!w)
           return !1;
-        const G = +w[1], ee = +w[2], K = +w[3], ne = w[4], Z = w[5] === "-" ? -1 : 1, Q = +(w[6] || 0), D = +(w[7] || 0);
-        if (Q > 23 || D > 59 || O && !ne)
+        const G = +w[1], ee = +w[2], Y = +w[3], ne = w[4], Z = w[5] === "-" ? -1 : 1, Q = +(w[6] || 0), P = +(w[7] || 0);
+        if (Q > 23 || P > 59 || O && !ne)
           return !1;
-        if (G <= 23 && ee <= 59 && K < 60)
+        if (G <= 23 && ee <= 59 && Y < 60)
           return !0;
-        const F = ee - D * Z, $ = G - Q * Z - (F < 0 ? 1 : 0);
-        return ($ === 23 || $ === -1) && (F === 59 || F === -1) && K < 61;
+        const F = ee - P * Z, $ = G - Q * Z - (F < 0 ? 1 : 0);
+        return ($ === 23 || $ === -1) && (F === 59 || F === -1) && Y < 61;
       };
     }
-    function a(O, T) {
-      if (!(O && T))
+    function a(O, E) {
+      if (!(O && E))
         return;
-      const M = (/* @__PURE__ */ new Date("2020-01-01T" + O)).valueOf(), w = (/* @__PURE__ */ new Date("2020-01-01T" + T)).valueOf();
+      const M = (/* @__PURE__ */ new Date("2020-01-01T" + O)).valueOf(), w = (/* @__PURE__ */ new Date("2020-01-01T" + E)).valueOf();
       if (M && w)
         return M - w;
     }
-    function o(O, T) {
-      if (!(O && T))
+    function o(O, E) {
+      if (!(O && E))
         return;
-      const M = c.exec(O), w = c.exec(T);
+      const M = c.exec(O), w = c.exec(E);
       if (M && w)
-        return O = M[1] + M[2] + M[3], T = w[1] + w[2] + w[3], O > T ? 1 : O < T ? -1 : 0;
+        return O = M[1] + M[2] + M[3], E = w[1] + w[2] + w[3], O > E ? 1 : O < E ? -1 : 0;
     }
     const f = /t|\s/i;
     function g(O) {
-      const T = A(O);
+      const E = A(O);
       return function(w) {
         const G = w.split(f);
-        return G.length === 2 && s(G[0]) && T(G[1]);
+        return G.length === 2 && s(G[0]) && E(G[1]);
       };
     }
-    function d(O, T) {
-      if (!(O && T))
+    function d(O, E) {
+      if (!(O && E))
         return;
-      const M = new Date(O).valueOf(), w = new Date(T).valueOf();
+      const M = new Date(O).valueOf(), w = new Date(E).valueOf();
       if (M && w)
         return M - w;
     }
-    function m(O, T) {
-      if (!(O && T))
+    function m(O, E) {
+      if (!(O && E))
         return;
-      const [M, w] = O.split(f), [G, ee] = T.split(f), K = l(M, G);
-      if (K !== void 0)
-        return K || a(w, ee);
+      const [M, w] = O.split(f), [G, ee] = E.split(f), Y = l(M, G);
+      if (Y !== void 0)
+        return Y || a(w, ee);
     }
     const u = /\/|:/, y = /^(?:[a-z][a-z0-9+\-.]*:)(?:\/?\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:]|%[0-9a-f]{2})*@)?(?:\[(?:(?:(?:(?:[0-9a-f]{1,4}:){6}|::(?:[0-9a-f]{1,4}:){5}|(?:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){4}|(?:(?:[0-9a-f]{1,4}:){0,1}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:|(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::)(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::)|[Vv][0-9a-f]+\.[a-z0-9\-._~!$&'()*+,;=:]+)\]|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)|(?:[a-z0-9\-._~!$&'()*+,;=]|%[0-9a-f]{2})*)(?::\d*)?(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*|\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)?|(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)(?:\?(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?(?:#(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?$/i;
     function p(O) {
@@ -11143,9 +11207,9 @@ function Bc() {
     function _(O) {
       return h.lastIndex = 0, h.test(O);
     }
-    const E = -2147483648, v = 2 ** 31 - 1;
+    const T = -2147483648, v = 2 ** 31 - 1;
     function C(O) {
-      return Number.isInteger(O) && O <= v && O >= E;
+      return Number.isInteger(O) && O <= v && O >= T;
     }
     function x(O) {
       return Number.isInteger(O);
@@ -11165,11 +11229,11 @@ function Bc() {
     }
   })(ba)), ba;
 }
-var wa = {}, xo;
-function Nc() {
-  return xo || (xo = 1, (function(e) {
+var wa = {}, Eo;
+function Ic() {
+  return Eo || (Eo = 1, (function(e) {
     Object.defineProperty(e, "__esModule", { value: !0 }), e.formatLimitDefinition = void 0;
-    const r = /* @__PURE__ */ li(), t = /* @__PURE__ */ ge(), i = t.operators, n = {
+    const r = /* @__PURE__ */ si(), t = /* @__PURE__ */ ge(), i = t.operators, n = {
       formatMaximum: { okStr: "<=", ok: i.LTE, fail: i.GT },
       formatMinimum: { okStr: ">=", ok: i.GTE, fail: i.LT },
       formatExclusiveMaximum: { okStr: "<", ok: i.LT, fail: i.GTE },
@@ -11194,18 +11258,18 @@ function Nc() {
           const _ = A.scopeValue("formats", {
             ref: m.formats,
             code: d.code.formats
-          }), E = A.const("fmt", (0, t._)`${_}[${u.schemaCode}]`);
-          c.fail$data((0, t.or)((0, t._)`typeof ${E} != "object"`, (0, t._)`${E} instanceof RegExp`, (0, t._)`typeof ${E}.compare != "function"`, h(E)));
+          }), T = A.const("fmt", (0, t._)`${_}[${u.schemaCode}]`);
+          c.fail$data((0, t.or)((0, t._)`typeof ${T} != "object"`, (0, t._)`${T} instanceof RegExp`, (0, t._)`typeof ${T}.compare != "function"`, h(T)));
         }
         function p() {
-          const _ = u.schema, E = m.formats[_];
-          if (!E || E === !0)
+          const _ = u.schema, T = m.formats[_];
+          if (!T || T === !0)
             return;
-          if (typeof E != "object" || E instanceof RegExp || typeof E.compare != "function")
+          if (typeof T != "object" || T instanceof RegExp || typeof T.compare != "function")
             throw new Error(`"${f}": format "${_}" does not define "compare" function`);
           const v = A.scopeValue("formats", {
             key: _,
-            ref: E,
+            ref: T,
             code: d.code.formats ? (0, t._)`${d.code.formats}${(0, t.getProperty)(_)}` : void 0
           });
           c.fail$data(h(v));
@@ -11220,11 +11284,11 @@ function Nc() {
     e.default = l;
   })(wa)), wa;
 }
-var Eo;
-function Sc() {
-  return Eo || (Eo = 1, (function(e, r) {
+var Lo;
+function kc() {
+  return Lo || (Lo = 1, (function(e, r) {
     Object.defineProperty(r, "__esModule", { value: !0 });
-    const t = Bc(), i = Nc(), n = /* @__PURE__ */ ge(), s = new n.Name("fullFormats"), l = new n.Name("fastFormats"), c = (a, o = { keywords: !0 }) => {
+    const t = Sc(), i = Ic(), n = /* @__PURE__ */ ge(), s = new n.Name("fullFormats"), l = new n.Name("fastFormats"), c = (a, o = { keywords: !0 }) => {
       if (Array.isArray(o))
         return A(a, o, t.fullFormats, s), a;
       const [f, g] = o.mode === "fast" ? [t.fastFormats, l] : [t.fullFormats, s], d = o.formats || t.formatNames;
@@ -11243,20 +11307,20 @@ function Sc() {
         a.addFormat(u, f[u]);
     }
     e.exports = r = c, Object.defineProperty(r, "__esModule", { value: !0 }), r.default = c;
-  })(kr, kr.exports)), kr.exports;
+  })(Fr, Fr.exports)), Fr.exports;
 }
-var Ic = Sc();
-const kc = /* @__PURE__ */ Ia(Ic), Fc = "http://json-schema.org/draft-07/schema#", Mc = "LectureDocument", Oc = "object", $c = !1, zc = ["schemaVersion", "documentTitle", "direction", "overview", "sections", "endNote"], Uc = { schemaVersion: { type: "string", enum: ["1.0", "1.1"] }, documentTitle: { type: "string", minLength: 1 }, direction: { type: "string", enum: ["ltr", "rtl"] }, overview: { $ref: "#/definitions/LectureOverview" }, sections: { type: "array", minItems: 1, items: { $ref: "#/definitions/LectureSection" } }, endNote: { $ref: "#/definitions/RichText" }, extractionAudit: { $ref: "#/definitions/ExtractionAudit" } }, Gc = { RichTextRun: { type: "object", additionalProperties: !1, required: ["text"], properties: { text: { type: "string", minLength: 1 }, emphasis: { type: "string", enum: ["none", "bold", "italic", "accent", "highlight"] } } }, RichText: { oneOf: [{ type: "string" }, { type: "array", minItems: 1, items: { $ref: "#/definitions/RichTextRun" } }] }, ListItem: { oneOf: [{ type: "string" }, { type: "object", additionalProperties: !1, required: ["text"], properties: { text: { $ref: "#/definitions/RichText" }, level: { type: "integer", minimum: 0 } } }] }, LectureOverview: { type: "object", additionalProperties: !1, required: ["title", "introduction", "keyPoints"], properties: { title: { type: "string", minLength: 1 }, introduction: { $ref: "#/definitions/RichText" }, keyPoints: { type: "array", items: { $ref: "#/definitions/RichText" } } } }, LectureSection: { type: "object", additionalProperties: !1, required: ["sectionId", "sectionTitle", "slides"], properties: { sectionId: { type: "string", minLength: 1 }, sectionTitle: { type: "string", minLength: 1 }, slides: { type: "array", minItems: 1, items: { $ref: "#/definitions/LectureSlide" } } } }, LectureSlide: { type: "object", additionalProperties: !1, required: ["slideId", "slideTitle", "slideSubtitle", "sourceReferences", "blocks"], properties: { slideId: { type: "string", minLength: 1 }, slideTitle: { type: "string" }, slideSubtitle: { $ref: "#/definitions/RichText" }, sourceReferences: { type: "array", items: { type: "string" } }, blocks: { type: "array", minItems: 1, items: { $ref: "#/definitions/LectureBlock" } } } }, LectureBlock: { oneOf: [{ $ref: "#/definitions/SubtitleBlock" }, { $ref: "#/definitions/ParagraphBlock" }, { $ref: "#/definitions/BulletsBlock" }, { $ref: "#/definitions/NumberedBlock" }, { $ref: "#/definitions/CalloutBlock" }, { $ref: "#/definitions/TableBlock" }, { $ref: "#/definitions/DiagramBlock" }, { $ref: "#/definitions/ImageBlock" }] }, BaseBlock: { type: "object", required: ["blockId", "sourceReferences"], properties: { blockId: { type: "string", minLength: 1 }, sourceReferences: { type: "array", items: { type: "string" } } } }, SubtitleBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "text"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "subtitle" }, text: { $ref: "#/definitions/RichText" } } }] }, ParagraphBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "text"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "paragraph" }, text: { $ref: "#/definitions/RichText" } } }] }, BulletsBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "items"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "bullets" }, items: { type: "array", minItems: 1, items: { $ref: "#/definitions/ListItem" } } } }] }, NumberedBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "items"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "numbered" }, items: { type: "array", minItems: 1, items: { $ref: "#/definitions/ListItem" } }, startAt: { type: "integer", minimum: 1 } } }] }, CalloutBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "label", "text", "tone"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "callout" }, label: { $ref: "#/definitions/RichText" }, text: { $ref: "#/definitions/RichText" }, tone: { type: "string", enum: ["note", "warning", "info"] } } }] }, TableBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "label", "headers", "rows"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "table" }, label: { $ref: "#/definitions/RichText" }, tableType: { type: "string", enum: ["standard", "comparison", "highlight", "heatmap"] }, headers: { type: "array", minItems: 1, items: { $ref: "#/definitions/RichText" } }, rows: { type: "array", items: { type: "array", items: { $ref: "#/definitions/RichText" } } }, heatmap: { type: "object", additionalProperties: !1, required: ["min", "max", "values"], properties: { min: { type: "number" }, max: { type: "number" }, values: { type: "array", items: { type: "array", items: { type: "number" } } } } } } }] }, DiagramBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "label", "diagramRows"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "diagram" }, label: { $ref: "#/definitions/RichText" }, diagramType: { type: "string", enum: ["generic", "metabolic", "signal-transduction", "gene-regulatory", "disease-pharmacology"] }, diagramRows: { type: "array", minItems: 1, items: { type: "array", minItems: 1, items: { oneOf: [{ type: "string", minLength: 1 }, { type: "array", minItems: 1, items: { $ref: "#/definitions/RichTextRun" } }] } } }, pathways: { type: "array", items: { type: "object", additionalProperties: !1, required: ["pathwayId", "label", "nodeIds"], properties: { pathwayId: { type: "string", minLength: 1 }, label: { $ref: "#/definitions/RichText" }, nodeIds: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } } } } } } }] }, ImageBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "slotId", "label", "description", "important", "sourceReference", "fit", "preferredAspect"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "image" }, slotId: { type: "string", minLength: 1 }, label: { $ref: "#/definitions/RichText" }, description: { $ref: "#/definitions/RichText" }, important: { type: "boolean" }, sourceReference: { type: "string" }, fit: { type: "string", enum: ["contain", "cover"] }, preferredAspect: { type: "string", enum: ["wide", "portrait", "square", "full", "automatic"] }, orientation: { type: "string", enum: ["automatic", "transverse", "longitudinal", "portrait", "landscape"] } } }] }, ExtractionAudit: { type: "object", additionalProperties: !1, required: ["sourceType", "sourcePageOrSlideCount", "coveredSourceReferences", "unmappedSourceReferences", "warnings"], properties: { sourceType: { type: "string", enum: ["pdf", "pptx"] }, sourcePageOrSlideCount: { type: "integer", minimum: 0 }, coveredSourceReferences: { type: "array", items: { type: "string" } }, unmappedSourceReferences: { type: "array", items: { type: "string" } }, warnings: { type: "array", items: { type: "string" } } } } }, ci = {
-  $schema: Fc,
-  title: Mc,
-  type: Oc,
-  additionalProperties: $c,
-  required: zc,
-  properties: Uc,
-  definitions: Gc
-}, Kc = ci, Ai = new Pc({ allErrors: !0, strict: !1 });
-kc(Ai);
-const _a = Ai.compile(ci), Xc = [
+var Fc = kc();
+const Mc = /* @__PURE__ */ Ia(Fc), Oc = "http://json-schema.org/draft-07/schema#", $c = "LectureDocument", zc = "object", Uc = !1, Gc = ["schemaVersion", "documentTitle", "direction", "overview", "sections", "endNote"], Xc = { schemaVersion: { type: "string", enum: ["1.0", "1.1"] }, documentTitle: { type: "string", minLength: 1 }, direction: { type: "string", enum: ["ltr", "rtl"] }, overview: { $ref: "#/definitions/LectureOverview" }, sections: { type: "array", minItems: 1, items: { $ref: "#/definitions/LectureSection" } }, endNote: { $ref: "#/definitions/RichText" }, extractionAudit: { $ref: "#/definitions/ExtractionAudit" } }, Wc = { RichTextRun: { type: "object", additionalProperties: !1, required: ["text"], properties: { text: { type: "string", minLength: 1 }, emphasis: { type: "string", enum: ["none", "bold", "italic", "accent", "highlight"] } } }, RichText: { oneOf: [{ type: "string" }, { type: "array", minItems: 1, items: { $ref: "#/definitions/RichTextRun" } }] }, ListItem: { oneOf: [{ type: "string" }, { type: "object", additionalProperties: !1, required: ["text"], properties: { text: { $ref: "#/definitions/RichText" }, level: { type: "integer", minimum: 0 } } }] }, LectureOverview: { type: "object", additionalProperties: !1, required: ["title", "introduction", "keyPoints"], properties: { title: { type: "string", minLength: 1 }, introduction: { $ref: "#/definitions/RichText" }, keyPoints: { type: "array", items: { $ref: "#/definitions/RichText" } } } }, LectureSection: { type: "object", additionalProperties: !1, required: ["sectionId", "sectionTitle", "slides"], properties: { sectionId: { type: "string", minLength: 1 }, sectionTitle: { type: "string", minLength: 1 }, slides: { type: "array", minItems: 1, items: { $ref: "#/definitions/LectureSlide" } } } }, LectureSlide: { type: "object", additionalProperties: !1, required: ["slideId", "slideTitle", "slideSubtitle", "sourceReferences", "blocks"], properties: { slideId: { type: "string", minLength: 1 }, slideTitle: { type: "string" }, slideSubtitle: { $ref: "#/definitions/RichText" }, sourceReferences: { type: "array", items: { type: "string" } }, blocks: { type: "array", minItems: 1, items: { $ref: "#/definitions/LectureBlock" } } } }, LectureBlock: { oneOf: [{ $ref: "#/definitions/SubtitleBlock" }, { $ref: "#/definitions/ParagraphBlock" }, { $ref: "#/definitions/BulletsBlock" }, { $ref: "#/definitions/NumberedBlock" }, { $ref: "#/definitions/CalloutBlock" }, { $ref: "#/definitions/TableBlock" }, { $ref: "#/definitions/DiagramBlock" }, { $ref: "#/definitions/ImageBlock" }] }, BaseBlock: { type: "object", required: ["blockId", "sourceReferences"], properties: { blockId: { type: "string", minLength: 1 }, sourceReferences: { type: "array", items: { type: "string" } } } }, SubtitleBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "text"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "subtitle" }, text: { $ref: "#/definitions/RichText" } } }] }, ParagraphBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "text"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "paragraph" }, text: { $ref: "#/definitions/RichText" } } }] }, BulletsBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "items"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "bullets" }, items: { type: "array", minItems: 1, items: { $ref: "#/definitions/ListItem" } } } }] }, NumberedBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "items"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "numbered" }, items: { type: "array", minItems: 1, items: { $ref: "#/definitions/ListItem" } }, startAt: { type: "integer", minimum: 1 } } }] }, CalloutBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "label", "text", "tone"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "callout" }, label: { $ref: "#/definitions/RichText" }, text: { $ref: "#/definitions/RichText" }, tone: { type: "string", enum: ["note", "warning", "info"] } } }] }, TableBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "label", "headers", "rows"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "table" }, label: { $ref: "#/definitions/RichText" }, tableType: { type: "string", enum: ["standard", "comparison", "highlight", "heatmap"] }, headers: { type: "array", minItems: 1, items: { $ref: "#/definitions/RichText" } }, rows: { type: "array", items: { type: "array", items: { $ref: "#/definitions/RichText" } } }, heatmap: { type: "object", additionalProperties: !1, required: ["min", "max", "values"], properties: { min: { type: "number" }, max: { type: "number" }, values: { type: "array", items: { type: "array", items: { type: "number" } } } } } } }] }, DiagramBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "label", "diagramRows"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "diagram" }, label: { $ref: "#/definitions/RichText" }, diagramType: { type: "string", enum: ["generic", "metabolic", "signal-transduction", "gene-regulatory", "disease-pharmacology"] }, diagramRows: { type: "array", minItems: 1, items: { type: "array", minItems: 1, items: { oneOf: [{ type: "string", minLength: 1 }, { type: "array", minItems: 1, items: { $ref: "#/definitions/RichTextRun" } }] } } }, pathways: { type: "array", items: { type: "object", additionalProperties: !1, required: ["pathwayId", "label", "nodeIds"], properties: { pathwayId: { type: "string", minLength: 1 }, label: { $ref: "#/definitions/RichText" }, nodeIds: { type: "array", minItems: 1, items: { type: "string", minLength: 1 } } } } } } }] }, ImageBlock: { allOf: [{ $ref: "#/definitions/BaseBlock" }, { type: "object", additionalProperties: !1, required: ["type", "slotId", "label", "description", "important", "sourceReference", "fit", "preferredAspect"], properties: { blockId: { type: "string" }, sourceReferences: { type: "array", items: { type: "string" } }, type: { const: "image" }, slotId: { type: "string", minLength: 1 }, label: { $ref: "#/definitions/RichText" }, description: { $ref: "#/definitions/RichText" }, important: { type: "boolean" }, sourceReference: { type: "string" }, fit: { type: "string", enum: ["contain", "cover"] }, preferredAspect: { type: "string", enum: ["wide", "portrait", "square", "full", "automatic"] }, orientation: { type: "string", enum: ["automatic", "transverse", "longitudinal", "portrait", "landscape"] } } }] }, ExtractionAudit: { type: "object", additionalProperties: !1, required: ["sourceType", "sourcePageOrSlideCount", "coveredSourceReferences", "unmappedSourceReferences", "warnings"], properties: { sourceType: { type: "string", enum: ["pdf", "pptx"] }, sourcePageOrSlideCount: { type: "integer", minimum: 0 }, coveredSourceReferences: { type: "array", items: { type: "string" } }, unmappedSourceReferences: { type: "array", items: { type: "string" } }, warnings: { type: "array", items: { type: "string" } } } } }, li = {
+  $schema: Oc,
+  title: $c,
+  type: zc,
+  additionalProperties: Uc,
+  required: Gc,
+  properties: Xc,
+  definitions: Wc
+}, Jc = li, ci = new Nc({ allErrors: !0, strict: !1 });
+Mc(ci);
+const _a = ci.compile(li), qc = [
   /^image$/i,
   /^figure$/i,
   /^picture$/i,
@@ -11269,10 +11333,10 @@ const _a = Ai.compile(ci), Xc = [
   /^img$/i,
   /^pic$/i
 ];
-function Wc(e) {
-  return Xc.some((r) => r.test(e.trim()));
+function Hc(e) {
+  return qc.some((r) => r.test(e.trim()));
 }
-function qc(e) {
+function Vc(e) {
   const r = e.instancePath || "(root)";
   if (e.keyword === "minItems") {
     if (r.endsWith("/slides")) return `${r}: section has no slides`;
@@ -11281,11 +11345,11 @@ function qc(e) {
   }
   return e.keyword === "minLength" && r.includes("/diagramRows/") ? `${r}: diagram has an empty node` : `${r}: ${e.message}`;
 }
-function Hc(e) {
+function Qc(e) {
   const r = [], t = [];
   if (!_a(e) && _a.errors) {
     for (const d of _a.errors)
-      r.push(qc(d));
+      r.push(Vc(d));
     return { valid: !1, errors: r, warnings: t };
   }
   const n = e;
@@ -11300,19 +11364,19 @@ function Hc(e) {
       for (const y of m.blocks) {
         if (c.has(y.blockId) && r.push(`Duplicate blockId: "${y.blockId}"`), c.add(y.blockId), y.type === "image") {
           const p = y;
-          if (A.has(p.slotId) && r.push(`Duplicate image slotId: "${p.slotId}"`), A.add(p.slotId), !Te(p.label).trim())
+          if (A.has(p.slotId) && r.push(`Duplicate image slotId: "${p.slotId}"`), A.add(p.slotId), !Ee(p.label).trim())
             r.push(`Image block "${p.blockId}" has no label`);
           else {
-            Wc(Te(p.label)) && t.push(
-              `Image block "${p.blockId}" has a generic label: "${Te(p.label)}". Use a specific descriptive label (e.g. "Mitochondria electron micrograph").`
+            Hc(Ee(p.label)) && t.push(
+              `Image block "${p.blockId}" has a generic label: "${Ee(p.label)}". Use a specific descriptive label (e.g. "Mitochondria electron micrograph").`
             );
-            const h = Te(p.label).toLowerCase().trim();
-            a.has(h) && t.push(`Duplicate image label: "${Te(p.label)}"`), a.add(h);
+            const h = Ee(p.label).toLowerCase().trim();
+            a.has(h) && t.push(`Duplicate image label: "${Ee(p.label)}"`), a.add(h);
           }
         }
         if (y.type === "table") {
           const p = y;
-          Te(p.label).trim() || r.push(`Table block "${p.blockId}" has no label`);
+          Ee(p.label).trim() || r.push(`Table block "${p.blockId}" has no label`);
           for (let h = 0; h < p.rows.length; h++)
             p.rows[h].length !== p.headers.length && r.push(
               `Table block "${p.blockId}" row ${h} has ${p.rows[h].length} cells but ${p.headers.length} headers`
@@ -11320,10 +11384,10 @@ function Hc(e) {
         }
         if (y.type === "diagram") {
           const p = y;
-          Te(p.label).trim() || r.push(`Diagram block "${p.blockId}" has no label`);
+          Ee(p.label).trim() || r.push(`Diagram block "${p.blockId}" has no label`);
           for (let h = 0; h < p.diagramRows.length; h++)
             for (let _ = 0; _ < p.diagramRows[h].length; _++)
-              Te(p.diagramRows[h][_]).trim() || r.push(
+              Ee(p.diagramRows[h][_]).trim() || r.push(
                 `Diagram block "${p.blockId}" has an empty node at row ${h}, position ${_}`
               );
         }
@@ -11334,15 +11398,15 @@ function Hc(e) {
     for (const m of d.slides)
       for (const u of m.blocks) {
         const y = [];
-        (u.type === "paragraph" || u.type === "subtitle") && y.push(["text", u.text]), u.type === "callout" && y.push(["label", u.label], ["text", u.text]), u.type === "image" && y.push(["label", u.label], ["description", u.description]), u.type === "table" && y.push(["label", u.label], ...u.headers.map((p, h) => [`headers[${h}]`, p]), ...u.rows.flatMap((p, h) => p.map((_, E) => [`rows[${h}][${E}]`, _]))), u.type === "diagram" && y.push(["label", u.label], ...u.diagramRows.flatMap((p, h) => p.map((_, E) => [`diagramRows[${h}][${E}]`, _])));
+        (u.type === "paragraph" || u.type === "subtitle") && y.push(["text", u.text]), u.type === "callout" && y.push(["label", u.label], ["text", u.text]), u.type === "image" && y.push(["label", u.label], ["description", u.description]), u.type === "table" && y.push(["label", u.label], ...u.headers.map((p, h) => [`headers[${h}]`, p]), ...u.rows.flatMap((p, h) => p.map((_, T) => [`rows[${h}][${T}]`, _]))), u.type === "diagram" && y.push(["label", u.label], ...u.diagramRows.flatMap((p, h) => p.map((_, T) => [`diagramRows[${h}][${T}]`, _])));
         for (const [p, h] of y)
-          for (const [_, E] of Wt(h).entries())
-            E.text || r.push(`${u.blockId}.${p}[${_}].text must not be empty`);
+          for (const [_, T] of qt(h).entries())
+            T.text || r.push(`${u.blockId}.${p}[${_}].text must not be empty`);
         if (u.type === "bullets" || u.type === "numbered") {
           let p = 0;
           u.items.forEach((h, _) => {
-            const E = Qr(h);
-            (!Number.isInteger(E) || E < 0) && r.push(`${u.blockId}.items[${_}].level must be a non-negative integer`), E - p > 1 && t.push(`${u.blockId}.items[${_}] jumps more than one nesting level`), p = E;
+            const T = jr(h);
+            (!Number.isInteger(T) || T < 0) && r.push(`${u.blockId}.items[${_}].level must be a non-negative integer`), T - p > 1 && t.push(`${u.blockId}.items[${_}] jumps more than one nesting level`), p = T;
           });
         }
         u.type === "table" && u.tableType === "heatmap" && u.heatmap && (u.heatmap.max <= u.heatmap.min && r.push(`${u.blockId}.heatmap.max must be greater than min`), u.heatmap.values.length !== u.rows.length && r.push(`${u.blockId}.heatmap.values must match row count`), u.heatmap.values.forEach((p, h) => {
@@ -11368,7 +11432,7 @@ function Hc(e) {
   const f = [...new Set(r)], g = [...new Set(t)];
   return { valid: f.length === 0, errors: f, warnings: g };
 }
-class Vc extends Error {
+class jc extends Error {
   validationErrors;
   constructor(r) {
     super(`Lecture document is invalid:
@@ -11376,38 +11440,38 @@ ${r.map((t) => `- ${t}`).join(`
 `)}`), this.name = "LectureValidationError", this.validationErrors = r;
   }
 }
-let To = Promise.resolve();
-function Qc(e) {
-  const r = To.then(e, e);
-  return To = r.then(() => {
+let Ro = Promise.resolve();
+function Yc(e) {
+  const r = Ro.then(e, e);
+  return Ro = r.then(() => {
   }, () => {
   }), r;
 }
-function Yc(e, r = {}, t = {}) {
-  return Qc(() => jc(e, r, t));
+function Zc(e, r = {}, t = {}) {
+  return Yc(() => Kc(e, r, t));
 }
-async function jc(e, r, t) {
+async function Kc(e, r, t) {
   const i = [];
   if (t.validateInput !== !1) {
-    const n = Hc(e);
-    if (i.push(...n.warnings), !n.valid) throw new Vc(n.errors);
+    const n = Qc(e);
+    if (i.push(...n.warnings), !n.valid) throw new jc(n.errors);
   }
-  en(), cs(t.theme);
+  rn(), ls(t.theme);
   try {
-    const n = new ls(), s = "JANG_WIDE";
-    n.defineLayout({ name: s, width: P.SLIDE_WIDTH, height: P.SLIDE_HEIGHT }), n.layout = s, n.author = "Jang PPTX Engine", n.company = "Jang", n.subject = e.documentTitle, n.title = e.documentTitle, n.lang = e.direction === "rtl" ? "ar-SA" : "en-US", n.rtlMode = e.direction === "rtl", n.theme = {
-      headFontFace: P.headingFont,
-      bodyFontFace: P.bodyFont,
+    const n = new ss(), s = "JANG_WIDE";
+    n.defineLayout({ name: s, width: D.SLIDE_WIDTH, height: D.SLIDE_HEIGHT }), n.layout = s, n.author = "Jang PPTX Engine", n.company = "Jang", n.subject = e.documentTitle, n.title = e.documentTitle, n.lang = e.direction === "rtl" ? "ar-SA" : "en-US", n.rtlMode = e.direction === "rtl", n.theme = {
+      headFontFace: D.headingFont,
+      bodyFontFace: D.bodyFont,
       lang: e.direction === "rtl" ? "ar-SA" : "en-US"
-    }, gl(n, e, r, i);
-    const l = bl(n);
+    }, vl(n, e, r, i);
+    const l = _l(n);
     if (l.checkedObjects === 0 && i.push("Geometry validation could not inspect any generated slide objects."), !l.valid) {
       const g = l.violations.map((d) => `Geometry: ${d}`);
       if (t.strictGeometry) throw new Error(g.join(`
 `));
       i.push(...g);
     }
-    const c = Cl(e, r);
+    const c = Tl(e, r);
     if (!c.valid) {
       const g = c.issues.filter((d) => d.code !== "unfilled-image-slot").map((d) => `Quality: ${d.message}`);
       if (t.strictQuality && g.length > 0) throw new Error(g.join(`
@@ -11428,25 +11492,25 @@ async function jc(e, r, t) {
     const f = n.slides ?? n._slides ?? [];
     return { blob: a, warnings: [...new Set(i)], slideCount: f.length, quality: c };
   } finally {
-    en();
+    rn();
   }
 }
 export {
-  Mo as DEFAULT_THEME,
-  Vc as LectureValidationError,
-  Ot as SlideRenderPlanError,
-  P as THEME,
-  Ls as assertValidContentSlideRenderPlan,
-  cs as configureTheme,
+  $o as DEFAULT_THEME,
+  jc as LectureValidationError,
+  $t as SlideRenderPlanError,
+  D as THEME,
+  Ds as assertValidContentSlideRenderPlan,
+  ls as configureTheme,
   qo as createContentSlideRenderPlan,
-  Yc as generateLecturePptx,
-  Kc as lectureSchema,
-  Ns as planDedicatedDiagramSlides,
-  Ss as planDedicatedImageSlide,
-  Fs as planDedicatedTableSlides,
+  Zc as generateLecturePptx,
+  Jc as lectureSchema,
+  Is as planDedicatedDiagramSlides,
+  ks as planDedicatedImageSlide,
+  Os as planDedicatedTableSlides,
   Yo as planLectureSlide,
-  qs as planPresentation,
-  en as resetTheme,
-  Ts as validateContentSlideRenderPlan,
-  Hc as validateLecture
+  Vs as planPresentation,
+  rn as resetTheme,
+  Rs as validateContentSlideRenderPlan,
+  Qc as validateLecture
 };

@@ -18,6 +18,10 @@ function createEventTarget(initial = {}) {
       callbacks.push(listener);
       listeners.set(type, callbacks);
     },
+    removeEventListener(type, listener) {
+      const callbacks = listeners.get(type) || [];
+      listeners.set(type, callbacks.filter((callback) => callback !== listener));
+    },
     dispatchEvent(event) {
       const callbacks = listeners.get(event.type) || [];
       callbacks.forEach((listener) => listener.call(this, event));
@@ -73,7 +77,7 @@ test("preview assets and application loader resolve relative to a repository sub
   assert.match(build, /"app-loader\.js"/);
   assert.match(loader, /^import "\.\/app\.js\?v=20260725-file-ready-ack";/m);
   assert.match(loader, /__jangApplicationModuleLoaded = true/);
-  assert.match(loader, /dispatchEvent\(new Event\("input"/);
+  assert.match(loader, /dispatchEvent\(new Event\("change"/);
 });
 
 test("bootstrap preserves a file while the application module is still loading", async () => {
@@ -126,7 +130,7 @@ test("bootstrap reports only a genuine application module error", async () => {
 
   vm.runInNewContext(source, context, { filename: "file-picker-bootstrap.js" });
   harness.elements.lectureFile.files = [{ name: "lecture.pptx", size: 4096, lastModified: 1 }];
-  harness.elements.lectureFile.dispatchEvent({ type: "input" });
+  harness.elements.lectureFile.dispatchEvent({ type: "change" });
   harness.moduleScript.dispatchEvent({ type: "error" });
 
   assert.equal(harness.elements.lectureFile.files.length, 1);

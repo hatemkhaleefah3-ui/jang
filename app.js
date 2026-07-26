@@ -90,25 +90,29 @@ function clearLectureSelection(message, tone = "error") {
   setStatus(message, tone);
 }
 
+function scheduleAfterPickerClose(callback) {
+  if (typeof window.requestAnimationFrame === "function") window.requestAnimationFrame(callback);
+  else window.setTimeout(callback, 0);
+}
+
 function handleLectureFileSelection(event) {
   const input = event.currentTarget;
   const file = selectedFileFromInput(input);
-
-  // Some browsers can emit an empty input/change event while the native picker
-  // is closing. Never erase a valid selection because of that transient event.
   if (!file) {
     if (!selectedFile) setStatus("No file was selected. Choose a PDF or PPTX lecture.", "error");
     return;
   }
-
   const signature = lectureFileSignature(file);
   if (selectedFile && signature === selectedFileSignature) return;
-
-  try {
-    selectLectureFile(file);
-  } catch (error) {
-    clearLectureSelection(error instanceof Error ? error.message : "The selected file could not be imported.");
-  }
+  scheduleAfterPickerClose(() => {
+    const currentFile = selectedFileFromInput(input);
+    if (!currentFile || lectureFileSignature(currentFile) !== signature) return;
+    try {
+      selectLectureFile(currentFile);
+    } catch (error) {
+      clearLectureSelection(error instanceof Error ? error.message : "The selected file could not be imported.");
+    }
+  });
 }
 
 function readImage(file) {
@@ -334,7 +338,6 @@ function downloadGeneratedFile() {
   setStatus(`Downloaded ${generated.filename}.`, "success");
 }
 
-fileInput.addEventListener("input", handleLectureFileSelection);
 fileInput.addEventListener("change", handleLectureFileSelection);
 
 action.addEventListener("click", () => {

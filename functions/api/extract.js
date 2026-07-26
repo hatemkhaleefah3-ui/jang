@@ -47,7 +47,7 @@ const blockSchema = {
     rows: { type: "array", items: { type: "array", items: { type: "string" } } },
     heatmap: heatmapSchema,
     diagramType: { type: "string", enum: ["generic", "metabolic", "signal-transduction", "gene-regulatory", "disease-pharmacology"] },
-    diagramRows: { type: "array", items: { type: "array", items: { type: "string" } } },
+    diagramRows: { type: "array", items: { type: "array", items: { type: "string" } }, description: "Concise ordered pathway nodes. Use this whenever the source explicitly supports a multi-step conversion, mechanism, cascade, or causal chain." },
     slotId: { type: "string", description: "Unique stable identifier for one important image position." },
     important: { type: "boolean" },
     fit: { type: "string", enum: ["contain", "cover"] },
@@ -143,25 +143,31 @@ TABLE SELECTION:
 18. Preserve all table headers and cells. Do not convert qualified prose into a table when meaning would be lost.
 
 PATHWAY-DIAGRAM SELECTION:
-19. Use diagramType metabolic for enzyme-catalyzed substrate-to-product chains such as glycolysis.
-20. Use diagramType signal-transduction for extracellular signals, receptors, intracellular cascades, activation, inhibition, and binding events.
-21. Use diagramType gene-regulatory for DNA, RNA, transcription factors, and gene-expression control relationships.
-22. Use diagramType disease-pharmacology for disrupted processes, disease mechanisms, drug targets, and therapeutic intervention points.
-23. Use diagramType generic for other supported processes or relationships. Populate diagramRows in reading order. Create a diagram only when the source supports the relationships.
+19. Actively inspect every source page or slide for explicit process relationships, even when they are written as prose, bullets, numbered steps, or arrow notation rather than already drawn as a pathway.
+20. Treat content as a pathway candidate when it contains at least three linked entities, at least two conversions or ordered mechanism steps, arrows, or relationship language such as converted to, forms, produces, via, catalyzed by, activates, inhibits, binds, phosphorylates, translocates, or leads to.
+21. When those relationships are supported, include one diagram block in addition to the explanatory paragraph or list. Do not leave a supported biochemical, signaling, gene-regulatory, or disease mechanism only as bullets or numbered prose.
+22. Use concise node labels in diagramRows. Keep full explanations, enzyme requirements, cofactors, clinical details, and qualifications in adjacent text blocks so the diagram remains readable without losing content.
+23. Use diagramType metabolic for enzyme-catalyzed substrate-to-product chains such as glycolysis, amino-acid conversion, biosynthesis, and degradation.
+24. Use diagramType signal-transduction for extracellular signals, receptors, intracellular cascades, activation, inhibition, binding, phosphorylation, and translocation events.
+25. Use diagramType gene-regulatory for DNA, RNA, transcription factors, epigenetic control, and gene-expression relationships.
+26. Use diagramType disease-pharmacology for disrupted processes, disease mechanisms, drug targets, and therapeutic intervention points.
+27. Use diagramType generic for other supported sequential or causal relationships. Populate diagramRows in reading order.
+28. Never invent missing links. If fewer than three entities are linked or the order is ambiguous, preserve the content as text instead of forcing a diagram.
+29. Before returning, audit every slide containing explicit linked steps and ensure it has a diagram block; when a clear candidate is omitted because the source is ambiguous, record that reason in warnings.
 
 IMPORTANT IMAGE POSITIONS:
-24. Do not return image bytes. Create image blocks only for important source visuals that materially support understanding and should be manually imported by the user.
-25. Give every important image a unique slotId, a unique simple content-specific label, a one-sentence description, important=true, fit, preferredAspect, orientation, sourceReference, and sourceReferences.
-26. Use orientation transverse for cross-sectional/anatomical transverse views and longitudinal for lengthwise views. Use portrait or landscape for ordinary orientation, and automatic only when the source does not establish it.
-27. Use contain for pathways, charts, microscopy, radiology, anatomy labels, and diagrams where cropping could remove information. Use cover only for photographs that can crop safely.
-28. Place each image block at the logical point in the reconstructed lecture near the content it supports.
+30. Do not return image bytes. Create image blocks only for important source visuals that materially support understanding and should be manually imported by the user.
+31. Give every important image a unique slotId, a unique simple content-specific label, a one-sentence description, important=true, fit, preferredAspect, orientation, sourceReference, and sourceReferences.
+32. Use orientation transverse for cross-sectional/anatomical transverse views and longitudinal for lengthwise views. Use portrait or landscape for ordinary orientation, and automatic only when the source does not establish it.
+33. Use contain for pathways, charts, microscopy, radiology, anatomy labels, and diagrams where cropping could remove information. Use cover only for photographs that can crop safely.
+34. Place each image block at the logical point in the reconstructed lecture near the content it supports.
 
 AUDIT BEFORE RETURNING:
-29. Count the source pages or slides and return sourcePageOrSlideCount.
-30. Return coveredSourceReferences for all represented locations and unmappedSourceReferences for any location whose meaningful content could not be mapped. Do not hide omissions.
-31. Return warnings for ambiguous, unreadable, contradictory, or uncertain source content.
-32. Verify that every source page or slide containing meaningful content is represented by at least one traceable block or explicitly listed as unmapped.
-33. Return only JSON matching the supplied schema. Do not return markdown, HTML, CSS, coordinates, commentary, or unsupported fields.`;
+35. Count the source pages or slides and return sourcePageOrSlideCount.
+36. Return coveredSourceReferences for all represented locations and unmappedSourceReferences for any location whose meaningful content could not be mapped. Do not hide omissions.
+37. Return warnings for ambiguous, unreadable, contradictory, or uncertain source content.
+38. Verify that every source page or slide containing meaningful content is represented by at least one traceable block or explicitly listed as unmapped.
+39. Return only JSON matching the supplied schema. Do not return markdown, HTML, CSS, coordinates, commentary, or unsupported fields.`;
 
 function jsonResponse(body, status = 200) {
   return new Response(JSON.stringify(body), {

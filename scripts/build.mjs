@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const output = resolve(root, "dist");
-const assetVersion = "20260726-immutable-render-plan";
+const assetVersion = "20260726-pathway-picker-title-polish";
 const staticFiles = [
   "index.html",
   "styles.css",

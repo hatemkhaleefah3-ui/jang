@@ -10,6 +10,7 @@
   var selectedInput = null;
   var selectedStatus = null;
   var selectedAction = null;
+  var bootstrapSelectionHandler = null;
 
   function hasOwn(object, key) {
     return Object.prototype.hasOwnProperty.call(object, key);
@@ -60,6 +61,10 @@
   function markApplicationReady() {
     applicationState = "ready";
     window.__jangApplicationModuleLoaded = true;
+    if (selectedInput && bootstrapSelectionHandler) {
+      selectedInput.removeEventListener("change", bootstrapSelectionHandler);
+      bootstrapSelectionHandler = null;
+    }
   }
 
   function markApplicationFailed() {
@@ -148,8 +153,8 @@
       }
     }
 
-    input.addEventListener("input", handleSelection);
-    input.addEventListener("change", handleSelection);
+    bootstrapSelectionHandler = handleSelection;
+    if (applicationState !== "ready") input.addEventListener("change", bootstrapSelectionHandler);
     window.__jangPickerBootstrapReady = true;
   }
 

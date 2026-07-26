@@ -22,8 +22,8 @@ export function renderPlanLecture() {
     documentTitle: "Amino acids metabolism render-plan regression",
     direction: "ltr",
     overview: {
-      title: "Overview",
-      introduction: "A realistic two-section lecture with text, images, tables, and diagrams.",
+      title: "Lecture Overview: Amino Acid Metabolism",
+      introduction: "This lecture provides a comprehensive study of metabolic pathways, biosynthetic functions, and associated clinical disorders for glycine, phenylalanine, and tyrosine.",
       keyPoints: ["Glycine", "Phenylalanine and tyrosine", "Clinical integration"],
     },
     sections: [
@@ -85,11 +85,11 @@ export function renderPlanLecture() {
       },
       {
         sectionId: "aromatic",
-        sectionTitle: "Phenylalanine and tyrosine",
+        sectionTitle: "Phenylalanine and Tyrosine Metabolism",
         slides: [
           {
             slideId: "aromatic-pathway",
-            slideTitle: "Aromatic amino acid pathway",
+            slideTitle: "Biosynthesis of Specialized Products from Tyrosine",
             slideSubtitle: "Precursor flow and clinical consequences",
             sourceReferences: ["p10", "p11"],
             blocks: [
@@ -123,7 +123,7 @@ export function renderPlanLecture() {
         ],
       },
     ],
-    endNote: "Questions and clinical discussion",
+    endNote: "Complete lecture reconstruction covering Glycine, Phenylalanine, and Tyrosine metabolism and clinical correlates.",
   };
 }
 
