@@ -123,10 +123,10 @@ X-Jang-API-Key: <JANG_API_KEY>
 
 ### Cloudflare setup
 
-Create one private R2 bucket and bind it to the Pages project with the variable name:
+Create one Workers KV namespace and bind it to the Pages project with this variable name:
 
 ```text
-JANG_AUTOMATION_BUCKET
+JANG_AUTOMATION_KV
 ```
 
 Add an encrypted Pages secret named:
@@ -135,9 +135,23 @@ Add an encrypted Pages secret named:
 JANG_API_KEY
 ```
 
-Configure the binding and secret for both Production and Preview, then redeploy. Imports expire logically after seven days. Add an R2 lifecycle rule for the `imports/` prefix if the stored files should also be deleted automatically after seven days.
+Configure the KV binding and secret for both Production and Preview, then redeploy. Every import, normalized build record, image, presentation metadata record, and generated PPTX uses an absolute seven-day KV expiration.
 
-Server-side PPTX generation is CPU-heavy. Use a Cloudflare Workers Paid plan for dependable `/api/continue` execution; the browser workflow remains available regardless of the API configuration.
+Workers KV is eventually consistent. A write is normally visible immediately in the same Cloudflare location, but a following n8n request may reach another location where a new value can take up to about 60 seconds to appear. The API retries required KV reads for several seconds and returns a `Retry-After: 2` header when a value is still unavailable. In n8n, add a short Wait node—two to five seconds—between dependent calls and retry HTTP `404` or `409` responses with increasing delays for up to 60 seconds.
+
+The API uses immutable keys for the raw import, normalized build, each image, generated presentation metadata, and final PPTX. This avoids repeatedly overwriting a shared state key, but it cannot make KV strongly consistent. Workflows that require guaranteed immediate cross-location consistency need Durable Objects, D1, R2, or another transactional store.
+
+Workers KV limits each individual value to 25 MiB. Jang therefore:
+
+- keeps the raw JSON request at 20 MB or less;
+- keeps each imported image at 15 MB or less;
+- rejects any normalized build record or stored value above 25 MiB;
+- adds a warning when the generated PPTX reaches 22 MiB;
+- rejects `/api/continue` with HTTP `413` when the generated PPTX exceeds 25 MiB.
+
+A presentation rejected by that final guard cannot be exported through KV. Its final binary would need R2, another object store, or a future one-request streaming export route that generates and returns the PPTX without persisting it.
+
+Server-side PPTX generation is CPU-heavy. The browser workflow remains available regardless of API bindings or server-side generation limits.
 
 ### API sequence
 
@@ -195,7 +209,7 @@ Jang downloads a public `http` or `https` image, verifies the image content type
 { "importId": "..." }
 ```
 
-This calls the same `buildLecturePptxFile()` path used by the **Continue** button and stores the generated PPTX. Missing images remain as the same labelled placeholders used by the browser workflow.
+This calls the same `buildLecturePptxFile()` path used by the **Continue** button and stores the generated PPTX in KV when it is below the 25 MiB value limit. Missing images remain as the same labelled placeholders used by the browser workflow.
 
 #### 5. `POST /api/export`
 
@@ -218,9 +232,9 @@ In the n8n HTTP Request node, select a file/binary response format for this requ
 - `/api/build`: `parseClaudeOutputText()` and the schema/semantic validation in `claude-import.js`.
 - `/api/images/import`: the canonical `imageSlots` returned by that same parser; images remain keyed by `slotId`, exactly like the UI `selectedImages` map.
 - `/api/continue`: `buildLecturePptxFile()` from `pptx-output.js`, which calls the existing deterministic `generateLecturePptx()` engine.
-- `/api/export`: `PPTX_MIME` and the generated filename from `pptx-output.js`; the already-built binary is streamed from R2.
+- `/api/export`: `PPTX_MIME` and the generated filename from `pptx-output.js`; the already-built binary is read from Workers KV and returned directly.
 
-The browser-only state (`extraction`, `selectedImages`, and `generated` in `app.js`) could not be called directly from n8n. The minimal backend refactor is the R2-backed state wrapper in `functions/_shared/automation.js`; the lecture and PPTX business logic remains shared and is generated into a Worker-safe module graph during `npm run build`.
+The browser-only state (`extraction`, `selectedImages`, and `generated` in `app.js`) could not be called directly from n8n. The minimal backend refactor is the KV-backed state wrapper in `functions/_shared/automation.js`; the lecture and PPTX business logic remains shared and is generated into a Worker-safe module graph during `npm run build`.
 
 ## File limits
 
@@ -229,6 +243,7 @@ The browser-only state (`extraction`, `selectedImages`, and `generated` in `app.
 - Claude JSON: 20 MB maximum.
 - Imported image: 15 MB maximum per image.
 - n8n automation images: 60 MB combined maximum per presentation.
+- KV-stored generated PPTX: less than or equal to 25 MiB; warning begins at 22 MiB.
 
 ## Development
 
@@ -251,5 +266,5 @@ For local Cloudflare testing:
 
 ```bash
 npm run build
-npx wrangler pages dev dist --binding GEMINI_API_KEY=your-key --binding JANG_API_KEY=your-api-key --r2=JANG_AUTOMATION_BUCKET
+npx wrangler pages dev dist --binding GEMINI_API_KEY=your-key --binding JANG_API_KEY=your-api-key --kv=JANG_AUTOMATION_KV
 ```
