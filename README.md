@@ -1,10 +1,12 @@
-# Jang — Gemini Lecture PPTX Builder
+# Jang — Gemini and Claude Lecture PPTX Builder
 
-Jang turns an imported PDF or PPTX lecture into one editable, designed PowerPoint presentation.
+Jang turns an imported PDF/PPTX lecture or a validated Claude JSON/PPTX pair into one editable, designed PowerPoint presentation.
 
 ## Visitor workflow
 
-The same primary button controls the complete workflow:
+The same primary button controls the complete workflow.
+
+### Option 1 — import a lecture
 
 1. Import a PDF or PPTX lecture file.
 2. Click **Build PPTX**.
@@ -14,11 +16,23 @@ The same primary button controls the complete workflow:
 6. Jang builds the editable PowerPoint in the browser using the approved premium academic design.
 7. The same button becomes **Download PPTX**.
 
-The generated PPTX contains editable text, native bullets and numbering, native tables, native shapes and connectors, and imported image objects. Gemini does not return source image bytes.
+### Option 2 — import Claude output
+
+1. Select **Import Claude output**.
+2. Choose exactly two files together: one Claude `lecture-output.json` and one companion `.pptx`.
+3. Click **Build PPTX**.
+4. Jang validates the JSON locally against `lecture-schema.json` and verifies that the companion PPTX is readable.
+5. Jang shows the image slots declared by image blocks in the validated lecture JSON.
+6. Import the matching images and click **Continue**.
+7. Jang rebuilds the editable PowerPoint with its approved engine and the same button becomes **Download PPTX**.
+
+The Claude JSON is authoritative for lecture structure and image slots. The companion PPTX is a required readable reference; it does not replace Jang's template or physical layout engine.
+
+The generated PPTX contains editable text, native bullets and numbering, native tables, native shapes and connectors, and imported image objects. Gemini and Claude output do not need to contain source image bytes.
 
 ## One shared lecture contract
 
-Gemini output, the image-import interface, and the PPTX renderer use the same schema. The normalized document contains:
+Gemini output, Claude JSON import, the image-import interface, and the PPTX renderer use the same schema. The normalized document contains:
 
 - lecture title, overview, section titles, slide titles, and subtitles;
 - paragraphs and callouts;
@@ -29,7 +43,7 @@ Gemini output, the image-import interface, and the PPTX renderer use the same sc
 - stable section, slide, block, and image-slot identifiers;
 - source references and a completeness audit listing covered, unmapped, and uncertain source locations.
 
-The contract is represented by `lecture-schema.json`. `functions/api/extract.js` asks Gemini for a simpler structured response and normalizes it into that exact engine contract before returning it to the browser.
+The contract is represented by `lecture-schema.json`. `functions/api/extract.js` asks Gemini for a simpler structured response and normalizes it into that exact engine contract before returning it to the browser. `claude-import.js` validates Claude JSON directly against the final contract and derives its image-review list from canonical image blocks.
 
 ## Completeness safeguards
 
@@ -46,7 +60,7 @@ AI extraction cannot honestly guarantee perfection for every file, so the audit 
 
 ## Important images
 
-Gemini creates image blocks only for visuals that materially support understanding. Each block includes:
+Gemini or Claude creates image blocks only for visuals that materially support understanding. Each block includes:
 
 - a unique `slotId`;
 - a short content-specific label;
@@ -89,10 +103,14 @@ GEMINI_MODEL=gemini-3.6-flash
 
 `GEMINI_MODEL` is optional. The server maps the previous `gemini-2.5-flash` value to the configured default.
 
+Claude-output import is local and does not require a Gemini API call.
+
 ## File limits
 
 - PDF: 18 MB maximum. Gemini receives the PDF with visual page context.
-- PPTX: 50 MB maximum. Jang decodes ordered slide text, tables, notes, element positions, image positions, and nearby image context in the browser before extraction.
+- PPTX lecture: 50 MB maximum. Jang decodes ordered slide text, tables, notes, element positions, image positions, and nearby image context in the browser before extraction.
+- Claude JSON: 20 MB maximum.
+- Claude companion PPTX: 50 MB maximum.
 - Imported image: 15 MB maximum per image.
 
 ## Development
@@ -107,6 +125,7 @@ npm run dev
 - Static deployment output: `dist/`
 - Cloudflare extraction endpoint: `functions/api/extract.js`
 - Engine schema: `lecture-schema.json`
+- Claude import helper: `claude-import.js`
 - Example output: `generated/jang-website-pptx-workflow-sample.pptx`
 
 For local Cloudflare testing:
