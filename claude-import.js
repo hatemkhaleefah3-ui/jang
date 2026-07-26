@@ -26,13 +26,14 @@ function textKey(value) {
   return cleanText(value).toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
 }
 
-function conciseDefinition(value, maximumWords = 30) {
-  const normalized = cleanText(value);
-  if (!normalized) return "";
-  const firstSentence = normalized.match(/^.*?(?:[.!?]|$)/u)?.[0] || normalized;
-  const words = firstSentence.split(/\s+/).filter(Boolean);
-  const result = words.slice(0, maximumWords).join(" ");
-  return /[.!?]$/u.test(result) ? result : `${result}.`;
+function wordsOf(value) {
+  return cleanText(value).split(/\s+/).filter(Boolean);
+}
+
+function ensureSentence(value) {
+  const text = cleanText(value);
+  if (!text) return "";
+  return /[.!?]$/u.test(text) ? text : `${text}.`;
 }
 
 function listItemText(item) {
@@ -42,19 +43,47 @@ function listItemText(item) {
 function blockSummary(block) {
   if (!block || typeof block !== "object") return "";
   if (["title", "subtitle", "paragraph"].includes(block.type)) return cleanText(block.text);
-  if (["bullets", "numbered"].includes(block.type)) return cleanText(listItemText(block.items?.[0]));
+  if (["bullets", "numbered"].includes(block.type)) {
+    return (block.items || []).map((item) => cleanText(listItemText(item))).filter(Boolean).join(" ");
+  }
   if (block.type === "callout") return cleanText(block.text || block.label);
-  if (["table", "diagram"].includes(block.type)) return cleanText(block.label);
+  if (block.type === "table") {
+    return [block.label, ...(block.headers || []), ...(block.rows || []).flat()].map(cleanText).filter(Boolean).join(" ");
+  }
+  if (block.type === "diagram") {
+    return [block.label, ...(block.diagramRows || []).flat()].map(cleanText).filter(Boolean).join(" ");
+  }
   if (block.type === "image") return cleanText(block.description || block.label);
   return "";
 }
 
-function deriveDefinition(candidates, heading, role) {
-  for (const candidate of candidates) {
-    const definition = conciseDefinition(candidate);
-    if (definition && textKey(definition) !== textKey(heading)) return definition;
+function definitionFallback(heading, role) {
+  const subject = cleanText(heading);
+  if (role === "section") {
+    return `${subject} brings together the source-supported concepts, mechanisms, functions, relationships, and clinical implications developed throughout this part of the lecture.`;
   }
-  return `This ${role} organizes the lecture content about ${cleanText(heading)}.`;
+  if (role === "title") {
+    return `${subject} is defined by the source-supported mechanisms, functions, relationships, and implications explained in the accompanying content.`;
+  }
+  return `${subject} focuses the accompanying content on its source-supported details, sequence, and relationships.`;
+}
+
+function deriveDefinition(candidates, heading, role, minimumWords, maximumWords) {
+  const selected = [];
+  const seen = new Set([textKey(heading)]);
+  for (const candidate of candidates) {
+    const text = cleanText(candidate);
+    const key = textKey(text);
+    if (!text || !key || seen.has(key)) continue;
+    seen.add(key);
+    selected.push(text);
+  }
+
+  const combined = selected.join(" ");
+  const words = wordsOf(combined);
+  if (words.length < minimumWords) words.push(...wordsOf(definitionFallback(heading, role)));
+  const result = words.slice(0, maximumWords).join(" ");
+  return ensureSentence(result || definitionFallback(heading, role));
 }
 
 function firstParagraphText(slides) {
@@ -66,51 +95,157 @@ function firstParagraphText(slides) {
   return "";
 }
 
+function collectExistingBlockIds(lecture) {
+  const ids = new Set();
+  for (const section of lecture.sections || []) {
+    for (const slide of section.slides || []) {
+      for (const block of slide.blocks || []) if (block?.blockId) ids.add(block.blockId);
+    }
+  }
+  return ids;
+}
+
+function uniqueGeneratedId(base, used) {
+  let value = base;
+  let suffix = 2;
+  while (used.has(value)) value = `${base}-${suffix++}`;
+  used.add(value);
+  return value;
+}
+
+function isDetailedReviewList(block) {
+  if (!["bullets", "numbered"].includes(block?.type)) return false;
+  const items = Array.isArray(block.items) ? block.items : [];
+  const wordCount = items.reduce((sum, item) => sum + wordsOf(listItemText(item)).length, 0);
+  return items.length >= 2 && wordCount >= 10;
+}
+
+function diagramReviewItems(diagram) {
+  const label = cleanText(diagram.label) || "the pathway";
+  const items = [];
+  const seen = new Set();
+  for (const row of Array.isArray(diagram.diagramRows) ? diagram.diagramRows : []) {
+    const nodes = row.map(cleanText).filter(Boolean);
+    for (let index = 0; index < nodes.length - 1; index += 1) {
+      const text = `Review the ordered relationship from ${nodes[index]} to ${nodes[index + 1]} in ${label}.`;
+      const key = textKey(text);
+      if (!seen.has(key)) {
+        seen.add(key);
+        items.push({ text, level: 0 });
+      }
+    }
+  }
+  if (!items.length) {
+    items.push({ text: `Review the named components and their source-supported order in ${label}.`, level: 0 });
+  }
+  if (items.length === 1) {
+    items.push({
+      text: `Retain the detailed enzymes, cofactors, regulation, exceptions, and clinical context in the explanatory content before using ${label} as a visual review.`,
+      level: 0,
+    });
+  }
+  return items;
+}
+
+function ensureDiagramReviewLists(blocks, usedBlockIds) {
+  const output = [];
+  let added = 0;
+  for (const block of blocks) {
+    if (block?.type === "diagram" && !isDetailedReviewList(output.at(-1))) {
+      output.push({
+        blockId: uniqueGeneratedId(`${block.blockId}-review-steps`, usedBlockIds),
+        type: "numbered",
+        startAt: 1,
+        items: diagramReviewItems(block),
+        sourceReferences: [...(block.sourceReferences || [])],
+      });
+      added += 1;
+    }
+    output.push(block);
+  }
+  return { blocks: output, added };
+}
+
+function collectOrderedTitles(sections) {
+  const titles = [];
+  const seen = new Set();
+  const remember = (value) => {
+    const text = cleanText(value);
+    const key = textKey(text);
+    if (!text || seen.has(key)) return;
+    seen.add(key);
+    titles.push(text);
+  };
+  for (const section of sections) {
+    for (const slide of section.slides || []) {
+      remember(slide.slideTitle);
+      for (const block of slide.blocks || []) if (block?.type === "title") remember(block.text);
+    }
+  }
+  return titles;
+}
+
 /**
- * Claude output is allowed to omit schema-optional hierarchy definitions, but
- * the schema 1.2 engine requires them semantically. Fill only missing values,
- * using the same adjacent-source derivation strategy as Gemini normalization.
+ * Normalize Claude JSON into the complete schema 1.2 semantic contract.
+ * Existing source-specific content is retained; short or missing hierarchy
+ * descriptions are expanded from adjacent content, and every diagram receives
+ * a detailed review list before the simplified visual.
  */
 export function normalizeClaudeLectureHierarchy(lecture) {
   let generatedDefinitions = 0;
+  let diagramListsAdded = 0;
+  const usedBlockIds = collectExistingBlockIds(lecture);
 
   const sections = (lecture.sections || []).map((section) => {
     const slides = (section.slides || []).map((slide) => {
       const sourceBlocks = Array.isArray(slide.blocks) ? slide.blocks : [];
-      const blocks = sourceBlocks.map((block, blockIndex) => {
-        if (!["title", "subtitle"].includes(block?.type) || cleanText(block.definition)) return block;
-        generatedDefinitions += 1;
-        return {
-          ...block,
-          definition: deriveDefinition(
-            [blockSummary(sourceBlocks[blockIndex + 1])],
-            block.text,
-            block.type === "title" ? "title" : "sub-title",
-          ),
-        };
+      const definedBlocks = sourceBlocks.map((block, blockIndex) => {
+        if (!["title", "subtitle"].includes(block?.type)) return block;
+        const nextSummaries = sourceBlocks.slice(blockIndex + 1, blockIndex + 4).map(blockSummary);
+        const role = block.type === "title" ? "title" : "sub-title";
+        const minimum = block.type === "title" ? 20 : 12;
+        const maximum = block.type === "title" ? 42 : 28;
+        const definition = deriveDefinition(
+          [block.definition, ...nextSummaries],
+          block.text,
+          role,
+          minimum,
+          maximum,
+        );
+        if (textKey(definition) !== textKey(block.definition)) generatedDefinitions += 1;
+        return { ...block, definition };
       });
 
+      const diagramNormalized = ensureDiagramReviewLists(definedBlocks, usedBlockIds);
+      diagramListsAdded += diagramNormalized.added;
+      const blocks = diagramNormalized.blocks;
       const firstSupportingText = blocks.map(blockSummary).find(Boolean) || "";
       const slideTitle = cleanText(slide.slideTitle);
       const slideSubtitle = cleanText(slide.slideSubtitle);
       let titleDefinition = slide.titleDefinition;
       let subtitleDefinition = slide.subtitleDefinition;
 
-      if (slideTitle && !cleanText(titleDefinition)) {
-        generatedDefinitions += 1;
-        titleDefinition = deriveDefinition(
-          [slideSubtitle, firstSupportingText],
+      if (slideTitle) {
+        const normalizedDefinition = deriveDefinition(
+          [titleDefinition, slideSubtitle, firstSupportingText, ...blocks.slice(1, 3).map(blockSummary)],
           slideTitle,
           "title",
+          20,
+          42,
         );
+        if (textKey(normalizedDefinition) !== textKey(titleDefinition)) generatedDefinitions += 1;
+        titleDefinition = normalizedDefinition;
       }
-      if (slideSubtitle && !cleanText(subtitleDefinition)) {
-        generatedDefinitions += 1;
-        subtitleDefinition = deriveDefinition(
-          [firstSupportingText, titleDefinition],
+      if (slideSubtitle) {
+        const normalizedDefinition = deriveDefinition(
+          [subtitleDefinition, firstSupportingText, titleDefinition],
           slideSubtitle,
           "sub-title",
+          12,
+          28,
         );
+        if (textKey(normalizedDefinition) !== textKey(subtitleDefinition)) generatedDefinitions += 1;
+        subtitleDefinition = normalizedDefinition;
       }
 
       return {
@@ -121,26 +256,29 @@ export function normalizeClaudeLectureHierarchy(lecture) {
       };
     });
 
-    let sectionDefinition = section.sectionDefinition;
-    if (cleanText(section.sectionTitle) && !cleanText(sectionDefinition)) {
-      generatedDefinitions += 1;
-      sectionDefinition = deriveDefinition(
-        [
-          slides[0]?.titleDefinition,
-          slides[0]?.subtitleDefinition,
-          firstParagraphText(slides),
-        ],
-        section.sectionTitle,
-        "section",
-      );
-    }
-
+    const sectionCandidates = [
+      section.sectionDefinition,
+      ...slides.slice(0, 3).flatMap((slide) => [
+        slide.titleDefinition,
+        slide.subtitleDefinition,
+        ...(slide.blocks || []).slice(0, 2).map(blockSummary),
+      ]),
+      firstParagraphText(slides),
+    ];
+    const sectionDefinition = deriveDefinition(
+      sectionCandidates,
+      section.sectionTitle,
+      "section",
+      35,
+      65,
+    );
+    if (textKey(sectionDefinition) !== textKey(section.sectionDefinition)) generatedDefinitions += 1;
     return { ...section, sectionDefinition, slides };
   });
 
-  const expectedKeyPoints = sections.map((section) => section.sectionTitle);
+  const expectedKeyPoints = collectOrderedTitles(sections);
   const originalKeyPoints = Array.isArray(lecture.overview?.keyPoints) ? lecture.overview.keyPoints : [];
-  const keyPointsChanged = JSON.stringify(originalKeyPoints.map(cleanText)) !== JSON.stringify(expectedKeyPoints.map(cleanText));
+  const keyPointsChanged = JSON.stringify(originalKeyPoints.map(cleanText)) !== JSON.stringify(expectedKeyPoints);
 
   return {
     lecture: {
@@ -152,6 +290,7 @@ export function normalizeClaudeLectureHierarchy(lecture) {
       sections,
     },
     generatedDefinitions,
+    diagramListsAdded,
     keyPointsChanged,
   };
 }
@@ -178,9 +317,7 @@ function assertUniqueIdentifiers(lecture) {
     remember("section", section.sectionId, section.sectionTitle || "section");
     for (const slide of section.slides || []) {
       remember("slide", slide.slideId, slide.slideTitle || section.sectionTitle || "slide");
-      for (const block of slide.blocks || []) {
-        remember("block", block.blockId, slide.slideTitle || slide.slideId || "slide");
-      }
+      for (const block of slide.blocks || []) remember("block", block.blockId, slide.slideTitle || slide.slideId || "slide");
     }
   }
 }
@@ -243,6 +380,7 @@ export function parseClaudeOutputText(text, schema) {
   assertUniqueIdentifiers(sourceLecture);
   const normalized = normalizeClaudeLectureHierarchy(sourceLecture);
   const lecture = normalized.lecture;
+  assertUniqueIdentifiers(lecture);
 
   if (!validateSchema(lecture)) {
     throw new Error(`The normalized Claude JSON does not match the Jang lecture schema: ${formatValidationErrors(validateSchema.errors)}`);
@@ -281,10 +419,13 @@ export function parseClaudeOutputText(text, schema) {
   const unusedDeclaredSlots = [...declaredById.keys()].filter((slotId) => !derivedIds.has(slotId));
   const importWarnings = unusedDeclaredSlots.map((slotId) => `Top-level image slot “${slotId}” has no matching image block and was ignored.`);
   if (normalized.generatedDefinitions) {
-    importWarnings.push(`Jang completed ${normalized.generatedDefinitions} missing hierarchy definition${normalized.generatedDefinitions === 1 ? "" : "s"} from adjacent lecture content.`);
+    importWarnings.push(`Jang completed or expanded ${normalized.generatedDefinitions} hierarchy description${normalized.generatedDefinitions === 1 ? "" : "s"} from adjacent lecture content.`);
+  }
+  if (normalized.diagramListsAdded) {
+    importWarnings.push(`Jang added ${normalized.diagramListsAdded} detailed review list${normalized.diagramListsAdded === 1 ? "" : "s"} before pathway diagrams that did not include one.`);
   }
   if (normalized.keyPointsChanged) {
-    importWarnings.push("Overview key points were aligned to the ordered section titles required by schema 1.2.");
+    importWarnings.push("Overview key terms were aligned to every ordered title, excluding section titles and sub-titles.");
   }
 
   return { lecture, imageSlots, importWarnings };
