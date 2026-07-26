@@ -5,5 +5,11 @@
   "compatibility_date": "2026-07-23",
   "compatibility_flags": [
     "nodejs_compat"
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "JANG_AUTOMATION_KV",
+      "id": "b3d01801415042df951f4b0ebdb4c788"
+    }
   ]
 }
