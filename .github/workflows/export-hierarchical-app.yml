@@ -1,0 +1,27 @@
+name: Export hierarchical application source
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/export-hierarchical-app.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/hierarchical-lecture-layout
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jang-hierarchical-source
+          path: |
+            **
+            !node_modules/**
+            !dist/**
+            !generated/**
+          if-no-files-found: error
