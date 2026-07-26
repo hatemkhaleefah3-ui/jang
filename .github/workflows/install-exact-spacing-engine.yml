@@ -1,0 +1,49 @@
+name: Install exact-spacing PPTX engine
+
+on:
+  push:
+    branches: [agent/claude-output-import]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/claude-output-import
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: hatemkhaleefah3-ui/janjooo
+          ref: feature/dense-content-spacing
+          path: .engine-source
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify final source status
+        run: |
+          node -e 'const fs=require("fs"); const s=JSON.parse(fs.readFileSync(".engine-source/artifacts/jang-pptx/validation/exact-spacing-status.json","utf8")); if(s.overall!=="success") throw new Error(JSON.stringify(s));'
+          test -s .engine-source/artifacts/jang-pptx/standalone/pptx-engine.js
+      - name: Install final browser engine
+        run: |
+          cp .engine-source/artifacts/jang-pptx/standalone/pptx-engine.js pptx-engine.js
+          rm -rf .engine-source
+      - name: Validate application
+        run: |
+          npm ci
+          npm test
+          npm run sample
+      - name: Commit final exact-spacing engine
+        run: |
+          rm -f .github/workflows/install-exact-spacing-engine.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "Install exact two-pixel engine without artificial spacing"
+          git push origin HEAD:agent/claude-output-import
