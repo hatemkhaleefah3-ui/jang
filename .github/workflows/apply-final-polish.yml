@@ -95,8 +95,17 @@ jobs:
       - name: Run application syntax checks
         run: npm run check
 
-      - name: Run application unit tests
-        run: npm run unit
+      - name: Test Gemini pathway extraction rules
+        run: node --test tests/unit/extract-function.test.mjs
+
+      - name: Test file picker responsiveness contract
+        run: node --test tests/unit/file-picker.test.mjs tests/unit/preview-file-picker.test.mjs
+
+      - name: Test PowerPoint render-plan regressions
+        run: node --test tests/unit/image-mode-render-plan.test.mjs tests/unit/geometry-overflow.test.mjs tests/unit/pptx-workflow.test.mjs
+
+      - name: Test remaining application units and CSP
+        run: node --test tests/unit/csp-scan.test.mjs tests/unit/lecture-validator.test.mjs tests/unit/browser-compat.test.mjs
 
       - name: Build strict CSP production application
         run: npm run build
