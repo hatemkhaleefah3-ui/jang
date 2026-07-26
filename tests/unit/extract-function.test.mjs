@@ -158,7 +158,7 @@ test("Gemini prompt requires complete traceable reconstruction and exact block c
   assert.match(extractionPrompt, /heatmap only for a valid numeric scale/i);
   assert.match(extractionPrompt, /metabolic.*diagramType/is);
   assert.match(extractionPrompt, /at least three entities/i);
-  assert.match(extractionPrompt, /in addition to complete explanatory text/i);
+  assert.match(extractionPrompt, /diagram is only a simplified review/i);
   assert.match(extractionPrompt, /ordered conversions/i);
   assert.match(extractionPrompt, /Audit every explicit linked mechanism/i);
   assert.match(extractionPrompt, /visualType/i);
@@ -195,7 +195,8 @@ test("normalizes title and sub-title definitions and safe image crop policy", ()
   assert.equal(lecture.sections[0].slides[0].slideTitle, "Glycolysis sequence");
   assert.ok(lecture.sections[0].slides[0].titleDefinition.startsWith(hierarchical.sections[0].slides[0].titleDefinition));
   assert.ok(lecture.sections[0].slides[0].titleDefinition.split(/\s+/).length >= 20);
-  assert.equal(lecture.sections[0].slides[0].subtitleDefinition, hierarchical.sections[0].slides[0].subtitleDefinition);
+  assert.ok(lecture.sections[0].slides[0].subtitleDefinition.startsWith(hierarchical.sections[0].slides[0].subtitleDefinition));
+  assert.ok(lecture.sections[0].slides[0].subtitleDefinition.split(/\s+/).length >= 12);
   assert.equal(lecture.sections[0].slides[0].blocks[0].type, "title");
   assert.ok(lecture.sections[0].slides[0].blocks[0].definition);
   assert.equal(lecture.sections[0].slides[0].blocks[1].type, "subtitle");
