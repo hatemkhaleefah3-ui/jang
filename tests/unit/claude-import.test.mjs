@@ -9,6 +9,7 @@ import {
 } from "../../claude-import.js";
 
 const schema = JSON.parse(await readFile(new URL("../../lecture-schema.json", import.meta.url), "utf8"));
+const wordCount = (value) => String(value || "").trim().split(/\s+/).filter(Boolean).length;
 
 function lectureWithImage() {
   return {
@@ -34,7 +35,7 @@ function lectureWithImage() {
         blocks: [{
           blockId: "block-pathway-text",
           type: "paragraph",
-          text: "The precursor is converted through an ordered pathway.",
+          text: "The precursor is converted through an ordered pathway. Enzymes and cofactors preserve reaction order, while regulation controls pathway activity and clinical defects alter the expected products.",
           sourceReferences: ["Page 1"],
         }, {
           blockId: "block-pathway-image",
@@ -71,7 +72,7 @@ test("Claude output selector accepts exactly one JSON file", () => {
   assert.throws(() => selectClaudeOutputFile([{ name: "lecture-output.pptx", size: 2_000 }]), /valid Claude .json/i);
 });
 
-test("Claude output parser validates the lecture and derives image slots", () => {
+test("Claude output parser validates dense hierarchy and derives image slots", () => {
   const lecture = lectureWithImage();
   const parsed = parseClaudeOutputText(JSON.stringify({
     lecture,
@@ -84,14 +85,17 @@ test("Claude output parser validates the lecture and derives image slots", () =>
   }), schema);
 
   assert.equal(parsed.lecture.documentTitle, "Claude lecture import");
+  assert.deepEqual(parsed.lecture.overview.keyPoints, ["Core pathway"]);
+  assert.ok(wordCount(parsed.lecture.sections[0].sectionDefinition) >= 35);
+  assert.ok(wordCount(parsed.lecture.sections[0].slides[0].titleDefinition) >= 20);
   assert.equal(parsed.imageSlots.length, 1);
   assert.equal(parsed.imageSlots[0].slotId, "image-pathway");
   assert.equal(parsed.imageSlots[0].label, "Imported pathway image");
   assert.equal(parsed.imageSlots[0].fit, "contain");
-  assert.deepEqual(parsed.importWarnings, []);
+  assert.ok(parsed.importWarnings.some((warning) => /title/i.test(warning)));
 });
 
-test("Claude hierarchy normalization fills schema 1.2 definitions before image review", () => {
+test("Claude hierarchy normalization fills descriptions and uses all ordered titles", () => {
   const lecture = lectureWithImage();
   lecture.overview.keyPoints = ["Unrelated generated term"];
   delete lecture.sections[0].sectionDefinition;
@@ -111,25 +115,46 @@ test("Claude hierarchy normalization fills schema 1.2 definitions before image r
   }, {
     blockId: "block-clinical-detail",
     type: "paragraph",
-    text: "Enzyme disruption produces a characteristic clinical pattern.",
+    text: "Enzyme disruption produces a characteristic clinical pattern with predictable biochemical, neurological, and systemic findings that connect the pathway defect to patient presentation.",
     sourceReferences: ["Page 1"],
   });
 
   const normalized = normalizeClaudeLectureHierarchy(lecture);
-  assert.equal(normalized.generatedDefinitions, 5);
+  assert.ok(normalized.generatedDefinitions >= 5);
   assert.equal(normalized.keyPointsChanged, true);
-  assert.deepEqual(normalized.lecture.overview.keyPoints, ["Metabolism"]);
+  assert.deepEqual(normalized.lecture.overview.keyPoints, ["Core pathway", "Clinical consequences"]);
 
   const parsed = parseClaudeOutputText(JSON.stringify({ lecture }), schema);
   const parsedSection = parsed.lecture.sections[0];
   const parsedSlide = parsedSection.slides[0];
-  assert.match(String(parsedSection.sectionDefinition), /pathway|reaction|clinical/i);
-  assert.ok(String(parsedSlide.titleDefinition).trim());
-  assert.ok(String(parsedSlide.subtitleDefinition).trim());
-  assert.ok(String(parsedSlide.blocks[0].definition).trim());
-  assert.ok(String(parsedSlide.blocks[1].definition).trim());
-  assert.ok(parsed.importWarnings.some((warning) => /completed 5 missing hierarchy definitions/i.test(warning)));
-  assert.ok(parsed.importWarnings.some((warning) => /aligned to the ordered section titles/i.test(warning)));
+  assert.ok(wordCount(parsedSection.sectionDefinition) >= 35);
+  assert.ok(wordCount(parsedSlide.titleDefinition) >= 20);
+  assert.ok(wordCount(parsedSlide.subtitleDefinition) >= 12);
+  assert.ok(wordCount(parsedSlide.blocks[0].definition) >= 20);
+  assert.ok(wordCount(parsedSlide.blocks[1].definition) >= 12);
+  assert.ok(parsed.importWarnings.some((warning) => /completed or expanded/i.test(warning)));
+  assert.ok(parsed.importWarnings.some((warning) => /every ordered title/i.test(warning)));
+});
+
+test("Claude hierarchy normalization adds a detailed review list before a diagram", () => {
+  const lecture = lectureWithImage();
+  const slide = lecture.sections[0].slides[0];
+  slide.blocks.push({
+    blockId: "block-pathway-diagram",
+    type: "diagram",
+    label: "Core metabolic sequence",
+    diagramType: "metabolic",
+    diagramRows: [["Precursor", "Intermediate", "Product"]],
+    sourceReferences: ["Page 1"],
+  });
+
+  const parsed = parseClaudeOutputText(JSON.stringify({ lecture }), schema);
+  const blocks = parsed.lecture.sections[0].slides[0].blocks;
+  const diagramIndex = blocks.findIndex((block) => block.blockId === "block-pathway-diagram");
+  assert.ok(diagramIndex > 0);
+  assert.equal(blocks[diagramIndex - 1].type, "numbered");
+  assert.ok(blocks[diagramIndex - 1].items.length >= 2);
+  assert.ok(parsed.importWarnings.some((warning) => /detailed review list/i.test(warning)));
 });
 
 test("Claude output parser accepts a bare lecture and rejects invalid schema", () => {
