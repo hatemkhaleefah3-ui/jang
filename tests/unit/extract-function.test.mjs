@@ -135,6 +135,10 @@ test("Gemini prompt requires complete traceable reconstruction and exact block c
   assert.match(extractionPrompt, /nested hierarchical items/i);
   assert.match(extractionPrompt, /tableType heatmap/i);
   assert.match(extractionPrompt, /diagramType metabolic/i);
+  assert.match(extractionPrompt, /at least three linked entities/i);
+  assert.match(extractionPrompt, /in addition to the explanatory paragraph or list/i);
+  assert.match(extractionPrompt, /converted to.*activates.*inhibits/is);
+  assert.match(extractionPrompt, /audit every slide containing explicit linked steps/i);
   assert.match(extractionPrompt, /orientation transverse/i);
   assert.match(extractionPrompt, /unmappedSourceReferences/i);
 });

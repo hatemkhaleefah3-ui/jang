@@ -7,7 +7,7 @@ const lectureInput = document.querySelector("#lectureFile");
 
 if (pendingFile && lectureInput?.files?.length) {
   window.queueMicrotask(() => {
-    lectureInput.dispatchEvent(new Event("input", { bubbles: true }));
+    lectureInput.dispatchEvent(new Event("change", { bubbles: true }));
   });
 }
 

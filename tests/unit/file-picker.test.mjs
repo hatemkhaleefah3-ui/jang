@@ -36,9 +36,11 @@ test("uses a stable signature to deduplicate input and change events", () => {
 });
 
 test("the deployed markup and script keep the picker contract in sync", async () => {
-  const [html, app, build, headers] = await Promise.all([
+  const [html, app, bootstrap, loader, build, headers] = await Promise.all([
     readFile(new URL("../../index.html", import.meta.url), "utf8"),
     readFile(new URL("../../app.js", import.meta.url), "utf8"),
+    readFile(new URL("../../file-picker-bootstrap.js", import.meta.url), "utf8"),
+    readFile(new URL("../../app-loader.js", import.meta.url), "utf8"),
     readFile(new URL("../../scripts/build.mjs", import.meta.url), "utf8"),
     readFile(new URL("../../_headers", import.meta.url), "utf8"),
   ]);
@@ -64,8 +66,12 @@ test("the deployed markup and script keep the picker contract in sync", async ()
   const inputPosition = html.indexOf('id="lectureFile"', uploadStart);
   assert.ok(uploadStart >= 0 && inputPosition > uploadStart && inputPosition < uploadEnd, "The native file input must be inside the upload zone.");
 
-  assert.match(app, /addEventListener\("input", handleLectureFileSelection\)/);
+  assert.doesNotMatch(app, /addEventListener\("input", handleLectureFileSelection\)/);
+  assert.match(app, /requestAnimationFrame/);
   assert.match(app, /addEventListener\("change", handleLectureFileSelection\)/);
+  assert.doesNotMatch(bootstrap, /addEventListener\("input"/);
+  assert.match(bootstrap, /removeEventListener\("change", bootstrapSelectionHandler\)/);
+  assert.match(loader, /new Event\("change"/);
   assert.match(app, /if \(coverageAudit\)/, "Optional new DOM nodes must not break older cached markup.");
   assert.match(build, /"lecture-file\.js"/);
   assert.match(headers, /Cache-Control: no-store, max-age=0/);
