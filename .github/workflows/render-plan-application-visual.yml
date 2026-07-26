@@ -1,0 +1,74 @@
+name: Render realistic PPTX image modes
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'pptx-engine.js'
+      - 'scripts/generate-render-plan-regression.mjs'
+      - 'tests/fixtures/render-plan-lecture.mjs'
+      - 'tests/unit/image-mode-render-plan.test.mjs'
+      - 'package.json'
+      - '.github/workflows/render-plan-application-visual.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render-image-modes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install and verify the production application
+        run: |
+          npm ci
+          npm test
+          npm run sample
+
+      - name: Install LibreOffice and Poppler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libreoffice poppler-utils
+
+      - name: Render no, some, and all image modes
+        run: |
+          mkdir -p visual-artifacts
+          for mode in no-images some-images all-images; do
+            pptx="generated/amino-acids-render-plan-${mode}.pptx"
+            test -f "$pptx"
+            mkdir -p "visual-artifacts/${mode}/png"
+            libreoffice --headless --convert-to pdf --outdir "visual-artifacts/${mode}" "$pptx"
+            pdf="visual-artifacts/${mode}/amino-acids-render-plan-${mode}.pdf"
+            test -f "$pdf"
+            pdftoppm -png -r 120 "$pdf" "visual-artifacts/${mode}/png/slide"
+            test "$(find "visual-artifacts/${mode}/png" -name '*.png' | wc -l)" -gt 0
+          done
+
+      - name: Verify rendered slide counts match
+        run: |
+          no_count=$(find visual-artifacts/no-images/png -name '*.png' | wc -l)
+          some_count=$(find visual-artifacts/some-images/png -name '*.png' | wc -l)
+          all_count=$(find visual-artifacts/all-images/png -name '*.png' | wc -l)
+          test "$no_count" -eq "$some_count"
+          test "$no_count" -eq "$all_count"
+          printf '{"noImages":%s,"someImages":%s,"allImages":%s}\n' "$no_count" "$some_count" "$all_count" > visual-artifacts/rendered-slide-counts.json
+
+      - name: Upload realistic visual review
+        uses: actions/upload-artifact@v4
+        with:
+          name: amino-acids-immutable-render-plan-review
+          path: |
+            generated/amino-acids-render-plan-*.pptx
+            generated/amino-acids-render-plan-report.json
+            visual-artifacts/**
+          if-no-files-found: error
+          retention-days: 14

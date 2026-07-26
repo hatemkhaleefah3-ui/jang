@@ -9,7 +9,7 @@ import { promisify } from "node:util";
 const execFileAsync = promisify(execFile);
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const reportPath = join(root, "generated", "csp-scan.json");
-const assetVersion = "20260726-geometry-overflow";
+const assetVersion = "20260726-immutable-render-plan";
 const FILES = [
   "browser-compat.js",
   "file-picker-bootstrap.js",
