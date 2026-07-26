@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const output = resolve(root, "dist");
-const assetVersion = "20260726-hierarchical-lecture-layout";
+const assetVersion = "20260726-claude-output-import";
 const staticFiles = [
   "index.html",
   "styles.css",
@@ -11,6 +11,7 @@ const staticFiles = [
   "file-picker-bootstrap.js",
   "app-loader.js",
   "app.js",
+  "claude-import.js",
   "lecture-file.js",
   "lecture-validator.js",
   "pptx-engine.js",
@@ -73,6 +74,24 @@ await replaceRequired(
   "the lecture file helper import",
 );
 await replaceRequired(
+  "app.js",
+  'from "./claude-import.js"',
+  `from "./claude-import.js?v=${assetVersion}"`,
+  "the Claude import helper import",
+);
+await replaceRequired(
+  "claude-import.js",
+  'from "./lecture-validator.js"',
+  `from "./lecture-validator.js?v=${assetVersion}"`,
+  "the lecture validator import",
+);
+await replaceRequired(
+  "claude-import.js",
+  'schemaUrl = "./lecture-schema.json"',
+  `schemaUrl = "./lecture-schema.json?v=${assetVersion}"`,
+  "the lecture schema URL",
+);
+await replaceRequired(
   "pptx-output.js",
   'from "./pptx-engine.js"',
   `from "./pptx-engine.js?v=${assetVersion}"`,
@@ -112,9 +131,9 @@ engine = engine.replace(
 const blockedTokens = [
   ["e", "val", "("].join(""),
   ["new ", "Func", "tion("].join(""),
-  ["Func", "tion(\""].join(""),
+  ["Func", "tion(\""] .join(""),
   ["Func", "tion('"] .join(""),
-  [".constructor(\""].join(""),
+  [".constructor(\""] .join(""),
   [".constructor('"] .join(""),
 ];
 const remainingToken = blockedTokens.find((token) => engine.includes(token));
@@ -123,4 +142,4 @@ if (remainingToken) {
 }
 
 await writeFile(enginePath, engine, "utf8");
-console.log(`Prepared ${staticFiles.length} static files with a CSP-safe static lecture validator and versioned module graph in dist.`);
+console.log(`Prepared ${staticFiles.length} static files with Claude-output import, a CSP-safe static lecture validator, and a versioned module graph in dist.`);
