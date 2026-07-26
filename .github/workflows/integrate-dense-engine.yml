@@ -1,0 +1,96 @@
+name: Integrate dense PPTX engine
+
+on:
+  push:
+    branches: [agent/claude-output-import]
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/claude-output-import
+          fetch-depth: 0
+
+      - uses: actions/checkout@v4
+        with:
+          repository: hatemkhaleefah3-ui/janjooo
+          ref: feature/dense-content-spacing
+          path: .engine-source
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify tested engine source
+        run: |
+          node -e 'const fs=require("fs"); const s=JSON.parse(fs.readFileSync(".engine-source/artifacts/jang-pptx/validation/dense-contract-status.json","utf8")); if(s.overall!=="success") throw new Error(`Engine source is not green: ${JSON.stringify(s)}`);'
+          test -s .engine-source/artifacts/jang-pptx/standalone/pptx-engine.js
+
+      - name: Apply dense Gemini and Claude contract
+        run: node scripts/apply-dense-prompt-contract.mjs
+
+      - name: Install tested browser engine
+        run: cp .engine-source/artifacts/jang-pptx/standalone/pptx-engine.js pptx-engine.js
+
+      - name: Remove source checkout
+        run: rm -rf .engine-source
+
+      - name: Install application dependencies
+        run: npm ci
+
+      - name: Validate application and generate samples
+        id: validation
+        shell: bash
+        run: |
+          set +e
+          mkdir -p generated
+          : > generated/dense-integration.log
+
+          run_check() {
+            name="$1"
+            shift
+            echo "## $name" | tee -a generated/dense-integration.log
+            "$@" >> generated/dense-integration.log 2>&1
+            code=$?
+            echo "$name=$code" | tee -a generated/dense-integration.log
+            return $code
+          }
+
+          tests=1; sample=1
+          run_check tests npm test; tests=$?
+          run_check sample npm run sample; sample=$?
+
+          if [ "$tests" -eq 0 ] && [ "$sample" -eq 0 ]; then overall=success; else overall=failure; fi
+          cat > generated/dense-integration-status.json <<EOF
+          {
+            "sourceRepository": "hatemkhaleefah3-ui/janjooo",
+            "sourceBranch": "feature/dense-content-spacing",
+            "sourceCommit": "359333f3860e8d65c6e9bb2579adcb19aa33d25c",
+            "overall": "${overall}",
+            "tests": ${tests},
+            "sample": ${sample}
+          }
+          EOF
+          echo "overall=$overall" >> "$GITHUB_OUTPUT"
+
+      - name: Commit integrated engine and contract
+        run: |
+          rm -f scripts/apply-dense-prompt-contract.mjs
+          rm -f .github/workflows/integrate-dense-engine.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "Integrate dense two-pixel PPTX layout and extraction contract"
+          git push origin HEAD:agent/claude-output-import
+
+      - name: Enforce validation result
+        if: steps.validation.outputs.overall != 'success'
+        run: |
+          cat generated/dense-integration.log
+          exit 1
