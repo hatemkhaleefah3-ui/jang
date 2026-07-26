@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/apply-final-polish.yml'
       - 'scripts/apply-final-polish-v2.mjs'
+      - 'scripts/apply-final-polish-v3.mjs'
 
 permissions:
   contents: write
@@ -82,6 +83,7 @@ jobs:
           fs.writeFileSync(path, source.replaceAll(shim, '__vite-browser-external.js'));
           NODE
           node scripts/apply-final-polish-v2.mjs
+          node scripts/apply-final-polish-v3.mjs
 
       - uses: actions/setup-node@v4
         with:
@@ -143,7 +145,7 @@ jobs:
       - name: Commit verified refinements
         run: |
           rm -rf engine-source
-          rm -f .github/workflows/apply-final-polish.yml scripts/apply-final-polish.mjs scripts/apply-final-polish-v2.mjs
+          rm -f .github/workflows/apply-final-polish.yml scripts/apply-final-polish.mjs scripts/apply-final-polish-v2.mjs scripts/apply-final-polish-v3.mjs
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add -A
