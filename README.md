@@ -107,12 +107,128 @@ GEMINI_MODEL=gemini-3.6-flash
 
 Claude JSON import is entirely local and does not require a Gemini API call.
 
+## n8n automation API
+
+The API mirrors the Claude JSON UI flow and reuses the same parser, semantic validator, image slots, PPTX engine, filename logic, and MIME type. Every route requires either:
+
+```text
+Authorization: Bearer <JANG_API_KEY>
+```
+
+or:
+
+```text
+X-Jang-API-Key: <JANG_API_KEY>
+```
+
+### Cloudflare setup
+
+Create one private R2 bucket and bind it to the Pages project with the variable name:
+
+```text
+JANG_AUTOMATION_BUCKET
+```
+
+Add an encrypted Pages secret named:
+
+```text
+JANG_API_KEY
+```
+
+Configure the binding and secret for both Production and Preview, then redeploy. Imports expire logically after seven days. Add an R2 lifecycle rule for the `imports/` prefix if the stored files should also be deleted automatically after seven days.
+
+Server-side PPTX generation is CPU-heavy. Use a Cloudflare Workers Paid plan for dependable `/api/continue` execution; the browser workflow remains available regardless of the API configuration.
+
+### API sequence
+
+#### 1. `POST /api/import`
+
+Send the raw Claude JSON as the entire request body. The response is:
+
+```json
+{ "importId": "..." }
+```
+
+This performs the file-import stage and stores the raw JSON configuration.
+
+#### 2. `POST /api/build`
+
+```json
+{ "importId": "..." }
+```
+
+This calls the same `parseClaudeOutputText()` path used by the **Build PPTX** button. It returns the remaining image labels and extra slot context:
+
+```json
+{
+  "labels": ["Tyrosine metabolic pathway"],
+  "images": [
+    {
+      "label": "Tyrosine metabolic pathway",
+      "topic": "Tyrosine metabolic pathway",
+      "description": "...",
+      "sectionTitle": "...",
+      "slideTitle": "..."
+    }
+  ],
+  "status": "awaiting_images"
+}
+```
+
+Use the exact returned `label` in the next request. Duplicate display labels are automatically disambiguated without changing the presentation content.
+
+#### 3. `POST /api/images/import`
+
+```json
+{
+  "importId": "...",
+  "label": "Tyrosine metabolic pathway",
+  "imageUrl": "https://example.com/pathway.png"
+}
+```
+
+Jang downloads a public `http` or `https` image, verifies the image content type and 15 MB limit, and stores it under the corresponding canonical image slot. Private-network and local URLs are rejected.
+
+#### 4. `POST /api/continue`
+
+```json
+{ "importId": "..." }
+```
+
+This calls the same `buildLecturePptxFile()` path used by the **Continue** button and stores the generated PPTX. Missing images remain as the same labelled placeholders used by the browser workflow.
+
+#### 5. `POST /api/export`
+
+```json
+{ "importId": "..." }
+```
+
+This implementation returns the PPTX file directly as the response body with:
+
+```text
+Content-Type: application/vnd.openxmlformats-officedocument.presentationml.presentation
+Content-Disposition: attachment; filename="...pptx"
+```
+
+In the n8n HTTP Request node, select a file/binary response format for this request.
+
+### Internal reuse map
+
+- `/api/import`: persistent API state wrapper only; raw JSON is retained for the build step.
+- `/api/build`: `parseClaudeOutputText()` and the schema/semantic validation in `claude-import.js`.
+- `/api/images/import`: the canonical `imageSlots` returned by that same parser; images remain keyed by `slotId`, exactly like the UI `selectedImages` map.
+- `/api/continue`: `buildLecturePptxFile()` from `pptx-output.js`, which calls the existing deterministic `generateLecturePptx()` engine.
+- `/api/export`: `PPTX_MIME` and the generated filename from `pptx-output.js`; the already-built binary is streamed from R2.
+
+The browser-only state (`extraction`, `selectedImages`, and `generated` in `app.js`) could not be called directly from n8n. The minimal backend refactor is the R2-backed state wrapper in `functions/_shared/automation.js`; the lecture and PPTX business logic remains shared and is generated into a Worker-safe module graph during `npm run build`.
+
 ## File limits
 
 - PDF: 18 MB maximum. Gemini receives the PDF with visual page context.
 - PPTX lecture: 50 MB maximum. Jang decodes ordered slide text, tables, notes, element positions, image positions, and nearby image context in the browser before extraction.
 - Claude JSON: 20 MB maximum.
 - Imported image: 15 MB maximum per image.
+- n8n automation images: 60 MB combined maximum per presentation.
 
 ## Development
 
@@ -125,6 +241,8 @@ npm run dev
 
 - Static deployment output: `dist/`
 - Cloudflare extraction endpoint: `functions/api/extract.js`
+- n8n API routes: `functions/api/import.js`, `functions/api/build.js`, `functions/api/images/import.js`, `functions/api/continue.js`, `functions/api/export.js`
+- Shared API state layer: `functions/_shared/automation.js`
 - Engine schema: `lecture-schema.json`
 - Claude import helper: `claude-import.js`
 - Example output: `generated/jang-website-pptx-workflow-sample.pptx`
@@ -132,5 +250,6 @@ npm run dev
 For local Cloudflare testing:
 
 ```bash
-npx wrangler pages dev dist --binding GEMINI_API_KEY=your-key
+npm run build
+npx wrangler pages dev dist --binding GEMINI_API_KEY=your-key --binding JANG_API_KEY=your-api-key --r2=JANG_AUTOMATION_BUCKET
 ```
