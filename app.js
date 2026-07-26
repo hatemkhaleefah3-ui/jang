@@ -1,7 +1,7 @@
 import { buildLecturePptxFile } from "./pptx-output.js";
 import { extractPptxManifest } from "./pptx-reader.js";
 import { lectureFileSignature, selectedFileFromInput, validateLectureFile } from "./lecture-file.js";
-import { loadLectureSchema, parseClaudeOutputText, selectClaudeOutputFiles } from "./claude-import.js";
+import { loadLectureSchema, parseClaudeOutputText, selectClaudeOutputFile } from "./claude-import.js";
 
 const fileInput = document.querySelector("#lectureFile");
 const fileButtonText = document.querySelector("#fileButtonText");
@@ -13,12 +13,11 @@ const lectureOption = document.querySelector("#lectureImportOption");
 const claudeOption = document.querySelector("#claudeImportOption");
 const lecturePanel = document.querySelector("#lectureImportPanel");
 const claudePanel = document.querySelector("#claudeImportPanel");
-const claudeFilesInput = document.querySelector("#claudeFiles");
-const claudePairCard = document.querySelector("#claudePairCard");
+const claudeFileInput = document.querySelector("#claudeFile");
+const claudeFileButtonText = document.querySelector("#claudeFileButtonText");
+const claudeFileCard = document.querySelector("#claudeFileCard");
 const claudeJsonName = document.querySelector("#claudeJsonName");
 const claudeJsonMeta = document.querySelector("#claudeJsonMeta");
-const claudePptxName = document.querySelector("#claudePptxName");
-const claudePptxMeta = document.querySelector("#claudePptxMeta");
 const action = document.querySelector("#actionButton");
 const actionLabel = document.querySelector("#actionLabel");
 const status = document.querySelector("#status");
@@ -31,7 +30,6 @@ let importMode = "lecture";
 let selectedFile = null;
 let selectedFileSignature = "";
 let selectedClaudeJson = null;
-let selectedClaudePptx = null;
 let extraction = null;
 let generated = null;
 let state = "idle";
@@ -90,15 +88,15 @@ function setImportMode(nextMode, announce = true) {
   if (isLecture && selectedFile) {
     setState("ready");
     if (announce) setStatus(`${selectedFile.name} is selected and ready for Gemini extraction.`, "success");
-  } else if (!isLecture && selectedClaudeJson && selectedClaudePptx) {
+  } else if (!isLecture && selectedClaudeJson) {
     setState("ready");
-    if (announce) setStatus("The Claude JSON and companion PPTX are selected and ready for validation.", "success");
+    if (announce) setStatus(`${selectedClaudeJson.name} is selected and ready for validation.`, "success");
   } else {
     setState("idle");
     if (announce) {
       setStatus(isLecture
         ? "Import a PDF or PPTX lecture to begin."
-        : "Choose the Claude JSON and companion PPTX together to begin.");
+        : "Choose the Claude lecture JSON file to begin.");
     }
   }
 }
@@ -131,25 +129,23 @@ function clearLectureSelection(message, tone = "error") {
   setStatus(message, tone);
 }
 
-function showClaudePair(jsonFile, pptxFile) {
-  selectedClaudeJson = jsonFile;
-  selectedClaudePptx = pptxFile;
+function selectClaudeJson(file) {
+  selectedClaudeJson = file;
   resetResult();
-  claudePairCard.hidden = false;
-  claudeJsonName.textContent = jsonFile.name;
-  claudeJsonMeta.textContent = `JSON · ${formatBytes(jsonFile.size)}`;
-  claudePptxName.textContent = pptxFile.name;
-  claudePptxMeta.textContent = `PPTX · ${formatBytes(pptxFile.size)}`;
+  claudeFileCard.hidden = false;
+  claudeJsonName.textContent = file.name;
+  claudeJsonMeta.textContent = `JSON · ${formatBytes(file.size)}`;
+  claudeFileButtonText.textContent = "Choose another JSON";
   setState("ready");
-  setStatus("The Claude JSON and companion PPTX are selected and ready for validation.", "success");
+  setStatus(`${file.name} is selected and ready for validation.`, "success");
 }
 
 function clearClaudeSelection(message, tone = "error") {
   selectedClaudeJson = null;
-  selectedClaudePptx = null;
   resetResult();
-  claudeFilesInput.value = "";
-  claudePairCard.hidden = true;
+  claudeFileInput.value = "";
+  claudeFileCard.hidden = true;
+  claudeFileButtonText.textContent = "Choose Claude JSON";
   setState("idle");
   setStatus(message, tone);
 }
@@ -179,18 +175,17 @@ function handleLectureFileSelection(event) {
   });
 }
 
-function handleClaudeFilesSelection(event) {
+function handleClaudeFileSelection(event) {
   const input = event.currentTarget;
   if (!input.files?.length) {
-    if (!selectedClaudeJson || !selectedClaudePptx) setStatus("Choose one Claude JSON file and one Claude PPTX file.", "error");
+    if (!selectedClaudeJson) setStatus("Choose the Claude lecture JSON file.", "error");
     return;
   }
   scheduleAfterPickerClose(() => {
     try {
-      const { jsonFile, pptxFile } = selectClaudeOutputFiles(input.files);
-      showClaudePair(jsonFile, pptxFile);
+      selectClaudeJson(selectClaudeOutputFile(input.files));
     } catch (error) {
-      clearClaudeSelection(error instanceof Error ? error.message : "The Claude output files could not be imported.");
+      clearClaudeSelection(error instanceof Error ? error.message : "The Claude JSON file could not be imported.");
     }
   });
 }
@@ -343,12 +338,9 @@ function showIntermediateStep(result, context = {}) {
   const isClaude = context.origin === "claude";
   review.hidden = false;
   if (isClaude) {
-    const companion = context.companionSlideCount
-      ? ` The companion PPTX was verified with ${context.companionSlideCount} readable slide${context.companionSlideCount === 1 ? "" : "s"}.`
-      : "";
     reviewSummary.textContent = slots.length
-      ? `Claude JSON contains ${slots.length} important image position${slots.length === 1 ? "" : "s"}. Import the matching images before continuing.${companion}`
-      : `Claude JSON contains no image positions. Continue to rebuild the editable PowerPoint.${companion}`;
+      ? `Claude JSON contains ${slots.length} important image position${slots.length === 1 ? "" : "s"}. Import the matching images before continuing.`
+      : "Claude JSON contains no image positions. Continue to build the editable PowerPoint.";
   } else {
     reviewSummary.textContent = slots.length
       ? `Gemini found ${slots.length} important image position${slots.length === 1 ? "" : "s"}. Each label describes the exact visual to import.`
@@ -370,7 +362,7 @@ function showIntermediateStep(result, context = {}) {
   const sections = result.lecture?.sections || [];
   const contentPlans = sections.reduce((sum, section) => sum + (section.slides?.length || 0), 0);
   setStatus(isClaude
-    ? `Claude import validated: ${sections.length} sections and ${contentPlans} structured content plans.`
+    ? `Claude JSON validated: ${sections.length} sections and ${contentPlans} structured content plans.`
     : `Extraction complete: ${sections.length} sections and ${contentPlans} structured content plans.`, "success");
 }
 
@@ -405,23 +397,19 @@ async function extractLecture() {
 }
 
 async function importClaudeOutput() {
-  if (!selectedClaudeJson || !selectedClaudePptx) return;
+  if (!selectedClaudeJson) return;
   setState("extracting");
-  setStatus("Validating the Claude JSON and checking the companion PowerPoint…");
+  setStatus("Validating the Claude lecture JSON…");
   try {
-    const [jsonText, schema, companionManifest] = await Promise.all([
+    const [jsonText, schema] = await Promise.all([
       selectedClaudeJson.text(),
       loadLectureSchema(),
-      extractPptxManifest(selectedClaudePptx),
     ]);
-    if (!Number.isInteger(companionManifest?.slideCount) || companionManifest.slideCount < 1) {
-      throw new Error("The companion Claude PPTX does not contain any readable slides.");
-    }
     const result = parseClaudeOutputText(jsonText, schema);
-    showIntermediateStep(result, { origin: "claude", companionSlideCount: companionManifest.slideCount });
+    showIntermediateStep(result, { origin: "claude" });
   } catch (error) {
-    setState(selectedClaudeJson && selectedClaudePptx ? "ready" : "idle");
-    setStatus(error instanceof Error ? error.message : "The Claude output files could not be validated.", "error");
+    setState(selectedClaudeJson ? "ready" : "idle");
+    setStatus(error instanceof Error ? error.message : "The Claude JSON file could not be validated.", "error");
   }
 }
 
@@ -466,7 +454,7 @@ function downloadGeneratedFile() {
 lectureOption.addEventListener("click", () => setImportMode("lecture"));
 claudeOption.addEventListener("click", () => setImportMode("claude"));
 fileInput.addEventListener("change", handleLectureFileSelection);
-claudeFilesInput.addEventListener("change", handleClaudeFilesSelection);
+claudeFileInput.addEventListener("change", handleClaudeFileSelection);
 
 action.addEventListener("click", () => {
   if (state === "ready" && importMode === "lecture") extractLecture();
