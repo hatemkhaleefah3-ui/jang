@@ -1,0 +1,164 @@
+name: Apply issue 29 hierarchical application
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-issue29-application.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  integrate-test-render:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/hierarchical-lecture-layout
+          persist-credentials: true
+
+      - name: Check out exact verified engine source
+        uses: actions/checkout@v4
+        with:
+          repository: hatemkhaleefah3-ui/janjooo
+          ref: 4b31fa9474a2084bb50fe8b4215a73cecf100f1e
+          path: engine-source
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: engine-source/pnpm-lock.yaml
+
+      - name: Reverify exact engine source
+        working-directory: engine-source
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm --dir artifacts/jang-pptx typecheck
+          pnpm --dir artifacts/jang-pptx test
+          pnpm --dir artifacts/jang-pptx build
+
+      - name: Build standalone browser engine
+        working-directory: engine-source/artifacts/jang-pptx
+        run: |
+          cat > vite.standalone.config.ts <<'CONFIG'
+          import path from 'node:path';
+          import { fileURLToPath } from 'node:url';
+          import { defineConfig } from 'vite';
+          const root = path.dirname(fileURLToPath(import.meta.url));
+          export default defineConfig({
+            publicDir: false,
+            build: {
+              lib: { entry: path.resolve(root, 'src/index.ts'), formats: ['es'], fileName: () => 'pptx-engine.js' },
+              outDir: path.resolve(root, 'standalone-dist'),
+              emptyOutDir: true,
+              sourcemap: false,
+              minify: 'esbuild',
+            },
+          });
+          CONFIG
+          pnpm exec vite build --config vite.standalone.config.ts
+
+      - name: Install browser engine and issue 29 application changes
+        run: |
+          cp engine-source/artifacts/jang-pptx/standalone-dist/pptx-engine.js ./pptx-engine.js
+          shim_path=$(find engine-source/artifacts/jang-pptx/standalone-dist -maxdepth 1 -name '__vite-browser-external-*.js' -print -quit)
+          test -n "$shim_path"
+          shim_name=$(basename "$shim_path")
+          cp "$shim_path" ./__vite-browser-external.js
+          node - "$shim_name" <<'NODE'
+          const fs = require('node:fs');
+          const shim = process.argv[2];
+          const path = 'pptx-engine.js';
+          const source = fs.readFileSync(path, 'utf8');
+          if (!source.includes(shim)) throw new Error(`Generated engine does not import ${shim}`);
+          fs.writeFileSync(path, source.replaceAll(shim, '__vite-browser-external.js'));
+          NODE
+          base64 -d .github/issue29/app.patch.xz.b64 | xz -d > /tmp/issue29-app.patch
+          git apply --check /tmp/issue29-app.patch
+          git apply /tmp/issue29-app.patch
+          cmp lecture-schema.json engine-source/artifacts/jang-pptx/src/schema/lecture-schema.json
+          rm -rf .github/issue29 engine-source
+          rm -f .github/workflows/export-hierarchical-app.yml
+          rm -f .github/workflows/apply-issue29-application.yml
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install application dependencies
+        run: npm ci
+
+      - name: First complete application verification
+        run: npm test
+
+      - name: Generate standard and three-mode review decks
+        run: npm run sample
+
+      - name: Verify issue 29 extraction and schema independently
+        run: node --test tests/unit/extract-function.test.mjs tests/unit/lecture-validator.test.mjs
+
+      - name: Install LibreOffice and Poppler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libreoffice-impress poppler-utils
+
+      - name: Render no, some, and all image modes
+        run: |
+          mkdir -p generated/issue29-render
+          for deck in generated/amino-acids-render-plan-*.pptx; do
+            libreoffice --headless --convert-to pdf --outdir generated/issue29-render "$deck"
+          done
+          for pdf in generated/issue29-render/*.pdf; do
+            pdfinfo "$pdf"
+            base=$(basename "$pdf" .pdf)
+            mkdir -p "generated/issue29-render/$base"
+            pdftoppm -png -r 100 "$pdf" "generated/issue29-render/$base/slide"
+          done
+          test "$(find generated/issue29-render -name 'slide-*.png' | wc -l)" -gt 0
+
+      - name: Verify mode structure and warnings
+        run: |
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const report = JSON.parse(fs.readFileSync('generated/amino-acids-render-plan-report.json', 'utf8'));
+          if (new Set(report.map((entry) => entry.slideCount)).size !== 1) throw new Error('Image modes changed slide count');
+          if (report.some((entry) => entry.warnings.some((warning) => warning.startsWith('Geometry:')))) throw new Error('Geometry warning found');
+          const all = report.find((entry) => entry.mode === 'all-images');
+          if (!all || all.warningCount !== 0) throw new Error('All-images deck is not warning-free');
+          console.log(JSON.stringify(report, null, 2));
+          NODE
+
+      - name: Second independent application verification
+        run: |
+          npm run check
+          npm run unit
+          npm run build
+          node scripts/generate-render-plan-regression.mjs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: issue29-hierarchical-application-review
+          path: |
+            generated/amino-acids-render-plan-*.pptx
+            generated/amino-acids-render-plan-report.json
+            generated/issue29-render/**
+            dist/**
+          if-no-files-found: error
+
+      - name: Commit exact verified integration
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "feat: integrate issue 29 hierarchical lecture layouts"
+          git push origin HEAD:feature/hierarchical-lecture-layout
