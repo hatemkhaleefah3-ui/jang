@@ -1,0 +1,121 @@
+name: Apply image companion refinement
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-image-companion-refinement.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-test:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: architecture/immutable-slide-render-plan
+          persist-credentials: true
+
+      - name: Check out refined source
+        uses: actions/checkout@v4
+        with:
+          repository: hatemkhaleefah3-ui/janjooo
+          ref: b8162c8e857ceb53c923d0356820fc2559d13efa
+          path: engine-source
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.17.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: engine-source/pnpm-lock.yaml
+
+      - name: Verify refined source
+        working-directory: engine-source
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm --dir artifacts/jang-pptx typecheck
+          pnpm --dir artifacts/jang-pptx test
+          pnpm --dir artifacts/jang-pptx build
+          pnpm --dir artifacts/jang-pptx sample
+
+      - name: Build standalone browser engine
+        working-directory: engine-source/artifacts/jang-pptx
+        run: |
+          cat > vite.standalone.config.ts <<'CONFIG'
+          import path from 'node:path';
+          import { fileURLToPath } from 'node:url';
+          import { defineConfig } from 'vite';
+          const root = path.dirname(fileURLToPath(import.meta.url));
+          export default defineConfig({
+            publicDir: false,
+            build: {
+              lib: {
+                entry: path.resolve(root, 'src/index.ts'),
+                formats: ['es'],
+                fileName: () => 'pptx-engine.js',
+              },
+              outDir: path.resolve(root, 'standalone-dist'),
+              emptyOutDir: true,
+              sourcemap: false,
+              minify: 'esbuild',
+            },
+          });
+          CONFIG
+          pnpm exec vite build --config vite.standalone.config.ts
+
+      - name: Install refined browser bundle
+        run: |
+          cp engine-source/artifacts/jang-pptx/standalone-dist/pptx-engine.js ./pptx-engine.js
+          shim_path=$(find engine-source/artifacts/jang-pptx/standalone-dist -maxdepth 1 -name '__vite-browser-external-*.js' -print -quit)
+          test -n "$shim_path"
+          shim_name=$(basename "$shim_path")
+          cp "$shim_path" ./__vite-browser-external.js
+          node - "$shim_name" <<'NODE'
+          const fs = require('node:fs');
+          const shim = process.argv[2];
+          const path = 'pptx-engine.js';
+          const source = fs.readFileSync(path, 'utf8');
+          if (!source.includes(shim)) throw new Error(`Generated engine does not import ${shim}`);
+          fs.writeFileSync(path, source.replaceAll(shim, '__vite-browser-external.js'));
+          NODE
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Verify CSP, application tests, and three image modes
+        run: |
+          npm ci
+          npm test
+          npm run sample
+
+      - name: Upload refined review decks
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-companion-refinement
+          path: |
+            generated/amino-acids-render-plan-*.pptx
+            generated/amino-acids-render-plan-report.json
+            dist/**
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Commit verified refined bundle
+        run: |
+          rm -rf engine-source
+          rm -f .github/workflows/apply-image-companion-refinement.yml
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "refine: keep inline images with substantive text"
+          git push origin HEAD:architecture/immutable-slide-render-plan
