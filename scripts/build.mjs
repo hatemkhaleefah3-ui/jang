@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const output = resolve(root, "dist");
-const assetVersion = "20260726-layout-quality";
+const assetVersion = "20260726-geometry-overflow";
 const staticFiles = [
   "index.html",
   "styles.css",
