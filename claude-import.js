@@ -1,7 +1,6 @@
 import { createStaticSchemaValidator } from "./lecture-validator.js";
 
 export const MAX_CLAUDE_JSON_BYTES = 20_000_000;
-export const MAX_CLAUDE_PPTX_BYTES = 50_000_000;
 
 function extensionOf(file) {
   const match = String(file?.name || "").toLowerCase().match(/\.([^.]+)$/);
@@ -46,22 +45,13 @@ function assertUniqueIdentifiers(lecture) {
   }
 }
 
-export function selectClaudeOutputFiles(fileList) {
+export function selectClaudeOutputFile(fileList) {
   const files = Array.from(fileList || []);
-  const jsonFiles = files.filter((file) => extensionOf(file) === "json");
-  const pptxFiles = files.filter((file) => extensionOf(file) === "pptx");
-  const unsupported = files.filter((file) => !["json", "pptx"].includes(extensionOf(file)));
-
-  if (unsupported.length) throw new Error("Choose only one Claude JSON file and one Claude PPTX file.");
-  if (jsonFiles.length !== 1 || pptxFiles.length !== 1 || files.length !== 2) {
-    throw new Error("Choose exactly two files together: one .json file and one .pptx file.");
-  }
-
-  const [jsonFile] = jsonFiles;
-  const [pptxFile] = pptxFiles;
+  if (files.length !== 1) throw new Error("Choose exactly one Claude .json file.");
+  const [jsonFile] = files;
+  if (extensionOf(jsonFile) !== "json") throw new Error("Choose a valid Claude .json file.");
   if (Number(jsonFile.size) > MAX_CLAUDE_JSON_BYTES) throw new Error("The Claude JSON file must be 20 MB or smaller.");
-  if (Number(pptxFile.size) > MAX_CLAUDE_PPTX_BYTES) throw new Error("The Claude PPTX file must be 50 MB or smaller.");
-  return { jsonFile, pptxFile };
+  return jsonFile;
 }
 
 export function collectLectureImageSlots(lecture) {
