@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {
   collectLectureImageSlots,
+  normalizeClaudeLectureHierarchy,
   parseClaudeOutputText,
   selectClaudeOutputFile,
 } from "../../claude-import.js";
@@ -90,6 +91,47 @@ test("Claude output parser validates the lecture and derives image slots", () =>
   assert.deepEqual(parsed.importWarnings, []);
 });
 
+test("Claude hierarchy normalization fills schema 1.2 definitions before image review", () => {
+  const lecture = lectureWithImage();
+  lecture.overview.keyPoints = ["Unrelated generated term"];
+  delete lecture.sections[0].sectionDefinition;
+  const slide = lecture.sections[0].slides[0];
+  delete slide.titleDefinition;
+  delete slide.subtitleDefinition;
+  slide.blocks.unshift({
+    blockId: "block-clinical-title",
+    type: "title",
+    text: "Clinical consequences",
+    sourceReferences: ["Page 1"],
+  }, {
+    blockId: "block-clinical-subtitle",
+    type: "subtitle",
+    text: "Characteristic findings",
+    sourceReferences: ["Page 1"],
+  }, {
+    blockId: "block-clinical-detail",
+    type: "paragraph",
+    text: "Enzyme disruption produces a characteristic clinical pattern.",
+    sourceReferences: ["Page 1"],
+  });
+
+  const normalized = normalizeClaudeLectureHierarchy(lecture);
+  assert.equal(normalized.generatedDefinitions, 5);
+  assert.equal(normalized.keyPointsChanged, true);
+  assert.deepEqual(normalized.lecture.overview.keyPoints, ["Metabolism"]);
+
+  const parsed = parseClaudeOutputText(JSON.stringify({ lecture }), schema);
+  const parsedSection = parsed.lecture.sections[0];
+  const parsedSlide = parsedSection.slides[0];
+  assert.match(String(parsedSection.sectionDefinition), /pathway|reaction|clinical/i);
+  assert.ok(String(parsedSlide.titleDefinition).trim());
+  assert.ok(String(parsedSlide.subtitleDefinition).trim());
+  assert.ok(String(parsedSlide.blocks[0].definition).trim());
+  assert.ok(String(parsedSlide.blocks[1].definition).trim());
+  assert.ok(parsed.importWarnings.some((warning) => /completed 5 missing hierarchy definitions/i.test(warning)));
+  assert.ok(parsed.importWarnings.some((warning) => /aligned to the ordered section titles/i.test(warning)));
+});
+
 test("Claude output parser accepts a bare lecture and rejects invalid schema", () => {
   const lecture = lectureWithImage();
   assert.equal(parseClaudeOutputText(JSON.stringify(lecture), schema).imageSlots.length, 1);
@@ -121,5 +163,6 @@ test("application exposes both import modes and ships the helper", async () => {
   assert.match(app, /parseClaudeOutputText/);
   assert.match(app, /selectClaudeOutputFile/);
   assert.match(build, /"claude-import\.js"/);
+  assert.match(build, /semantic engine validator import/);
   assert.match(packageJson, /claude-import\.test\.mjs/);
 });
