@@ -53,7 +53,7 @@ function minimalLecture() {
     overview: {
       title: "Overview",
       introduction: "Core pathways and regulation.",
-      keyPoints: ["Glycolysis"],
+      keyPoints: ["Pathway"],
     },
     sections: [{
       sectionId: "section-1",
