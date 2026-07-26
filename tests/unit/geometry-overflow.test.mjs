@@ -59,6 +59,8 @@ function geometryRegressionLecture() {
   };
 }
 
+// The image block exists in the layout whether its slot is filled or empty,
+// so this regression intentionally runs without importing image bytes.
 test("production engine prevents first-page and late-image geometry overflow", async () => {
   const result = await generateLecturePptx(
     geometryRegressionLecture(),
