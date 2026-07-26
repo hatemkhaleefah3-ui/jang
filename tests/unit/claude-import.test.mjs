@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import {
   collectLectureImageSlots,
   parseClaudeOutputText,
-  selectClaudeOutputFiles,
+  selectClaudeOutputFile,
 } from "../../claude-import.js";
 
 const schema = JSON.parse(await readFile(new URL("../../lecture-schema.json", import.meta.url), "utf8"));
@@ -62,12 +62,12 @@ function lectureWithImage() {
   };
 }
 
-test("Claude output selector requires exactly one JSON and one PPTX", () => {
+test("Claude output selector accepts exactly one JSON file", () => {
   const jsonFile = { name: "lecture-output.json", size: 1_000 };
-  const pptxFile = { name: "lecture-output.pptx", size: 2_000 };
-  assert.deepEqual(selectClaudeOutputFiles([pptxFile, jsonFile]), { jsonFile, pptxFile });
-  assert.throws(() => selectClaudeOutputFiles([jsonFile]), /exactly two files/i);
-  assert.throws(() => selectClaudeOutputFiles([jsonFile, { name: "notes.txt", size: 4 }]), /only one Claude JSON/i);
+  assert.equal(selectClaudeOutputFile([jsonFile]), jsonFile);
+  assert.throws(() => selectClaudeOutputFile([]), /exactly one/i);
+  assert.throws(() => selectClaudeOutputFile([jsonFile, jsonFile]), /exactly one/i);
+  assert.throws(() => selectClaudeOutputFile([{ name: "lecture-output.pptx", size: 2_000 }]), /valid Claude .json/i);
 });
 
 test("Claude output parser validates the lecture and derives image slots", () => {
@@ -115,9 +115,11 @@ test("application exposes both import modes and ships the helper", async () => {
   ]);
   assert.match(html, /id="lectureImportOption"/);
   assert.match(html, /id="claudeImportOption"/);
-  assert.match(html, /id="claudeFiles"[^>]*multiple/);
+  assert.match(html, /id="claudeFile"/);
+  assert.doesNotMatch(html, /id="claudeFiles"[^>]*multiple/);
   assert.match(app, /importClaudeOutput/);
   assert.match(app, /parseClaudeOutputText/);
+  assert.match(app, /selectClaudeOutputFile/);
   assert.match(build, /"claude-import\.js"/);
   assert.match(packageJson, /claude-import\.test\.mjs/);
 });
