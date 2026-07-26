@@ -16,7 +16,8 @@
       "type": "string",
       "enum": [
         "1.0",
-        "1.1"
+        "1.1",
+        "1.2"
       ]
     },
     "documentTitle": {
@@ -155,6 +156,9 @@
           "items": {
             "$ref": "#/definitions/LectureSlide"
           }
+        },
+        "sectionDefinition": {
+          "$ref": "#/definitions/RichText"
         }
       }
     },
@@ -191,11 +195,20 @@
           "items": {
             "$ref": "#/definitions/LectureBlock"
           }
+        },
+        "titleDefinition": {
+          "$ref": "#/definitions/RichText"
+        },
+        "subtitleDefinition": {
+          "$ref": "#/definitions/RichText"
         }
       }
     },
     "LectureBlock": {
       "oneOf": [
+        {
+          "$ref": "#/definitions/TitleBlock"
+        },
         {
           "$ref": "#/definitions/SubtitleBlock"
         },
@@ -267,6 +280,9 @@
               "const": "subtitle"
             },
             "text": {
+              "$ref": "#/definitions/RichText"
+            },
+            "definition": {
               "$ref": "#/definitions/RichText"
             }
           }
@@ -679,6 +695,20 @@
                 "portrait",
                 "landscape"
               ]
+            },
+            "visualType": {
+              "type": "string",
+              "enum": [
+                "photo",
+                "decorative",
+                "pathway",
+                "chart",
+                "microscopy",
+                "radiology",
+                "anatomy",
+                "diagram",
+                "other"
+              ]
             }
           }
         }
@@ -725,6 +755,41 @@
           }
         }
       }
+    },
+    "TitleBlock": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseBlock"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "text"
+          ],
+          "properties": {
+            "blockId": {
+              "type": "string"
+            },
+            "sourceReferences": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "type": {
+              "const": "title"
+            },
+            "text": {
+              "$ref": "#/definitions/RichText"
+            },
+            "definition": {
+              "$ref": "#/definitions/RichText"
+            }
+          }
+        }
+      ]
     }
   }
 }

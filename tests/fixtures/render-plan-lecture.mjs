@@ -1,7 +1,7 @@
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700"><rect width="1200" height="700" fill="#111111"/><circle cx="410" cy="350" r="170" fill="#777777"/><rect x="690" y="170" width="320" height="360" rx="28" fill="#fafaf9"/><text x="850" y="365" fill="#111111" font-size="44" text-anchor="middle">Editable evidence</text></svg>`;
 export const renderPlanImageDataUrl = `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
 
-function image(blockId, slotId, preferredAspect = "wide") {
+function image(blockId, slotId, preferredAspect = "wide", visualType = "pathway") {
   return {
     blockId,
     type: "image",
@@ -10,7 +10,8 @@ function image(blockId, slotId, preferredAspect = "wide") {
     description: "The same planned image box must be used whether the image is filled or empty.",
     important: true,
     sourceReference: `source-${slotId}`,
-    fit: "contain",
+    fit: ["photo", "decorative"].includes(visualType) ? "cover" : "contain",
+    visualType,
     preferredAspect,
     sourceReferences: [`source-${slotId}`],
   };
@@ -18,23 +19,26 @@ function image(blockId, slotId, preferredAspect = "wide") {
 
 export function renderPlanLecture() {
   return {
-    schemaVersion: "1.1",
+    schemaVersion: "1.2",
     documentTitle: "Amino acids metabolism render-plan regression",
     direction: "ltr",
     overview: {
       title: "Lecture Overview: Amino Acid Metabolism",
       introduction: "This lecture provides a comprehensive study of metabolic pathways, biosynthetic functions, and associated clinical disorders for glycine, phenylalanine, and tyrosine.",
-      keyPoints: ["Glycine", "Phenylalanine and tyrosine", "Clinical integration"],
+      keyPoints: ["Glycine metabolism", "Phenylalanine and Tyrosine Metabolism"],
     },
     sections: [
       {
         sectionId: "glycine",
         sectionTitle: "Glycine metabolism",
+        sectionDefinition: "Glycine metabolism connects biosynthesis, neurotransmission, antioxidant defense, and one-carbon transfer.",
         slides: [
           {
             slideId: "glycine-functions",
             slideTitle: "Metabolic functions of glycine",
+            titleDefinition: "Glycine contributes to biosynthesis, antioxidant defense, and nervous-system signaling.",
             slideSubtitle: "Biosynthesis, neurotransmission, and one-carbon metabolism",
+            subtitleDefinition: "These functions explain the broad physiological importance of glycine.",
             sourceReferences: ["p1", "p2"],
             blocks: [
               {
@@ -43,7 +47,7 @@ export function renderPlanLecture() {
                 text: "Glycine participates in protein synthesis, heme production, purine metabolism, glutathione synthesis, and inhibitory neurotransmission. ".repeat(12),
                 sourceReferences: ["p1"],
               },
-              image("glycine-image", "glycine-slot"),
+              image("glycine-image", "glycine-slot", "wide", "pathway"),
               {
                 blockId: "glycine-points",
                 type: "bullets",
@@ -60,7 +64,9 @@ export function renderPlanLecture() {
           {
             slideId: "glycine-table",
             slideTitle: "Glycine pathway comparison",
+            titleDefinition: "A structured comparison links glycine pathways with their roles and clinical relevance.",
             slideSubtitle: "Editable native data",
+            subtitleDefinition: "The table remains editable and preserves every source row.",
             sourceReferences: ["p3"],
             blocks: [
               {
@@ -86,11 +92,14 @@ export function renderPlanLecture() {
       {
         sectionId: "aromatic",
         sectionTitle: "Phenylalanine and Tyrosine Metabolism",
+        sectionDefinition: "Aromatic amino-acid metabolism links precursor conversion with specialized products and inherited disease.",
         slides: [
           {
             slideId: "aromatic-pathway",
             slideTitle: "Biosynthesis of Specialized Products from Tyrosine",
+            titleDefinition: "Tyrosine supplies catecholamines, thyroid hormones, and melanin through distinct biosynthetic routes.",
             slideSubtitle: "Precursor flow and clinical consequences",
+            subtitleDefinition: "Ordered reactions connect precursor availability with physiological products and disease.",
             sourceReferences: ["p10", "p11"],
             blocks: [
               {
@@ -99,7 +108,7 @@ export function renderPlanLecture() {
                 text: "Phenylalanine is converted to tyrosine, which supplies catecholamine, thyroid hormone, and melanin synthesis. Defects in pathway enzymes cause clinically important disorders. ".repeat(10),
                 sourceReferences: ["p10"],
               },
-              image("aromatic-image", "aromatic-slot"),
+              image("aromatic-image", "aromatic-slot", "wide", "photo"),
               {
                 blockId: "aromatic-diagram",
                 type: "diagram",
@@ -116,9 +125,11 @@ export function renderPlanLecture() {
           {
             slideId: "full-evidence",
             slideTitle: "Clinical image evidence",
+            titleDefinition: "Clinical photography can fill its reserved evidence area without changing pagination.",
             slideSubtitle: "Full evidence layout remains stable",
+            subtitleDefinition: "The imported image changes painting only and not the planned slide structure.",
             sourceReferences: ["p12"],
-            blocks: [image("full-image", "full-slot", "full")],
+            blocks: [image("full-image", "full-slot", "full", "decorative")],
           },
         ],
       },

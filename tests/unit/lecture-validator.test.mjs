@@ -7,7 +7,7 @@ const schema = JSON.parse(await readFile(new URL("../../lecture-schema.json", im
 
 function minimalLecture() {
   return {
-    schemaVersion: "1.1",
+    schemaVersion: "1.2",
     documentTitle: "Carbohydrate metabolism",
     direction: "ltr",
     overview: {
@@ -18,9 +18,11 @@ function minimalLecture() {
     sections: [{
       sectionId: "section-1",
       sectionTitle: "Glycolysis",
+      sectionDefinition: "Glycolysis converts glucose to pyruvate while conserving energy.",
       slides: [{
         slideId: "slide-1",
         slideTitle: "Pathway",
+        titleDefinition: "The pathway summarizes the ordered reactions of glycolysis.",
         slideSubtitle: "",
         sourceReferences: ["Page 1"],
         blocks: [{

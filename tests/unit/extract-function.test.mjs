@@ -82,10 +82,14 @@ const extracted = {
 test("normalizes directly into the shared PPTX engine contract", () => {
   const result = normalizeLectureResult(extracted, { sourceType: "pptx", sourceCount: 6 });
   const lecture = result.lecture;
-  assert.equal(lecture.schemaVersion, "1.1");
+  assert.equal(lecture.schemaVersion, "1.2");
   assert.match(lecture.sections[0].sectionId, /carbohydrate-metabolism/);
   assert.equal(lecture.sections[0].slides[0].slideTitle, "Glycolysis");
+  assert.ok(lecture.sections[0].sectionDefinition);
+  assert.ok(lecture.sections[0].slides[0].titleDefinition);
+  assert.ok(lecture.sections[0].slides[0].subtitleDefinition);
   assert.equal(lecture.sections[0].slides[1].slideTitle, "");
+  assert.deepEqual(lecture.overview.keyPoints, ["Carbohydrate Metabolism"]);
   assert.ok(lecture.sections[0].slides[0].slideId);
   assert.ok(lecture.sections[0].slides[0].blocks[0].blockId);
   assert.deepEqual(lecture.sections[0].slides[0].blocks[1].items, [
@@ -105,6 +109,8 @@ test("derives unique labelled image imports with aspect and orientation", () => 
   assert.match(result.imageSlots[0].label, /Glycolysis biochemical pathway/i);
   assert.equal(result.imageSlots[0].preferredAspect, "wide");
   assert.equal(result.imageSlots[0].orientation, "landscape");
+  assert.equal(result.imageSlots[0].visualType, "pathway");
+  assert.equal(result.imageSlots[0].fit, "contain");
   assert.equal(result.imageSlots[0].sourceReference, "Slide 3");
 });
 
@@ -121,6 +127,12 @@ test("downgrades malformed heat maps instead of producing invalid engine input",
 test("structured response schema models all requested reusable template inputs", () => {
   const blockProperties = lectureResponseSchema.properties.sections.items.properties.slides.items.properties.blocks.items.properties;
   assert.ok(blockProperties.items.items.properties.level);
+  assert.ok(blockProperties.definition);
+  assert.ok(blockProperties.visualType.enum.includes("radiology"));
+  assert.ok(lectureResponseSchema.properties.sections.items.properties.sectionDefinition);
+  const slideProperties = lectureResponseSchema.properties.sections.items.properties.slides.items.properties;
+  assert.ok(slideProperties.titleDefinition);
+  assert.ok(slideProperties.subtitleDefinition);
   assert.deepEqual(blockProperties.tableType.enum, ["standard", "comparison", "highlight", "heatmap"]);
   assert.deepEqual(blockProperties.diagramType.enum, ["generic", "metabolic", "signal-transduction", "gene-regulatory", "disease-pharmacology"]);
   assert.ok(blockProperties.preferredAspect);
@@ -130,17 +142,58 @@ test("structured response schema models all requested reusable template inputs",
 });
 
 test("Gemini prompt requires complete traceable reconstruction and exact block classification", () => {
-  assert.match(extractionPrompt, /exact structured input contract/i);
-  assert.match(extractionPrompt, /every unique meaningful instructional item/i);
-  assert.match(extractionPrompt, /nested hierarchical items/i);
-  assert.match(extractionPrompt, /tableType heatmap/i);
-  assert.match(extractionPrompt, /diagramType metabolic/i);
-  assert.match(extractionPrompt, /at least three linked entities/i);
-  assert.match(extractionPrompt, /in addition to the explanatory paragraph or list/i);
-  assert.match(extractionPrompt, /converted to.*activates.*inhibits/is);
-  assert.match(extractionPrompt, /audit every slide containing explicit linked steps/i);
-  assert.match(extractionPrompt, /orientation transverse/i);
+  assert.match(extractionPrompt, /exact structured contract/i);
+  assert.match(extractionPrompt, /WORK IN FOUR ORDERED STAGES/i);
+  assert.match(extractionPrompt, /A\. COMPLETE EXTRACTION/i);
+  assert.match(extractionPrompt, /B\. IMPORTANT-IMAGE MAPPING/i);
+  assert.match(extractionPrompt, /C\. REORDER, REGROUP, AND REORGANIZE/i);
+  assert.match(extractionPrompt, /D\. BUILD THE LECTURE HIERARCHY/i);
+  assert.match(extractionPrompt, /Configure means/i);
+  assert.match(extractionPrompt, /Decide means/i);
+  assert.match(extractionPrompt, /Make means/i);
+  assert.match(extractionPrompt, /every unique meaningful text item/i);
+  assert.match(extractionPrompt, /Preserve nesting with item\.level/i);
+  assert.match(extractionPrompt, /heatmap only for a valid numeric scale/i);
+  assert.match(extractionPrompt, /metabolic.*diagramType/is);
+  assert.match(extractionPrompt, /at least three entities/i);
+  assert.match(extractionPrompt, /in addition to complete explanatory text/i);
+  assert.match(extractionPrompt, /ordered conversions/i);
+  assert.match(extractionPrompt, /Audit every explicit linked mechanism/i);
+  assert.match(extractionPrompt, /visualType/i);
   assert.match(extractionPrompt, /unmappedSourceReferences/i);
+});
+
+test("normalizes title and sub-title definitions and safe image crop policy", () => {
+  const hierarchical = structuredClone(extracted);
+  hierarchical.sections[0].sectionDefinition = "Carbohydrate metabolism explains glucose use, storage, and energy production.";
+  hierarchical.sections[0].slides[0].title = "Glycolysis sequence";
+  hierarchical.sections[0].slides[0].titleDefinition = "Glycolysis converts glucose to pyruvate through ordered reactions.";
+  hierarchical.sections[0].slides[0].subTitle = "Energy investment";
+  hierarchical.sections[0].slides[0].subtitleDefinition = "The investment phase consumes ATP before energy payoff.";
+  hierarchical.sections[0].slides[0].blocks.unshift(
+    { type: "title", text: "Regulatory checkpoint", definition: "Phosphofructokinase controls pathway flux.", sourceReferences: ["Slide 2"] },
+    { type: "subtitle", text: "Allosteric control", definition: "Metabolites activate or inhibit the rate-limiting enzyme.", sourceReferences: ["Slide 2"] },
+  );
+  hierarchical.sections[0].slides[0].blocks.push({
+    type: "image", slotId: "clinical-photo", label: "Clinical photograph",
+    description: "A safely croppable patient photograph.", visualType: "photo", fit: "contain",
+    important: true, preferredAspect: "portrait", orientation: "portrait",
+    sourceReference: "Slide 2", sourceReferences: ["Slide 2"],
+  });
+
+  const result = normalizeLectureResult(hierarchical, { sourceType: "pptx", sourceCount: 6 });
+  const lecture = result.lecture;
+  assert.equal(lecture.sections[0].sectionDefinition, hierarchical.sections[0].sectionDefinition);
+  assert.equal(lecture.sections[0].slides[0].slideTitle, "Glycolysis sequence");
+  assert.equal(lecture.sections[0].slides[0].titleDefinition, hierarchical.sections[0].slides[0].titleDefinition);
+  assert.equal(lecture.sections[0].slides[0].subtitleDefinition, hierarchical.sections[0].slides[0].subtitleDefinition);
+  assert.equal(lecture.sections[0].slides[0].blocks[0].type, "title");
+  assert.ok(lecture.sections[0].slides[0].blocks[0].definition);
+  assert.equal(lecture.sections[0].slides[0].blocks[1].type, "subtitle");
+  assert.ok(lecture.sections[0].slides[0].blocks[1].definition);
+  const photo = result.imageSlots.find((slot) => slot.slotId === "clinical-photo");
+  assert.equal(photo.visualType, "photo");
+  assert.equal(photo.fit, "cover");
 });
 
 test("uses the configured Gemini model migration behavior", () => {
