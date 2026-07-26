@@ -89,12 +89,17 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      - name: Verify application and generate realistic decks
-        run: |
-          npm ci
-          npm test
-          npm run sample
-          node scripts/generate-render-plan-regression.mjs
+      - name: Install application dependencies
+        run: npm ci
+
+      - name: Run application syntax unit and CSP tests
+        run: npm test
+
+      - name: Generate standard application sample
+        run: npm run sample
+
+      - name: Generate realistic long-title decks
+        run: node scripts/generate-render-plan-regression.mjs
 
       - name: Render long-title regression through LibreOffice
         run: |
