@@ -123,19 +123,26 @@ X-Jang-API-Key: <JANG_API_KEY>
 
 ### Cloudflare setup
 
-Create one Workers KV namespace and bind it to the Pages project with this variable name:
+The Workers KV namespace binding is committed in `wrangler.jsonc` and is the source of truth for deployments:
 
-```text
-JANG_AUTOMATION_KV
+```jsonc
+"kv_namespaces": [
+  {
+    "binding": "JANG_AUTOMATION_KV",
+    "id": "b3d01801415042df951f4b0ebdb4c788"
+  }
+]
 ```
 
-Add an encrypted Pages secret named:
+`JANG_API_KEY` remains an encrypted Pages secret and must not be added to `wrangler.jsonc`, source control, or a plaintext `vars` block. Create or update it with:
 
-```text
-JANG_API_KEY
+```bash
+npx wrangler pages secret put JANG_API_KEY --project-name jang
 ```
 
-Configure the KV binding and secret for both Production and Preview, then redeploy. Every import, normalized build record, image, presentation metadata record, and generated PPTX uses an absolute seven-day KV expiration.
+The command prompts for the secret value and stores it in Cloudflare. For local development only, use a gitignored `.dev.vars` or `.env` file.
+
+After the secret is configured, redeploy the Pages project. Every import, normalized build record, image, presentation metadata record, and generated PPTX uses an absolute seven-day KV expiration.
 
 Workers KV is eventually consistent. A write is normally visible immediately in the same Cloudflare location, but a following n8n request may reach another location where a new value can take up to about 60 seconds to appear. The API retries required KV reads for several seconds and returns a `Retry-After: 2` header when a value is still unavailable. In n8n, add a short Wait node—two to five seconds—between dependent calls and retry HTTP `404` or `409` responses with increasing delays for up to 60 seconds.
 
@@ -266,5 +273,5 @@ For local Cloudflare testing:
 
 ```bash
 npm run build
-npx wrangler pages dev dist --binding GEMINI_API_KEY=your-key --binding JANG_API_KEY=your-api-key --kv=JANG_AUTOMATION_KV
+npx wrangler pages dev dist --binding GEMINI_API_KEY=your-key --binding JANG_API_KEY=your-api-key
 ```
