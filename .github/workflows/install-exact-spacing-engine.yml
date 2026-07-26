@@ -35,13 +35,43 @@ jobs:
           cp .engine-source/artifacts/jang-pptx/standalone/pptx-engine.js pptx-engine.js
           rm -rf .engine-source
       - name: Validate application
+        id: validate
+        shell: bash
         run: |
-          npm ci
-          npm test
-          npm run sample
+          set +e
+          mkdir -p generated
+          npm ci > generated/exact-engine-application.log 2>&1
+          install=$?
+          if [ "$install" -eq 0 ]; then
+            npm test >> generated/exact-engine-application.log 2>&1
+            tests=$?
+            npm run sample >> generated/exact-engine-application.log 2>&1
+            sample=$?
+          else
+            tests=1
+            sample=1
+          fi
+          if [ "$install" -eq 0 ] && [ "$tests" -eq 0 ] && [ "$sample" -eq 0 ]; then overall=success; else overall=failure; fi
+          echo "overall=$overall" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Commit diagnostic on failure
+        if: steps.validate.outputs.overall != 'success'
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -f generated/exact-engine-application.log
+          git commit -m "Record exact-spacing engine application failure"
+          git push origin HEAD:agent/claude-output-import
+      - name: Stop on compatibility failure
+        if: steps.validate.outputs.overall != 'success'
+        run: |
+          cat generated/exact-engine-application.log
+          exit 1
       - name: Commit final exact-spacing engine
+        if: steps.validate.outputs.overall == 'success'
         run: |
           rm -f .github/workflows/install-exact-spacing-engine.yml
+          rm -f generated/exact-engine-application.log
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add -A
