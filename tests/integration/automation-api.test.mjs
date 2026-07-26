@@ -2,9 +2,10 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { renderPlanLecture } from "../fixtures/render-plan-lecture.mjs";
 
-class MemoryR2Bucket {
+class MemoryKVNamespace {
   constructor() {
-    this.objects = new Map();
+    this.values = new Map();
+    this.transientMisses = new Map();
   }
 
   async put(key, value, options = {}) {
@@ -13,34 +14,70 @@ class MemoryR2Bucket {
     else if (value instanceof ArrayBuffer) bytes = new Uint8Array(value);
     else if (ArrayBuffer.isView(value)) bytes = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
     else if (value instanceof Blob) bytes = new Uint8Array(await value.arrayBuffer());
-    else throw new TypeError(`Unsupported R2 value for ${key}`);
-    this.objects.set(key, {
+    else throw new TypeError(`Unsupported KV value for ${key}`);
+    if (bytes.byteLength > 25 * 1024 * 1024) throw new Error("KV value exceeds 25 MiB");
+    const expiration = options.expiration || (options.expirationTtl ? Math.floor(Date.now() / 1000) + options.expirationTtl : undefined);
+    this.values.set(key, {
       bytes: new Uint8Array(bytes),
-      httpMetadata: options.httpMetadata || {},
-      customMetadata: options.customMetadata || {},
+      metadata: options.metadata || null,
+      expiration,
     });
   }
 
-  async get(key) {
-    const stored = this.objects.get(key);
+  #stored(key) {
+    const remainingMisses = this.transientMisses.get(key) || 0;
+    if (remainingMisses > 0) {
+      this.transientMisses.set(key, remainingMisses - 1);
+      return null;
+    }
+    const stored = this.values.get(key);
+    if (!stored) return null;
+    if (stored.expiration && stored.expiration <= Math.floor(Date.now() / 1000)) {
+      this.values.delete(key);
+      return null;
+    }
+    return stored;
+  }
+
+  #decode(stored, type = "text") {
     if (!stored) return null;
     const copy = stored.bytes.slice();
+    if (type === "arrayBuffer") return copy.buffer.slice(copy.byteOffset, copy.byteOffset + copy.byteLength);
+    const text = new TextDecoder().decode(copy);
+    if (type === "json") return JSON.parse(text);
+    if (type === "stream") return new Response(copy).body;
+    return text;
+  }
+
+  async get(key, options = {}) {
+    const type = typeof options === "string" ? options : options.type || "text";
+    return this.#decode(this.#stored(key), type);
+  }
+
+  async getWithMetadata(key, options = {}) {
+    const stored = this.#stored(key);
+    const type = typeof options === "string" ? options : options.type || "text";
     return {
-      size: copy.byteLength,
-      body: new Response(copy).body,
-      httpMetadata: stored.httpMetadata,
-      customMetadata: stored.customMetadata,
-      text: async () => new TextDecoder().decode(copy),
-      arrayBuffer: async () => copy.buffer.slice(copy.byteOffset, copy.byteOffset + copy.byteLength),
+      value: this.#decode(stored, type),
+      metadata: stored?.metadata || null,
     };
   }
 
-  async delete(keys) {
-    for (const key of Array.isArray(keys) ? keys : [keys]) this.objects.delete(key);
+  async list(options = {}) {
+    const prefix = options.prefix || "";
+    const keys = [...this.values.entries()]
+      .filter(([key, stored]) => key.startsWith(prefix) && (!stored.expiration || stored.expiration > Math.floor(Date.now() / 1000)))
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([name, stored]) => ({ name, expiration: stored.expiration, metadata: stored.metadata }));
+    return { keys, list_complete: true, cursor: "" };
+  }
+
+  async delete(key) {
+    this.values.delete(key);
   }
 }
 
-function context(path, body, bucket, apiKey = "test-secret") {
+function context(path, body, kv, apiKey = "test-secret") {
   return {
     request: new Request(`https://jang.example${path}`, {
       method: "POST",
@@ -52,7 +89,7 @@ function context(path, body, bucket, apiKey = "test-secret") {
     }),
     env: {
       JANG_API_KEY: "test-secret",
-      JANG_AUTOMATION_BUCKET: bucket,
+      JANG_AUTOMATION_KV: kv,
     },
   };
 }
@@ -61,7 +98,7 @@ async function payload(response) {
   return response.json();
 }
 
-test("n8n API mirrors JSON import, build, image import, continue, and binary export", { timeout: 60000 }, async () => {
+test("n8n API mirrors JSON import, build, image import, continue, and binary export through KV", { timeout: 60000 }, async () => {
   const {
     handleImport,
     handleBuild,
@@ -70,16 +107,18 @@ test("n8n API mirrors JSON import, build, image import, continue, and binary exp
     handleExport,
   } = await import("../../functions/_shared/automation.js");
 
-  const bucket = new MemoryR2Bucket();
-  const unauthorized = await handleImport(context("/api/import", { lecture: renderPlanLecture() }, bucket, "wrong"));
+  const kv = new MemoryKVNamespace();
+  const unauthorized = await handleImport(context("/api/import", { lecture: renderPlanLecture() }, kv, "wrong"));
   assert.equal(unauthorized.status, 401);
 
-  const imported = await handleImport(context("/api/import", { lecture: renderPlanLecture() }, bucket));
+  const imported = await handleImport(context("/api/import", { lecture: renderPlanLecture() }, kv));
   assert.equal(imported.status, 200);
   const { importId } = await payload(imported);
   assert.match(importId, /^[0-9a-f-]{36}$/i);
 
-  const built = await handleBuild(context("/api/build", { importId }, bucket));
+  // Simulate one transient eventually-consistent miss. Required KV reads retry.
+  kv.transientMisses.set(`imports/${importId}/import.json`, 1);
+  const built = await handleBuild(context("/api/build", { importId }, kv));
   assert.equal(built.status, 200);
   const buildResult = await payload(built);
   assert.ok(buildResult.labels.length >= 1);
@@ -95,7 +134,7 @@ test("n8n API mirrors JSON import, build, image import, continue, and binary exp
       importId,
       label: buildResult.labels[0],
       imageUrl: "https://images.example/lecture.svg",
-    }, bucket));
+    }, kv));
     assert.equal(imageImported.status, 200);
     assert.equal((await payload(imageImported)).success, true);
   } finally {
@@ -106,7 +145,7 @@ test("n8n API mirrors JSON import, build, image import, continue, and binary exp
   globalThis.document = {};
   let continued;
   try {
-    continued = await handleContinue(context("/api/continue", { importId }, bucket));
+    continued = await handleContinue(context("/api/continue", { importId }, kv));
   } finally {
     if (previousDocument === undefined) delete globalThis.document;
     else globalThis.document = previousDocument;
@@ -116,9 +155,11 @@ test("n8n API mirrors JSON import, build, image import, continue, and binary exp
   assert.equal(continueResult.success, true);
   assert.ok(continueResult.slideCount > 0);
 
-  const exported = await handleExport(context("/api/export", { importId }, bucket));
+  const exported = await handleExport(context("/api/export", { importId }, kv));
   assert.equal(exported.status, 200);
   assert.equal(exported.headers.get("content-type"), "application/vnd.openxmlformats-officedocument.presentationml.presentation");
   assert.match(exported.headers.get("content-disposition"), /attachment/i);
-  assert.ok((await exported.arrayBuffer()).byteLength > 1000);
+  const pptxBytes = (await exported.arrayBuffer()).byteLength;
+  assert.ok(pptxBytes > 1000);
+  assert.ok(pptxBytes < 25 * 1024 * 1024);
 });
