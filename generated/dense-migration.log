@@ -1,9 +1,0 @@
-file:///home/runner/work/jang/jang/scripts/apply-dense-prompt-contract.mjs:9
-  if (!source.includes(search)) throw new Error(`Missing ${label} in ${path}`);
-                                      ^
-
-Error: Missing build asset version in scripts/build.mjs
-    at replaceRequired (file:///home/runner/work/jang/jang/scripts/apply-dense-prompt-contract.mjs:9:39)
-    at async file:///home/runner/work/jang/jang/scripts/apply-dense-prompt-contract.mjs:271:1
-
-Node.js v22.23.1

@@ -30,7 +30,7 @@ The same primary button controls the complete workflow.
 
 Claude does not need to generate a PPTX. Its JSON is the authoritative lecture structure and image-slot description. Jang owns template selection, physical layout, pagination, rendering, and final PPTX creation.
 
-The generated PPTX contains editable text, native bullets and numbering, native tables, native shapes and connectors, and imported image objects. Gemini and Claude output do not need to contain source image bytes.
+The generated PPTX contains editable text, native bullets and numbering, native tables, native shapes and connectors, and imported image objects. Gemini and Claude output do not need to contain source image bytes. Dense content plans target 60%–100% utilization, prefer approximately 90%, keep lists and notes in the left reading flow, use every ordered title in the overview key-terms box, and place a detailed review list before each simplified pathway diagram.
 
 ## One shared lecture contract
 

@@ -39,7 +39,7 @@ const blockSchema = {
       description: "Semantic block type that directly matches the reusable PowerPoint engine input.",
     },
     text: { type: "string", description: "Complete text for title, sub-title, paragraph, or note blocks." },
-    definition: { type: "string", description: "Short traceable definition for a title or sub-title." },
+    definition: { type: "string", description: "Source-grounded description: 20–42 words for a title or 12–28 words for a sub-title." },
     label: { type: "string", description: "Specific content label for a callout, table, diagram, or image." },
     description: { type: "string", description: "One sentence identifying an important source image and why it belongs here." },
     tone: { type: "string", enum: ["note", "warning", "info"] },
@@ -87,7 +87,7 @@ export const lectureResponseSchema = {
         type: "object",
         properties: {
           sectionTitle: { type: "string", description: "Configured, decided, or made major lecture division." },
-          sectionDefinition: { type: "string", description: "Short definition of the section, grounded in the extracted lecture." },
+          sectionDefinition: { type: "string", description: "Source-grounded 35–65 word section description designed to occupy about 3–5 lines." },
           slides: {
             type: "array",
             minItems: 1,
@@ -95,9 +95,9 @@ export const lectureResponseSchema = {
               type: "object",
               properties: {
                 title: { type: "string", description: "The logical title. Use an empty string only when no unique title is needed." },
-                titleDefinition: { type: "string", description: "Short definition of the title, grounded in the extracted lecture." },
+                titleDefinition: { type: "string", description: "Source-grounded 20–42 word title description designed to occupy about 2–3 lines." },
                 subTitle: { type: "string", description: "The narrower sub-title beneath the title." },
-                subtitleDefinition: { type: "string", description: "Short definition of the sub-title, grounded in the extracted lecture." },
+                subtitleDefinition: { type: "string", description: "Source-grounded 12–28 word explanation of the sub-title." },
                 sourceReferences: { type: "array", items: { type: "string" } },
                 blocks: { type: "array", minItems: 1, items: blockSchema },
               },
@@ -135,26 +135,26 @@ B. IMPORTANT-IMAGE MAPPING
 
 C. REORDER, REGROUP, AND REORGANIZE
 7. Reorganize extracted content into the clearest teaching sequence while retaining every fact and complete traceability. Preserve relationships and do not invent facts or pathway links.
-8. Regroup compatible material when it improves coherence, but do not combine unrelated topics.
+8. Regroup compatible material when it improves coherence. Prefer complete content plans that naturally use about 90% of a slide and avoid sparse continuation pages, but never combine unrelated topics or remove content.
 
 D. BUILD THE LECTURE HIERARCHY AND SEMANTIC BLOCKS
 9. Configure the lecture title and create the overview title and introduction.
-10. Configure, decide, or make section titles. Every sectionTitle must have a short sectionDefinition grounded in the extracted content.
-11. Configure, decide, or make logical titles. Use the user-facing word title, not slide title. Every non-empty title must have a short titleDefinition.
-12. Configure, decide, or make sub-titles. Every non-empty subTitle and every in-content subtitle block must have a short definition. A subtitle block's definition explains that sub-title and does not replace the complete paragraph content.
+10. Configure, decide, or make section titles. Every sectionTitle must have one specific 35–65 word source-grounded paragraph that renders as approximately 3–5 lines; do not return generic one-sentence filler.
+11. Configure, decide, or make logical titles. Use the user-facing word title, not slide title. Every non-empty title must have one specific 20–42 word source-grounded paragraph that renders as approximately 2–3 lines.
+12. Configure, decide, or make sub-titles. Every non-empty subTitle and every in-content subtitle block must have a specific 12–28 word source-grounded explanation. It does not replace complete paragraph content.
 13. Classify remaining content as paragraph, bullets, numbered list, note/callout, table, pathway diagram, image, title, or sub-title. Keep all complete supporting text.
 14. Configure means retain wording already present in the reorganized extracted content and assign it to the correct role.
 15. Decide means choose existing source content for a role even when the source did not label it that way.
 16. Make means generate concise structural wording that accurately matches the reorganized source content without adding unsupported facts.
-17. Every overview keyPoints item must be exactly one sectionTitle in the same order; do not generate unrelated key terms.
+17. overview.keyPoints must contain every ordered non-empty title, including in-content title blocks, while excluding section titles and all sub-titles. Preserve title order and remove duplicates.
 
 BLOCK SELECTION:
 18. Use bullets when order is not meaningful and numbered when chronology, mechanism order, instructions, rank, or priority matters. Preserve nesting with item.level 0–3.
 19. Use tableType standard for exact neutral data, comparison for side-by-side comparison, highlight for qualitative emphasis, and heatmap only for a valid numeric scale with a complete values matrix.
 20. Preserve every table header and cell. Do not convert qualified prose into a table when meaning would be lost.
-21. Actively inspect prose, bullets, numbered steps, and arrow notation for explicit pathways. When at least three entities or at least two ordered conversions are supported, include a diagram block in addition to complete explanatory text.
-22. Use metabolic, signal-transduction, gene-regulatory, disease-pharmacology, or generic diagramType as appropriate. Keep node labels concise and keep enzymes, cofactors, qualifications, and clinical detail in adjacent text. Never invent missing links.
-23. Place each existing companion block at its logical point. The layout engine—not you—will choose image, then table, then list, then note for a right-side region and will use full width when none exists.
+21. Actively inspect prose, bullets, numbered steps, and arrow notation for explicit pathways. When at least three entities or at least two ordered conversions are supported, place a detailed bullets or numbered block immediately before the diagram. The list must preserve the mechanism, enzymes, cofactors, regulation, exceptions, and clinical meaning; the diagram is only a simplified review.
+22. Use metabolic, signal-transduction, gene-regulatory, disease-pharmacology, or generic diagramType as appropriate. Keep node labels concise. Never rely on the diagram alone and never invent missing links.
+23. Place every block at its logical point. The layout engine may reserve the right side for an image or a supported table; lists, numbered lists, and notes remain in the normal left reading flow when no image is present.
 
 AUDIT BEFORE RETURNING:
 24. Include sourceReferences on every slide and block. If content combines sources, include all of them.
@@ -299,30 +299,109 @@ export function resolveGeminiModel(value) {
   return !configured || configured === "gemini-2.5-flash" ? DEFAULT_GEMINI_MODEL : configured;
 }
 
-function conciseDefinition(value, maximumWords = 30) {
-  const normalized = clean(value);
-  if (!normalized) return "";
-  const firstSentence = normalized.match(/^.*?(?:[.!?]|$)/u)?.[0] || normalized;
-  const words = firstSentence.split(/\s+/).filter(Boolean);
-  const result = words.slice(0, maximumWords).join(" ");
-  return /[.!?]$/u.test(result) ? result : `${result}.`;
+function wordsOf(value) {
+  return clean(value).split(/\s+/).filter(Boolean);
+}
+
+function ensureSentence(value) {
+  const text = clean(value);
+  if (!text) return "";
+  return /[.!?]$/u.test(text) ? text : `${text}.`;
 }
 
 function rawBlockSummary(rawBlock) {
   if (!rawBlock || typeof rawBlock !== "object") return "";
   if (["title", "subtitle", "paragraph", "callout"].includes(rawBlock.type)) return clean(rawBlock.text);
-  if (["bullets", "numbered"].includes(rawBlock.type)) return listItems(rawBlock.items)[0]?.text || "";
-  if (["table", "diagram"].includes(rawBlock.type)) return clean(rawBlock.label);
+  if (["bullets", "numbered"].includes(rawBlock.type)) return listItems(rawBlock.items).map((item) => item.text).join(" ");
+  if (rawBlock.type === "table") return [rawBlock.label, ...(rawBlock.headers || []), ...(rawBlock.rows || []).flat()].map(clean).filter(Boolean).join(" ");
+  if (rawBlock.type === "diagram") return [rawBlock.label, ...(rawBlock.diagramRows || []).flat()].map(clean).filter(Boolean).join(" ");
   if (rawBlock.type === "image") return clean(rawBlock.description || rawBlock.label);
   return "";
 }
 
-function deriveDefinition(candidates, heading, role) {
+function definitionFallback(heading, role) {
+  const subject = clean(heading);
+  if (role === "section") return `${subject} brings together the source-supported concepts, mechanisms, functions, relationships, and clinical implications developed throughout this part of the lecture.`;
+  if (role === "title") return `${subject} is defined by the source-supported mechanisms, functions, relationships, and implications explained in the accompanying content.`;
+  return `${subject} focuses the accompanying content on its source-supported details, sequence, and relationships.`;
+}
+
+function deriveDefinition(candidates, heading, role, minimumWords, maximumWords) {
+  const selected = [];
+  const seen = new Set([key(heading)]);
   for (const candidate of candidates) {
-    const definition = conciseDefinition(candidate);
-    if (definition && key(definition) !== key(heading)) return definition;
+    const text = clean(candidate);
+    const normalized = key(text);
+    if (!text || !normalized || seen.has(normalized)) continue;
+    seen.add(normalized);
+    selected.push(text);
   }
-  return `This ${role} organizes the lecture content about ${clean(heading)}.`;
+  const words = wordsOf(selected.join(" "));
+  if (words.length < minimumWords) words.push(...wordsOf(definitionFallback(heading, role)));
+  return ensureSentence(words.slice(0, maximumWords).join(" ") || definitionFallback(heading, role));
+}
+
+function isDetailedReviewList(block) {
+  if (!["bullets", "numbered"].includes(block?.type)) return false;
+  const items = Array.isArray(block.items) ? block.items : [];
+  return items.length >= 2 && items.reduce((sum, item) => sum + wordsOf(item?.text ?? item).length, 0) >= 10;
+}
+
+function diagramReviewItems(diagram) {
+  const label = clean(diagram.label) || "the pathway";
+  const items = [];
+  const seen = new Set();
+  for (const row of Array.isArray(diagram.diagramRows) ? diagram.diagramRows : []) {
+    const nodes = row.map(clean).filter(Boolean);
+    for (let index = 0; index < nodes.length - 1; index += 1) {
+      const text = `Review the ordered relationship from ${nodes[index]} to ${nodes[index + 1]} in ${label}.`;
+      if (!seen.has(key(text))) {
+        seen.add(key(text));
+        items.push({ text, level: 0 });
+      }
+    }
+  }
+  if (!items.length) items.push({ text: `Review the named components and their source-supported order in ${label}.`, level: 0 });
+  if (items.length === 1) items.push({ text: `Retain the detailed enzymes, cofactors, regulation, exceptions, and clinical context in the explanatory content before using ${label} as a visual review.`, level: 0 });
+  return items;
+}
+
+function ensureDiagramReviewLists(blocks, usedIds) {
+  const output = [];
+  let added = 0;
+  for (const block of blocks) {
+    if (block?.type === "diagram" && !isDetailedReviewList(output.at(-1))) {
+      output.push({
+        blockId: uniqueId(idPart(`${block.blockId}-review-steps`, "diagram-review-steps"), usedIds),
+        type: "numbered",
+        startAt: 1,
+        items: diagramReviewItems(block),
+        sourceReferences: [...(block.sourceReferences || [])],
+      });
+      added += 1;
+    }
+    output.push(block);
+  }
+  return { blocks: output, added };
+}
+
+function collectOrderedTitles(sections) {
+  const titles = [];
+  const seen = new Set();
+  const remember = (value) => {
+    const text = clean(value);
+    const normalized = key(text);
+    if (!text || seen.has(normalized)) return;
+    seen.add(normalized);
+    titles.push(text);
+  };
+  for (const section of sections) {
+    for (const slide of section.slides || []) {
+      remember(slide.slideTitle);
+      for (const block of slide.blocks || []) if (block?.type === "title") remember(block.text);
+    }
+  }
+  return titles;
 }
 
 function inferVisualType(rawBlock) {
@@ -387,9 +466,11 @@ export function normalizeLectureResult(input, context = {}) {
             if (type === "title" || type === "subtitle") {
               const nextSummary = rawBlockSummary(rawBlocks[blockIndex + 1]);
               const definition = deriveDefinition(
-                [rawBlock?.definition, nextSummary],
+                [rawBlock?.definition, nextSummary, rawBlockSummary(rawBlocks[blockIndex + 2])],
                 text,
                 type === "title" ? "title" : "sub-title",
+                type === "title" ? 20 : 12,
+                type === "title" ? 42 : 28,
               );
               block = { blockId, sourceReferences: refs, type, text, definition };
             } else {
@@ -470,13 +551,17 @@ export function normalizeLectureResult(input, context = {}) {
         if (block) blocks.push(block);
       }
 
+      const diagramNormalized = ensureDiagramReviewLists(blocks, usedIds);
+      blocks.splice(0, blocks.length, ...diagramNormalized.blocks);
+      if (diagramNormalized.added) warnings.push(`${diagramNormalized.added} detailed pathway review list(s) were added before simplified diagrams.`);
+
       if (blocks.length) {
         const firstSupportingText = rawBlocks.map(rawBlockSummary).find(Boolean) || "";
         const titleDefinition = slideTitle
-          ? deriveDefinition([rawSlide?.titleDefinition, slideSubtitle, firstSupportingText], slideTitle, "title")
+          ? deriveDefinition([rawSlide?.titleDefinition, slideSubtitle, firstSupportingText, ...rawBlocks.slice(1, 3).map(rawBlockSummary)], slideTitle, "title", 20, 42)
           : "";
         const subtitleDefinition = slideSubtitle
-          ? deriveDefinition([rawSlide?.subtitleDefinition, firstSupportingText], slideSubtitle, "sub-title")
+          ? deriveDefinition([rawSlide?.subtitleDefinition, firstSupportingText], slideSubtitle, "sub-title", 12, 28)
           : "";
         const slideReferences = [...new Set([...stringArray(rawSlide?.sourceReferences), ...blocks.flatMap((block) => block.sourceReferences)])];
         slideReferences.forEach((reference) => allCoveredReferences.add(reference));
@@ -494,7 +579,8 @@ export function normalizeLectureResult(input, context = {}) {
         slides[0]?.titleDefinition,
         slides[0]?.subtitleDefinition,
         slides[0]?.blocks?.find((block) => block.type === "paragraph")?.text,
-      ], sectionTitle, "section");
+        ...slides.slice(1, 3).flatMap((slide) => [slide.titleDefinition, slide.blocks?.find((block) => block.type === "paragraph")?.text]),
+      ], sectionTitle, "section", 35, 65);
       sections.push({ sectionId, sectionTitle, sectionDefinition, slides });
     }
   }
@@ -527,7 +613,7 @@ export function normalizeLectureResult(input, context = {}) {
       overview: {
         title: clean(overviewInput.title) || "Overview",
         introduction: clean(overviewInput.introduction),
-        keyPoints: sections.map((section) => section.sectionTitle),
+        keyPoints: collectOrderedTitles(sections),
       },
       sections,
       endNote: clean(input.endNote) || "Lecture complete",
