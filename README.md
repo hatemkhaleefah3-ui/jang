@@ -30,7 +30,7 @@ The same primary button controls the complete workflow.
 
 Claude does not need to generate a PPTX. Its JSON is the authoritative lecture structure and image-slot description. Jang owns template selection, physical layout, pagination, rendering, and final PPTX creation.
 
-The generated PPTX contains editable text, native bullets and numbering, native tables, native shapes and connectors, and imported image objects. Gemini and Claude output do not need to contain source image bytes. Dense content plans target 60%–100% utilization, prefer approximately 90%, keep lists and notes in the left reading flow, use every ordered title in the overview key-terms box, and place a detailed review list before each simplified pathway diagram.
+The generated PPTX contains editable text, native bullets and numbering, native tables, native shapes and connectors, and imported image objects. Gemini and Claude output do not need to contain source image bytes. Content plans target 60%–100% utilization and prefer approximately 90%, but density is created only by grouping real content and producing complete descriptions and review lists. The renderer never stretches gaps or text boxes to imitate density. Lists and notes remain in the left reading flow, the overview key-terms box uses every ordered title, and each simplified pathway diagram is preceded by a detailed review list.
 
 ## One shared lecture contract
 
@@ -85,7 +85,7 @@ The browser ships a standalone bundled copy of the approved Jang PPTX engine in 
 - RTL/LTR support;
 - schema and semantic validation.
 
-The renderer compacts adjacent low-density topics within a section before pagination. Non-full images share a balanced text/image layout with their related content when space permits, while unfilled image slots remain compact labelled placeholders rather than blank dedicated slides. A post-layout quality audit checks slide density and content preservation.
+The renderer compacts adjacent compatible topics within a section before pagination, targeting naturally dense content without changing the exact two-pixel vertical rhythm. Non-full images share a balanced text/image layout with their related content when space permits, while unfilled image slots remain compact labelled placeholders rather than blank dedicated slides. A post-layout quality audit reports genuinely sparse slides instead of visually padding them.
 
 `pptx-output.js` wraps the engine result with the correct PowerPoint MIME type and a safe `.pptx` filename.
 
